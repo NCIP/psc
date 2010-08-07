@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandContr
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.security.AuthorizationManager;
 import org.json.JSONArray;
@@ -42,6 +43,10 @@ public class AdministerUserController
     private SiteDao siteDao;
     private StudyDao studyDao;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
+
+    public AdministerUserController() {
+        setValidator(new ValidatableValidator());
+    }
 
     @Override
     public Collection<ResourceAuthorization> authorizations(
@@ -89,7 +94,7 @@ public class AdministerUserController
                 "No user " + request.getParameter(USER_PARAMETER_NAME));
             return null;
         }
-        if ("POST".equals(request.getMethod())) {
+        if ("POST".equals(request.getMethod()) && !errors.hasErrors()) {
             command.apply();
             return new ModelAndView("redirectToUserList");
         } else {

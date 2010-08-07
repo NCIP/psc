@@ -83,7 +83,6 @@
 <body>
 <laf:box title="Set properties and permissions for ${command.user.loginName}">
     <form:form method="post" id="user-admin">
-        <tags:errors path="*"/>
         <div class="row">
             <c:choose>
                 <c:when test="${command.newUser}">
@@ -99,6 +98,9 @@
                     <div class="value">${command.user.loginName}</div>
                 </c:otherwise>
             </c:choose>
+        </div>
+        <div class="row">
+            <div class="value"><tags:errors path="*"/></div>
         </div>
         <div class="row">
             <div class="label">
