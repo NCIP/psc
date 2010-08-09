@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +49,6 @@ public class ProvisionUserCommand
     extends AbstractSingleUserProvisioningCommand
     implements Validatable
 {
-    private static final int JSON_INDENT_DEPTH = 4;
 
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
@@ -201,41 +199,6 @@ public class ProvisionUserCommand
         }
     }
 
-    public String getJavaScriptProvisionableUser() {
-        try {
-            return String.format(
-                "new psc.admin.ProvisionableUser('%s', %s)",
-                getUser().getCsmUser().getLoginName(),
-                buildProvisionableUserRoleJSON().toString(JSON_INDENT_DEPTH));
-        } catch (JSONException e) {
-            throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
-        }
-    }
-
-    private JSONObject buildProvisionableUserRoleJSON() throws JSONException {
-        JSONObject rolesJSON = new JSONObject();
-        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
-            rolesJSON.put(entry.getKey().getCsmName(), buildProvisionableUserScopeJSON(entry.getValue()));
-        }
-        return rolesJSON;
-    }
-
-    private JSONObject buildProvisionableUserScopeJSON(SuiteRoleMembership membership) throws JSONException {
-        JSONObject scopeJSON = new JSONObject();
-        for (ScopeType scopeType : ScopeType.values()) {
-            if (membership.hasScope(scopeType)) {
-                List<String> identifiers;
-                if (membership.isAll(scopeType)) {
-                    identifiers = Collections.singletonList(JSON_ALL_SCOPE_IDENTIFIER);
-                } else {
-                    identifiers = membership.getIdentifiers(scopeType);
-                }
-                scopeJSON.put(scopeType.getPluralName(), new JSONArray(identifiers));
-            }
-        }
-        return scopeJSON;
-    }
-
     public String getJavaScriptProvisionableSites() {
         try {
             return buildJavaScriptProvisionableSites().toString(JSON_INDENT_DEPTH);
@@ -363,22 +326,13 @@ public class ProvisionUserCommand
 
     ////// INNER CLASSES
 
-    private static class StudyJSONObjectComparator implements Comparator<JSONObject> {
+    private static class StudyJSONObjectComparator extends ScopeComparator<JSONObject> {
         public static final Comparator<? super JSONObject> INSTANCE =
             new StudyJSONObjectComparator();
 
-        public int compare(JSONObject o1, JSONObject o2) {
-            String id1 = o1.optString("identifier");
-            String id2 = o2.optString("identifier");
-            if (id1.equals(id2)) {
-                return 0;
-            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id1)) {
-                return -1;
-            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id2)) {
-                return 1;
-            } else {
-                return id1.compareToIgnoreCase(id2);
-            }
+        @Override
+        public String extractScopeIdentifier(JSONObject o) {
+            return o.optString("identifier");
         }
 
         private StudyJSONObjectComparator() { }

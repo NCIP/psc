@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -60,6 +62,7 @@ public abstract class AbstractSingleUserProvisioningCommand {
     private boolean canProvisionParticipateInAllStudies;
     private List<Study> provisionableParticipatingStudies;
     private Set<String> provisionableParticipatingStudyIdentifiers;
+    protected static final int JSON_INDENT_DEPTH = 4;
 
     public AbstractSingleUserProvisioningCommand(
         PscUser user,
@@ -221,6 +224,43 @@ public abstract class AbstractSingleUserProvisioningCommand {
         return user.getMemberships();
     }
 
+    ////// JAVASCRIPT SERIALIZATION
+
+    public String getJavaScriptProvisionableUser() {
+        try {
+            return String.format(
+                "new psc.admin.ProvisionableUser('%s', %s)",
+                getUser().getCsmUser().getLoginName(),
+                buildProvisionableUserRoleJSON().toString(JSON_INDENT_DEPTH));
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
+        }
+    }
+
+    private JSONObject buildProvisionableUserRoleJSON() throws JSONException {
+        JSONObject rolesJSON = new JSONObject();
+        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
+            rolesJSON.put(entry.getKey().getCsmName(), buildProvisionableUserScopeJSON(entry.getValue()));
+        }
+        return rolesJSON;
+    }
+
+    private JSONObject buildProvisionableUserScopeJSON(SuiteRoleMembership membership) throws JSONException {
+        JSONObject scopeJSON = new JSONObject();
+        for (ScopeType scopeType : ScopeType.values()) {
+            if (membership.hasScope(scopeType)) {
+                List<String> identifiers;
+                if (membership.isAll(scopeType)) {
+                    identifiers = Collections.singletonList(JSON_ALL_SCOPE_IDENTIFIER);
+                } else {
+                    identifiers = membership.getIdentifiers(scopeType);
+                }
+                scopeJSON.put(scopeType.getPluralName(), new JSONArray(identifiers));
+            }
+        }
+        return scopeJSON;
+    }
+
     ////// CONFIGURATION
 
     public List<ProvisioningRole> getProvisionableRoles() {
@@ -232,6 +272,14 @@ public abstract class AbstractSingleUserProvisioningCommand {
         for (SuiteRole role : roles) {
             this.provisionableRoles.add(new ProvisioningRole(role));
         }
+    }
+
+    public void setProvisionableRoles(PscRole... roles) {
+        SuiteRole[] sRoles = new SuiteRole[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            sRoles[i] = roles[i].getSuiteRole();
+        }
+        setProvisionableRoles(sRoles);
     }
 
     public List<Site> getProvisionableSites() {
@@ -359,5 +407,27 @@ public abstract class AbstractSingleUserProvisioningCommand {
         public boolean isScopeChange() {
             return this.scopeType != null;
         }
+    }
+
+    public abstract static class ScopeComparator<T> implements Comparator<T> {
+        public static final Comparator<String> IDENTITY = new ScopeComparator<String>() {
+            @Override public String extractScopeIdentifier(String o) { return o; }
+        };
+
+        public int compare(T o1, T o2) {
+            String id1 = extractScopeIdentifier(o1);
+            String id2 = extractScopeIdentifier(o2);
+            if (id1.equals(id2)) {
+                return 0;
+            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id1)) {
+                return -1;
+            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id2)) {
+                return 1;
+            } else {
+                return id1.compareToIgnoreCase(id2);
+            }
+        }
+
+        public abstract String extractScopeIdentifier(T o);
     }
 }
