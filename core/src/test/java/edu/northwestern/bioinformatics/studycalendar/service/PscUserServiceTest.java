@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
 import static org.easymock.EasyMock.*;
 
 public class PscUserServiceTest extends StudyCalendarTestCase {
@@ -59,9 +59,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private StudyDao studyDao;
     private StudySubjectAssignmentDao assignmentDao;
-    private PlatformTransactionManager transactionManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
-    private CsmHelper csmHelper;
     private AuthorizationManager csmAuthorizationManager;
     private LegacyModeSwitch aSwitch;
 
@@ -72,16 +70,16 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         userService = registerMockFor(UserService.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
         suiteRoleMembershipLoader = registerMockFor(SuiteRoleMembershipLoader.class);
-        transactionManager = registerMockFor(PlatformTransactionManager.class);
         aSwitch = new LegacyModeSwitch();
 
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
 
-        csmHelper = registerMockFor(CsmHelper.class);
+        CsmHelper csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
 
+        PlatformTransactionManager transactionManager = registerMockFor(PlatformTransactionManager.class);
         DefaultTransactionStatus status = new DefaultTransactionStatus(null, true, true, true, true, null);
         expect(transactionManager.getTransaction((TransactionDefinition) notNull())).
             andStubReturn(status);
@@ -99,9 +97,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setSiteDao(siteDao);
         service.setStudySubjectAssignmentDao(assignmentDao);
 
-        csmUser = new User();
-        csmUser.setLoginName("John");
-        csmUser.setUserId(5L);
+        csmUser = AuthorizationObjectFactory.createCsmUser(5, "John");
         legacyUser = Fixtures.createUser(1, "John", 1L, true);
 
         for (SuiteRole role : SuiteRole.values()) {
