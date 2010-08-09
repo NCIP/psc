@@ -33,7 +33,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -120,6 +123,10 @@ public class PscUserService implements PscUserDetailsService {
         }
     }
 
+    /**
+     * Returns a list of all the users in the system.  For performance reasons, their role
+     * memberships are not included.
+     */
     @SuppressWarnings({"unchecked"})
     public List<PscUser> getAllUsers() {
         List<User> allCsmUsers = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
@@ -129,6 +136,78 @@ public class PscUserService implements PscUserDetailsService {
         }
         Collections.sort(users);
         return users;
+    }
+
+    /**
+     * Gets PscUser instances corresponding to the given CSM users.  The CSM users must be real,
+     * loaded instances.  (Particularly, their IDs must be set and correct.)
+     * <p>
+     * This loads the full role membership collection for each user, so beware of using it on
+     * long lists of users.
+     */
+    public List<PscUser> getPscUsers(Collection<User> csmUsers) {
+        List<PscUser> users = new ArrayList<PscUser>(csmUsers.size());
+        for (User csmUser : csmUsers) {
+            users.add(new PscUser(
+                csmUser, suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())));
+        }
+        return users;
+    }
+
+    /**
+     * Finds all the users in the system who share some role membership scope with the
+     * given user in the given role.
+     */
+    public List<PscUser> getColleaguesOf(PscUser user, PscRole collegialRole) {
+        SuiteRoleMembership primaryMembership = user.getMembership(collegialRole);
+        if (primaryMembership == null) return Collections.emptyList();
+
+        Collection<User> csmUsers = getCsmUsers(collegialRole);
+        List<PscUser> candidates = getPscUsers(csmUsers);
+        for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
+            PscUser candidate = it.next();
+            SuiteRoleMembership candidateMembership = candidate.getMembership(collegialRole);
+            if (candidateMembership != null &&
+                candidateMembership.intersect(primaryMembership) != null) {
+                continue;
+            }
+            it.remove();
+        }
+        Collections.sort(candidates);
+
+        return candidates;
+    }
+
+    /**
+     * Finds all the users who have participation memberships that are manageable
+     * by the given study team admin.  "Manageable by" means the memberships are for
+     * study-scoped roles and their site scopes overlap with the admin's site scope.
+     */
+    public List<PscUser> getTeamMembersFor(PscUser studyTeamAdmin) {
+        SuiteRoleMembership staMembership =
+            studyTeamAdmin.getMembership(PscRole.STUDY_TEAM_ADMINISTRATOR);
+        if (staMembership == null) return Collections.emptyList();
+
+        Set<User> csmUsers = new LinkedHashSet<User>();
+        for (PscRole role : PscRoleUse.SITE_PARTICIPATION.roles()) {
+            if (role.isStudyScoped()) csmUsers.addAll(getCsmUsers(role));
+        }
+        List<PscUser> candidates = getPscUsers(csmUsers);
+        CANDIDATES: for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
+            PscUser candidate = it.next();
+            for (PscRole spRole : PscRoleUse.SITE_PARTICIPATION.roles()) {
+                if (spRole.isStudyScoped()) {
+                    SuiteRoleMembership candidateMembership = candidate.getMembership(spRole);
+                    if (candidateMembership != null &&
+                        candidateMembership.intersect(staMembership) != null) {
+                        continue CANDIDATES;
+                    }
+                }
+            }
+            it.remove();
+        }
+        Collections.sort(candidates);
+        return candidates;
     }
 
     ////// VISIBLE DOMAIN INSTANCES
