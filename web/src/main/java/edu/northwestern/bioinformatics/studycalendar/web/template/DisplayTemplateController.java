@@ -83,7 +83,7 @@ public class DisplayTemplateController extends PscAbstractController {
             getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
             model.put("studySegment", new StudySegmentTemplate(studySegment));
 
-            Boolean canEdit = user.hasRole(Role.STUDY_COORDINATOR) && study.isInDevelopment() && !(study.isReleased() && selectedAmendmentId==null);
+            Boolean canEdit = user.hasRole(Role.STUDY_COORDINATOR);
             model.put("canEdit", canEdit);
 
             if (study.isReleased()) {

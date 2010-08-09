@@ -14,15 +14,15 @@
 <laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
     <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
-    <c:if test="${canEdit || (!canEdit && not empty studySegment.base.cycleLength)}">
+    <c:if test="${(canEdit && editable) || ((!canEdit || !editable)&& not empty studySegment.base.cycleLength)}">
         <form:form method="post" id="cycle-form" action="${cycleUrl}">
-            <c:if test="${canEdit}">
+            <c:if test="${canEdit && editable}">
                <form:errors path="*"/>
                <h5 id="cycleError"></h5>
                     Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
                 <input type="submit" value="Update" id="cycleButton"/>
             </c:if>
-            <c:if test="${!canEdit && not empty studySegment.base.cycleLength}">
+            <c:if test="${(!canEdit || !editable) && not empty studySegment.base.cycleLength}">
                 The cycle length of this segment is ${studySegment.base.cycleLength} days.
             </c:if>
         </form:form>

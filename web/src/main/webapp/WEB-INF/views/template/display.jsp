@@ -787,12 +787,12 @@
                     <ul>
                         <c:forEach items="${study.populations}" var="population">
                             <li>
-                                <c:if test="${canEdit}">
+                                <c:if test="${canEdit && not empty developmentRevision}">
                                     <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
                                             ${population.abbreviation}: ${population.name}
                                     </a>
                                 </c:if>
-                                <c:if test="${!canEdit}">${population.abbreviation}: ${population.name}</c:if>
+                                <c:if test="${!canEdit || empty developmentRevision}">${population.abbreviation}: ${population.name}</c:if>
                             </li>
                         </c:forEach>
                         <li class="controls addPopulationButton" studyId='${study.id}' studyInInitialDevelopment='${study.inInitialDevelopment}' studyInAmendmentDevelopment='${study.inAmendmentDevelopment}'/>
