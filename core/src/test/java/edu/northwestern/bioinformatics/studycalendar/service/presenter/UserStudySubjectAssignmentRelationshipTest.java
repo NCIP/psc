@@ -19,6 +19,8 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Rhett Sutphin
  */
 public class UserStudySubjectAssignmentRelationshipTest extends TestCase {
+    private static final long CSM_USER_ID = 14L;
+
     private Study study, otherStudy;
     private Site nu, mayo;
     private StudySubjectAssignment assignment;
@@ -115,6 +117,29 @@ public class UserStudySubjectAssignmentRelationshipTest extends TestCase {
             getCanUpdateSchedule());
     }
 
+    ////// isCalendarManager
+
+    public void testIsCalendarManagerWhenIs() throws Exception {
+        assignment.setManagerCsmUserId((int) CSM_USER_ID);
+        assertTrue(actual(
+            createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+            isCalendarManager());
+    }
+
+    public void testIsCalendarManagerWhenIsNot() throws Exception {
+        assignment.setManagerCsmUserId((int) CSM_USER_ID - 7);
+        assertFalse(actual(
+            createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+            isCalendarManager());
+    }
+
+    public void testIsCalendarManagerWhenNone() throws Exception {
+        assignment.setManagerCsmUserId(null);
+        assertFalse(actual(
+            createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+            isCalendarManager());
+    }
+
     ////// HELPERS
 
     private UserStudySubjectAssignmentRelationship actual(SuiteRoleMembership membership) {
@@ -129,6 +154,6 @@ public class UserStudySubjectAssignmentRelationshipTest extends TestCase {
             fail("Test membership is invalid.  " + save.getMessage());
         }
         return new UserStudySubjectAssignmentRelationship(
-            createPscUser("jo", membership), assignment);
+            createPscUser("jo", CSM_USER_ID, membership), assignment);
     }
 }

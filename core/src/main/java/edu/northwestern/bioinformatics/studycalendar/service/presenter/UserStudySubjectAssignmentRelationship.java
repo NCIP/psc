@@ -31,6 +31,11 @@ public class UserStudySubjectAssignmentRelationship
         return hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
+    public boolean isCalendarManager() {
+        return assignment.getManagerCsmUserId() != null
+            && assignment.getManagerCsmUserId().equals(user.getCsmUser().getUserId().intValue());
+    }
+
     ////// comparable
 
     public int compareTo(UserStudySubjectAssignmentRelationship o) {
