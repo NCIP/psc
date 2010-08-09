@@ -1,7 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -10,6 +15,22 @@ import java.util.List;
  */
 public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite> implements DeletableDomainObjectDao<StudySite> {
     @Override public Class<StudySite> domainClass() { return StudySite.class; }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<StudySite> getIntersections(Collection<Integer> studyIds, Collection<Integer> siteIds) {
+        if (studyIds == null && siteIds == null) return getAll();
+        DetachedCriteria criteria = DetachedCriteria.forClass(StudySite.class);
+
+        Conjunction and = Restrictions.conjunction();
+        if (siteIds != null) {
+            and.add(MoreRestrictions.in("site.id", siteIds));
+        }
+        if (studyIds != null) {
+            and.add(MoreRestrictions.in("study.id", studyIds));
+        }
+        criteria.add(and);
+        return getHibernateTemplate().findByCriteria(criteria);
+    }
 
     /**
      * Deletes the study site relationship
