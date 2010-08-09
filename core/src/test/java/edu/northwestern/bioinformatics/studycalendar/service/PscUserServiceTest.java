@@ -246,14 +246,15 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             add(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(whatCheer).
             add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon).forAllStudies().
             toUser();
+        StudySubjectAssignment expectedAssignment =
+            createAssignment(eg1701, solon, createSubject("F", "B"));
+
         expect(siteDao.getVisibleSiteIds(
             new VisibleSiteParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
             andReturn(Arrays.asList(3, 7));
         expect(studyDao.getVisibleStudyIds(
             new VisibleStudyParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
             andReturn(Arrays.asList(4));
-        StudySubjectAssignment expectedAssignment =
-            createAssignment(eg1701, solon, createSubject("F", "B"));
         expect(assignmentDao.getAssignmentsInIntersection(Arrays.asList(3, 7), Arrays.asList(4))).
             andReturn(Arrays.asList(expectedAssignment));
 
@@ -283,5 +284,45 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong number of assignments returned", 0, actual.size());
+    }
+
+    public void testGetManagedAssignments() throws Exception {
+        PscUser manager = new PscUserBuilder().setCsmUserId(15L).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().
+            toUser();
+        StudySubjectAssignment expectedAssignment =
+            createAssignment(eg1701, northLiberty, createSubject("F", "B"));
+
+        expect(assignmentDao.getAssignmentsByManagerCsmUserId(15)).
+            andReturn(Arrays.asList(expectedAssignment));
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual = service.getManagedAssignments(manager);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible assignments", 1, actual.size());
+        assertSame("Wrong assignment visible", expectedAssignment, actual.get(0).getAssignment());
+        assertSame("User not carried forward", manager, actual.get(0).getUser());
+    }
+
+    public void testGetManagedAssignmentsFiltersOutNoLongerManageableAssignments() throws Exception {
+        PscUser manager = new PscUserBuilder().setCsmUserId(15L).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(whatCheer).forAllStudies().
+            toUser();
+        StudySubjectAssignment expectedOldAssignment =
+            createAssignment(eg1701, northLiberty, createSubject("F", "B"));
+        StudySubjectAssignment expectedStillManageableAssignment =
+            createAssignment(eg1701, whatCheer, createSubject("W", "C"));
+
+        expect(assignmentDao.getAssignmentsByManagerCsmUserId(15)).
+            andReturn(Arrays.asList(expectedOldAssignment, expectedStillManageableAssignment));
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual = service.getManagedAssignments(manager);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible assignments", 1, actual.size());
+        assertSame("Wrong assignment visible", expectedStillManageableAssignment, actual.get(0).getAssignment());
+        assertSame("User not carried forward", manager, actual.get(0).getUser());
     }
 }

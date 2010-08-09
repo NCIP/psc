@@ -157,8 +157,23 @@ public class PscUserService implements PscUserDetailsService {
      * Returns all the assignments for which the user is the designated manager and which the user
      * can still manage.
      */
-    public List<UserStudySubjectAssignmentRelationship> getManagingAssignments(PscUser user) {
-        throw new UnsupportedOperationException("TODO");
+    public List<UserStudySubjectAssignmentRelationship> getManagedAssignments(PscUser user) {
+        List<StudySubjectAssignment> managed = studySubjectAssignmentDao.
+            getAssignmentsByManagerCsmUserId(user.getCsmUser().getUserId().intValue());
+        List<UserStudySubjectAssignmentRelationship> result =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(managed.size());
+        for (StudySubjectAssignment assignment : managed) {
+            UserStudySubjectAssignmentRelationship rel =
+                new UserStudySubjectAssignmentRelationship(user, assignment);
+            if (rel.getCanUpdateSchedule()) {
+                result.add(rel);
+            } else {
+                log.warn(
+                    "The designated primary manager ({}) for assignment id={} can no longer manage it.",
+                    user.getUsername(), assignment.getId());
+            }
+        }
+        return result;
     }
 
     ////// CONFIGURATION

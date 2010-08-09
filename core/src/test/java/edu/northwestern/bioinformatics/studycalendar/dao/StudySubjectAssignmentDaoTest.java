@@ -119,4 +119,12 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertEquals("Wrong number of assignments found", 0, actual.size());
     }
+
+    public void testGetAssignmentsByManager() throws Exception {
+        List<StudySubjectAssignment> actual =
+            getDao().getAssignmentsByManagerCsmUserId(-8901);
+
+        assertEquals("Wrong number of assignments found", 1, actual.size());
+        assertEquals("Wrong assignment found", -12, (int) actual.get(0).getId());
+    }
 }

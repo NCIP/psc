@@ -67,8 +67,7 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
         Collection<Integer> studyIds, Collection<Integer> siteIds
     ) {
         if (studyIds == null && siteIds == null) return getAll();
-        DetachedCriteria criteria = DetachedCriteria.
-            forClass(StudySubjectAssignment.class).createAlias("studySite", "ss");
+        DetachedCriteria criteria = criteria().createAlias("studySite", "ss");
 
         Conjunction and = Restrictions.conjunction();
         if (siteIds != null) {
@@ -79,5 +78,15 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
         }
         criteria.add(and);
         return getHibernateTemplate().findByCriteria(criteria);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<StudySubjectAssignment> getAssignmentsByManagerCsmUserId(int csmUserId) {
+        return getHibernateTemplate().findByCriteria(
+            criteria().add(Restrictions.eq("managerCsmUserId", csmUserId)));
+    }
+
+    private DetachedCriteria criteria() {
+        return DetachedCriteria.forClass(StudySubjectAssignment.class);
     }
 }

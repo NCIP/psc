@@ -136,6 +136,9 @@
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
         <property name="csmHelper" ref="suiteCsmHelper"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="studyDao" ref="studyDao"/>
+        <property name="studySubjectAssignmentDao" ref="studySubjectAssignmentDao"/>
     </bean>
 
     <!-- DATA PROVIDERS -->

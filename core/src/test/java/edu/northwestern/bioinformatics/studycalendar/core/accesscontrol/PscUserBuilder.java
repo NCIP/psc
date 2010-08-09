@@ -16,6 +16,7 @@ import java.util.List;
 */
 public class PscUserBuilder {
     private String username;
+    private Long csmUserId;
     private SuiteRoleMembership current;
     private List<SuiteRoleMembership> memberships;
 
@@ -29,18 +30,23 @@ public class PscUserBuilder {
     }
 
     public PscUser toUser() {
-        pushCurrent();
-        return AuthorizationObjectFactory.createPscUser(username,
+        pushCurrentMembership();
+        return AuthorizationObjectFactory.createPscUser(username, csmUserId,
             memberships.toArray(new SuiteRoleMembership[memberships.size()]));
     }
 
+    public PscUserBuilder setCsmUserId(long id) {
+        csmUserId = id;
+        return this;
+    }
+
     public PscUserBuilder add(PscRole role) {
-        pushCurrent();
+        pushCurrentMembership();
         current = AuthorizationScopeMappings.createSuiteRoleMembership(role);
         return this;
     }
 
-    private void pushCurrent() {
+    private void pushCurrentMembership() {
         if (current == null) return;
         current.checkComplete();
         current.validate();
