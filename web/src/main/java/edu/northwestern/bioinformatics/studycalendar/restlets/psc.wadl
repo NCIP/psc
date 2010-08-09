@@ -1463,6 +1463,8 @@
                 <doc>
                     <html:p>
                         Retrieve a list of scheduled activities that fit the criteria specified in the filters.
+                        The filters are applied simultaneously -- i.e., only information about scheduled activities
+                        that match all the filters will be returned.
                     </html:p>
                     <html:div class="roles">
                         Authorized to:
@@ -1475,31 +1477,31 @@
                 </doc>
                 <request>
                     <param style="query" name="study" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows which contains the study id value.</doc>
+                        <doc>Limit to those scheduled activities derived from the study with the specified identifier.</doc>
                     </param>
                     <param style="query" name="site" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows which contains the site id value.</doc>
+                        <doc>Limit to those scheduled activities for subjects participating at the site with the specified identifier.</doc>
                     </param>
                     <param style="query" name="state" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows which contains the activity state value.</doc>
+                        <doc>Limit to those scheduled activities currently in the given state.</doc>
                     </param>
                     <param style="query" name="activity-type" type="xsd:string">
-                        <doc>If specified, only scheduled activities report rows that contain the activity type value (case-insensitive) in their scheduled activity instance.</doc>
+                        <doc>Limit to those scheduled activities whose activity type matches the given value.</doc>
                     </param>
                     <param style="query" name="label" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows which contains the specified label value.</doc>
+                        <doc>Limit to those scheduled activities which have the given label.</doc>
                     </param>
                     <param style="query" name="start-date" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows whose activities follow within the start-date value.</doc>
+                        <doc>Limit to those scheduled activities whose current date is this date or later.</doc>
                     </param>
                     <param style="query" name="end-date" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows whose activities follow within the end-date value.</doc>
+                        <doc>Limit to those scheduled activities whose current date is this date or earlier.</doc>
                     </param>
                     <param style="query" name="responsible-user" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows whose subject coordinator is the specified responsible-user.</doc>
+                        <doc>Limit to those scheduled activities whose subject assignment is being managed by the user with this username.</doc>
                     </param>
                     <param style="query" name="person-id" type="xsd:string">
-                        <doc>If specified, only collection of scheduled activities report rows which belongs to the specified person-id.</doc>
+                        <doc>Limit to activities for the given subject only.</doc>
                     </param>
                 </request>
                 <response>
