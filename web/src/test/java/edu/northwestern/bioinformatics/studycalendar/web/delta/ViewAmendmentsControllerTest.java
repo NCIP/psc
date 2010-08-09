@@ -80,7 +80,8 @@ public class ViewAmendmentsControllerTest extends ControllerTestCase {
     public void testDevelopmentAmendmentNotIncludedIfPresentAndUserIsNotStudyCoordinator() throws Exception {
         Amendment dev = new Amendment();
         study.setDevelopmentAmendment(dev);
-        setUser(new PscUserBuilder("jo").add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().toUser());
+        setUser(new PscUserBuilder("jo").
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites().toUser());
 
         assertNull("Should have no dev amendment", handleAndReturnModel("dev"));
     }
@@ -141,7 +142,8 @@ public class ViewAmendmentsControllerTest extends ControllerTestCase {
     public void testCannotSelectTheDevAmendmentWhenNotStudyCoord() throws Exception {
         Amendment dev = setId(6, new Amendment());
         study.setDevelopmentAmendment(dev);
-        setUser(new PscUserBuilder("jo").add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().toUser());
+        setUser(new PscUserBuilder("jo").
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites().toUser());
         request.setParameter("amendment", "6");
         assertNull(handle());
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
@@ -155,7 +157,8 @@ public class ViewAmendmentsControllerTest extends ControllerTestCase {
     }
 
     public void testNoSiteApprovalsReturnedForStudyCoord() throws Exception {
-        setUser(new PscUserBuilder("jo").add(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().toUser());
+        setUser(new PscUserBuilder("jo").
+            add(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies().toUser());
 
         AmendmentView aBview = handleAndReturnActualAmendmentViews().get(1);
         assertSame("Test setup failure", aB, aBview.getAmendment());
