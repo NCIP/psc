@@ -248,7 +248,24 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         expect(suiteRoleMembershipLoader.getRoleMemberships(5L)).andReturn(expectedMemberships);
 
         replayMocks();
-        Collection<PscUser> actual = service.getPscUsers(Collections.singleton(csmUser));
+        Collection<PscUser> actual = service.getPscUsers(Collections.singleton(csmUser), false);
+        verifyMocks();
+
+        assertEquals("Wrong number of PSC users", 1, actual.size());
+        PscUser actualUser = actual.iterator().next();
+        assertSame("Wrong CSM user", csmUser, actualUser.getCsmUser());
+        assertSame("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+    }
+
+    public void testGetPscUsersFromCsmUsersWithPartial() throws Exception {
+        Map<SuiteRole, SuiteRoleMembership> expectedMemberships =
+            Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
+                new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(5L)).
+            andReturn(expectedMemberships);
+
+        replayMocks();
+        Collection<PscUser> actual = service.getPscUsers(Collections.singleton(csmUser), true);
         verifyMocks();
 
         assertEquals("Wrong number of PSC users", 1, actual.size());
@@ -354,13 +371,13 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         expectGetCsmUsersForSuiteRole(SuiteRole.DATA_READER, both, dr);
         expectGetCsmUsersForSuiteRole(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER, sscm, both);
 
-        expect(suiteRoleMembershipLoader.getRoleMemberships(6)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(6)).andReturn(
             Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
                 catholicRoleMembership(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER)));
-        expect(suiteRoleMembershipLoader.getRoleMemberships(16)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(16)).andReturn(
             Collections.singletonMap(SuiteRole.DATA_READER,
                 catholicRoleMembership(SuiteRole.DATA_READER)));
-        expect(suiteRoleMembershipLoader.getRoleMemberships(96)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(96)).andReturn(
             new MapBuilder<SuiteRole, SuiteRoleMembership>().
                 put(SuiteRole.DATA_READER, catholicRoleMembership(SuiteRole.DATA_READER)).
                 put(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
@@ -386,13 +403,13 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         expectGetCsmUsersForSuiteRole(SuiteRole.DATA_READER, wcDR);
         expectGetCsmUsersForSuiteRole(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER, wcSSCM, solonSSCM);
 
-        expect(suiteRoleMembershipLoader.getRoleMemberships(81)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(81)).andReturn(
             Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
                 createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(whatCheer)));
-        expect(suiteRoleMembershipLoader.getRoleMemberships(243)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(243)).andReturn(
             Collections.singletonMap(SuiteRole.DATA_READER,
                 createSuiteRoleMembership(PscRole.DATA_READER).forSites(whatCheer)));
-        expect(suiteRoleMembershipLoader.getRoleMemberships(729)).andReturn(
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(729)).andReturn(
             Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
                 createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon)));
 

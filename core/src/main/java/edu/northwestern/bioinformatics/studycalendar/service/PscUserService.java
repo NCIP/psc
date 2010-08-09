@@ -145,11 +145,14 @@ public class PscUserService implements PscUserDetailsService {
      * This loads the full role membership collection for each user, so beware of using it on
      * long lists of users.
      */
-    public List<PscUser> getPscUsers(Collection<User> csmUsers) {
+    public List<PscUser> getPscUsers(Collection<User> csmUsers, boolean includePartialMemberships) {
         List<PscUser> users = new ArrayList<PscUser>(csmUsers.size());
         for (User csmUser : csmUsers) {
-            users.add(new PscUser(
-                csmUser, suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())));
+            users.add(new PscUser(csmUser,
+                includePartialMemberships ?
+                    suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId()) :
+                    suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())
+            ));
         }
         return users;
     }
@@ -163,7 +166,7 @@ public class PscUserService implements PscUserDetailsService {
         if (primaryMembership == null) return Collections.emptyList();
 
         Collection<User> csmUsers = getCsmUsers(collegialRole);
-        List<PscUser> candidates = getPscUsers(csmUsers);
+        List<PscUser> candidates = getPscUsers(csmUsers, false);
         for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
             SuiteRoleMembership candidateMembership = candidate.getMembership(collegialRole);
@@ -193,7 +196,7 @@ public class PscUserService implements PscUserDetailsService {
         for (PscRole role : PscRole.valuesProvisionableByStudyTeamAdministrator()) {
             csmUsers.addAll(getCsmUsers(role));
         }
-        List<PscUser> candidates = getPscUsers(csmUsers);
+        List<PscUser> candidates = getPscUsers(csmUsers, true);
         CANDIDATES: for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
             for (PscRole spRole : PscRole.valuesProvisionableByStudyTeamAdministrator()) {
