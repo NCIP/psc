@@ -8,7 +8,12 @@
 
 <html>
 <head>
-    <title>Administer user ${command.user.loginName}</title>
+    <title>
+        <c:choose>
+            <c:when test="${command.newUser}">Create New User</c:when>
+            <c:otherwise>Provision User ${command.user.displayName}</c:otherwise>
+        </c:choose>
+    </title>
     <c:forEach items="${fn:split('yahoo-dom-event logger-min json-min', ' ')}" var="script">
         <tags:javascriptLink name="yui/2.7.0/${script}"/>
     </c:forEach>
@@ -81,21 +86,21 @@
     </script>
 </head>
 <body>
-<laf:box title="Set properties and permissions for ${command.user.loginName}">
+<laf:box title="Set properties and permissions for ${empty command.newUser ? 'new user' : command.user.displayName}">
     <form:form method="post" id="user-admin">
         <div class="row">
             <c:choose>
                 <c:when test="${command.newUser}">
                     <div class="label">
-                        <form:label path="user.loginName">Username</form:label>
+                        <form:label path="user.csmUser.loginName">Username</form:label>
                     </div>
                     <div class="value">
-                        <form:input path="user.loginName"/>
+                        <form:input path="user.csmUser.loginName"/>
                     </div>
                 </c:when>
                 <c:otherwise>
                     <div class="label">Username</div>
-                    <div class="value">${command.user.loginName}</div>
+                    <div class="value">${command.user.csmUser.loginName}</div>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -104,26 +109,26 @@
         </div>
         <div class="row">
             <div class="label">
-                <form:label path="user.emailId">E-mail address</form:label>
+                <form:label path="user.csmUser.emailId">E-mail address</form:label>
             </div>
             <div class="value">
-                <form:input path="user.emailId"/>
+                <form:input path="user.csmUser.emailId"/>
             </div>
         </div>
         <div class="row">
             <div class="label">
-                <form:label path="user.firstName">First name</form:label>
+                <form:label path="user.csmUser.firstName">First name</form:label>
             </div>
             <div class="value">
-                <form:input path="user.firstName"/>
+                <form:input path="user.csmUser.firstName"/>
             </div>
         </div>
         <div class="row">
             <div class="label">
-                <form:label path="user.lastName">Last name</form:label>
+                <form:label path="user.csmUser.lastName">Last name</form:label>
             </div>
             <div class="value">
-                <form:input path="user.lastName"/>
+                <form:input path="user.csmUser.lastName"/>
             </div>
         </div>
         <c:if test="${command.usesLocalPasswords}">
@@ -149,10 +154,10 @@
         </c:if>
         <div class="row">
             <div class="label">
-                <form:label path="user.endDate">End date</form:label>
+                <form:label path="user.csmUser.endDate">End date</form:label>
             </div>
             <div class="value">
-                <laf:dateInput path="user.endDate"/>
+                <laf:dateInput path="user.csmUser.endDate"/>
                 The day this account stops being valid.  Leave blank to have it never expire, or set it in the past to have it expire immediately.
             </div>
         </div>

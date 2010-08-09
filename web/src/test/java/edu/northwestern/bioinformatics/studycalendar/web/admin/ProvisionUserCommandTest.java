@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
@@ -12,9 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -33,7 +30,6 @@ import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.anyLong;
 import static org.easymock.classextension.EasyMock.expectLastCall;
 
 /**
@@ -47,7 +43,6 @@ public class ProvisionUserCommandTest extends WebTestCase {
     private Site austin, sanAntonio;
     private Study studyA, studyB, studyC;
 
-    private ProvisioningSession pSession;
     private AuthorizationManager authorizationManager;
     private ProvisioningSessionFactory psFactory;
     private AuthenticationSystem authenticationSystem;
@@ -70,8 +65,6 @@ public class ProvisionUserCommandTest extends WebTestCase {
         expect(authorizationManager.getUser(csmUser.getLoginName())).andStubReturn(null); // for validation
 
         psFactory = registerMockFor(ProvisioningSessionFactory.class);
-        pSession = registerMockFor(ProvisioningSession.class);
-        expect(psFactory.createSession(anyLong())).andStubReturn(pSession);
 
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
         expect(authenticationSystem.usesLocalPasswords()).andStubReturn(true);
@@ -285,105 +278,11 @@ public class ProvisionUserCommandTest extends WebTestCase {
         command.apply();
         verifyMocks();
 
-        assertSame("User not replaced with loaded one", savedJo, command.getUser());
+        assertSame("User not replaced with loaded one", savedJo, command.getUser().getCsmUser());
         assertEquals("Bound properties not copied to loaded user",
-            "foo@nihil.it", command.getUser().getEmailId());
+            "foo@nihil.it", command.getUser().getCsmUser().getEmailId());
         assertEquals("Not-bound properties blanked on loaded user",
-            "Josephine", command.getUser().getFirstName());
-    }
-
-    public void testApplyAppliesAddAllSiteScope() throws Exception {
-        expectRoleChange("data_reader", "add", "site", "__ALL__");
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Membership not made for all sites", srm.isAllSites());
-    }
-
-    public void testApplyAppliesAddSingleSiteScope() throws Exception {
-        expectRoleChange("data_reader", "add", "site", sanAntonio.getAssignedIdentifier());
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Membership not made for specified site",
-            srm.getSiteIdentifiers().contains(sanAntonio.getAssignedIdentifier()));
-    }
-
-    public void testApplyAppliesAddAllStudyScope() throws Exception {
-        expectRoleChange("data_reader", "add", "study", "__ALL__");
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Membership not made for all sites", srm.isAllStudies());
-    }
-
-    public void testApplyAppliesAddSingleStudyScope() throws Exception {
-        expectRoleChange("data_reader", "add", "study", studyB.getAssignedIdentifier());
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Membership not made for specified study",
-            srm.getStudyIdentifiers().contains(studyB.getAssignedIdentifier()));
-    }
-
-    public void testApplyAppliesAddGroupOnly() throws Exception {
-        expectRoleChange("business_administrator", "add");
-
-        expectGetAndReplaceMembership(SuiteRole.BUSINESS_ADMINISTRATOR);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testApplyRemoveGroupDeletesRole() throws Exception {
-        expectRoleChange("system_administrator", "remove");
-
-        /* expect */ pSession.deleteRole(SuiteRole.SYSTEM_ADMINISTRATOR);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testApplyAppliesRemoveSingleSiteScope() throws Exception {
-        expectRoleChange("data_reader", "remove", "site", sanAntonio.getAssignedIdentifier());
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER).
-            forSites(sanAntonio, austin);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertEquals("Removed site not removed", 1, srm.getSiteIdentifiers().size());
-        assertEquals("Wrong site removed",
-            austin.getAssignedIdentifier(), srm.getSiteIdentifiers().get(0));
-    }
-
-    public void testApplyAppliesRemoveSingleStudyScope() throws Exception {
-        expectRoleChange("data_reader", "remove", "study", "C");
-
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER).
-            forStudies(studyB, studyC);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertEquals("Removed study not removed", 1, srm.getStudyIdentifiers().size());
-        assertEquals("Wrong studye removed",
-            studyB.getAssignedIdentifier(), srm.getStudyIdentifiers().get(0));
+            "Josephine", command.getUser().getCsmUser().getFirstName());
     }
 
     public void testApplySetsPasswordToRequestedValueIfUsingLocalPasswordsAndThePasswordIsSet() throws Exception {
@@ -398,7 +297,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
     // TODO: make this test deterministic via a non-random source of randomness
     public void testApplySetsPasswordToRandomValueIfUsingNotLocalPasswordsAndTheUserIsNew() throws Exception {
-        command.getUser().setUserId(null);
+        command.getUser().getCsmUser().setUserId(null);
         expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
         /* expect */ authorizationManager.createUser(csmUser);
         replayMocks();
@@ -433,236 +332,10 @@ public class ProvisionUserCommandTest extends WebTestCase {
         assertNull("Password should not be set", csmUser.getPassword());
     }
 
-    private SuiteRoleMembership expectGetAndReplaceMembership(SuiteRole expectedRole) {
-        SuiteRoleMembership srm =
-            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.valueOf(expectedRole));
-        expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(srm);
-        /* expect */ pSession.replaceRole(srm);
-        return srm;
-    }
-
-    public void testApplySetsStaleIfModifyingSelf() throws Exception {
-        PscUser existingUser = createPscUser("zelda");
-        existingUser.getCsmUser().setUserId(99L);
-
-        /* expect */ authorizationManager.modifyUser(existingUser.getCsmUser());
-
-        ProvisionUserCommand selfMod = create(existingUser);
-        replayMocks();
-
-        selfMod.apply();
-        verifyMocks();
-
-        assertTrue("Security context principal should be stale",
-            applicationSecurityManager.getUser().isStale());
-    }
-
-    public void testApplyDoesNotSetStaleIfNotModifyingSelf() throws Exception {
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-
-        assertFalse("Security context principal should not be stale",
-            applicationSecurityManager.getUser().isStale());
-    }
-
-    public void testApplyDoesNotSetStaleIfNoApplicationSecurityManager() throws Exception {
-        ProvisionUserCommand setup = ProvisionUserCommand.create(pscUser,
-            psFactory, authorizationManager, authenticationSystem, null,
-            siteDao, studyDao, null
-        );
-        replayMocks();
-
-        setup.apply();
-        verifyMocks();
-        // no exceptions
-    }
-
-    ////// authorization
-
-    public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
-        command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR);
-
-        expectRoleChange(command, "system_administrator", "add", null, null);
-        replayMocks(); // nothing expected
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testSiteChangeWhenDisallowedIgnored() throws Exception {
-        command.setProvisionableSites(Arrays.asList(sanAntonio));
-
-        expectRoleChange(command, "data_reader", "add", "site", austin.getAssignedIdentifier());
-        replayMocks(); // nothing expected
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testAllSiteChangesWhenDisallowedIgnored() throws Exception {
-        command.setCanProvisionAllSites(false);
-
-        expectRoleChange(command, "data_reader", "add", "site", "__ALL__");
-        replayMocks(); // nothing expected
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testProvisioningAllowedForManagedStudyWithTemplateManagerRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_calendar_template_builder", "add", "study", "A");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertContains("Study not added", srm.getStudyIdentifiers(), "A");
-    }
-
-    public void testProvisioningNotAllowedForParticipatingStudyWithTemplateManagerRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_calendar_template_builder", "add", "study", "B");
-        replayMocks();  // expect nothing
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testProvisioningAllowedForParticipatingStudyWithParticipationRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_subject_calendar_manager", "add", "study", "B");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
-    }
-
-    public void testProvisioningNotAllowedForManagedStudyWithParticipationRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_subject_calendar_manager", "add", "study", "A");
-        replayMocks();  // expect nothing
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testProvisioningAllowedForParticipatingStudyWithTemplateManagerAndParticipationRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_qa_manager", "add", "study", "B");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_QA_MANAGER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
-    }
-
-    public void testProvisioningAllowedForManagedStudyWithTemplateManagerAndParticipationRole() throws Exception {
-        command.setProvisionableManagedStudies(Arrays.asList(studyA));
-        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
-
-        expectRoleChange(command, "study_qa_manager", "add", "study", "A");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_QA_MANAGER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertContains("Study not added", srm.getStudyIdentifiers(), "A");
-    }
-
-    public void testAllStudiesProvisioningAllowedWithAllManagedPermissionAndTemplateManagerRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(true);
-        command.setCanProvisionParticipateInAllStudies(false);
-
-        expectRoleChange(command, "study_calendar_template_builder", "add", "study", "__ALL__");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Not added", srm.isAllStudies());
-    }
-
-    public void testAllStudiesProvisioningNotAllowedWithAllParticipatingPermissionAndTemplateManagerRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(false);
-        command.setCanProvisionParticipateInAllStudies(true);
-
-        expectRoleChange(command, "study_calendar_template_builder", "add", "study", "__ALL__");
-        replayMocks(); // expect nothing
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testAllStudiesProvisioningAllowedWithAllParticipatingPermissionAndParticipationRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(false);
-        command.setCanProvisionParticipateInAllStudies(true);
-
-        expectRoleChange(command, "study_subject_calendar_manager", "add", "study", "__ALL__");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Not added", srm.isAllStudies());
-    }
-
-    public void testAllStudiesProvisioningNotAllowedWithAllManagingPermissionAndParticipationRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(true);
-        command.setCanProvisionParticipateInAllStudies(false);
-
-        expectRoleChange(command, "study_subject_calendar_manager", "add", "study", "__ALL__");
-        replayMocks(); // expect nothing
-
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testAllStudiesProvisioningAllowedWithAllParticipatingPermissionAndBothRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(false);
-        command.setCanProvisionParticipateInAllStudies(true);
-
-        expectRoleChange(command, "data_reader", "add", "study", "__ALL__");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Not added", srm.isAllStudies());
-    }
-
-    public void testAllStudiesProvisioningAllowedWithAllManagingPermissionAndBothRole() throws Exception {
-        command.setCanProvisionManagingAllStudies(true);
-        command.setCanProvisionParticipateInAllStudies(false);
-
-        expectRoleChange(command, "data_reader", "add", "study", "__ALL__");
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
-        assertTrue("Not added", srm.isAllStudies());
-    }
-
     ////// validation
 
     public void testInvalidWhenBlankUsername() throws Exception {
-        command.getUser().setLoginName("\t");
+        command.getUser().getCsmUser().setLoginName("\t");
         doValidate();
         assertFieldErrorCount("user.loginName", 1);
     }
@@ -670,7 +343,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testInvalidWhenNewInstanceWithDuplicateUsernameAndLookupNotConfigured() throws Exception {
         csmUser.setUserId(null);
         command.setLookUpBoundUser(false);
-        command.getUser().setLoginName("zap");
+        command.getUser().getCsmUser().setLoginName("zap");
 
         User expectedMatch = new User();
         expectedMatch.setUserId(14L);
@@ -684,7 +357,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testValidWhenNewInstanceWithDuplicateUsernameAndLookupIsConfigured() throws Exception {
         csmUser.setUserId(null);
         command.setLookUpBoundUser(true);
-        command.getUser().setLoginName("zap");
+        command.getUser().getCsmUser().setLoginName("zap");
 
         User expectedMatch = new User();
         expectedMatch.setUserId(14L);
@@ -696,7 +369,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testValidWhenDuplicateUsernameAndEditingSavedInstance() throws Exception {
-        command.getUser().setLoginName("zap");
+        command.getUser().getCsmUser().setLoginName("zap");
         expect(authorizationManager.getUser("zap")).andReturn(csmUser);
 
         doValidate();
@@ -705,7 +378,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testInvalidWhenDuplicateUsernameAndEditingDifferentInstance() throws Exception {
-        command.getUser().setLoginName("zap");
+        command.getUser().getCsmUser().setLoginName("zap");
 
         User expectedMatch = new User();
         expectedMatch.setUserId(14L);
@@ -717,21 +390,21 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testInvalidWithBlankEmailAddress() throws Exception {
-        command.getUser().setEmailId("\n\t");
+        command.getUser().getCsmUser().setEmailId("\n\t");
 
         doValidate();
         assertFieldErrorCount("user.emailId", 1);
     }
 
     public void testInvalidWithNonAddressEmailAddress() throws Exception {
-        command.getUser().setEmailId("hello");
+        command.getUser().getCsmUser().setEmailId("hello");
 
         doValidate();
         assertFieldErrorCount("user.emailId", 1);
     }
 
     public void testValidWithReasonableEmailAddress() throws Exception {
-        command.getUser().setEmailId("someguy@nemo.it");
+        command.getUser().getCsmUser().setEmailId("someguy@nemo.it");
 
         doValidate();
         assertFieldErrorCount("user.emailId", 0);
@@ -780,28 +453,28 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testBlankFirstNameIsInvalid() throws Exception {
-        command.getUser().setFirstName(" ");
+        command.getUser().getCsmUser().setFirstName(" ");
         
         doValidate();
         assertFieldErrorCount("user.firstName", 1);
     }
     
     public void testSetFirstNameIsValid() throws Exception {
-        command.getUser().setFirstName("Jo");
+        command.getUser().getCsmUser().setFirstName("Jo");
         
         doValidate();
         assertFieldErrorCount("user.firstName", 0);
     }
     
     public void testBlankLastNameIsInvalid() throws Exception {
-        command.getUser().setLastName(" ");
+        command.getUser().getCsmUser().setLastName(" ");
         
         doValidate();
         assertFieldErrorCount("user.lastName", 1);
     }
     
     public void testSetLastNameIsValid() throws Exception {
-        command.getUser().setLastName("Jo");
+        command.getUser().getCsmUser().setLastName("Jo");
         
         doValidate();
         assertFieldErrorCount("user.lastName", 0);
@@ -947,29 +620,6 @@ public class ProvisionUserCommandTest extends WebTestCase {
         assertEquals("Wrong number of studies", 2, actual.length());
         assertEquals("Wrong 1st study", "__ALL__", actual.getJSONObject(0).get("identifier"));
         assertEquals("Wrong 2nd study", "[ABC 1234]", actual.getJSONObject(1).get("identifier"));
-    }
-
-    ////// HELPERS
-
-    private void expectRoleChange(String roleKey, String changeKind) {
-        expectRoleChange(roleKey, changeKind, null, null);
-    }
-
-    private void expectRoleChange(String roleKey, String changeKind, String scopeType, String scopeIdent) {
-        expectRoleChange(this.command, roleKey, changeKind, scopeType, scopeIdent);
-    }
-
-    private void expectRoleChange(
-        ProvisionUserCommand cmd,
-        String roleKey, String changeKind, String scopeType, String scopeIdent
-    ) {
-        MapBuilder<String, String> mb = new MapBuilder<String, String>().
-            put("role", roleKey).put("kind", changeKind);
-        if (scopeType != null) {
-            mb.put("scopeType", scopeType).put("scopeIdentifier", scopeIdent);
-        }
-
-        cmd.getRoleChanges().put(new JSONObject(mb.toMap()));
     }
 
     ////// INNER CLASSES

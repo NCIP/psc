@@ -43,20 +43,20 @@
             <tags:errors path="*"/>
             <input type="hidden" name="_eventId" value="save"/>
             <div class="row">
-                <div class="label"><form:label path="user.loginName">Username</form:label></div>
-                <div class="value"><form:input path="user.loginName" size="40"/></div>
+                <div class="label"><form:label path="user.csmUser.loginName">Username</form:label></div>
+                <div class="value"><form:input path="user.csmUser.loginName" size="40"/></div>
             </div>
             <div class="row">
-                <div class="label"><form:label path="user.emailId">Email address</form:label></div>
-                <div class="value"><form:input path="user.emailId" size="40"/></div>
+                <div class="label"><form:label path="user.csmUser.emailId">Email address</form:label></div>
+                <div class="value"><form:input path="user.csmUser.emailId" size="40"/></div>
             </div>
             <div class="row">
-                <div class="label"><form:label path="user.firstName">First name</form:label></div>
-                <div class="value"><form:input path="user.firstName" size="40"/></div>
+                <div class="label"><form:label path="user.csmUser.firstName">First name</form:label></div>
+                <div class="value"><form:input path="user.csmUser.firstName" size="40"/></div>
             </div>
             <div class="row">
-                <div class="label"><form:label path="user.lastName">Last name</form:label></div>
-                <div class="value"><form:input path="user.lastName" size="40"/></div>
+                <div class="label"><form:label path="user.csmUser.lastName">Last name</form:label></div>
+                <div class="value"><form:input path="user.csmUser.lastName" size="40"/></div>
             </div>
             <c:if test="${usesLocalPasswords}">
                 <div class="row">

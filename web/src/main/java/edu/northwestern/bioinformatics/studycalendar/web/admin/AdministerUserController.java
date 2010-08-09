@@ -80,7 +80,7 @@ public class AdministerUserController
         super.initBinder(request, binder);
         binder.registerCustomEditor(JSONArray.class, "roleChanges", new JsonArrayEditor());
         binder.registerCustomEditor(
-            Date.class, "user.endDate", getControllerTools().getDateEditor(false));
+            Date.class, "user.csmUser.endDate", getControllerTools().getDateEditor(false));
     }
 
     @Override
