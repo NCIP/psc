@@ -25,15 +25,22 @@ public class PscUserBuilder {
     }
 
     public PscUser toUser() {
-        if (current != null) memberships.add(current);
+        pushCurrent();
         return AuthorizationObjectFactory.createPscUser(username,
             memberships.toArray(new SuiteRoleMembership[memberships.size()]));
     }
 
     public PscUserBuilder add(PscRole role) {
-        if (current != null) memberships.add(current);
+        pushCurrent();
         current = AuthorizationScopeMappings.createSuiteRoleMembership(role);
         return this;
+    }
+
+    private void pushCurrent() {
+        if (current == null) return;
+        current.checkComplete();
+        current.validate();
+        memberships.add(current);
     }
 
     public PscUserBuilder forAllSites() {
