@@ -179,9 +179,10 @@ public class PscUserService implements PscUserDetailsService {
     }
 
     /**
-     * Finds all the users who have participation memberships that are manageable
-     * by the given study team admin.  "Manageable by" means the memberships are for
-     * study-scoped roles and their site scopes overlap with the admin's site scope.
+     * Finds all the users who have participation memberships that are provisionable
+     * by the given study team admin.
+     *
+     * @see PscRole#valuesProvisionableByStudyTeamAdministrator()
      */
     public List<PscUser> getTeamMembersFor(PscUser studyTeamAdmin) {
         SuiteRoleMembership staMembership =
@@ -189,19 +190,17 @@ public class PscUserService implements PscUserDetailsService {
         if (staMembership == null) return Collections.emptyList();
 
         Set<User> csmUsers = new LinkedHashSet<User>();
-        for (PscRole role : PscRoleUse.SITE_PARTICIPATION.roles()) {
-            if (role.isStudyScoped()) csmUsers.addAll(getCsmUsers(role));
+        for (PscRole role : PscRole.valuesProvisionableByStudyTeamAdministrator()) {
+            csmUsers.addAll(getCsmUsers(role));
         }
         List<PscUser> candidates = getPscUsers(csmUsers);
         CANDIDATES: for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
-            for (PscRole spRole : PscRoleUse.SITE_PARTICIPATION.roles()) {
-                if (spRole.isStudyScoped()) {
-                    SuiteRoleMembership candidateMembership = candidate.getMembership(spRole);
-                    if (candidateMembership != null &&
-                        candidateMembership.intersect(staMembership) != null) {
-                        continue CANDIDATES;
-                    }
+            for (PscRole spRole : PscRole.valuesProvisionableByStudyTeamAdministrator()) {
+                SuiteRoleMembership candidateMembership = candidate.getMembership(spRole);
+                if (candidateMembership != null &&
+                    candidateMembership.intersect(staMembership) != null) {
+                    continue CANDIDATES;
                 }
             }
             it.remove();

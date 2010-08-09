@@ -6,10 +6,12 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.acegisecurity.GrantedAuthority;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -41,7 +43,7 @@ public enum PscRole implements GrantedAuthority {
     private Collection<PscRoleUse> uses;
 
     private static Properties roleProperties;
-    private static PscRole[] withStudyAccess;
+    private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator;
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
@@ -135,5 +137,22 @@ public enum PscRole implements GrantedAuthority {
             withStudyAccess = union.toArray(new PscRole[union.size()]);
         }
         return withStudyAccess;
+    }
+
+    /**
+     * Those roles which can have their study scope provisioned by a Study Team Administrator.
+     * This means the study-scoped roles which are used for site participation.
+     */
+    public static synchronized PscRole[] valuesProvisionableByStudyTeamAdministrator() {
+        if (provisionableByStudyTeamAdministrator == null) {
+            List<PscRole> provisionable =
+                new ArrayList<PscRole>(PscRoleUse.SITE_PARTICIPATION.roles().length);
+            for (PscRole role : PscRoleUse.SITE_PARTICIPATION.roles()) {
+                if (role.isStudyScoped()) provisionable.add(role);
+            }
+            provisionableByStudyTeamAdministrator =
+                provisionable.toArray(new PscRole[provisionable.size()]);
+        }
+        return provisionableByStudyTeamAdministrator;
     }
 }
