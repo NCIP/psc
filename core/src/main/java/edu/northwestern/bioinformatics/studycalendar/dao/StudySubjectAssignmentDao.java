@@ -10,7 +10,11 @@ import org.hibernate.criterion.Restrictions;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.hibernate.criterion.Projections.*;
 
 /**
  * @author Rhett Sutphin
@@ -84,6 +88,24 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
     public List<StudySubjectAssignment> getAssignmentsByManagerCsmUserId(int csmUserId) {
         return getHibernateTemplate().findByCriteria(
             criteria().add(Restrictions.eq("managerCsmUserId", csmUserId)));
+    }
+
+    /**
+     * Returns the CSM IDs for all the users who are marked as the primary for
+     * an assignment.
+     */
+    @SuppressWarnings({"unchecked"})
+    public Map<Integer, Integer> getManagerCsmUserIdCounts() {
+        String idField = "managerCsmUserId";
+        List<Object[]> counts = getHibernateTemplate().findByCriteria(
+            criteria().setProjection(
+                projectionList().add(count(idField)).add(groupProperty(idField))
+                ).add(Restrictions.isNotNull(idField)));
+        Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+        for (Object[] item : counts) {
+            result.put((Integer) item[1], (Integer) item[0]);
+        }
+        return result;
     }
 
     private DetachedCriteria criteria() {

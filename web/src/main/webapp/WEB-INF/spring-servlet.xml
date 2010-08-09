@@ -612,6 +612,20 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.PurgeStudyController">
     </bean>
 
+    <bean name="/admin/team" id="studyTeamController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.StudyTeamController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Study teams"/>
+                <property name="parent" ref="administrationController"/>
+            </bean>
+        </property>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+        <property name="pscUserService" ref="pscUserService"/>
+        <property name="studyDao" ref="studyDao"/>
+        <property name="studySubjectAssignmentDao" ref="studySubjectAssignmentDao"/>
+        <property name="controllerTools" ref="controllerTools"/>
+    </bean>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages"/>
@@ -724,6 +738,11 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Manage users"/>
                                 <property name="linkName" value="listUsersController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Manage study teams"/>
+                                <property name="linkName" value="studyTeamController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

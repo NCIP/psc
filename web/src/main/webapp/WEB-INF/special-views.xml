@@ -67,4 +67,9 @@
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/admin/users"/>
     </bean>
+
+    <bean id="redirectToTeamAdmin" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative" value="true"/>
+        <property name="url" value="/pages/admin/team"/>
+    </bean>
 </beans>

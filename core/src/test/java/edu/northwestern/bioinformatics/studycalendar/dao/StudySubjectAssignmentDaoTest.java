@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -126,5 +127,13 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertEquals("Wrong number of assignments found", 1, actual.size());
         assertEquals("Wrong assignment found", -12, (int) actual.get(0).getId());
+    }
+
+    public void testGetManagerCsmIds() throws Exception {
+        Map<Integer, Integer> actual = getDao().getManagerCsmUserIdCounts();
+
+        assertEquals("Wrong number of map entries found: " + actual, 2, actual.size());
+        assertEquals("Wrong count for -67: " + actual, 1, actual.get(-67).intValue());
+        assertEquals("Wrong count for -8901: " + actual, 1, actual.get(-8901).intValue());
     }
 }
