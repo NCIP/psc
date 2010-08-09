@@ -5,12 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.web.AbstractGridCommand;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 
 import java.util.List;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
 
 /**
  * @author John Dzak
@@ -19,13 +15,11 @@ public abstract class AbstractAssignSubjectCoordinatorCommand<R extends Named, C
     private List<Study> assignableStudies;
     private List<Site> assignableSites;
     private List<User> assignableUsers;
-    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
-    protected AbstractAssignSubjectCoordinatorCommand(List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers, InstalledAuthenticationSystem installedAuthenticationSystem) {
+    protected AbstractAssignSubjectCoordinatorCommand(List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         this.assignableStudies = assignableStudies;
         this.assignableSites = assignableSites;
         this.assignableUsers = assignableUsers;
-        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 
     public List<Study> getAssignableStudies() {
@@ -38,19 +32,5 @@ public abstract class AbstractAssignSubjectCoordinatorCommand<R extends Named, C
 
     public List<User> getAssignableUsers() {
         return assignableUsers;
-    }
-
-    public InstalledAuthenticationSystem getInstalledAuthenticationSystem() {
-        return installedAuthenticationSystem;
-    }
-
-    protected void refreshUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            User authenticatedUser = (User) authentication.getPrincipal();
-            if (user.getName().equals(authenticatedUser.getName())) {
-                installedAuthenticationSystem.reloadAuthorities();
-            }
-        }
     }
 }

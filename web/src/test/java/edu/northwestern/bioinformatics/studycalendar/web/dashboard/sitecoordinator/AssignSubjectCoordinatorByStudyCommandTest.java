@@ -1,20 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
-import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author John Dzak
  */
 public class AssignSubjectCoordinatorByStudyCommandTest extends StudyCalendarTestCase {
     private TemplateService templateService;
-    private InstalledAuthenticationSystem installedAuthenticationSystem;
     private Study study;
     private User user0, user1;
     private Site site0, site1;
@@ -26,8 +29,7 @@ public class AssignSubjectCoordinatorByStudyCommandTest extends StudyCalendarTes
         study = createNamedInstance("Study A", Study.class);
 
         templateService = registerMockFor(TemplateService.class);
-        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
-        command = new AssignSubjectCoordinatorByStudyCommand(templateService, study, null, null, null, installedAuthenticationSystem);
+        command = new AssignSubjectCoordinatorByStudyCommand(templateService, study, null, null, null);
 
         site0  = createNamedInstance("Mayo Clinic" , Site.class);
         site1  = createNamedInstance("Northwestern", Site.class);
@@ -81,7 +83,6 @@ public class AssignSubjectCoordinatorByStudyCommandTest extends StudyCalendarTes
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(user0, "secret"));
         expect(templateService.removeAssignedTemplateFromSubjectCoordinator(study, site0, user0)).andReturn(user0);
-        installedAuthenticationSystem.reloadAuthorities();
         replayMocks();
         command.performUncheckAction(user0, site0);
         verifyMocks();

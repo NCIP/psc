@@ -1,14 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparatorByLetterCase;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 
 /**
  * @author John Dzak
@@ -18,8 +23,8 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
     private TemplateService templateService;
     private Map<Study, Map<Site, GridCell>> grid;
 
-    public AssignSubjectCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers, InstalledAuthenticationSystem installedAuthenticationSystem) {
-        super(assignableStudies, assignableSites, assignableUsers, installedAuthenticationSystem);
+    public AssignSubjectCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+        super(assignableStudies, assignableSites, assignableUsers);
         grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparatorByLetterCase());
         this.templateService = templateService;
         this.selected = selected;
@@ -46,12 +51,10 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
 
      protected void performCheckAction(Study study, Site site) throws Exception {
         templateService.assignTemplateToSubjectCoordinator(study,site, selected);
-        refreshUser(selected);
     }
 
     protected void performUncheckAction(Study study, Site site) throws Exception  {
         templateService.removeAssignedTemplateFromSubjectCoordinator(study,site, selected);
-        refreshUser(selected);
     }
 
     public User getSelected() {

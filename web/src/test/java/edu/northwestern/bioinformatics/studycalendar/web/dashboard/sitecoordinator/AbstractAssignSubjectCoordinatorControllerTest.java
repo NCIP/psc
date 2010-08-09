@@ -1,25 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
-import static org.easymock.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
-import static java.util.Arrays.asList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static java.util.Arrays.asList;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author John Dzak
@@ -32,7 +36,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private TemplateService templateService;
     private UserService userService;
     private AuthorizationService authorizationService;
-    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     private AbstractAssignSubjectCoordinatorCommand command;
 
@@ -58,7 +61,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         userService     = registerMockFor(UserService.class);
         studySiteService = registerMockFor(StudySiteService.class);
         authorizationService = registerMockFor(AuthorizationService.class);
-        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
         controller = new SimpleAssignSubjectCoordinatorController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
@@ -167,7 +169,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private class SimpleAssignSubjectCoordinatorCommand extends AbstractAssignSubjectCoordinatorCommand<Study, Site> {
         private Map<Study, Map<Site, GridCell>> studyAssignmentGrid = new HashMap<Study, Map<Site, GridCell>>();
         public SimpleAssignSubjectCoordinatorCommand(List assignableStudies, List assignableSites, List assignableUsers) {
-            super(assignableStudies, assignableSites, assignableUsers, installedAuthenticationSystem);
+            super(assignableStudies, assignableSites, assignableUsers);
         }
 
         @Override

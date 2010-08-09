@@ -59,7 +59,7 @@ public class AssignSubjectCoordinatorByStudyController extends AbstractAssignSub
     }
 
     protected AbstractAssignSubjectCoordinatorCommand createSiteCoordinatorDashboardCommand(Study selectedStudy, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        return new AssignSubjectCoordinatorByStudyCommand(getTemplateService(), selectedStudy, assignableStudies, assignableSites, assignableUsers, getInstalledAuthenticationSystem());
+        return new AssignSubjectCoordinatorByStudyCommand(getTemplateService(), selectedStudy, assignableStudies, assignableSites, assignableUsers);
     }
 
     @Override
