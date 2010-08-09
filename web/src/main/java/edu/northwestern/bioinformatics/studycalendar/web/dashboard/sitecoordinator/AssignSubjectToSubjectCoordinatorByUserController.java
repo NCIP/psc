@@ -226,7 +226,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                 Subject subject = assignment.getSubject();
                 if (assignment.getSubjectCoordinator() != null && !isForUnassigned) {
-                    if (assignment.getSubjectCoordinator().equals(subjectCoordinator) && !assignment.isExpired()) {
+                    if (assignment.getSubjectCoordinator().equals(subjectCoordinator) && !assignment.isOff()) {
                         studySubjects.add(subject);
                     }
                 } else if (assignment.getSubjectCoordinator() == null && isForUnassigned){

@@ -95,7 +95,7 @@ public class StudyService {
         Activity reconsent = activityDao.getByName("Reconsent");
 
         for (StudySubjectAssignment assignment : subjectAssignments) {
-            if (!assignment.isExpired()) {
+            if (!assignment.isOff()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
                     .getScheduledCalendar(), startDate);
                 if (upcomingScheduledActivity != null) {

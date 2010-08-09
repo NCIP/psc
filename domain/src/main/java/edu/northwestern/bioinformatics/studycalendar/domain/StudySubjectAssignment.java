@@ -140,6 +140,11 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         getPopulations().add(population);
     }
 
+    @Transient
+    public boolean isOff() {
+        return getEndDate() != null;
+    }
+
     public int compareTo(StudySubjectAssignment o) {
         int result;
 
@@ -242,17 +247,6 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
     public void setStudySubjectId(String studySubjectId) {
         this.studySubjectId = studySubjectId;
-    }
-
-    @Transient
-    @Deprecated // this is a weird name
-    public boolean isExpired() {
-        return isOff();
-    }
-
-    @Transient
-    public boolean isOff() {
-        return getEndDate() != null;
     }
 
     @ManyToMany
