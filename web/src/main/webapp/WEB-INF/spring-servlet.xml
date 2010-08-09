@@ -224,6 +224,8 @@
                 <property name="name" value="Dashboard"/>
             </bean>
         </property>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+        <property name="studyDao" ref="studyDao"/>
     </bean>
 
     <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
