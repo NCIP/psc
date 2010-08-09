@@ -35,8 +35,11 @@ public class ManageSitesCommand {
 
     public boolean isSiteCreationEnabled() {
         SuiteRoleMembership m = user.getMembership(PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
-
         return (m != null) && m.isAllSites();
+    }
+
+    public boolean isSiteDeletionEnabled() {
+        return isSiteCreationEnabled();
     }
 
     public static ManageSitesCommand create(SiteService siteService, PscUser user) {

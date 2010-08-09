@@ -84,11 +84,9 @@
                             <input type="button" name="edit" value="Edit"
                                onclick="location.href='<c:url value="/pages/admin/manage/editSite?id=${site.id}"/>'"/>
                         </c:if>
-                        <c:forEach items="${enableDeletes}" var="enableDelete">
-                            <c:if test="${site.id == enableDelete.key && enableDelete.value == true }">
-                                <input type="button" name="delete" value="Delete" onclick="deleteSite('${site.assignedIdentifier}', '${site.name}')"/>
-                            </c:if>
-                        </c:forEach>
+                        <c:if test="${command.siteDeletionEnabled}">
+                            <input type="button" name="delete" value="Delete" onclick="deleteSite('${site.assignedIdentifier}', '${site.name}')"/>
+                        </c:if>
                     </td>
                     <td><c:if test="${not empty site.provider}">${site.provider}</c:if></td>
                 </tr>
