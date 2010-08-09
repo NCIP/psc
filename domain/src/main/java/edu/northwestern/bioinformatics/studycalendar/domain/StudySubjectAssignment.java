@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
@@ -53,12 +54,14 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
     private Date startDate;
     private Date endDate;
-    private User subjectCoordinator;
+    @Deprecated private User subjectCoordinator;
+    private Integer managerCsmUserId;
 
     private Amendment currentAmendment;
     private ScheduledCalendar scheduledCalendar;
     private List<Notification> notifications = new LinkedList<Notification>();
     private Set<Population> populations = new HashSet<Population>();
+    private gov.nih.nci.security.authorization.domainobjects.User resolvedManager;
 
     ////// LOGIC
 
@@ -161,6 +164,33 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         return 0;
     }
 
+    /*
+      TODO: I would prefer that this field's type be PscUser.  However, that would introduce
+      a dependency on psc:authorization from psc:domain.  psc:authorization's legacy mode support
+      forces a dependency on psc:domain, so the reverse dependency isn't possible until legacy
+      mode can be completely removed.
+     */
+
+    @Transient
+    public gov.nih.nci.security.authorization.domainobjects.User getStudySubjectCalendarManager() {
+        if (resolvedManager != null) {
+            return resolvedManager;
+        } else if (getManagerCsmUserId() == null) {
+            return null;
+        } else {
+            throw new StudyCalendarSystemException("The actual manager user object has not been externally resolved for this assignment");
+        }
+    }
+
+    public void setStudySubjectCalendarManager(gov.nih.nci.security.authorization.domainobjects.User csmUser) {
+        this.resolvedManager = csmUser;
+        if (csmUser != null) {
+            setManagerCsmUserId(csmUser.getUserId().intValue());
+        } else {
+            setManagerCsmUserId(null);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     public void setStudySite(StudySite studySite) {
@@ -183,14 +213,28 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         return subject;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_coordinator_id")
+    @Deprecated
+    @Transient
     public User getSubjectCoordinator() {
         return subjectCoordinator;
     }
 
+    @Deprecated
     public void setSubjectCoordinator(User subjectCoordinator) {
         this.subjectCoordinator = subjectCoordinator;
+    }
+
+    public Integer getManagerCsmUserId() {
+        return managerCsmUserId;
+    }
+
+    public void setManagerCsmUserId(Integer managerCsmUserId) {
+        if (managerCsmUserId == null) {
+            resolvedManager = null;
+        } else if ((resolvedManager != null) && (managerCsmUserId != resolvedManager.getUserId().intValue())) {
+            resolvedManager = null;
+        }
+        this.managerCsmUserId = managerCsmUserId;
     }
 
     public void setStartDate(Date startDate) {

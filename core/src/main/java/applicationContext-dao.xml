@@ -92,7 +92,10 @@
         <property name="eventListeners">
             <map>
                 <entry key="post-load">
-                    <ref local="changeChildResolverListener" />
+                    <list>
+                        <ref local="changeChildResolverListener" />
+                        <ref local="assignmentManagerResolverListener"/>
+                    </list>
                 </entry>
             </map>
         </property>
@@ -100,6 +103,11 @@
 
     <bean id="changeChildResolverListener" class="edu.northwestern.bioinformatics.studycalendar.dao.ChangeChildResolverListener">
         <property name="daoFinder" ref="daoFinder"/>
+    </bean>
+
+    <bean id="assignmentManagerResolverListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.AssignmentManagerResolverListener">
+        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
     </bean>
 
     <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">

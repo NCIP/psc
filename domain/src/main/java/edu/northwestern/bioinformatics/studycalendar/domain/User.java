@@ -10,7 +10,6 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
@@ -101,13 +100,7 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         this.userRoles.addAll(srcRoles);
     }
 
-    public boolean hasAssignment(Site site) {
-        for (StudySubjectAssignment assignment : getStudySubjectAssignments()) {
-            if (assignment.getStudySite().getSite().equals(site)) return true;
-        }
-        return false;
-    }
-
+    @Deprecated
     public boolean hasAssignment(StudySite ss) {
         for (StudySubjectAssignment assignment : getStudySubjectAssignments()) {
             if (assignment.getStudySite().equals(ss)) return true;
@@ -233,13 +226,13 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         this.userRoles = userRoles;
     }
 
-    @OneToMany (mappedBy = "subjectCoordinator")
-    @OrderBy // order by ID for testing consistency
-    @Cascade (value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Transient
+    @Deprecated
     public List<StudySubjectAssignment> getStudySubjectAssignments() {
         return studySubjectAssignments;
     }
 
+    @Deprecated
     public void setStudySubjectAssignments(List<StudySubjectAssignment> studySubjectAssignments) {
         this.studySubjectAssignments = studySubjectAssignments;
     }

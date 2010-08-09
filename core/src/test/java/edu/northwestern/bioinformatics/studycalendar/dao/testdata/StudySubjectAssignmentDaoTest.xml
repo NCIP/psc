@@ -20,9 +20,11 @@
     <SUBJECTS id="-221" first_name="Alice" last_name="Childress" birth_date="1960-01-01" gender="F"
               person_id="UNIVERSAL"/>
 
+    <CSM_USER user_id="-67" login_name="jo" first_name="J" last_name="O"/>
+
     <SUBJECT_ASSIGNMENTS id="-10" subject_id="-20" study_site_id="-15" start_date="2003-02-01"
                          end_date="2003-09-01" study_subject_id="A" grid_id="NOT-SMALL1"
-                         current_amendment_id="-18"/>
+                         current_amendment_id="-18" manager_csm_user_id="-67"/>
 
     <SUBJECT_ASSIGNMENTS id="-11" subject_id="-21" study_site_id="-15" start_date="2003-02-01"
                          end_date="2003-09-01" study_subject_id="B" grid_id="NOT-SMALL2"
@@ -30,7 +32,7 @@
 
     <SUBJECT_ASSIGNMENTS id="-12" subject_id="-22" study_site_id="-15" start_date="2003-02-01"
                          end_date="2003-09-01" study_subject_id="C" grid_id="NOT-SMALL3"
-                         current_amendment_id="-18"/>
+                         current_amendment_id="-18" manager_csm_user_id="-8901"/> <!-- manager id deliberately non-resolveable -->
 
     <SUBJECT_ASSIGNMENTS id="-13" subject_id="-21" study_site_id="-25" start_date="2003-02-08"
                          end_date="2003-09-01" study_subject_id="B" grid_id="NOT-SMALL4"

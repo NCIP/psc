@@ -22,7 +22,7 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
     }
 
-    public void testGetAllAssignmenetsWhichHasNoActivityBeyondADate() throws Exception {
+    public void testGetAllAssignmentsWhichHaveNoActivityBeyondADate() throws Exception {
         Date date = DateUtils.createDate(2008, Calendar.MAY, 8);
         List<StudySubjectAssignment> assignments = getDao().getAllAssignmenetsWhichHaveNoActivityBeyondADate(date);
         assertEquals("there must  be 2 assignments which have no activities after 8th May", 2, assignments.size());
@@ -45,6 +45,7 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         assertEquals("Wrong current amendment", -18, (int) assignment.getCurrentAmendment().getId());
         assertEquals("Wrong number of populations", 1, assignment.getPopulations().size());
         assertEquals("Wrong population", -21, (int) assignment.getPopulations().iterator().next().getId());
+        assertEquals("Wrong manager ID", -67, (int) assignment.getManagerCsmUserId());
     }
 
     public void testGetByGridId() throws Exception {

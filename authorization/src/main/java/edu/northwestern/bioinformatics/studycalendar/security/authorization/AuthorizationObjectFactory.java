@@ -4,9 +4,11 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,16 +21,29 @@ public class AuthorizationObjectFactory {
         return createPscUser((String) null);
     }
 
+    // this explicit no-varags variant prevents a conflict between the other two
     public static PscUser createPscUser(String username) {
-        return createPscUser(username, new SuiteRoleMembership[0]);
+        return createPscUser(username, (Long) null);
+    }
+
+    public static PscUser createPscUser(String username, Long csmUserId) {
+        return createPscUser(username, csmUserId, new SuiteRoleMembership[0]);
     }
 
     public static PscUser createPscUser(String username, PscRole... roles) {
-        return new PscUser(createCsmUser(username), indexSuiteRoleMemberships(createSuiteRoleMemberships(roles)));
+        return createPscUser(username, null, roles);
+    }
+
+    public static PscUser createPscUser(String username, Long csmUserId, PscRole... roles) {
+        return createPscUser(username, csmUserId, createSuiteRoleMemberships(roles));
     }
 
     public static PscUser createPscUser(String username, SuiteRoleMembership... memberships) {
-        return new PscUser(createCsmUser(username), indexSuiteRoleMemberships(memberships));
+        return createPscUser(username, null, memberships);
+    }
+
+    public static PscUser createPscUser(String username, Long csmUserId, SuiteRoleMembership... memberships) {
+        return new PscUser(createCsmUser(csmUserId, username), indexSuiteRoleMemberships(memberships));
     }
 
     @Deprecated
@@ -49,16 +64,27 @@ public class AuthorizationObjectFactory {
         return csmUser;
     }
 
+   public static User createCsmUser(int id, String username) {
+        return createCsmUser((long) id, username);
+    }
+
+    public static User createCsmUser(Long id, String username) {
+        User csmUser = new User();
+        csmUser.setUserId(id);
+        csmUser.setLoginName(username);
+        csmUser.setUpdateDate(new Date()); // because otherwise toString NPEs
+        return csmUser;
+    }
+
     private static SuiteRoleMembership[] createSuiteRoleMemberships(PscRole... roles) {
-        SuiteRoleMembership[] memberships = new SuiteRoleMembership[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            PscRole role = roles[i];
+        List<SuiteRoleMembership> memberships = new ArrayList<SuiteRoleMembership>(roles.length);
+        for (PscRole role : roles) {
             SuiteRoleMembership mem = new SuiteRoleMembership(role.getSuiteRole(), null, null);
-            if (role.isSiteScoped()) mem.forAllSites();
-            if (role.isStudyScoped()) mem.forAllStudies();
-            memberships[i] = mem;
+            if (mem.getRole().isSiteScoped()) mem.forAllSites();
+            if (mem.getRole().isStudyScoped()) mem.forAllStudies();
+            memberships.add(mem);
         }
-        return memberships;
+        return memberships.toArray(new SuiteRoleMembership[memberships.size()]);
     }
 
     private static Map<SuiteRole, SuiteRoleMembership> indexSuiteRoleMemberships(SuiteRoleMembership... memberships) {

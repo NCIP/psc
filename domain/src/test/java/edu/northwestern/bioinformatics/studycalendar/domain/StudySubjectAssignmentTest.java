@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
@@ -194,5 +195,70 @@ public class StudySubjectAssignmentTest extends TestCase {
         AdverseEvent event = setId(aeId, new AdverseEvent());
         Notification notification = setId(aeId, new Notification(event));
         assignment.addAeNotification(notification);
+    }
+
+    public void testGetManagerIsNullWhenNotSetAndManagerIdIsNull() throws Exception {
+        assignment.setManagerCsmUserId(null);
+        assertNull(assignment.getStudySubjectCalendarManager());
+    }
+
+    public void testGetManagerThrowsExceptionWhenNotSetAndManagerIdIsNotNull() throws Exception {
+        assignment.setManagerCsmUserId(17);
+        try {
+            assignment.getStudySubjectCalendarManager();
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("Wrong message",
+                "The actual manager user object has not been externally resolved for this assignment",
+                scse.getMessage());
+        }
+    }
+
+    public void testSetManagerSetsManagerCsmUserId() throws Exception {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
+        csmUser.setUserId(11L);
+
+        assignment.setStudySubjectCalendarManager(csmUser);
+        assertEquals("manager ID not set", (Object) 11, assignment.getManagerCsmUserId());
+    }
+
+    public void testSetManagerNullSetsManagerIdNull() throws Exception {
+        assignment.setManagerCsmUserId(15);
+        assignment.setStudySubjectCalendarManager(null);
+        assertNull(assignment.getManagerCsmUserId());
+    }
+
+    public void testSetManagerIdClearsManagerIfIdDifferent() throws Exception {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
+        csmUser.setUserId(11L);
+        assignment.setStudySubjectCalendarManager(csmUser);
+
+        assignment.setManagerCsmUserId(15);
+        try {
+            assignment.getStudySubjectCalendarManager();
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("Wrong message",
+                "The actual manager user object has not been externally resolved for this assignment",
+                scse.getMessage());
+        }
+    }
+
+    public void testSetManagerIdLeavesManagerIfIdSame() throws Exception {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
+        csmUser.setUserId(11L);
+        assignment.setStudySubjectCalendarManager(csmUser);
+
+        assignment.setManagerCsmUserId(11);
+        assertNotNull(assignment.getStudySubjectCalendarManager());
+    }
+
+    public void testSetManagerIdNullClearsManager() throws Exception {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
+        csmUser.setUserId(11L);
+        assignment.setStudySubjectCalendarManager(csmUser);
+
+        assignment.setManagerCsmUserId(null);
+        assertNull(assignment.getStudySubjectCalendarManager());
     }
 }
