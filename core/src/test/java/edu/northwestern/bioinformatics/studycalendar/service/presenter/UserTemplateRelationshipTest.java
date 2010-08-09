@@ -375,38 +375,38 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
     ////// getSubjectAssignableStudySites
 
     public void testCanOnlyAssignSubjectsForApprovedTemplatesWhenHasAccessToSpecificSites() throws Exception {
-        Collection<StudySite> actual =
+        Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(vanderbilt, nu, mayo).forAllStudies()).
                 getSubjectAssignableStudySites();
         assertEquals("Wrong number of study sites", 1, actual.size());
-        assertEquals("Wrong study site", nu, actual.iterator().next().getSite());
+        assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCanOnlyAssignSubjectsForApprovedTemplatesWhenHasAccessToAllSites() throws Exception {
-        Collection<StudySite> actual =
+        Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
                 getSubjectAssignableStudySites();
         assertEquals("Wrong number of study sites", 1, actual.size());
-        assertEquals("Wrong study site", nu, actual.iterator().next().getSite());
+        assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCannotAssignSubjectsWhenHasAccessOnlyToADifferentStudy() throws Exception {
-        Collection<StudySite> actual =
+        Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(otherStudy)).
                 getSubjectAssignableStudySites();
         assertEquals("Wrong number of study sites", 0, actual.size());
     }
 
     public void testAssignSubjectsWhenHasAccessOnlyThisSpecificStudy() throws Exception {
-        Collection<StudySite> actual =
+        Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(study)).
                 getSubjectAssignableStudySites();
         assertEquals("Wrong number of study sites", 1, actual.size());
-        assertEquals("Wrong study site", nu, actual.iterator().next().getSite());
+        assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCannotAssignSubjectsWhenInADifferentRole() throws Exception {
-        Collection<StudySite> actual =
+        Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(REGISTRAR).forSites(nu).forAllStudies()).
                 getSubjectAssignableStudySites();
         assertEquals("Wrong number of study sites", 0, actual.size());

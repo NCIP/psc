@@ -5,9 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -113,12 +112,15 @@ public class UserTemplateRelationship {
      * The list of StudySites for which the user may assign new subjects and
      * which are released and approved for this template.
      */
-    public Collection<StudySite> getSubjectAssignableStudySites() {
-        Collection<StudySite> subjectAssignable =
+    public Collection<UserStudySiteRelationship> getSubjectAssignableStudySites() {
+        Collection<StudySite> sscmStudySites =
             tools.getParticipatingStudySites(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
-        for (Iterator<StudySite> it = subjectAssignable.iterator(); it.hasNext();) {
-            StudySite candidate = it.next();
-            if (candidate.getAmendmentApprovals().isEmpty()) it.remove();
+        Collection<UserStudySiteRelationship> subjectAssignable
+            = new ArrayList<UserStudySiteRelationship>(sscmStudySites.size());
+        for (StudySite sscmStudySite : sscmStudySites) {
+            UserStudySiteRelationship candidate =
+                new UserStudySiteRelationship(getUser(), sscmStudySite);
+            if (candidate.getCanAssignSubjects()) subjectAssignable.add(candidate);
         }
         return subjectAssignable;
     }
