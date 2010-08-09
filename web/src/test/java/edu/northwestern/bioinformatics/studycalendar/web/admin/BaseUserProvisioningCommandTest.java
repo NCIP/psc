@@ -15,6 +15,8 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -23,12 +25,12 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests for AbstractSingleUserProvisioningCommand.
+ * Tests for BaseUserProvisioningCommand.
  *
  * @author Rhett Sutphin
  */
-public class SingleUserProvisioningCommandTest extends WebTestCase {
-    private AbstractSingleUserProvisioningCommand command;
+public class BaseUserProvisioningCommandTest extends WebTestCase {
+    private BaseUserProvisioningCommand command;
 
     private PscUser pscUser;
     private Site austin, sanAntonio;
@@ -53,8 +55,8 @@ public class SingleUserProvisioningCommandTest extends WebTestCase {
         studyB = Fixtures.createBasicTemplate("B");
         studyC = Fixtures.createBasicTemplate("C");
 
-        PscUser principal = new PscUserBuilder("zelda").add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser();
-        principal.getCsmUser().setUserId(99L);
+        PscUser principal = new PscUserBuilder("zelda").setCsmUserId(99L).
+            add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser();
         SecurityContextHolderTestHelper.setSecurityContext(principal);
 
         command = create(pscUser);
@@ -167,8 +169,7 @@ public class SingleUserProvisioningCommandTest extends WebTestCase {
     }
 
     public void testApplySetsStaleIfModifyingSelf() throws Exception {
-        PscUser existingUser = createPscUser("zelda");
-        existingUser.getCsmUser().setUserId(99L);
+        PscUser existingUser = createPscUser("zelda", 99L);
 
         TestCommand selfMod = create(existingUser);
         replayMocks();
@@ -208,6 +209,14 @@ public class SingleUserProvisioningCommandTest extends WebTestCase {
     }
 
     ////// authorization
+
+    public void testRoleChangesForUnallowedUsersIgnored() throws Exception {
+        expectRoleChange(command, "harvey", "system_administrator", "add", null, null);
+        replayMocks(); // nothing expected
+
+        command.apply();
+        verifyMocks();
+    }
 
     public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
         command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR);
@@ -426,30 +435,40 @@ public class SingleUserProvisioningCommandTest extends WebTestCase {
 
     ////// HELPERS
 
-    private void expectRoleChange(String roleKey, String changeKind) {
+    private void expectRoleChange(String roleKey, String changeKind) throws JSONException {
         expectRoleChange(roleKey, changeKind, null, null);
     }
 
-    private void expectRoleChange(String roleKey, String changeKind, String scopeType, String scopeIdent) {
+    private void expectRoleChange(
+        String roleKey, String changeKind, String scopeType, String scopeIdent
+    ) throws JSONException {
         expectRoleChange(this.command, roleKey, changeKind, scopeType, scopeIdent);
     }
 
     private void expectRoleChange(
-        AbstractSingleUserProvisioningCommand cmd,
+        BaseUserProvisioningCommand cmd,
         String roleKey, String changeKind, String scopeType, String scopeIdent
-    ) {
+    ) throws JSONException {
+        expectRoleChange(cmd, cmd.getUser().getUsername(),
+            roleKey, changeKind, scopeType, scopeIdent);
+    }
+
+    private void expectRoleChange(
+        BaseUserProvisioningCommand cmd, String username,
+        String roleKey, String changeKind, String scopeType, String scopeIdent
+    ) throws JSONException {
         MapBuilder<String, String> mb = new MapBuilder<String, String>().
             put("role", roleKey).put("kind", changeKind);
         if (scopeType != null) {
             mb.put("scopeType", scopeType).put("scopeIdentifier", scopeIdent);
         }
 
-        cmd.getRoleChanges().put(new JSONObject(mb.toMap()));
+        cmd.getRoleChanges().put(username, new JSONArray(Arrays.asList(new JSONObject(mb.toMap()))));
     }
 
     ////// INNER CLASSES
 
-    private static class TestCommand extends AbstractSingleUserProvisioningCommand {
+    private static class TestCommand extends BaseUserProvisioningCommand {
         private TestCommand(
             PscUser user, ProvisioningSessionFactory provisioningSessionFactory,
             ApplicationSecurityManager applicationSecurityManager

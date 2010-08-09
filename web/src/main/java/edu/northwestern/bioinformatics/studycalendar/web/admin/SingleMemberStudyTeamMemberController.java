@@ -5,11 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonObjectEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
-import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -49,7 +49,7 @@ public class SingleMemberStudyTeamMemberController extends PscAbstractCommandCon
         HttpServletRequest request, ServletRequestDataBinder binder
     ) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(JSONArray.class, "roleChanges", new JsonArrayEditor());
+        binder.registerCustomEditor(JSONObject.class, "roleChanges", new JsonObjectEditor());
     }
 
     @Override

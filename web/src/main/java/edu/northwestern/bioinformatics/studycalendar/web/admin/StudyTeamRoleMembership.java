@@ -39,7 +39,7 @@ public class StudyTeamRoleMembership {
     public boolean isScopeIncluded() {
         if (!getHasRole()) return false;
         boolean isByAll = membership.isAllStudies() &&
-            studyIdentifier.equals(AbstractSingleUserProvisioningCommand.JSON_ALL_SCOPE_IDENTIFIER);
+            studyIdentifier.equals(BaseUserProvisioningCommand.JSON_ALL_SCOPE_IDENTIFIER);
         boolean isBySpecific = !membership.isAllStudies() &&
             membership.getStudyIdentifiers().contains(studyIdentifier);
         return isByAll || isBySpecific;

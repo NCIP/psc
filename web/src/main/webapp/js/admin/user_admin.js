@@ -106,7 +106,8 @@ psc.admin.UserAdmin = (function ($) {
     },
 
     serializeRoleChanges: function () {
-      return YAHOO.lang.JSON.stringify(user.changes);
+      var changes = {}; changes[user.username] = user.changes;
+      return YAHOO.lang.JSON.stringify(changes);
     }
   };
 })(jQuery);

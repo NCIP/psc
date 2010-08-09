@@ -14,7 +14,6 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +38,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.A
 /**
  * @author Rhett Sutphin
  */
-public abstract class AbstractSingleUserProvisioningCommand {
+public abstract class BaseUserProvisioningCommand {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String JSON_CHANGE_PROP_ROLE = "role";
@@ -45,10 +47,9 @@ public abstract class AbstractSingleUserProvisioningCommand {
     public static final String JSON_CHANGE_PROP_SCOPE_IDENTIFIER = "scopeIdentifier";
     public static final String JSON_ALL_SCOPE_IDENTIFIER = "__ALL__";
 
-    protected PscUser user;
-    private JSONArray roleChanges;
+    private List<PscUser> users;
+    private JSONObject roleChanges;
 
-    private ProvisioningSession provisioningSession;
     private final ProvisioningSessionFactory provisioningSessionFactory;
     private final ApplicationSecurityManager applicationSecurityManager;
 
@@ -64,12 +65,20 @@ public abstract class AbstractSingleUserProvisioningCommand {
     private Set<String> provisionableParticipatingStudyIdentifiers;
     protected static final int JSON_INDENT_DEPTH = 4;
 
-    public AbstractSingleUserProvisioningCommand(
+    protected BaseUserProvisioningCommand(
         PscUser user,
         ProvisioningSessionFactory provisioningSessionFactory,
         ApplicationSecurityManager applicationSecurityManager
     ) {
-        this.user = user;
+        this(Arrays.asList(user), provisioningSessionFactory, applicationSecurityManager);
+    }
+
+    protected BaseUserProvisioningCommand(
+        List<PscUser> users,
+        ProvisioningSessionFactory provisioningSessionFactory,
+        ApplicationSecurityManager applicationSecurityManager
+    ) {
+        this.users = users;
         this.applicationSecurityManager = applicationSecurityManager;
         this.provisioningSessionFactory = provisioningSessionFactory;
 
@@ -85,17 +94,26 @@ public abstract class AbstractSingleUserProvisioningCommand {
 
     ////// APPLY
 
-    public void apply() throws CSTransactionException {
-        Map<String, List<SubmittedChange>> changesByType = classifyAndFilterChanges();
-        applyAddAndRemoveScopes(changesByType.get("specificScope"));
-        applyAddAndRemoveAllScope(changesByType.get("allScope"));
-        applyAddAndRemoveGroupOnly(changesByType.get("groupOnly"));
-        applyStaleFlag();
+    public void apply() throws Exception {
+        Map<PscUser, Map<String, List<SubmittedChange>>> changesByUserAndType
+            = classifyAndFilterChanges();
+        for (Map.Entry<PscUser, Map<String, List<SubmittedChange>>> entry : changesByUserAndType.entrySet()) {
+            PscUser user = entry.getKey();
+            ProvisioningSession session = provisioningSessionFactory.createSession(
+                user.getCsmUser().getUserId());
+            applyAddAndRemoveScopes(session, entry.getValue().get("specificScope"));
+            applyAddAndRemoveAllScope(session, entry.getValue().get("allScope"));
+            applyAddAndRemoveGroupOnly(session, entry.getValue().get("groupOnly"));
+        }
+        // apply separately since non-role changes may have occurred
+        for (PscUser user : getUsers()) {
+            applyStaleFlag(user);
+        }
     }
 
-    private void applyAddAndRemoveScopes(List<SubmittedChange> specificScopeChanges) {
+    private void applyAddAndRemoveScopes(ProvisioningSession session, List<SubmittedChange> specificScopeChanges) {
         for (SubmittedChange change : specificScopeChanges) {
-            SuiteRoleMembership base = getProvisioningSession().getProvisionableRoleMembership(change.getRole());
+            SuiteRoleMembership base = session.getProvisionableRoleMembership(change.getRole());
             if (change.isAdd()) {
                 if (change.getScopeType() == ScopeType.SITE) base.addSite(change.getScopeIdentifier());
                 else base.addStudy(change.getScopeIdentifier());
@@ -104,13 +122,13 @@ public abstract class AbstractSingleUserProvisioningCommand {
                 else base.removeStudy(change.getScopeIdentifier());
             }
 
-            getProvisioningSession().replaceRole(base);
+            session.replaceRole(base);
         }
     }
 
-    private void applyAddAndRemoveAllScope(List<SubmittedChange> allScopeChanges) {
+    private void applyAddAndRemoveAllScope(ProvisioningSession session, List<SubmittedChange> allScopeChanges) {
         for (SubmittedChange change : allScopeChanges) {
-            SuiteRoleMembership base = getProvisioningSession().getProvisionableRoleMembership(change.getRole());
+            SuiteRoleMembership base = session.getProvisionableRoleMembership(change.getRole());
             if (change.isAdd()) {
                 if (change.getScopeType() == ScopeType.SITE) base.forAllSites();
                 else base.forAllStudies();
@@ -119,61 +137,73 @@ public abstract class AbstractSingleUserProvisioningCommand {
                 else base.notForAllStudies();
             }
 
-            getProvisioningSession().replaceRole(base);
+            session.replaceRole(base);
         }
     }
 
-    private void applyAddAndRemoveGroupOnly(List<SubmittedChange> groupOnlyChanges) {
+    private void applyAddAndRemoveGroupOnly(ProvisioningSession session, List<SubmittedChange> groupOnlyChanges) {
         for (SubmittedChange change : groupOnlyChanges) {
             if (change.isAdd()) {
-                getProvisioningSession().replaceRole(
-                    getProvisioningSession().getProvisionableRoleMembership(change.getRole()));
+                session.replaceRole(
+                    session.getProvisionableRoleMembership(change.getRole()));
             } else if (change.isRemove()) {
-                getProvisioningSession().deleteRole(change.getRole());
+                session.deleteRole(change.getRole());
             }
         }
     }
 
-    private void applyStaleFlag() {
+    private void applyStaleFlag(PscUser user) {
         if (applicationSecurityManager == null) return;
         PscUser principal = applicationSecurityManager.getUser();
-        if (principal.getCsmUser().getUserId().equals(getUser().getCsmUser().getUserId())) {
+        if (principal.getCsmUser().getUserId().equals(user.getCsmUser().getUserId())) {
             principal.setStale(true);
         }
     }
 
-    private ProvisioningSession getProvisioningSession() {
-        if (provisioningSession == null) {
-            provisioningSession =
-                provisioningSessionFactory.createSession(getUser().getCsmUser().getUserId());
+    @SuppressWarnings({"unchecked"})
+    private Map<PscUser, Map<String, List<SubmittedChange>>> classifyAndFilterChanges() {
+        Map<PscUser, Map<String, List<SubmittedChange>>> byUser =
+            new LinkedHashMap<PscUser, Map<String, List<SubmittedChange>>>();
+        for (Iterator<String> keys = getRoleChanges().keys(); keys.hasNext();) {
+            String username = keys.next();
+            PscUser user = findUser(username);
+            if (user == null) {
+                log.warn("Ignoring unauthorized attempt to change roles for {}", username);
+                continue;
+            }
+            Map<String, List<SubmittedChange>> classified = new MapBuilder<String, List<SubmittedChange>>().
+                put("specificScope", new LinkedList<SubmittedChange>()).
+                put("allScope", new LinkedList<SubmittedChange>()).
+                put("groupOnly", new LinkedList<SubmittedChange>()).
+                toMap();
+            JSONArray userRoleChanges = getRoleChanges().optJSONArray(username);
+            for (int i = 0; i < userRoleChanges.length(); i++) {
+                try {
+                    SubmittedChange change = new SubmittedChange(userRoleChanges.getJSONObject(i));
+                    if (shouldSkip(change)) continue;
+
+                    if (!change.isScopeChange()) {
+                        classified.get("groupOnly").add(change);
+                    } else if (change.isAllScope()) {
+                        classified.get("allScope").add(change);
+                    } else {
+                        classified.get("specificScope").add(change);
+                    }
+                } catch (JSONException e) {
+                    throw new StudyCalendarValidationException(
+                        "One of the elements in the change list isn't an object or is otherwise invalid", e);
+                }
+            }
+            byUser.put(user, classified);
         }
-        return provisioningSession;
+        return byUser;
     }
 
-    private Map<String, List<SubmittedChange>> classifyAndFilterChanges() {
-        Map<String, List<SubmittedChange>> classified = new MapBuilder<String, List<SubmittedChange>>().
-            put("specificScope", new LinkedList<SubmittedChange>()).
-            put("allScope", new LinkedList<SubmittedChange>()).
-            put("groupOnly", new LinkedList<SubmittedChange>()).
-            toMap();
-        for (int i = 0; i < getRoleChanges().length(); i++) {
-            try {
-                SubmittedChange change = new SubmittedChange(getRoleChanges().getJSONObject(i));
-                if (shouldSkip(change)) continue;
-
-                if (!change.isScopeChange()) {
-                    classified.get("groupOnly").add(change);
-                } else if (change.isAllScope()) {
-                    classified.get("allScope").add(change);
-                } else {
-                    classified.get("specificScope").add(change);
-                }
-            } catch (JSONException e) {
-                throw new StudyCalendarValidationException(
-                    "One of the elements in the change list isn't an object or is otherwise invalid", e);
-            }
+    private PscUser findUser(String username) {
+        for (PscUser user : getUsers()) {
+            if (user.getUsername().equals(username)) return user;
         }
-        return classified;
+        return null;
     }
 
     private boolean shouldSkip(SubmittedChange change) {
@@ -220,26 +250,26 @@ public abstract class AbstractSingleUserProvisioningCommand {
         return false;
     }
 
-    public Map<SuiteRole, SuiteRoleMembership> getCurrentRoles() {
-        return user.getMemberships();
-    }
-
     ////// JAVASCRIPT SERIALIZATION
 
     public String getJavaScriptProvisionableUser() {
+        return buildJavaScriptProvisionableUser(getUser());
+    }
+
+    private String buildJavaScriptProvisionableUser(PscUser user) {
         try {
             return String.format(
                 "new psc.admin.ProvisionableUser('%s', %s)",
-                getUser().getCsmUser().getLoginName(),
-                buildProvisionableUserRoleJSON().toString(JSON_INDENT_DEPTH));
+                user.getCsmUser().getLoginName(),
+                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH));
         } catch (JSONException e) {
             throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
         }
     }
 
-    private JSONObject buildProvisionableUserRoleJSON() throws JSONException {
+    private JSONObject buildProvisionableUserRoleJSON(PscUser user) throws JSONException {
         JSONObject rolesJSON = new JSONObject();
-        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
+        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : user.getMemberships().entrySet()) {
             rolesJSON.put(entry.getKey().getCsmName(), buildProvisionableUserScopeJSON(entry.getValue()));
         }
         return rolesJSON;
@@ -262,6 +292,22 @@ public abstract class AbstractSingleUserProvisioningCommand {
     }
 
     ////// CONFIGURATION
+
+    public List<PscUser> getUsers() {
+        return users;
+    }
+
+    /**
+     * Returns the first configured user.
+     */
+    public PscUser getUser() {
+        return getUsers().isEmpty() ? null : getUsers().get(0);
+    }
+
+    // internal use only
+    protected void setUser(PscUser replacement) {
+        this.users = Arrays.asList(replacement);
+    }
 
     public List<ProvisioningRole> getProvisionableRoles() {
         return provisionableRoles;
@@ -344,19 +390,15 @@ public abstract class AbstractSingleUserProvisioningCommand {
 
     ////// BOUND PROPERTIES
 
-    public PscUser getUser() {
-        return user;
-    }
-
-    public JSONArray getRoleChanges() {
+    public JSONObject getRoleChanges() {
         if (roleChanges == null) {
-            roleChanges = new JSONArray();
+            roleChanges = new JSONObject();
         }
         return roleChanges;
     }
 
-    @SuppressWarnings({ "UnusedDeclaration" })
-    public void setRoleChanges(JSONArray roleChanges) {
+    @SuppressWarnings({ "UnusedDeclaration" }) // used in binding
+    public void setRoleChanges(JSONObject roleChanges) {
         this.roleChanges = roleChanges;
     }
 

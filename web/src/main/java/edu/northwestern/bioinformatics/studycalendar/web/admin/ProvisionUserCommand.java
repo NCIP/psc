@@ -46,24 +46,24 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 public class ProvisionUserCommand
-    extends AbstractSingleUserProvisioningCommand
+    extends BaseUserProvisioningCommand
     implements Validatable
 {
-
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
 
     private boolean lookUpBoundUser;
     private String password, rePassword;
 
-    private ProvisionUserCommand(
+    protected ProvisionUserCommand(
         PscUser user,
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
         AuthenticationSystem authenticationSystem,
         ApplicationSecurityManager applicationSecurityManager
     ) {
-        super(user, provisioningSessionFactory, applicationSecurityManager);
+        super(user == null ? AuthorizationObjectFactory.createPscUser() : user,
+            provisioningSessionFactory, applicationSecurityManager);
         this.authorizationManager = authorizationManager;
         this.authenticationSystem = authenticationSystem;
     }
@@ -75,8 +75,7 @@ public class ProvisionUserCommand
         ApplicationSecurityManager applicationSecurityManager,
         SiteDao siteDao, StudyDao studyDao, PscUser provisioner
     ) {
-        ProvisionUserCommand command = new ProvisionUserCommand(
-            existingUser == null ? AuthorizationObjectFactory.createPscUser() : existingUser,
+        ProvisionUserCommand command = new ProvisionUserCommand(existingUser,
             psFactory, authorizationManager, authenticationSystem, applicationSecurityManager);
         if (provisioner == null) return command;
 
@@ -144,7 +143,7 @@ public class ProvisionUserCommand
     }
 
     @Override
-    public void apply() throws CSTransactionException {
+    public void apply() throws Exception {
         applyPassword();
         saveOrUpdateUser();
         super.apply();
@@ -172,7 +171,7 @@ public class ProvisionUserCommand
             User found = authorizationManager.getUser(getUser().getCsmUser().getLoginName());
             if (found != null) {
                 copyBoundProperties(this.getUser().getCsmUser(), found);
-                this.user = AuthorizationObjectFactory.createPscUser(found);
+                setUser(AuthorizationObjectFactory.createPscUser(found));
                 authorizationManager.modifyUser(getUser().getCsmUser());
             } else {
                 authorizationManager.createUser(getUser().getCsmUser());

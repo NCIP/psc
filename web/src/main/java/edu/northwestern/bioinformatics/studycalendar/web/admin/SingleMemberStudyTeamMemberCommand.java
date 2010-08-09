@@ -16,7 +16,7 @@ import java.util.TreeMap;
 /**
  * @author Rhett Sutphin
  */
-public class SingleMemberStudyTeamMemberCommand extends AbstractSingleUserProvisioningCommand {
+public class SingleMemberStudyTeamMemberCommand extends BaseUserProvisioningCommand {
     private Map<String, Map<PscRole, StudyTeamRoleMembership>> teamMemberships;
 
     private SingleMemberStudyTeamMemberCommand(

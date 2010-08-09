@@ -111,8 +111,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
         ProvisionUserCommand actual = create(null);
 
         assertNotNull("User not created", actual.getUser());
-        assertNotNull("Current should be set", actual.getCurrentRoles());
-        assertTrue("Current should be set empty", actual.getCurrentRoles().isEmpty());
+        assertNotNull("Current should be set", actual.getUser().getMemberships());
+        assertTrue("Current should be set empty", actual.getUser().getMemberships().isEmpty());
     }
 
     public void testCreateForSysAdminProvisioner() throws Exception {

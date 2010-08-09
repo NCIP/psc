@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonObjectEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -14,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthentic
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.security.AuthorizationManager;
-import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -78,7 +78,7 @@ public class AdministerUserController
         HttpServletRequest request, ServletRequestDataBinder binder
     ) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(JSONArray.class, "roleChanges", new JsonArrayEditor());
+        binder.registerCustomEditor(JSONObject.class, "roleChanges", new JsonObjectEditor());
         binder.registerCustomEditor(
             Date.class, "user.csmUser.endDate", getControllerTools().getDateEditor(false));
     }
