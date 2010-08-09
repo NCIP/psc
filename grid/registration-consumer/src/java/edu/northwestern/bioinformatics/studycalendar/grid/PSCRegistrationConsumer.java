@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -45,6 +46,7 @@ import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -335,7 +337,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     		StudySubjectAssignment newAssignment = null;
     		try {
     			newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-    					startDate, registrationGridId,registrationGridId, (PscUser) null);
+    					startDate, registrationGridId,registrationGridId, Collections.<Population>emptySet(), null);
     		} catch (StudyCalendarSystemException exp) {
     			throw getRegistrationConsumerException(exp.getMessage());
 
