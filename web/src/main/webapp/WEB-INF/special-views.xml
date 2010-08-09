@@ -48,6 +48,11 @@
         <property name="url" value="/pages/subject"/>
     </bean>
 
+    <bean id="redirectToDashboard" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative" value="true"/>
+        <property name="url" value="/pages/dashboard"/>
+    </bean>
+
     <bean id="redirectToAdministration" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/admin"/>
