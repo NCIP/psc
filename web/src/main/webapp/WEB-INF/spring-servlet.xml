@@ -257,38 +257,6 @@
         </property>
     </bean>
 
-    <bean name="/dashboard/siteCoordinator" id="dashboardSiteCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.SiteCoordinatorController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Site coordinator"/>
-                <property name="parent" ref="dashboardController"/>
-            </bean>
-        </property>
-    </bean>
-
-    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"
-          id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByStudyController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Assign study to subject coordinators"/>
-                <property name="parent" ref="dashboardSiteCoordinatorController"/>
-            </bean>
-        </property>
-    </bean>
-
-    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser"
-          autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByUserController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Assign subject coordinator to studies"/>
-                <property name="parent" ref="dashboardSiteCoordinatorController"/>
-            </bean>
-        </property>
-    </bean>
-
     <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"
           id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
