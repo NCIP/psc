@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -165,7 +166,7 @@ public class PSCAdverseEventMessgeTest /* TODO: renable when working // extends 
                 logger.debug("creating subject assignment");
 
                 newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-                        new Date(), assignmentGridId, null);
+                        new Date(), assignmentGridId, Collections.<Population>emptySet(), null);
 
                 ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
                 logger.debug("Created assignment " + scheduledCalendar.getId());

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -9,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -35,19 +35,20 @@ import org.apache.commons.logging.LogFactory;
 import org.easymock.classextension.EasyMock;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.AbstractTransactionalSpringContextTests;
 
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import java.rmi.RemoteException;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
@@ -392,7 +393,10 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			try {
 				logger.debug("creating subject assignment");
 
-				newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment, new Date(), assignmentGridId, assignmentGridId, null);
+                newAssignment = subjectService.assignSubject(
+                    subject, studySite, loadedStudySegment, new Date(),
+                    assignmentGridId, assignmentGridId, Collections.<Population>emptySet(), null
+                );
 				ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
 				logger.debug("Created assignment " + newAssignment.getId());
 			} catch (StudyCalendarSystemException exp) {
