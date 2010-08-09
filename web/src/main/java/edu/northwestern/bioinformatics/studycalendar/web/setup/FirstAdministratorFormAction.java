@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
-import edu.northwestern.bioinformatics.studycalendar.web.admin.ProvisionUserCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
@@ -22,14 +22,14 @@ public class FirstAdministratorFormAction extends FormAction {
     private ProvisioningSessionFactory provisioningSessionFactory;
 
     public FirstAdministratorFormAction() {
-        super(ProvisionUserCommand.class);
+        super(AdministerUserCommand.class);
         setFormObjectName("adminCommand");
         setValidator(new ValidatableValidator());
         setFormObjectScope(ScopeType.REQUEST);
     }
 
     @Override
-    protected ProvisionUserCommand createFormObject(RequestContext context) throws Exception {
+    protected AdministerUserCommand createFormObject(RequestContext context) throws Exception {
         return new FirstAdministratorCommand(
             provisioningSessionFactory, csmAuthorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem());

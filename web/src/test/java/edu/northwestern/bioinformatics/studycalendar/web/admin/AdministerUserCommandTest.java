@@ -35,8 +35,8 @@ import static org.easymock.classextension.EasyMock.expectLastCall;
 /**
  * @author Rhett Sutphin
  */
-public class ProvisionUserCommandTest extends WebTestCase {
-    private ProvisionUserCommand command;
+public class AdministerUserCommandTest extends WebTestCase {
+    private AdministerUserCommand command;
 
     private User csmUser;
     private PscUser pscUser;
@@ -92,14 +92,14 @@ public class ProvisionUserCommandTest extends WebTestCase {
         command = create(pscUser);
     }
 
-    private ProvisionUserCommand create(PscUser existingUser) {
+    private AdministerUserCommand create(PscUser existingUser) {
         return create(existingUser, new PscUserBuilder("sam").
             add(PscRole.USER_ADMINISTRATOR).forAllSites().
             toUser());
     }
 
-    private ProvisionUserCommand create(PscUser existingUser, PscUser provisioner) {
-        return ProvisionUserCommand.create(existingUser,
+    private AdministerUserCommand create(PscUser existingUser, PscUser provisioner) {
+        return AdministerUserCommand.create(existingUser,
             psFactory, authorizationManager, authenticationSystem, applicationSecurityManager, siteDao, studyDao,
             provisioner
         );
@@ -108,7 +108,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     ////// create
 
     public void testCreateWithoutUserSetsBlankUserInfo() throws Exception {
-        ProvisionUserCommand actual = create(null);
+        AdministerUserCommand actual = create(null);
 
         assertNotNull("User not created", actual.getUser());
         assertNotNull("Current should be set", actual.getUser().getMemberships());
@@ -119,7 +119,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
         PscUser provisioner = new PscUserBuilder("jo").
             add(PscRole.SYSTEM_ADMINISTRATOR).
             toUser();
-        ProvisionUserCommand actual = create(pscUser, provisioner);
+        AdministerUserCommand actual = create(pscUser, provisioner);
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             2, actual.getProvisionableRoles().size());
@@ -146,7 +146,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
         PscUser provisioner = new PscUserBuilder("jo").
             add(PscRole.USER_ADMINISTRATOR).forAllSites().
             toUser();
-        ProvisionUserCommand actual = create(pscUser, provisioner);
+        AdministerUserCommand actual = create(pscUser, provisioner);
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             SuiteRole.values().length, actual.getProvisionableRoles().size());
@@ -182,7 +182,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
         PscUser provisioner = new PscUserBuilder("jo").
             add(PscRole.USER_ADMINISTRATOR).forSites(sanAntonio).
             toUser();
-        ProvisionUserCommand actual = create(pscUser, provisioner);
+        AdministerUserCommand actual = create(pscUser, provisioner);
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             SuiteRole.values().length, actual.getProvisionableRoles().size());
@@ -211,20 +211,20 @@ public class ProvisionUserCommandTest extends WebTestCase {
         PscUser provisioner = new PscUserBuilder("jo").
             add(PscRole.SUBJECT_MANAGER).forSites(sanAntonio).
             toUser();
-        ProvisionUserCommand actual = create(pscUser, provisioner);
+        AdministerUserCommand actual = create(pscUser, provisioner);
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             0, actual.getProvisionableRoles().size());
     }
 
     public void testCreateForNoProvisionerIsBlank() throws Exception {
-        ProvisionUserCommand actual = create(pscUser, null);
+        AdministerUserCommand actual = create(pscUser, null);
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             0, actual.getProvisionableRoles().size());
     }
 
-    private void assertMayProvision(SuiteRole expectedRole, ProvisionUserCommand actual) {
+    private void assertMayProvision(SuiteRole expectedRole, AdministerUserCommand actual) {
         assertTrue("Should be able to provision " + expectedRole,
             actual.getProvisionableRoles().contains(new ProvisioningRole(expectedRole)));
     }

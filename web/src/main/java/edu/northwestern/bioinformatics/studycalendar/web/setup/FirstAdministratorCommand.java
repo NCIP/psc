@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.web.admin.ProvisionUserCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.security.AuthorizationManager;
@@ -14,7 +14,7 @@ import java.util.Collections;
 /**
  * @author Rhett Sutphin
  */
-public class FirstAdministratorCommand extends ProvisionUserCommand {
+public class FirstAdministratorCommand extends AdministerUserCommand {
     public FirstAdministratorCommand(
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
@@ -28,9 +28,9 @@ public class FirstAdministratorCommand extends ProvisionUserCommand {
     @Override
     public void apply() throws Exception {
         JSONObject addSysAdmin = new JSONObject();
-        addSysAdmin.put(ProvisionUserCommand.JSON_CHANGE_PROP_KIND, "add");
+        addSysAdmin.put(AdministerUserCommand.JSON_CHANGE_PROP_KIND, "add");
         addSysAdmin.put(
-            ProvisionUserCommand.JSON_CHANGE_PROP_ROLE, PscRole.SYSTEM_ADMINISTRATOR.getCsmName());
+            AdministerUserCommand.JSON_CHANGE_PROP_ROLE, PscRole.SYSTEM_ADMINISTRATOR.getCsmName());
         getRoleChanges().put(getUser().getUsername(),
             new JSONArray(Collections.singletonList(addSysAdmin)));
 

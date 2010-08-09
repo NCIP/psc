@@ -45,7 +45,7 @@ import java.util.Set;
  *
  * @author Rhett Sutphin
  */
-public class ProvisionUserCommand
+public class AdministerUserCommand
     extends BaseUserProvisioningCommand
     implements Validatable
 {
@@ -55,7 +55,7 @@ public class ProvisionUserCommand
     private boolean lookUpBoundUser;
     private String password, rePassword;
 
-    protected ProvisionUserCommand(
+    protected AdministerUserCommand(
         PscUser user,
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
@@ -69,13 +69,13 @@ public class ProvisionUserCommand
     }
 
     @SuppressWarnings({ "unchecked" })
-    public static ProvisionUserCommand create(
+    public static AdministerUserCommand create(
         PscUser existingUser, ProvisioningSessionFactory psFactory,
         AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem,
         ApplicationSecurityManager applicationSecurityManager,
         SiteDao siteDao, StudyDao studyDao, PscUser provisioner
     ) {
-        ProvisionUserCommand command = new ProvisionUserCommand(existingUser,
+        AdministerUserCommand command = new AdministerUserCommand(existingUser,
             psFactory, authorizationManager, authenticationSystem, applicationSecurityManager);
         if (provisioner == null) return command;
 

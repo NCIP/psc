@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class AdministerUserController
-    extends PscAbstractCommandController<ProvisionUserCommand>
+    extends PscAbstractCommandController<AdministerUserCommand>
     implements PscAuthorizedHandler
 {
     private static final String USER_PARAMETER_NAME = "user";
@@ -57,7 +57,7 @@ public class AdministerUserController
     }
 
     @Override
-    protected ProvisionUserCommand getCommand(HttpServletRequest request) throws Exception {
+    protected AdministerUserCommand getCommand(HttpServletRequest request) throws Exception {
         String username = ServletRequestUtils.getStringParameter(request, USER_PARAMETER_NAME);
         PscUser targetUser;
         if (username == null) {
@@ -66,7 +66,7 @@ public class AdministerUserController
             targetUser = pscUserService.getProvisionableUser(username);
         }
 
-        return ProvisionUserCommand.create(targetUser,
+        return AdministerUserCommand.create(targetUser,
             provisioningSessionFactory, authorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
             applicationSecurityManager, siteDao, studyDao,
@@ -85,7 +85,7 @@ public class AdministerUserController
 
     @Override
     protected ModelAndView handle(
-        ProvisionUserCommand command, BindException errors,
+        AdministerUserCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
         if (command.isNewUser() && request.getParameter(USER_PARAMETER_NAME) != null) {
