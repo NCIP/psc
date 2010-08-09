@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -81,5 +82,41 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         StudySubjectAssignment ssa = getDao().getByStudySubjectIdentifier(studyDao.getById(-101), "B");
         assertNotNull(ssa);
         assertEquals("Wrong SSA found", -13, (int) ssa.getId());
+    }
+
+    public void testGetAssignmentsInIntersection() throws Exception {
+        List<StudySubjectAssignment> actual = getDao().
+            getAssignmentsInIntersection(Arrays.asList(-101), Arrays.asList(-200));
+
+        assertEquals("Wrong number of assignments found", 1, actual.size());
+        assertEquals("Wrong assignment found", -13, (int) actual.get(0).getId());
+    }
+
+    public void testGetAssignmentsInIntersectionWithNullStudies() throws Exception {
+        List<StudySubjectAssignment> actual = getDao().
+            getAssignmentsInIntersection(null, Arrays.asList(-200));
+
+        assertEquals("Wrong number of assignments found", 4, actual.size());
+    }
+
+    public void testGetAssignmentsInIntersectionWithNullSites() throws Exception {
+        List<StudySubjectAssignment> actual = getDao().
+            getAssignmentsInIntersection(Arrays.asList(-100), null);
+
+        assertEquals("Wrong number of assignments found", 3, actual.size());
+    }
+
+    public void testGetAssignmentsInIntersectionForUnknownSite() throws Exception {
+        List<StudySubjectAssignment> actual = getDao().
+            getAssignmentsInIntersection(Arrays.asList(-101), Arrays.asList(-20000));
+
+        assertEquals("Wrong number of assignments found", 0, actual.size());
+    }
+
+    public void testGetAssignmentsInIntersectionForUnknownStudy() throws Exception {
+        List<StudySubjectAssignment> actual = getDao().
+            getAssignmentsInIntersection(Arrays.asList(-10100), Arrays.asList(-200));
+
+        assertEquals("Wrong number of assignments found", 0, actual.size());
     }
 }

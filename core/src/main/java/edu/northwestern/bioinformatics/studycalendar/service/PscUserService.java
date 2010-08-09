@@ -1,9 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -41,6 +47,10 @@ public class PscUserService implements PscUserDetailsService {
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private LegacyModeSwitch legacyModeSwitch;
     private CsmHelper csmHelper;
+
+    private StudyDao studyDao;
+    private SiteDao siteDao;
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
 
     public PscUser getProvisionableUser(String username) {
         User user = loadCsmUser(username);
@@ -121,6 +131,36 @@ public class PscUserService implements PscUserDetailsService {
         return users;
     }
 
+    ////// VISIBLE DOMAIN INSTANCES
+
+    /**
+     * Get all the assignments the user can see.
+     */
+    public List<UserStudySubjectAssignmentRelationship> getVisibleAssignments(PscUser user) {
+        Collection<Integer> sites = siteDao.getVisibleSiteIds(
+            user.getVisibleSiteParameters(PscRoleUse.SUBJECT_MANAGEMENT.roles()));
+        Collection<Integer> studies = studyDao.getVisibleStudyIds(
+            user.getVisibleStudyParameters(PscRoleUse.SUBJECT_MANAGEMENT.roles()));
+        List<StudySubjectAssignment> assignments =
+            studySubjectAssignmentDao.getAssignmentsInIntersection(sites, studies);
+        List<UserStudySubjectAssignmentRelationship> result =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(assignments.size());
+        for (StudySubjectAssignment assignment : assignments) {
+            UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(user, assignment);
+            // this condition is a belt+suspenders thing
+            if (rel.isVisible()) result.add(rel);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all the assignments for which the user is the designated manager and which the user
+     * can still manage.
+     */
+    public List<UserStudySubjectAssignmentRelationship> getManagingAssignments(PscUser user) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
     ////// CONFIGURATION
 
     @Required @Deprecated
@@ -151,5 +191,20 @@ public class PscUserService implements PscUserDetailsService {
     @Required @Deprecated
     public void setLegacyModeSwitch(LegacyModeSwitch lmSwitch) {
         this.legacyModeSwitch = lmSwitch;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
     }
 }

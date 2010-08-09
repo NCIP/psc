@@ -1,9 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -55,5 +60,24 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
 
     public void deleteAll(List<StudySubjectAssignment> t) {
         getHibernateTemplate().deleteAll(t);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<StudySubjectAssignment> getAssignmentsInIntersection(
+        Collection<Integer> studyIds, Collection<Integer> siteIds
+    ) {
+        if (studyIds == null && siteIds == null) return getAll();
+        DetachedCriteria criteria = DetachedCriteria.
+            forClass(StudySubjectAssignment.class).createAlias("studySite", "ss");
+
+        Conjunction and = Restrictions.conjunction();
+        if (siteIds != null) {
+            and.add(MoreRestrictions.in("ss.site.id", siteIds));
+        }
+        if (studyIds != null) {
+            and.add(MoreRestrictions.in("ss.study.id", studyIds));
+        }
+        criteria.add(and);
+        return getHibernateTemplate().findByCriteria(criteria);
     }
 }

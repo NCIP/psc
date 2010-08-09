@@ -1,11 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -28,8 +38,10 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static org.easymock.EasyMock.*;
 
 public class PscUserServiceTest extends StudyCalendarTestCase {
@@ -38,8 +50,13 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
     private User csmUser;
     private Group dataReaderGroup;
+    private Site whatCheer, northLiberty, solon;
+    private Study eg1701;
 
     private UserService userService;
+    private SiteDao siteDao;
+    private StudyDao studyDao;
+    private StudySubjectAssignmentDao assignmentDao;
     private PlatformTransactionManager transactionManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private CsmHelper csmHelper;
@@ -55,6 +72,10 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         suiteRoleMembershipLoader = registerMockFor(SuiteRoleMembershipLoader.class);
         transactionManager = registerMockFor(PlatformTransactionManager.class);
         aSwitch = new LegacyModeSwitch();
+
+        siteDao = registerDaoMockFor(SiteDao.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
+        assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
 
         csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
@@ -72,6 +93,9 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setSuiteRoleMembershipLoader(suiteRoleMembershipLoader);
         service.setLegacyModeSwitch(aSwitch);
         service.setCsmHelper(csmHelper);
+        service.setStudyDao(studyDao);
+        service.setSiteDao(siteDao);
+        service.setStudySubjectAssignmentDao(assignmentDao);
 
         csmUser = new User();
         csmUser.setLoginName("John");
@@ -81,6 +105,12 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         dataReaderGroup = new Group();
         dataReaderGroup.setGroupName(SuiteRole.DATA_READER.getCsmName());
         dataReaderGroup.setGroupId(6L);
+
+        whatCheer = setId(987, createSite("What Cheer", "IA987"));
+        northLiberty = setId(720, createSite("North Liberty", "IA720"));
+        solon = setId(846, createSite("Solon", "IA846"));
+
+        eg1701 = createBasicTemplate("EG 1701");
     }
 
     public void testLoadKnownUser() throws Exception {
@@ -209,5 +239,49 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("A", it.next().getUsername());
         assertEquals("b", it.next().getUsername());
         assertEquals("C", it.next().getUsername());
+    }
+
+    public void testVisibleAssignments() throws Exception {
+        PscUser guy = new PscUserBuilder().
+            add(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(whatCheer).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon).forAllStudies().
+            toUser();
+        expect(siteDao.getVisibleSiteIds(
+            new VisibleSiteParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
+            andReturn(Arrays.asList(3, 7));
+        expect(studyDao.getVisibleStudyIds(
+            new VisibleStudyParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
+            andReturn(Arrays.asList(4));
+        StudySubjectAssignment expectedAssignment =
+            createAssignment(eg1701, solon, createSubject("F", "B"));
+        expect(assignmentDao.getAssignmentsInIntersection(Arrays.asList(3, 7), Arrays.asList(4))).
+            andReturn(Arrays.asList(expectedAssignment));
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual = service.getVisibleAssignments(guy);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible assignments", 1, actual.size());
+        assertSame("Wrong assignment visible", expectedAssignment, actual.get(0).getAssignment());
+        assertSame("User not carried forward", guy, actual.get(0).getUser());
+    }
+
+    public void testGetVisibleAssignmentsDoesNotQueryAssignmentsForNonSubjectRoles() throws Exception {
+        PscUser qa = new PscUserBuilder().
+            add(PscRole.STUDY_QA_MANAGER).forSites(whatCheer).toUser();
+
+        expect(siteDao.getVisibleSiteIds(new VisibleSiteParameters())).
+            andReturn(Collections.<Integer>emptyList());
+        expect(studyDao.getVisibleStudyIds(new VisibleStudyParameters())).
+            andReturn(Collections.<Integer>emptyList());
+        expect(assignmentDao.getAssignmentsInIntersection(
+            Collections.<Integer>emptyList(), Collections.<Integer>emptyList())).
+            andReturn(Arrays.<StudySubjectAssignment>asList());
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual = service.getVisibleAssignments(qa);
+        verifyMocks();
+
+        assertEquals("Wrong number of assignments returned", 0, actual.size());
     }
 }

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -65,6 +66,10 @@ public abstract class VisibleDomainObjectParameters<S extends VisibleDomainObjec
         return (S) this;
     }
 
+    public S forManagingSiteIdentifiers(String... idents) {
+        return forManagingSiteIdentifiers(Arrays.asList(idents));
+    }
+
     @SuppressWarnings({ "unchecked" })
     public S forAllParticipatingSites() {
         participatingSiteIdentifiers = null;
@@ -79,6 +84,10 @@ public abstract class VisibleDomainObjectParameters<S extends VisibleDomainObjec
             }
         }
         return (S) this;
+    }
+
+    public S forParticipatingSiteIdentifiers(String... idents) {
+        return forParticipatingSiteIdentifiers(Arrays.asList(idents));
     }
 
     ////// ACCESSORS
@@ -108,7 +117,6 @@ public abstract class VisibleDomainObjectParameters<S extends VisibleDomainObjec
     ////// OBJECT METHODS
 
     @Override
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof VisibleDomainObjectParameters)) return false;

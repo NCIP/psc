@@ -19,6 +19,10 @@ public class PscUserBuilder {
     private SuiteRoleMembership current;
     private List<SuiteRoleMembership> memberships;
 
+    public PscUserBuilder() {
+        this("josephine");
+    }
+
     public PscUserBuilder(String username) {
         this.username = username;
         memberships = new ArrayList<SuiteRoleMembership>(PscRole.values().length);
