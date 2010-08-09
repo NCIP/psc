@@ -74,6 +74,7 @@ public class SecureOperation extends TagSupport {
             log.trace(" - user is {}", Arrays.asList(authentication.getAuthorities()));
         }
 
+        if (authorizations == null) return EVAL_BODY_INCLUDE;
         for (ResourceAuthorization authorization : authorizations) {
             if (authorization.permits(user)) return EVAL_BODY_INCLUDE;
         }

@@ -55,6 +55,7 @@ public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
                 return forbidden(response);
             }
 
+            if (authorizations == null) return true;
             for (ResourceAuthorization authorization : authorizations) {
                 if (authorization.permits(user)) return true;
             }
@@ -68,7 +69,7 @@ public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean forbidden(HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Insufficient privileges");
         return false;
     }
 

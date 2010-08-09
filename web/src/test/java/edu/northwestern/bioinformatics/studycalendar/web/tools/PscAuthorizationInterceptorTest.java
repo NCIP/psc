@@ -45,6 +45,15 @@ public class PscAuthorizationInterceptorTest extends WebTestCase {
         verifyMocks();
     }
 
+    public void testPreHandleReturnsTrueWhenAllAuthorized() throws Exception {
+        expect(controller.authorizations((String) notNull(), (Map<String, String[]>) notNull())).
+            andReturn(null);
+        replayMocks();
+
+        assertTrue("Should continue", interceptor.preHandle(request, response, controller));
+        verifyMocks();
+    }
+
     public void testPreHandleReturnsFalseWhenUserNotAuthorized() throws Exception {
         expectControllerRequiresRole(PscRole.DATA_READER);
         replayMocks();

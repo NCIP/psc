@@ -76,6 +76,11 @@ public class SecureOperationTest extends WebTestCase {
         assertEquals(EVAL_BODY_INCLUDE, secureOperation.doStartTag());
     }
 
+    public void testBodyIncludedWhenAuthorizedForAll() throws Exception {
+        secureOperation.setElement("/pages/cal/display");
+        assertEquals(EVAL_BODY_INCLUDE, secureOperation.doStartTag());
+    }
+
     public void testBodySkippedWhenNotAuthenticatedAndUrlExactlyMatches() throws Exception {
         secureOperation.setElement("/pages/cal/assignSubject");
         assertEquals(SKIP_BODY, secureOperation.doStartTag());

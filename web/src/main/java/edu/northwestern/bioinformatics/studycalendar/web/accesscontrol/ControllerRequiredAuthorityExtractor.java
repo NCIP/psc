@@ -39,9 +39,15 @@ public class ControllerRequiredAuthorityExtractor {
                 log.error("Extracting authorizations from " + controller + " failed.  Will lock down.", e);
                 auths = PscAuthorizedHandler.NONE_AUTHORIZED;
             }
-            Set<PscRole> roles = new LinkedHashSet<PscRole>();
-            for (ResourceAuthorization auth : auths) roles.add(auth.getRole());
-            return roles.toArray(new PscRole[roles.size()]);
+            if (auths == null) {
+                return PscRole.values();
+            } else {
+                Set<PscRole> roles = new LinkedHashSet<PscRole>();
+                for (ResourceAuthorization auth : auths) {
+                    roles.add(auth.getRole());
+                }
+                return roles.toArray(new PscRole[roles.size()]);
+            }
         }
     }
 
