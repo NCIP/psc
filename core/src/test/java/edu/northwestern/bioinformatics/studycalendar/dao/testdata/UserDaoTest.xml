@@ -37,7 +37,6 @@
         start_date="2006-09-15"
         subject_id="-100"
         study_site_id="-3000"
-        subject_coordinator_id="-100"
         current_amendment_id="-5221"
         />
 
@@ -46,7 +45,6 @@
         start_date="2007-10-10"
         subject_id="-130"
         study_site_id="-3000"
-        subject_coordinator_id="-100"
         current_amendment_id="-5221"
         />
     
@@ -55,7 +53,6 @@
         start_date="2008-01-01"
         subject_id="-140"
         study_site_id="-3000"
-        subject_coordinator_id="-100"
         current_amendment_id="-5221"
         />
 

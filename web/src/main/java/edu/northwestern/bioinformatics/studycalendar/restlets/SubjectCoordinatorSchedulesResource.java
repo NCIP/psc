@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -89,6 +90,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
         List<StudySite> colleageStudySites = new ArrayList<StudySite>();
         List<StudySubjectAssignment> colleageStudySubjectAssignments = new ArrayList<StudySubjectAssignment>();
 
+        /* TODO: #1057
         for (StudySite studySite: userStudySites) {
             if (currentUserStudySites.contains(studySite)) {
                 colleageStudySites.add(studySite);
@@ -103,6 +105,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
                 }
             }
         }
+        */
         return colleageStudySubjectAssignments;
     }
 

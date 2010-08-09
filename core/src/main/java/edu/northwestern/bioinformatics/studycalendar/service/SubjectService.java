@@ -3,12 +3,31 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -20,7 +39,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -33,22 +60,34 @@ public class SubjectService {
     public static final String RESCHEDULED = "Rescheduled. ";
 
     private SubjectDao subjectDao;
-    private SiteService siteService;
     private AmendmentService amendmentService;
 
+    @Deprecated
     public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator, Set<Population> populations) {
         return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator, populations);
     }
 
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator) {
-        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator);
-    }
-
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, User subjectCoordinator) {
-        return assignSubject(subject, studySite, studySegmentOfFirstEpoch, startDate, assignmentGridIdentifier, studySubjectId, subjectCoordinator, null);
-    }
-
+    @Deprecated
     public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, User subjectCoordinator, Set<Population> populations) {
+        throw new UnsupportedOperationException("This needs to be removed");
+    }
+
+    public StudySubjectAssignment assignSubject(
+        Subject subject, StudySite study,
+        StudySegment studySegmentOfFirstEpoch, Date startDate,
+        String studySubjectId, Set<Population> populations,
+        PscUser manager
+    ) {
+        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, populations, manager);
+    }
+
+    public StudySubjectAssignment assignSubject(
+        Subject subject, StudySite studySite,
+        StudySegment studySegmentOfFirstEpoch, Date startDate,
+        String assignmentGridIdentifier,
+        String studySubjectId, Set<Population> populations,
+        PscUser manager
+    ) {
         Amendment currentAmendment = studySite.getCurrentApprovedAmendment();
         if (currentAmendment == null) {
             throw new StudyCalendarSystemException("The template for %s has not been approved by %s",
@@ -62,7 +101,7 @@ public class SubjectService {
         spa.setStudySite(studySite);
         spa.setStartDate(startDate);
         spa.setGridId(assignmentGridIdentifier);
-        spa.setSubjectCoordinator(subjectCoordinator);
+        spa.setStudySubjectCalendarManager(manager == null ? null : manager.getCsmUser());
         spa.setCurrentAmendment(currentAmendment);
         spa.setStudySubjectId(studySubjectId);
         spa.setPopulations(populations);
@@ -70,19 +109,6 @@ public class SubjectService {
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
         return spa;
-    }
-
-    // TODO: is this used?
-    public List<StudySubjectAssignment> getAssignedStudySubject(String userName, List<StudySubjectAssignment> assignments) {
-        List<StudySubjectAssignment> actualAssignments = new ArrayList<StudySubjectAssignment>();
-        List<Site> sites =  new ArrayList<Site>(siteService.getSitesForSubjectCoordinator(userName));
-        for (StudySubjectAssignment assignment : assignments) {
-            for (Site site : sites) {
-                if (site.getId() == assignment.getStudySite().getSite().getId())
-                    actualAssignments.add(assignment);
-            }
-        }
-        return actualAssignments;
     }
 
     public ScheduledStudySegment scheduleStudySegment(
@@ -470,16 +496,9 @@ public class SubjectService {
     }
 
     @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
-    }
-
-    @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
     }
-
-
 
     @SuppressWarnings("unchecked")
     public Subject findSubjectByPersonId(final String mrn) {
@@ -500,34 +519,14 @@ public class SubjectService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Subject> findSubjectByFirstNameLastNameAndDateOfBirth(final String firstName, final String lastName, Date dateOfBirth) {
-        List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(firstName, lastName, dateOfBirth);
-        if (subjects != null) {
-            for (Subject subject : subjects) {
-                Hibernate.initialize(subject.getAssignments());
-                List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
-                for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
-                    Hibernate.initialize(studySubjectAssignment.getScheduledCalendar());
-                    if (studySubjectAssignment.getScheduledCalendar() != null) {
-                        Hibernate.initialize(studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments());
-                    }
-                }
-            }
-        }
-        return subjects;
-    }
-
-    @SuppressWarnings("unchecked")
     /**
      * Searches all the subjects in the system for those that match the given
      * criteria.  Returns a list of transient Subject elements containing just the
      * matching activities.
      */
     public List<Subject> getFilteredSubjects(String subjSearch) {
-        List<Subject> matches = subjectDao.getSubjectsBySearchText(subjSearch);
-        return matches;
+        return subjectDao.getSubjectsBySearchText(subjSearch);
     }
-
 
     public List<Subject> findSubjects(Subject searchCriteria) {
         if (searchCriteria == null) return null;

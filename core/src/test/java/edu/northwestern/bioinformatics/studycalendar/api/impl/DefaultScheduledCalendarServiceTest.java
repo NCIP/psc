@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
@@ -32,14 +31,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.classextension.EasyMock.*;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -261,7 +262,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+            loadedSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)).andReturn(newAssignment);
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
@@ -278,7 +279,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         subjectDao.save(parameterSubject);
         expect(subjectService.assignSubject(
-            parameterSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)
+            parameterSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)
             ).andReturn(newAssignment);
         expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
@@ -350,7 +351,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), defaultStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+            loadedSubject, loadedStudy.getStudySites().get(0), defaultStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)).andReturn(newAssignment);
         expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
         service.assignSubject(parameterStudy, parameterSubject, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);

@@ -1,38 +1,55 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
-import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.security.AuthorizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 import static java.util.Arrays.asList;
-import java.util.*;
+import static org.easymock.EasyMock.expect;
 
 public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends ControllerTestCase {
     private AssignSubjectToSubjectCoordinatorByUserController controller;
     private UserDao userDao;
     private StudySiteService studySiteService;
-    private User subjectCoord0, subjectCoord1, subjectCoord2, siteCoord0;
+    private PscUser subjectCoord0, subjectCoord1, subjectCoord2, siteCoord0;
     private Site site0, site1;
     private Study study0, study1;
     private Subject subject0, subject1, subject2, subject3, subjectUnassigned;
-    private StudySite studySite0, studySite1, studySite2, studySite3, studySite4;
+    private StudySite studySite00, studySite01, studySite10, studySite02;
     private Site site2;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private UserService userService;
     private SubjectDao subjectDao;
+    private AuthorizationManager authorizationManager;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -42,6 +59,7 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         studyDao = registerMockFor(StudyDao.class);
         siteDao = registerMockFor(SiteDao.class);
         subjectDao = registerDaoMockFor(SubjectDao.class);
+        authorizationManager = registerMockFor(AuthorizationManager.class);
 
         controller = new AssignSubjectToSubjectCoordinatorByUserController();
         controller.setUserDao(userDao);
@@ -58,41 +76,24 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         site1 = createNamedInstance("Mayo", Site.class);
         site2 = createNamedInstance("Empty Site", Site.class);
 
-        studySite0 = createStudySite(study0, site0);
-        studySite1 = createStudySite(study0, site1);
-        studySite2 = createStudySite(study1, site0);
-        studySite3 = createStudySite(study0, site2);
-        studySite4 = createStudySite(study0, site2);
+        studySite00 = createStudySite(study0, site0);
+        studySite01 = createStudySite(study0, site1);
+        studySite10 = createStudySite(study1, site0);
+        studySite02 = createStudySite(study0, site2);
 
-        subjectCoord0 = setId(0, createNamedInstance("Subject Coordinator 0", User.class));
-        subjectCoord1 = setId(1, createNamedInstance("Subject Coordinator 1", User.class));
-        subjectCoord2 = setId(2, createNamedInstance("Subject Coordinator 2", User.class));
+        subjectCoord0 = createPscUser("Subject Coordinator 0", 0L,
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(site0, site1).forStudies(study0, study1));
+        subjectCoord1 = createPscUser("Subject Coordinator 1", 1L,
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(site0, site1).forStudies(study0));
+        subjectCoord2 = createPscUser("Subject Coordinator 2", 2L,
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(site1));
 
-        siteCoord0 = setId(3, createNamedInstance("Site Coordinator 0", User.class));
-
-        UserRole role0 = createUserRole(subjectCoord0, Role.SUBJECT_COORDINATOR, site0, site1);
-        UserRole role1 = createUserRole(subjectCoord1, Role.SUBJECT_COORDINATOR, site0, site1);
-        UserRole role2 = createUserRole(subjectCoord2, Role.SUBJECT_COORDINATOR, site1);
-
-        UserRole siteCoordinatorRole = createUserRole(siteCoord0, Role.SITE_COORDINATOR, site0, site1);
-        UserRole subjCoordinatorRole = createUserRole(siteCoord0, Role.SUBJECT_COORDINATOR, site0, site1);
-        siteCoord0.addUserRole(siteCoordinatorRole);
-        siteCoord0.addUserRole(subjCoordinatorRole);
-
-        /* assign subjectCoord0 to studySite0, studySite1, studySite2 */
-        assignStudySite(studySite0, role0);
-        assignStudySite(studySite1, role0);
-        assignStudySite(studySite2, role0);
-
-        /* assign subjectCoord1 to studySite0, studySite1 */
-        assignStudySite(studySite0, role1);
-        assignStudySite(studySite1, role1);
-
-        /* assign subjectCoord2 to studySite2, studySite3 */
-        assignStudySite(studySite1, role2);
-        assignStudySite(studySite3, role0);
-        assignStudySite(studySite4, siteCoordinatorRole);
-        assignStudySite(studySite4, subjCoordinatorRole);
+        siteCoord0 = createPscUser("Site Coordinator 0", 2L,
+            createSuiteRoleMembership(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(site0, site1),
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(site0, site1, site2).forStudies(study0));
 
         subject0 = createSubject("John" , "Smith");
         subject1 = createSubject("Steve", "Smith");
@@ -100,11 +101,11 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         subject3 = createSubject("Fred" , "Smith");
         subjectUnassigned = createSubject("Unique", "Smith");
 
-        createStudySubjectAssignment(subject0, studySite0, subjectCoord0);
-        createStudySubjectAssignment(subject1, studySite1, subjectCoord0);
-        createStudySubjectAssignment(subject2, studySite2, subjectCoord0);
-        createStudySubjectAssignment(subject3, studySite2, subjectCoord0);
-        createStudySubjectAssignment(subjectUnassigned, studySite4, null);
+        createStudySubjectAssignment(subject0, studySite00, subjectCoord0);
+        createStudySubjectAssignment(subject1, studySite01, subjectCoord0);
+        createStudySubjectAssignment(subject2, studySite10, subjectCoord0);
+        createStudySubjectAssignment(subject3, studySite10, subjectCoord0);
+        createStudySubjectAssignment(subjectUnassigned, studySite02, null);
     }
     
     public void testAuthorizedRoles() {
@@ -113,7 +114,6 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     }
 
     public void testBuildDisplayMap() throws Exception {
-        expect(studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoord0)).andReturn(getStudySitesForUser(subjectCoord0));
         replayMocks();
 
         Map<Site, Map<Study, List<Subject>>> actualDisplayMap = controller.buildDisplayMap(subjectCoord0, false);
@@ -147,8 +147,6 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     }
 
     public void testBuildDisplayMapForUnAssigned() throws Exception {
-        expect(studySiteService.getAllStudySitesForSubjectCoordinator(siteCoord0)).andReturn(getStudySitesForUser(siteCoord0));
-
         replayMocks();
         Map<Site, Map<Study, List<Subject>>> actualDisplayMap = controller.buildDisplayMap(siteCoord0, true);
         verifyMocks();
@@ -167,20 +165,19 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     }
 
     public void testBuildSubjectsForUnassigned() throws Exception {
-        List<Subject> subjects = controller.buildSubjects(studySite4, siteCoord0, true);
+        List<Subject> subjects = controller.buildSubjects(studySite02, siteCoord0, true);
         assertEquals("Wrong number of subjects", 1, subjects.size());
         assertEquals("Wrong subject", subjectUnassigned.getFullName(), subjects.get(0).getFullName());
     }
 
     public void testBuildSubjectsForAssigned() throws Exception {
-        List<Subject> subjects = controller.buildSubjects(studySite2, subjectCoord0, false);
+        List<Subject> subjects = controller.buildSubjects(studySite10, subjectCoord0, false);
         assertEquals("Wrong number of subjects", 2, subjects.size());
         assertEquals("Wrong subject", subject2.getFullName(), subjects.get(0).getFullName());
         assertEquals("Wrong subject", subject3.getFullName(), subjects.get(1).getFullName());
     }
 
     public void testBuildDisplayMapfWithNoSubjectsAssigned() throws Exception {
-        expect(studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoord1)).andReturn(getStudySitesForUser(subjectCoord1));
         replayMocks();
         Map<Site, Map<Study, List<Subject>>> actualDisplayMap = controller.buildDisplayMap(subjectCoord1, true);
         verifyMocks();
@@ -195,23 +192,24 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     }
 
     public void testBuildStudySiteSubjectCoordinatorMap() throws Exception {
-        expect(studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoord0)).andReturn(getStudySitesForUser(subjectCoord0));
         replayMocks();
 
         Map<Study, Map<Site, List<User>>> map = controller.buildStudySiteSubjectCoordinatorMap(subjectCoord0);
         verifyMocks();
 
-        assertEquals("Wrong number of subject coordinators", 1, map.get(studySite0.getStudy()).get(studySite0.getSite()).size());
-        assertEquals("Wrong number of subject coordinators", 2, map.get(studySite1.getStudy()).get(studySite1.getSite()).size());
+        assertEquals("Wrong number of subject coordinators", 1, map.get(studySite00.getStudy()).get(studySite00.getSite()).size());
+        assertEquals("Wrong number of subject coordinators", 2, map.get(studySite01.getStudy()).get(studySite01.getSite()).size());
 
-        assertEquals("Wrong subject coordinator", subjectCoord1.getName(), map.get(studySite0.getStudy()).get(studySite0.getSite()).get(0).getName());
+        assertEquals("Wrong subject coordinator", subjectCoord1.getName(), map.get(studySite00.getStudy()).get(studySite00.getSite()).get(0).getName());
 
-        assertEquals("Wrong subject coordinator", subjectCoord1.getName(), map.get(studySite1.getStudy()).get(studySite1.getSite()).get(0).getName());
-        assertEquals("Wrong subject coordinator", subjectCoord2.getName(), map.get(studySite1.getStudy()).get(studySite1.getSite()).get(1).getName());
+        assertEquals("Wrong subject coordinator", subjectCoord1.getName(), map.get(studySite01.getStudy()).get(studySite01.getSite()).get(0).getName());
+        assertEquals("Wrong subject coordinator", subjectCoord2.getName(), map.get(studySite01.getStudy()).get(studySite01.getSite()).get(1).getName());
     }
 
     public void testStudySiteSubjectCoordinatorMapForUnassgined() throws Exception {
-        List<User> usersAvailable = new ArrayList<User>();
+        throw new UnsupportedOperationException("TODO");
+        /*
+        List<PscUser> usersAvailable = new ArrayList<PscUser>();
         usersAvailable.add(subjectCoord0);
         usersAvailable.add(subjectCoord1);
         usersAvailable.add(subjectCoord2);
@@ -234,11 +232,10 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
 
         assertEquals("Wrong number of coordinators", 1, mapOfUsersToMonitorStudySite.get(study0).get(site2).size());
         assertEquals("Wrong assigned coordinator", siteCoord0.getName(), mapOfUsersToMonitorStudySite.get(study0).get(site2).get(0).getName());
+        */
     }
 
     public void testStudySiteSubjectCoordinatorMap() throws Exception {
-        expect(studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoord1)).andReturn(getStudySitesForUser(subjectCoord1));
-
         replayMocks();
         Map<Study, Map<Site, List<User>>> mapOfUsersToMonitorStudySite = controller.buildStudySiteSubjectCoordinatorMap(subjectCoord1);
         verifyMocks();
@@ -271,7 +268,7 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         expect(siteDao.getById(2)).andReturn(site2);
         expect(subjectDao.getById(3)).andReturn(subject3);
         expect(subjectDao.getById(4)).andReturn(subject0);
-        expect(userDao.getById(5)).andReturn(subjectCoord0);
+        expect(authorizationManager.getUserById("5")).andReturn(subjectCoord0.getCsmUser());
         replayMocks();
 
         tibController.handleRequest(request, response);
@@ -283,26 +280,17 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         return user.getUserRole(Role.SUBJECT_COORDINATOR).getStudySites();
     }
 
-    private StudySubjectAssignment createStudySubjectAssignment(Subject subject, StudySite studySite, User subjectCoordinator) {
+    private StudySubjectAssignment createStudySubjectAssignment(Subject subject, StudySite studySite, PscUser manager) {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setSubject(subject);
-        assignment.setSubjectCoordinator(subjectCoordinator);
+        assignment.setStudySubjectCalendarManager(manager.getCsmUser());
         subject.addAssignment(assignment);
         assignment.setStudySite(studySite);
         if (studySite.getStudySubjectAssignments() == null) {
-            studySite.setStudySubjectAssignments(new ArrayList());
+            studySite.setStudySubjectAssignments(new ArrayList<StudySubjectAssignment>());
         }
         studySite.getStudySubjectAssignments().add(assignment);
         return assignment;
-    }
-
-    private void assignStudySite(StudySite studySite, UserRole role) {
-        role.addStudySite(studySite);
-
-        List<UserRole> userRoles = studySite.getUserRoles() != null ? studySite.getUserRoles() : new ArrayList();
-        userRoles.add(role);
-
-        studySite.setUserRoles(userRoles);
     }
 
    public class TestInitBinderController extends AssignSubjectToSubjectCoordinatorByUserController {
@@ -316,6 +304,7 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
            this.setSubjectDao(subjectDao);
        }
 
+       @Override
        protected ModelAndView onSubmit(Object o) throws Exception {
            return new ModelAndView();
        }

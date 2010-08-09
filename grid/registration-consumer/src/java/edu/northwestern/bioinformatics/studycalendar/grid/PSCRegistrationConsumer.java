@@ -4,30 +4,42 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import gov.nih.nci.cabig.ccts.domain.*;
+import gov.nih.nci.cabig.ccts.domain.IdentifierType;
+import gov.nih.nci.cabig.ccts.domain.OrganizationAssignedIdentifierType;
+import gov.nih.nci.cabig.ccts.domain.ParticipantType;
+import gov.nih.nci.cabig.ccts.domain.Registration;
+import gov.nih.nci.cabig.ccts.domain.ScheduledTreatmentEpochType;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.ccts.grid.common.RegistrationConsumerI;
 import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
 import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.globus.wsrf.security.SecurityManager;
-import org.oasis.wsrf.properties.*;
+import org.oasis.wsrf.properties.GetMultipleResourcePropertiesResponse;
+import org.oasis.wsrf.properties.GetMultipleResourceProperties_Element;
+import org.oasis.wsrf.properties.GetResourcePropertyResponse;
+import org.oasis.wsrf.properties.QueryResourcePropertiesResponse;
+import org.oasis.wsrf.properties.QueryResourceProperties_Element;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -323,7 +335,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     		StudySubjectAssignment newAssignment = null;
     		try {
     			newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-    					startDate, registrationGridId,registrationGridId, null);
+    					startDate, registrationGridId,registrationGridId, (PscUser) null);
     		} catch (StudyCalendarSystemException exp) {
     			throw getRegistrationConsumerException(exp.getMessage());
 

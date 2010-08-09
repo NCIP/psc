@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 
-import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 
 /**
  * @author Jalpa Patel
@@ -179,8 +179,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         JacksonTools.nullSafeWriteStringField(generator, "name", assignment.getName());
         generator.writeFieldName("subject_coordinator");
             generator.writeStartObject();
-                if (assignment.getSubjectCoordinator() != null) {
-                    JacksonTools.nullSafeWriteStringField(generator, "username", assignment.getSubjectCoordinator().getUsername());
+                if (assignment.getStudySubjectCalendarManager() != null) {
+                    JacksonTools.nullSafeWriteStringField(generator, "username", assignment.getStudySubjectCalendarManager().getLoginName());
                 }
             generator.writeEndObject();
         generator.writeEndObject();

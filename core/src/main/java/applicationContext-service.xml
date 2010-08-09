@@ -12,8 +12,11 @@
 
     <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
 
-    <bean id="subjectService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService"/>
+    <bean id="subjectService"
+          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService">
+        <property name="amendmentService" ref="amendmentService"/>
+        <property name="subjectDao" ref="subjectDao"/>
+    </bean>
     <bean id="siteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
     <bean id="templateService" autowire="byName"
@@ -68,8 +71,11 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.SourceService" >
     </bean>
 
-     <bean id="registrationService" autowire="byName"
+     <bean id="registrationService"
           class="edu.northwestern.bioinformatics.studycalendar.service.RegistrationService">
+         <property name="pscUserDetailsService" ref="pscUserService"/>
+         <property name="subjectService" ref="subjectService"/>
+         <property name="studySegmentDao" ref="studySegmentDao"/>
     </bean>
 
     <!-- the applicationContextPath property is set in the web module -->

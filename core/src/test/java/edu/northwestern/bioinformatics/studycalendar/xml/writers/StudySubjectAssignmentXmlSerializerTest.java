@@ -1,17 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import org.dom4j.Element;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
-import static org.easymock.EasyMock.expect;
 
 import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author John Dzak
@@ -22,6 +30,7 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
     private AbstractStudyCalendarXmlSerializer<Subject> subjectSerializer;
     private Subject subject;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -37,11 +46,9 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
 
         Amendment amend = createAmendment("Amendment A", createDate(2008, Calendar.FEBRUARY, 1), true);
 
-        User subjCoord = createUser("Sam the subject coord");
-
         subject = createSubject("john", "Doe");
 
-        assignment = setGridId("grid0", createSubjectAssignment(studySite, subject, amend, subjCoord));
+        assignment = setGridId("grid0", createSubjectAssignment(studySite, subject, amend, AuthorizationObjectFactory.createCsmUser(11, "sammyc")));
     }
 
     public void testCreateElementNewSubject() {
@@ -55,7 +62,7 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assertEquals("Wrong study name", "Study A", actual.attributeValue("study-name"));
         assertEquals("Wrong site name", "Site Two", actual.attributeValue("site-name"));
         assertEquals("Wrong current amendment key", "2008-02-01~Amendment A", actual.attributeValue("current-amendment-key"));
-        assertEquals("Wrong subject coordinator name", "Sam the subject coord", actual.attributeValue("subject-coordinator-name"));
+        assertEquals("Wrong subject coordinator name", "sammyc", actual.attributeValue("subject-coordinator-name"));
         assertEquals("Wrong start date", "2008-01-01", actual.attributeValue("start-date"));
         assertEquals("Wrong end date", "2008-03-01", actual.attributeValue("end-date"));
         assertEquals("Wrong assignment identifier", "grid0", actual.attributeValue("id"));
@@ -97,7 +104,7 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assignment.setStudySite(studySite);
         assignment.setSubject(subject);
         assignment.setCurrentAmendment(amend);
-        assignment.setSubjectCoordinator(subjCoord);
+        assignment.setStudySubjectCalendarManager(subjCoord);
         assignment.setStartDate(createDate(2008, Calendar.JANUARY, 1));
         assignment.setEndDate(createDate(2008, Calendar.MARCH, 1));
         return assignment;

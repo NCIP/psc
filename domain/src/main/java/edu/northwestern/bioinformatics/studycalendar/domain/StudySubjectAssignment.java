@@ -54,7 +54,6 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
     private Date startDate;
     private Date endDate;
-    @Deprecated private User subjectCoordinator;
     private Integer managerCsmUserId;
 
     private Amendment currentAmendment;
@@ -213,17 +212,6 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         return subject;
     }
 
-    @Deprecated
-    @Transient
-    public User getSubjectCoordinator() {
-        return subjectCoordinator;
-    }
-
-    @Deprecated
-    public void setSubjectCoordinator(User subjectCoordinator) {
-        this.subjectCoordinator = subjectCoordinator;
-    }
-
     public Integer getManagerCsmUserId() {
         return managerCsmUserId;
     }
@@ -358,7 +346,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
     }
 
     private static class OnOffComparator implements Comparator<StudySubjectAssignment> {
-        public static Comparator<StudySubjectAssignment> INSTANCE = new OnOffComparator();
+        public static final Comparator<StudySubjectAssignment> INSTANCE = new OnOffComparator();
 
         public int compare(StudySubjectAssignment o1, StudySubjectAssignment o2) {
             int result = o1.isOff() ? (o2.isOff() ? 0 : 1) : (o2.isOff() ? -1 : 0);

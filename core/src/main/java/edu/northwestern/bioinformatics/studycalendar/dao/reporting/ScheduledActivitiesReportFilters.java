@@ -14,16 +14,15 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private SubstringFilterLimit studyAssignedIdentifier = new SubstringFilterLimit("studyAssignedIdentifier");
     private SubstringFilterLimit siteName = new SubstringFilterLimit("siteName");
     private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
-            new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
+        new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
-//    private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
-//            new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
 
     private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
     private StringFilter label = new StringFilter("label");
     private StringFilter personId = new StringFilter("personId");
 
+    @Override
     protected String getHibernateFilterPrefix() {
         return "filter_";
     }
@@ -75,7 +74,6 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     public User getSubjectCoordinator() {
         return subjectCoordinator.getValue();
     }
-
 
     public String getLabel() {
         return label.getValue();

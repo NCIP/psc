@@ -12,8 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -37,9 +37,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
@@ -63,6 +61,8 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
 
     //We have to remember 2 cases to process here: when selected is "unassigned" and when selected is actually the existing user
     protected Map referenceData(HttpServletRequest request) throws Exception {
+        throw new UnsupportedOperationException("TODO");
+        /*
         Map<String, Object> refData = new HashMap<String, Object>();
         AssignSubjectToSubjectCoordinatorByUserCommand command = new AssignSubjectToSubjectCoordinatorByUserCommand();
         User siteCoordinator = getSiteCoordinator();
@@ -95,6 +95,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
          }
 
          return refData;
+         */
      }
 
     //taking care of the case, when selected is null. We defaulting it to "unassigned"
@@ -121,6 +122,8 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
 
 
     protected ModelAndView onSubmit(Object o) throws Exception {
+        throw new UnsupportedOperationException("TODO");
+        /*
         AssignSubjectToSubjectCoordinatorByUserCommand command = (AssignSubjectToSubjectCoordinatorByUserCommand) o;
 
         command.assignSubjectsToSubjectCoordinator();
@@ -136,6 +139,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), getSiteCoordinator(), true));
         }
         return new ModelAndView("dashboard/sitecoordinator/ajax/displaySubjects", model);
+        */
     }
 
 
@@ -149,7 +153,9 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         return applicationSecurityManager.getFreshUser();
     }
                                                                                                                 
-    protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User user, Boolean isForUnassigned) {
+    protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(PscUser user, Boolean isForUnassigned) {
+        throw new UnsupportedOperationException("TODO");
+        /* TODO #1105
         Map<Site, Map<Study, List<Subject>>> displayMap = new TreeMap<Site, Map<Study, List<Subject>>>(new NamedComparator());
         if (user != null) {
             List<StudySite> studySitesForSiteCoordinator = studySiteService.getAllStudySitesForSubjectCoordinator(user);
@@ -170,9 +176,12 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             }
         }
         return displayMap;
+        */
     }
 
     protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMapForUnassigned(User siteCoordinator) {
+        throw new UnsupportedOperationException("TODO");
+        /*
         Map<Study, Map<Site, List<User>>> studySiteSubjectCoordinatorMap = new HashMap<Study, Map<Site, List<User>>>();
         List<User> otherStudySiteSubjectCoords = new ArrayList<User>();
         List<User> allUsers = userService.getSiteCoordinatorsAssignableUsers(siteCoordinator);
@@ -200,10 +209,13 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             }
         }
         return studySiteSubjectCoordinatorMap;
+        */
     }
 
 
-    protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMap(User subjectCoordinator) {
+    protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMap(PscUser subjectCoordinator) {
+        throw new UnsupportedOperationException("TODO");
+        /*
         Map<Study ,Map<Site, List<User>>> studySiteSubjectCoordinatorMap = new HashMap<Study ,Map<Site, List<User>>>();
 
         if (subjectCoordinator != null ) {
@@ -225,18 +237,19 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             }
         }
         return studySiteSubjectCoordinatorMap;
+        */
     }
 
-    public List<Subject> buildSubjects(StudySite studySite, User subjectCoordinator, Boolean isForUnassigned) {
+    public List<Subject> buildSubjects(StudySite studySite, PscUser subjectCoordinator, Boolean isForUnassigned) {
         List<Subject> studySubjects = new ArrayList<Subject>();
         if (studySite != null ) {
             for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                 Subject subject = assignment.getSubject();
-                if (assignment.getSubjectCoordinator() != null && !isForUnassigned) {
-                    if (assignment.getSubjectCoordinator().equals(subjectCoordinator) && !assignment.isOff()) {
+                if (assignment.getStudySubjectCalendarManager() != null && !isForUnassigned) {
+                    if (assignment.getStudySubjectCalendarManager().equals(subjectCoordinator.getCsmUser()) && !assignment.isOff()) {
                         studySubjects.add(subject);
                     }
-                } else if (assignment.getSubjectCoordinator() == null && isForUnassigned){
+                } else if (assignment.getStudySubjectCalendarManager() == null && isForUnassigned){
                     studySubjects.add(subject);
                 }
             }

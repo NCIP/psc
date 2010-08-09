@@ -4,11 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT_ASSIGNMENT;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT_ASSIGNMENT;
 
 /**
  * @author John Dzak
@@ -28,7 +29,7 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
         ASSIGNMENT_SITE_NAME.addTo(elt,  assignment.getStudySite().getSite().getName());
         ASSIGNMENT_START_DATE.addTo(elt,  assignment.getStartDate());
         ASSIGNMENT_END_DATE.addTo(elt,  assignment.getEndDate());
-        ASSIGNMENT_SUBJECT_COORD.addTo(elt,  assignment.getSubjectCoordinator().getName());
+        ASSIGNMENT_SUBJECT_COORD.addTo(elt,  assignment.getStudySubjectCalendarManager().getName());
         ASSIGNMENT_CURRENT_AMENDMENT.addTo(elt, assignment.getCurrentAmendment().getNaturalKey());
         ASSIGNMENT_ID.addTo(elt, assignment.getGridId());
         if (!subjectCentric) {

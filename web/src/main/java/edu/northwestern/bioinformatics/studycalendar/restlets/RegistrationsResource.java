@@ -54,21 +54,16 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     protected String acceptValue(Registration value) throws ResourceException {
         try {
             registrationService.resolveRegistration(value);
-            if (value.getSubjectCoordinator() == null) {
-                value.setSubjectCoordinator(getLegacyCurrentUser());
+            if (value.getStudySubjectCalendarManager() == null) {
+                value.setStudySubjectCalendarManager(getCurrentUser());
             }
-            for (StudySite studySite : value.getSubjectCoordinator().getUserRole(Role.SUBJECT_COORDINATOR).getStudySites() ) {
-                if (studySite.equals(getStudySite())) {
-                    StudySubjectAssignment assigned = subjectService.assignSubject(
-                    value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-                    value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
-                    return String.format("studies/%s/schedules/%s",
-                        Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
-                        Reference.encode(assigned.getGridId()));
-                }
-            }
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Study " + getStudy().getAssignedIdentifier()
-                   +" is not visible to the subject coordinator " +value.getSubjectCoordinator().getDisplayName());
+            StudySubjectAssignment assigned = subjectService.assignSubject(
+                value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
+                value.getDesiredStudySubjectAssignmentId(), null,
+                value.getStudySubjectCalendarManager());
+            return String.format("studies/%s/schedules/%s",
+                Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
+                Reference.encode(assigned.getGridId()));
         } catch (StudyCalendarValidationException scve) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
         }

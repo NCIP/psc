@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
@@ -100,8 +101,8 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         }
 
         if (responsible_user != null) {
-            User user = userDao.getById(new Integer(responsible_user));
-            filters.setSubjectCoordinator(user);
+            // TODO: #1111
+            throw new StudyCalendarError("TODO: issue #1111");
         }
 
         filters.setSiteName(site);

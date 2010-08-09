@@ -1,31 +1,34 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
-import static org.easymock.EasyMock.expect;
 
-import static java.util.Calendar.JANUARY;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static java.util.Calendar.JANUARY;
+import static org.easymock.EasyMock.expect;
 
 public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private RegistrationXmlSerializer serializer;
     private StudySegment segment;
     private Date date;
-    private User subjCoord;
+    private PscUser expectedCoordinator;
     private SubjectXmlSerializer subjectSerializer;
     private Subject subject;
     private String dateString;
     private String desiredAssignmentId;
     private Element element;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         subjectSerializer = registerMockFor(SubjectXmlSerializer.class);
@@ -34,13 +37,13 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setSubjectXmlSerializer(subjectSerializer);
 
         segment = setGridId("grid0", new StudySegment());
-        subjCoord = createUser("Sam the Subject Coord");
+        expectedCoordinator = AuthorizationObjectFactory.createPscUser("sammyc");
         subject = createSubject("John", "Doe");
         date = DateUtils.createDate(2008, JANUARY, 15);
         dateString = "2008-01-15";
         desiredAssignmentId = "12345";
 
-        element = createElement(segment, dateString, subjCoord, desiredAssignmentId);
+        element = createElement(segment, dateString, expectedCoordinator.getUsername(), desiredAssignmentId);
     }
 
     public void testReadElement() {
@@ -52,13 +55,13 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Wrong first study segment", segment, actual.getFirstStudySegment());
         assertSameDay("Dates should be the same", date, actual.getDate());
-        assertEquals("Wrong Subject coordinator", subjCoord, actual.getSubjectCoordinator());
+        assertEquals("Wrong Subject coordinator", expectedCoordinator.getUsername(), actual.getStudySubjectCalendarManager().getUsername());
         assertEquals("Wrong desired subject assignment id", "12345", actual.getDesiredStudySubjectAssignmentId());
         assertEquals("Wrong Subject", subject,  actual.getSubject());
     }
 
     public void testReadElementWhenStudySegmentIsNull() {
-        Element elt = createElement(null, dateString, subjCoord, desiredAssignmentId);
+        Element elt = createElement(null, dateString, expectedCoordinator.getUsername(), desiredAssignmentId);
         try {
             serializer.readElement(elt);
             fail("An exception should be thrown");
@@ -68,7 +71,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhenDateIsNull() {
-        Element elt = createElement(segment, null, subjCoord, desiredAssignmentId);
+        Element elt = createElement(segment, null, expectedCoordinator.getUsername(), desiredAssignmentId);
         try {
             serializer.readElement(elt);
             fail("An exception should be thrown");
@@ -77,17 +80,18 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         }
     }
 
-    //// Test Helper Methods
+    //// HELPERS
+
     private void expectReadSubjectElement() {
         expect(subjectSerializer.readElement(null)).andReturn(subject);
     }
 
-    private Element createElement(StudySegment segment, String date, User subjCoord, String desiredAssignmentId) {
+    private Element createElement(StudySegment segment, String date, String scName, String desiredAssignmentId) {
         Element elt = new BaseElement("registration");
         elt.addAttribute("date", date);
         elt.addAttribute("desired-assignment-id", desiredAssignmentId);
         if (segment != null) elt.addAttribute("first-study-segment-id", segment.getGridId());
-        if (subjCoord != null) elt.addAttribute("subject-coordinator-name", subjCoord.getName());
+        if (scName != null) elt.addAttribute("subject-coordinator-name", scName);
         return elt;
     }
 }

@@ -3,16 +3,18 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT;
 
 public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Registration> {
     private SubjectXmlSerializer subjectXmlSerializer;
@@ -40,16 +42,15 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
         StudySegment segment = new StudySegment();
         segment.setGridId(segmentId);
         Registration reg = new Registration();
-        User subjCoord = null;
+        PscUser subjCoord = null;
         if (subjCoordName != null) {
-          subjCoord = new User();
-          subjCoord.setName(subjCoordName);
+            subjCoord = AuthorizationObjectFactory.createPscUser(subjCoordName);
         }
         reg.setSubject(subject);
         reg.setFirstStudySegment(segment);
         reg.setDate(date);
         reg.setDesiredStudySubjectAssignmentId(desiredAssignId);
-        reg.setSubjectCoordinator(subjCoord);
+        reg.setStudySubjectCalendarManager(subjCoord);
 
         return reg;
     }

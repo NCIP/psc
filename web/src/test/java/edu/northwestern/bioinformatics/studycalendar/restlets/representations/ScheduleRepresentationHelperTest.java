@@ -4,11 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
@@ -45,10 +43,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
-import static org.easymock.EasyMock.*;
+import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
+import static org.easymock.EasyMock.expect;
 
 
 /**
@@ -99,7 +97,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
         StudySubjectAssignment ssa = createAssignment(study,site,subject);
-        ssa.setSubjectCoordinator(Fixtures.createUser("subjCoord1", Role.SUBJECT_COORDINATOR));
+        ssa.setStudySubjectCalendarManager(AuthorizationObjectFactory.createCsmUser(14L, "SammyC"));
         state = new Scheduled();
         state.setDate(DateTools.createDate(2009, Calendar.APRIL, 3));
         state.setReason("Just moved by 4 days");

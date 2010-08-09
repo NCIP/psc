@@ -2,8 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 
 import java.util.Date;
 
@@ -14,7 +13,7 @@ public class Registration {
     private StudySegment firstStudySegment;
     private Date date;
     private Subject subject;
-    private User subjectCoordinator;
+    private PscUser studySubjectCalendarManager;
     private String desiredStudySubjectAssignmentId;
 
     public static Registration create(StudySegment firstStudySegment, Date date, Subject subject) {
@@ -29,16 +28,6 @@ public class Registration {
         Registration registration = create(firstStudySegment, date, subject);
         registration.setDesiredStudySubjectAssignmentId(desiredStudySubjectAssignmentId);
         return registration;
-    }
-
-    public static Registration create(StudySubjectAssignment assignment) {
-        Registration reg = new Registration();
-        reg.setDesiredStudySubjectAssignmentId(assignment.getGridId());
-        reg.setDate(assignment.getStartDate());
-        reg.setFirstStudySegment(assignment.getScheduledCalendar().getScheduledStudySegments().get(0).getStudySegment());
-        reg.setSubject(assignment.getSubject());
-        reg.setSubjectCoordinator(assignment.getSubjectCoordinator());
-        return reg;
     }
 
     public StudySegment getFirstStudySegment() {
@@ -65,12 +54,12 @@ public class Registration {
         this.subject = subject;
     }
 
-    public User getSubjectCoordinator() {
-        return subjectCoordinator;
+    public PscUser getStudySubjectCalendarManager() {
+        return studySubjectCalendarManager;
     }
 
-    public void setSubjectCoordinator(User subjectCoordinator) {
-        this.subjectCoordinator = subjectCoordinator;
+    public void setStudySubjectCalendarManager(PscUser studySubjectCalendarManager) {
+        this.studySubjectCalendarManager = studySubjectCalendarManager;
     }
 
     public String getDesiredStudySubjectAssignmentId() {

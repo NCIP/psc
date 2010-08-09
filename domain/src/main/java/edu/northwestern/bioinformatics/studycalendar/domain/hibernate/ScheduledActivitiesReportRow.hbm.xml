@@ -27,8 +27,8 @@
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
                 sites.name AS site_name,
-                users.name AS subject_coordinator_name,
-                users.id AS subject_coordinator_id,
+                -- users.name AS subject_coordinator_name,
+                -- users.id AS subject_coordinator_id,
                 pa.condition,
                 assign.study_subject_id
 
@@ -39,7 +39,7 @@
                 LEFT JOIN scheduled_calendars s_cal ON s_cal.id = s_seg.scheduled_calendar_id
                 LEFT JOIN subject_assignments assign ON assign.id = s_cal.assignment_id
                 LEFT JOIN subjects subj ON subj.id = assign.subject_id
-                LEFT JOIN users users ON users.id = assign.subject_coordinator_id
+                -- LEFT JOIN users users ON users.id = assign.subject_coordinator_id
                 LEFT JOIN study_sites ssites ON ssites.id = assign.study_site_id
                 LEFT JOIN studies ON studies.id = ssites.study_id
                 LEFT JOIN sites ON sites.id = ssites.site_id
@@ -94,7 +94,9 @@
             <property name="name" column="site_name"/>
         </component>
 
+        <!--
         <property name="subjectCoordinatorName" column="subject_coordinator_name"/>
+        -->
         <property name="studySubjectId" column="study_subject_id"/>
 
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
@@ -103,7 +105,9 @@
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
         <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
+        <!--
         <filter name="filter_subjectCoordinator" condition="subject_coordinator_id = :subjectCoordinator_id"/>
+        -->
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
         <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(grid_id) = :personId)"/>
     </class>
@@ -125,9 +129,11 @@
     <filter-def name="filter_activityType">
         <filter-param name="activityType_id" type="integer"/>
     </filter-def>
+    <!--
     <filter-def name="filter_subjectCoordinator">
         <filter-param name="subjectCoordinator_id" type="integer"/>
     </filter-def>
+    -->
     <filter-def name="filter_label">
         <filter-param name="label" type="string"/>
     </filter-def>

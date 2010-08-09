@@ -2,31 +2,53 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import org.easymock.EasyMock;
-
-import static java.util.Arrays.asList;
-import static org.easymock.EasyMock.notNull;
-import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.expectLastCall;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static java.util.Arrays.asList;
 import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -37,8 +59,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     private SubjectDao subjectDao;
     private AmendmentService amendmentService;
 
-    private User user;
-
+    private PscUser user;
     private StudySegment studySegment;
     private Activity a1;
 
@@ -71,12 +92,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         p3.addPlannedActivity(setId(4, createPlannedActivity("Infusion", 1, "Infusion Details")));            // 8, 36
         p3.addPlannedActivity(setId(5, createPlannedActivity("Infusion", 18, "Infusion Details")));           // 25, 53
 
-        user = new User();
-        Set<UserRole> userRoles = new HashSet<UserRole>();
-        UserRole userRole = new UserRole();
-        userRole.setRole(Role.SUBJECT_COORDINATOR);
-        userRoles.add(userRole);
-        user.setUserRoles(userRoles);
+        user = AuthorizationObjectFactory.createPscUser("sc", 67L);
     }
 
     public void testAssignSubject() throws Exception {
@@ -109,7 +125,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
         replayMocks();
 
-        StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedStudySegment, startDate, studySubjectId, user);
+        StudySubjectAssignment actualAssignment = service.assignSubject(
+            subjectIn, studySite, expectedStudySegment, startDate, studySubjectId, null, user);
         verifyMocks();
 
         assertNotNull("Assignment not returned", actualAssignment);
@@ -121,6 +138,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         ScheduledStudySegment scheduledStudySegment = actualAssignment.getScheduledCalendar().getScheduledStudySegments().get(0);
         assertEquals(expectedStudySegment, scheduledStudySegment.getStudySegment());
         assertPositive("No scheduled events", scheduledStudySegment.getActivities().size());
+        assertEquals("Coordinator not set", 67, (Object) actualAssignment.getManagerCsmUserId());
     }
 
     public void testAssignSubjectRespectsCurrentApprovedAmendment() throws Exception {
@@ -142,10 +160,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         subjectDao.save(subject);
         expectLastCall().times(2);
 
-        User user=null;
-
         replayMocks();
-        StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11),null, null);
+        StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null, (PscUser) null);
         verifyMocks();
 
         assertSame("Wrong amendment for new assignment", currentApproved, actual.getCurrentAmendment());
@@ -154,7 +170,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     public void testExceptionWhenAssigningASubjectToASiteWithNoApprovedAmendments() throws Exception {
         Subject subject = new Subject();
         Study study = createBasicTemplate();
-        study.setName("ECOG 2502");
+        study.setAssignedIdentifier("ECOG 2502");
         study.setAmendment(createAmendments(
             DateTools.createDate(2005, MAY, 12),
             DateTools.createDate(2005, JUNE, 13)
@@ -170,7 +186,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null);
+            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null, (PscUser) null);
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
             assertEquals("The template for ECOG 2502 has not been approved by Mayo", scse.getMessage());
@@ -679,44 +695,43 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testAssignSubjectWithPopulationScopedActivity() {
-    Population population = createPopulation("Male", "M");
+        Population population = createPopulation("Male", "M");
 
-    Study study = createSingleEpochStudy("Study A", "Epoch A", "Segment A");
-    study.addPopulation(population);
+        Study study = createSingleEpochStudy("Study A", "Epoch A", "Segment A");
+        study.addPopulation(population);
 
-    StudySegment segment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        StudySegment segment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
 
-    Period period = createPeriod("Period A", 1, 2, 1);
-    segment.addPeriod(period);
+        Period period = createPeriod("Period A", 1, 2, 1);
+        segment.addPeriod(period);
 
-    PlannedActivity plannedActivity = createPlannedActivity(a1, 1);
-    plannedActivity.setPopulation(population);
-    period.addPlannedActivity(plannedActivity);
+        PlannedActivity plannedActivity = createPlannedActivity(a1, 1);
+        plannedActivity.setPopulation(population);
+        period.addPlannedActivity(plannedActivity);
 
-    Subject subject = createSubject("Bernie", "Mac");
+        Subject subject = createSubject("Bernie", "Mac");
 
-    Site site = createSite("NU");
-    StudySite studySite = createStudySite(study, site);
+        Site site = createSite("NU");
+        StudySite studySite = createStudySite(study, site);
 
-    Amendment amendment = new Amendment();
-    study.setAmendment(amendment);
+        Amendment amendment = new Amendment();
+        study.setAmendment(amendment);
 
-    AmendmentApproval amendmentApproval = new AmendmentApproval();
-    amendmentApproval.setAmendment(amendment);
+        AmendmentApproval amendmentApproval = new AmendmentApproval();
+        amendmentApproval.setAmendment(amendment);
 
-    studySite.addAmendmentApproval(amendmentApproval);
+        studySite.addAmendmentApproval(amendmentApproval);
 
-    expect(amendmentService.getAmendedNode((PlanTreeNode) notNull(), (Amendment) notNull())).andReturn((PlanTreeNode) segment);
-    subjectDao.save((Subject) notNull());
-    subjectDao.save((Subject) notNull());
-    replayMocks();
+        expect(amendmentService.getAmendedNode((PlanTreeNode) notNull(), (Amendment) notNull())).andReturn(segment);
+        subjectDao.save((Subject) notNull());
+        subjectDao.save((Subject) notNull());
+        replayMocks();
 
-    StudySubjectAssignment actual = service.assignSubject(subject, studySite, segment, createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "123", user, new HashSet(asList(population)));
-    verifyMocks();
+        StudySubjectAssignment actual = service.assignSubject(subject, studySite, segment, createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "123", new HashSet<Population>(asList(population)), user);
+        verifyMocks();
 
-    assertFalse(actual.getScheduledCalendar().getScheduledStudySegments().get(0).getActivities().isEmpty());
-
-}
+        assertFalse(actual.getScheduledCalendar().getScheduledStudySegments().get(0).getActivities().isEmpty());
+    }
 
     ////// Expect Methods
     private void expectFindSubjectByPersonId(String id, Subject returned) {
