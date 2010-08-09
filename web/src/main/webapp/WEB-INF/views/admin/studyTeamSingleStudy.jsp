@@ -5,33 +5,33 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:useBean id="command" scope="request"
-             type="edu.northwestern.bioinformatics.studycalendar.web.admin.SingleMemberStudyTeamMemberCommand"/>
+             type="edu.northwestern.bioinformatics.studycalendar.web.admin.SingleStudyStudyTeamMemberCommand"/>
 <jsp:useBean id="roles" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole[]"/>
 
 <html>
 <head>
-    <title>Update study team memberships for ${command.user.displayName}</title>
+    <title>Update study team memberships for ${command.study.assignedIdentifier}</title>
     <tags:javascriptLink name="admin/provisionable_user"/>
-    <tags:javascriptLink name="admin/study_team_single_member"/>
-    <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+    <tags:javascriptLink name="admin/study_team_single_study"/>
     <c:forEach items="${fn:split('yahoo-dom-event logger-min json-min', ' ')}" var="script">
         <tags:javascriptLink name="yui/2.7.0/${script}"/>
     </c:forEach>
 
     <script type="text/javascript">
         jQuery(document).ready(function () {
-            psc.admin.team.SingleMember.init(${command.javaScriptProvisionableUser});
-            jQuery('#single-member').submit(function (evt) {
-                jQuery('#role-changes').attr('value', psc.admin.team.SingleMember.serializeRoleChanges());
+            psc.admin.team.SingleStudy.init("${command.study.assignedIdentifier}",
+                ${command.javaScriptProvisionableUsers});
+            jQuery('#single-study').submit(function (evt) {
+                jQuery('#role-changes').attr('value', psc.admin.team.SingleStudy.serializeRoleChanges());
             });
         });
     </script>
 </head>
 <body>
-<laf:box title="Update study team memberships for ${command.user.displayName}">
+<laf:box title="Update study team memberships for ${command.study.assignedIdentifier}">
     <laf:division>
-        <form:form id="single-member" method="post">
+        <form:form id="single-study" method="post">
             <form:hidden path="roleChanges" id="role-changes"/>
             <div class="row">
                 <input type="submit" value="Save"/>
@@ -45,12 +45,19 @@
                 </tr>
                 <c:forEach items="${command.teamMemberships}" var="membershipEntry">
                     <tr>
-                        <th>${membershipEntry.key == '__ALL__' ? 'All studies' : membershipEntry.key}</th>
+                        <th>${membershipEntry.key.displayName}</th>
                         <c:forEach items="${membershipEntry.value}" var="roleEntry">
                             <c:choose>
+                                <c:when test="${roleEntry.value.allStudiesForRole}">
+                                    <td class="na">
+                                        <abbr title="This user has access to all studies in this role">
+                                            All
+                                        </abbr>
+                                    </td>
+                                </c:when>
                                 <c:when test="${roleEntry.value.hasRole}">
                                     <td>
-                                        <input study-identifier="${roleEntry.value.studyIdentifier}"
+                                        <input username="${roleEntry.value.user.username}"
                                                role="${roleEntry.value.role.csmName}" type="checkbox"
                                                class="study-role-control role-${roleEntry.value.role.csmName}"
                                                ${roleEntry.value.scopeIncluded ? 'checked' : ''}/>

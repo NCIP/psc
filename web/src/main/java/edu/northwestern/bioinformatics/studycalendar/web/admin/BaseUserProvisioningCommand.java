@@ -14,6 +14,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -254,6 +255,14 @@ public abstract class BaseUserProvisioningCommand {
 
     public String getJavaScriptProvisionableUser() {
         return buildJavaScriptProvisionableUser(getUser());
+    }
+
+    public String getJavaScriptProvisionableUsers() {
+        List<String> js = new ArrayList<String>(getUsers().size());
+        for (PscUser user : getUsers()) {
+            js.add(buildJavaScriptProvisionableUser(user));
+        }
+        return String.format("[%s]", StringUtils.join(js, ",\n"));
     }
 
     private String buildJavaScriptProvisionableUser(PscUser user) {

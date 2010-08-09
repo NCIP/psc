@@ -44,4 +44,8 @@ public class StudyTeamRoleMembership {
             membership.getStudyIdentifiers().contains(studyIdentifier);
         return isByAll || isBySpecific;
     }
+
+    public boolean isAllStudiesForRole() {
+        return membership != null && membership.isAllStudies();
+    }
 }
