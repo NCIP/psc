@@ -250,21 +250,12 @@
         </property>
     </bean>
 
-    <bean name="/dashboard/studyCoordinator" id="dashboardStudyCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.StudyCoordinatorDashboardController"/>
-
-    <bean name="/dashboard/studyAdmin" id="dashboardStudyAdminController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.StudyAdministratorDashboardController"/>
-
     <bean name="/cal/template/externalStudy" id="externalStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ExternalStudyController">
         <property name="crumb.parent">
             <ref local="displayTemplateController"/>
         </property>
     </bean>
-
-    <bean name="/dashboard/systemAdmin" id="dashboardSystemAdminController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.SystemAdministratorDashboardController"/>
 
     <bean name="/dashboard/siteCoordinator" id="dashboardSiteCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.SiteCoordinatorController">
@@ -671,25 +662,9 @@
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="Study Coordinator"/>
-                                <property name="linkName"
-                                          value="dashboardStudyCoordinatorController"/>
-                                <property name="urlResolver" ref="urlResolver"/>
-                            </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Site Coordinator"/>
                                 <property name="linkName"
                                           value="dashboardSiteCoordinatorController"/>
-                                <property name="urlResolver" ref="urlResolver"/>
-                            </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="Study Admin"/>
-                                <property name="linkName" value="dashboardStudyAdminController"/>
-                                <property name="urlResolver" ref="urlResolver"/>
-                            </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="System Admin"/>
-                                <property name="linkName" value="dashboardSystemAdminController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                         </list>
