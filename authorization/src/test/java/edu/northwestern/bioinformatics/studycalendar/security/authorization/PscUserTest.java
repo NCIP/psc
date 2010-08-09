@@ -138,6 +138,10 @@ public class PscUserTest extends TestCase {
         assertNull("Found", actual);
     }
 
+    public void testPrincipalNameIsUsername() throws Exception {
+        assertEquals("jo", create().getName());
+    }
+
     public void testToStringIsUsername() throws Exception {
         assertEquals("jo", create().toString());
     }

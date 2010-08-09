@@ -8,6 +8,7 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
 import org.apache.commons.lang.StringUtils;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -19,7 +20,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class PscUser implements UserDetails, Comparable<PscUser> {
+public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
     private User user;
     private Map<SuiteRole, SuiteRoleMembership> memberships;
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
@@ -146,6 +147,12 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             other.setAttribute(entry.getKey(), entry.getValue());
         }
+    }
+
+    ////// IMPLEMENTATION OF Principal
+
+    public String getName() {
+        return getUsername();
     }
 
     ////// IMPLEMENTATION OF UserDetails
