@@ -92,13 +92,15 @@
         <property name="eventListeners">
             <map>
                 <entry key="post-load">
-                    <ref local="studyCalendarPostLoadEventListener" />
+                    <ref local="changeChildResolverListener" />
                 </entry>
             </map>
         </property>
     </bean>
 
-    <bean id="studyCalendarPostLoadEventListener" class="edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarPostLoadEventListener" autowire="byName" />
+    <bean id="changeChildResolverListener" class="edu.northwestern.bioinformatics.studycalendar.dao.ChangeChildResolverListener">
+        <property name="daoFinder" ref="daoFinder"/>
+    </bean>
 
     <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
         <property name="mappingLocations">
@@ -112,7 +114,7 @@
         </property>
         <property name="annotatedClasses">
             <list>
- 				<value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
                 <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
           </list>
         </property>

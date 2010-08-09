@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author Jalpa Patel
  */
-
-public class StudyCalendarPostLoadEventListener implements PostLoadEventListener {
+public class ChangeChildResolverListener implements PostLoadEventListener {
     private DaoFinder daoFinder;
 
+    @SuppressWarnings({ "unchecked" })
     public void onPostLoad(PostLoadEvent postLoadEvent) {
         if (postLoadEvent.getEntity() instanceof ChildrenChange) {
             ChildrenChange change = (ChildrenChange) postLoadEvent.getEntity();
