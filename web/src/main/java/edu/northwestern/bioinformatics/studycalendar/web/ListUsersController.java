@@ -23,7 +23,7 @@ public class ListUsersController extends PscSimpleFormController implements PscA
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return new ModelAndView("listUsers", "users", pscUserService.getAllUsers());
+        return new ModelAndView("admin/users", "users", pscUserService.getAllUsers());
     }
 
     ////// CONFIGURATION
