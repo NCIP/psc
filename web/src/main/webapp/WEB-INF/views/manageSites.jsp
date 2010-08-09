@@ -80,7 +80,7 @@
                                onclick="location.href='<c:url value="/pages/admin/manage/blackoutDates?site=${site.id}"/>'"/>
                     </td>
                     <td>
-                        <c:if test="${empty site.provider}">
+                        <c:if test="${site.nameEditable && site.assignedIdentifierEditable}">
                             <input type="button" name="edit" value="Edit"
                                onclick="location.href='<c:url value="/pages/admin/manage/editSite?id=${site.id}"/>'"/>
                         </c:if>

@@ -78,4 +78,22 @@ public class SiteTest extends TestCase {
             "Site[id=49; name=An Area; assignedIdentifier=51]",
             site.toString());
     }
+
+    public void testIsNameEditableWithoutProvider() {
+        assertTrue("Should be editable", site.isNameEditable());
+    }
+
+    public void testIsNameEditableWithProvider() {
+        site.setProvider("orb");
+        assertFalse("Should not be editable", site.isNameEditable());
+    }
+
+    public void testIsAssignedIdentifierEditableWithoutProvider() {
+        assertTrue("Should be editable", site.isAssignedIdentifierEditable());
+    }   
+
+    public void testIsAssignedIdentifierEditableWithProvider() {
+        site.setProvider("orb");
+        assertFalse("Should not be editable", site.isAssignedIdentifierEditable());
+    }
 }

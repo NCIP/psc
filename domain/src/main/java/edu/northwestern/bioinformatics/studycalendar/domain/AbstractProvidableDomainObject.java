@@ -3,7 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
+
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
  * @author Rhett Sutphin
@@ -27,5 +30,10 @@ public abstract class AbstractProvidableDomainObject extends AbstractMutableDoma
 
     public void setLastRefresh(Timestamp lastRefresh) {
         this.lastRefresh = lastRefresh;
+    }
+
+    @Transient
+    public boolean isProviderExist() {
+        return isNotEmpty(getProvider());
     }
 }

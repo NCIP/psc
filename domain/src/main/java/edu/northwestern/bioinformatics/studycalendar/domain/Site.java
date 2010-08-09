@@ -5,18 +5,9 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Padmaja Vedula
@@ -107,6 +98,16 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
         for (Study managee : managees) {
             managee.removeManagingSite(this);
         }
+    }
+
+    @Transient
+    public boolean isAssignedIdentifierEditable() {
+        return !isProviderExist();
+    }
+
+    @Transient
+    public boolean isNameEditable() {
+        return !isProviderExist();
     }
 
     ////// BEAN PROPERTIES

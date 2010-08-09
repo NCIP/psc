@@ -3,14 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.*;
+import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
@@ -35,7 +33,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         sites = asList(nu, mayo);
     }
 
-    public void testManageableSitesForAllSites() {
+    public void testGetManageableSitesForAllSites() {
         PscUser user = createPscUser(
             "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
         );
@@ -50,7 +48,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertContains("Should contain all sites", sites, actual);
     }
 
-    public void testManageableSitesForOneSite() {
+    public void testGetManageableSitesForOneSite() {
         PscUser user = createPscUser(
             "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
         );
@@ -63,7 +61,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertEquals("Should only contain NU", nu, actual.get(0));
     }
 
-    public void testManageableSitesForNoRole() {
+    public void testGetManageableSitesForNoRole() {
         PscUser user = createPscUser("jo");
 
         replayMocks();
@@ -73,7 +71,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of sites", 0, actual.size());
     }
 
-    public void testSiteCreationEnabled() {
+    public void testIsSiteCreationEnabled() {
         PscUser user = createPscUser(
             "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
         );
@@ -85,7 +83,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertTrue("should be allowed", actual);
     }
     
-    public void testSiteCreationEnabledIsFalse() {
+    public void testIsSiteCreationEnabledIsFalse() {
         PscUser user = createPscUser(
             "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
         );
@@ -97,7 +95,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertFalse("should not be allowed", actual);
     }
 
-    public void testSiteCreationEnabledWithoutRole() {
+    public void testIsSiteCreationEnabledWithoutRole() {
         PscUser user = createPscUser("jo");
 
         replayMocks();
