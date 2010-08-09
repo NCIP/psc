@@ -16,11 +16,6 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
         return StudySubjectAssignment.class;
     }
 
-
-    public List<StudySubjectAssignment> getAllAssignments() {
-        return null;
-    }
-
     /**
      * Returns on-study patients with nothing scheduled beyond a date
      *
