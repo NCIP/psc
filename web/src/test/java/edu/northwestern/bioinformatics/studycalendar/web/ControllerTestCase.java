@@ -43,7 +43,7 @@ public abstract class ControllerTestCase extends WebTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    protected void assertSiteScopedRoles(Collection<ResourceAuthorization> actual, Site expectedSite, PscRole... expectedRoles) {
+    protected void assertSiteScopedRolesAllowed(Collection<ResourceAuthorization> actual, Site expectedSite, PscRole... expectedRoles) {
         Map<PscRole, String> actualRoles = new HashMap<PscRole, String>();
 
         if (actual == null) {
@@ -58,6 +58,28 @@ public abstract class ControllerTestCase extends WebTestCase {
             for (PscRole role : expectedRoles) {
                 assertTrue(role.getDisplayName() + " should be scoped to " + expectedSite.getAssignedIdentifier(),
                         actualRoles.get(role) != null && actualRoles.get(role).equals(sa));
+            }
+
+            Collection<PscRole> minus = subtract(actualRoles.keySet(), Arrays.asList(expectedRoles));
+            for (PscRole role : minus) {
+                fail(role.getDisplayName() + " should not be allowed");
+            }
+        }
+    }
+
+    protected void assertOnlyAllScopedRolesAllowed(Collection<ResourceAuthorization> actual, ScopeType expectedScope, PscRole... expectedRoles) {
+        Map<PscRole, Boolean> actualRoles = new HashMap<PscRole, Boolean>();
+
+        if (actual == null) {
+            fail("No roles scoped to sites");
+        } else {
+            for (ResourceAuthorization actualResourceAuthorization : actual) {
+                actualRoles.put(actualResourceAuthorization.getRole(), actualResourceAuthorization.isAllScoped(expectedScope));
+            }
+
+            for (PscRole role : expectedRoles) {
+                assertTrue(role.getDisplayName() + " should be all-" + expectedScope.getName() + " scoped",
+                        actualRoles.get(role) != null && actualRoles.get(role).equals(true));
             }
 
             Collection<PscRole> minus = subtract(actualRoles.keySet(), Arrays.asList(expectedRoles));

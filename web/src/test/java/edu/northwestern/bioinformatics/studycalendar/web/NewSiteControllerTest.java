@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -44,17 +45,21 @@ public class NewSiteControllerTest  extends ControllerTestCase {
 
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, params);
         assertRolesAllowed(actualAuthorizations, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
-        assertSiteScopedRoles(actualAuthorizations, nu, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        assertSiteScopedRolesAllowed(actualAuthorizations, nu, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
-    //todo, what actually is tested is the error message in the log. we don't have a good way to capture it.
-    //todo, leaving test and will add espected login message, once we have this functionality.
-    public void testAuthorizedRolesWithErroLog() {
+    public void testAuthorizedRolesWithMalformedId() {
         Map<String, String[]> params = new HashMap<String, String[]>();
-        String[] siteId = {"15"};
-        params.put("assignment", siteId);
+        String[] siteId = {"not an id"};
+        params.put("id", siteId);
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, params);
-        assertRolesAllowed(actualAuthorizations, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        assertOnlyAllScopedRolesAllowed(actualAuthorizations, ScopeType.SITE, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+    }
+
+    public void testAuthorizedRolesWithoutAnId() {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, params);
+        assertOnlyAllScopedRolesAllowed(actualAuthorizations, ScopeType.SITE, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
     public void testReferenceDataForCreateAction() throws Exception {
