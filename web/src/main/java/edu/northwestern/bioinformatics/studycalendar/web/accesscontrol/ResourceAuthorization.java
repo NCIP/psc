@@ -74,6 +74,15 @@ public class ResourceAuthorization {
         return Arrays.asList(createSeveral(site, study, roles));
     }
 
+    public static Collection<ResourceAuthorization> createAllScopedCollection(ScopeType type, PscRole... roles) {
+        ResourceAuthorization[] ras = new ResourceAuthorization[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            ras[i] = create(roles[i]);
+            ras[i].scopes.add(ScopeDescription.createForAll(type));
+        }
+        return Arrays.asList(ras);
+    }
+
     /**
      * Creates a set of authorizations reflecting all the appropriate template management roles
      * for the study (i.e., taking into account the managing sites for the study).
@@ -177,6 +186,13 @@ public class ResourceAuthorization {
             if (scope.getScope() == scopeType) return scope.getIdentifier();
         }
         return null;
+    }
+
+    public boolean isAllScoped(ScopeType scopeType) {
+        for (ScopeDescription scope : scopes) {
+            if (scope.getScope() == scopeType && scope.isAll()) return true;
+        }
+        return false;
     }
 
     ////// PROPERTIES

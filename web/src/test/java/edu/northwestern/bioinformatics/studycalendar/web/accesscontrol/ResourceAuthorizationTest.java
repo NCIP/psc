@@ -271,6 +271,15 @@ public class ResourceAuthorizationTest extends TestCase {
         assertResourceAuthorization("Missing builder", STUDY_CALENDAR_TEMPLATE_BUILDER, SITE_A_IDENT, "B", it.next());
     }
 
+    public void testCreateAllScopedCollectionForSite() {
+        Collection<ResourceAuthorization> actual =
+            ResourceAuthorization.createAllScopedCollection(ScopeType.SITE, STUDY_QA_MANAGER, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        assertEquals("Wrong number of authorizations", 2, actual.size());
+        Iterator<ResourceAuthorization> it = actual.iterator();
+        assertTrue("Should be all-site scoped", it.next().isAllScoped(ScopeType.SITE));
+        assertTrue("Should be all-site scoped", it.next().isAllScoped(ScopeType.SITE));
+    }
+
     ////// HELPERS
 
     public static void assertResourceAuthorization(
