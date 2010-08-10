@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
@@ -10,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateA
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -52,7 +54,7 @@ public class StudyListController extends PscAbstractController implements PscAut
     @Override   
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         PscUser user = applicationSecurityManager.getUser();
-
+        SuiteRoleMembership membershipForDataReader = user.getMembership(PscRole.DATA_IMPORTER);
         Map<TemplateAvailability, List<StudyWorkflowStatus>> templates =
             studyService.getVisibleStudies(user);
 
@@ -66,10 +68,16 @@ public class StudyListController extends PscAbstractController implements PscAut
             templates.get(TemplateAvailability.IN_DEVELOPMENT).size(), user.getUsername());
         log.trace("All visible templates: {}", templates);
 
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("pendingTemplates", templates.get(TemplateAvailability.PENDING));
         model.put("availableTemplates", templates.get(TemplateAvailability.AVAILABLE));
         model.put("inDevelopmentTemplates", templates.get(TemplateAvailability.IN_DEVELOPMENT));
+        if (membershipForDataReader== null) {
+            model.put("isAbleToImport", false);
+        } else {
+            model.put("isAbleToImport", true);
+        }
 
         return new ModelAndView("studyList", model);
     }

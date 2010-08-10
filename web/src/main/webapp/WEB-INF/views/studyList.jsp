@@ -249,7 +249,9 @@
             <c:if test="${configuration.map.enableCreatingTemplate}">
                 <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
             </c:if>
-            <p><a href="<c:url value="/pages/cal/template/import"/>">Import an existing template</a></p>
+            <c:if test="${isAbleToImport}">
+                <p><a href="<c:url value="/pages/cal/template/import"/>">Import an existing template</a></p>
+            </c:if>
         </security:secureOperation>
      </laf:division>
         <c:if test="${not empty inDevelopmentTemplates}">
