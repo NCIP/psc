@@ -9,6 +9,7 @@
     <SITES
         id="-5"
         name="anotherSite"
+        assigned_identifier="anotherSite"
         grid_id="grid2"
         />
 

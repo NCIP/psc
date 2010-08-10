@@ -20,16 +20,19 @@
     <SITES
         id="-200"
         name="Mayo Clinic"
+        assigned_identifier="Mayo Clinic"
         />
 
     <SITES
         id="-300"
         name="Northwestern Clinic"
+        assigned_identifier="Northwestern Clinic"
         />
 
     <SITES
         id="-400"
         name="CDC Clinic"
+        assigned_identifier="CDC Clinic"
         />
 
     <USER_ROLE_SITES

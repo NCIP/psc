@@ -1,6 +1,6 @@
 <dataset>
-  <SITES id="-1" name="Alpha Centauri"/>
-  <SITES id="-2" name="Canopus"/>
+  <SITES id="-1" name="Alpha Centauri" assigned_identifier="Alpha Centauri"/>
+  <SITES id="-2" name="Canopus" assigned_identifier="Canopus"/>
 
   <STUDIES id="-50" assigned_identifier="Artichoke Study" />
   <STUDIES id="-51" assigned_identifier="Cartwheel Study" />

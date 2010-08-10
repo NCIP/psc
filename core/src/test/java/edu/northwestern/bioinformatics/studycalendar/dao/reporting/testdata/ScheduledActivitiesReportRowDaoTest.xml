@@ -18,7 +18,7 @@
     <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
     <PLANNED_ACTIVITIES id="-7" period_id="-5" day="4" activity_id="-100"/>
 
-    <SITES id="-1" name="DC"/>
+    <SITES id="-1" name="DC" assigned_identifier="DC"/>
 
     <STUDY_SITES id="-1" site_id="-1" study_id="-1"/>
 

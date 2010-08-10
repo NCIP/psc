@@ -94,8 +94,8 @@
         user_id="-400"
         />
 
-    <SITES id="-30" name="Thirty"/>
-    <SITES id="-40" name="Forty"/>
+    <SITES id="-30" name="Thirty" assigned_identifier="Thirty"/>
+    <SITES id="-40" name="Forty" assigned_identifier="Forty"/>
 
     <USER_ROLE_SITES
         user_role_id="-13"

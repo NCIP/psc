@@ -20,6 +20,7 @@
     <SITES
         id="-1001"
         name="New Site"
+        assigned_identifier="New Site"
        />
     <AMENDMENTS id="-55" amendment_date="2005-01-08"/>
     <STUDIES

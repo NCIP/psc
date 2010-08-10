@@ -5,7 +5,7 @@
     <AMENDMENTS id="-20" amendment_date="2007-06-05"/>
     <STUDIES id="-101" assigned_identifier="S2" amendment_id="-20" long_title="S2"/>
 
-    <SITES id="-200" name="DC"/>
+    <SITES id="-200" name="DC" assigned_identifier="DC"/>
 
     <STUDY_SITES id="-15" study_id="-100" site_id="-200"/>
     <STUDY_SITES id="-25" study_id="-101" site_id="-200"/>

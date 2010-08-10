@@ -18,11 +18,13 @@
     <SITES
         id="-200"
         name="New Site"
+        assigned_identifier="New Site"
         />
 
     <SITES
         id="-201"
         name="Old site"
+        assigned_identifier="Old site"
         />
 
     <STUDY_SITES

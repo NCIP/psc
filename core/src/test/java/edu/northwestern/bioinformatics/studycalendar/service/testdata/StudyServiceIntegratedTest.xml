@@ -3,7 +3,7 @@
     <AMENDMENTS id="-2" name="abc" amendment_date="2006-02-01"/>
     <AMENDMENTS id="-200" name="def" amendment_date="2008-05-17"/>
 
-    <SITES id="-201" name="Old site"/>
+    <SITES id="-201" name="Old site" assigned_identifier="Old site"/>
 
     <!-- For some reason, these amendments must be below Sites for the previous_amendment_id column to be inserted -->
     <AMENDMENTS id="-1" amendment_date="2007-01-01" previous_amendment_id="-2"/>
