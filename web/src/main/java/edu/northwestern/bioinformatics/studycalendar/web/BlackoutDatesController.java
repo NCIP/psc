@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
@@ -38,7 +41,29 @@ public class BlackoutDatesController extends PscSimpleFormController implements 
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        Site site = parseSite(queryParameters);
+
+        if (site == null) {
+            throw new StudyCalendarSystemException("Site parameter is invalid");
+        }
+
+        return ResourceAuthorization.createCollection(site, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+
+    }
+
+    private Site parseSite(Map<String, String[]> queryParameters) {
+        Integer siteId = null;
+
+        String[] siteArray = queryParameters.get("site");
+        if (siteArray != null && siteArray[0] != null) {
+            try {
+                siteId = Integer.parseInt(siteArray[0]);
+            } catch (NumberFormatException e) {
+                log.error("Site parameter is invalid " + e);
+            }
+        }
+
+        return siteId != null ? siteDao.getById(siteId) : null;
     }
 
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
