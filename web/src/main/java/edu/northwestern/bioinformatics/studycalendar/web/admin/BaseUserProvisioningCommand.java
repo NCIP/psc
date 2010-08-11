@@ -268,11 +268,19 @@ public abstract class BaseUserProvisioningCommand {
     private String buildJavaScriptProvisionableUser(PscUser user) {
         try {
             return String.format(
-                "new psc.admin.ProvisionableUser('%s', %s)",
-                user.getCsmUser().getLoginName(),
+                "new psc.admin.ProvisionableUser(%s, %s)",
+                buildJavaScriptString(user.getCsmUser().getLoginName()),
                 buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH));
         } catch (JSONException e) {
             throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
+        }
+    }
+
+    private String buildJavaScriptString(String s) {
+        if (s == null) {
+            return "null";
+        } else {
+            return String.format("'%s'", s);
         }
     }
 

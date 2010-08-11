@@ -98,7 +98,7 @@
                         <form:label path="user.csmUser.loginName">Username</form:label>
                     </div>
                     <div class="value">
-                        <form:input path="user.csmUser.loginName"/>
+                        <form:input path="user.csmUser.loginName" id="username"/>
                     </div>
                 </c:when>
                 <c:otherwise>

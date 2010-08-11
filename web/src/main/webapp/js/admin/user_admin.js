@@ -93,6 +93,10 @@ psc.admin.UserAdmin = (function ($) {
     input.attr('checked', data.kind === 'add');
   }
 
+  function syncUsername() {
+    user.username = $('input#username').val();
+  }
+
   return {
     init: function (u) {
       user = u;
@@ -103,11 +107,16 @@ psc.admin.UserAdmin = (function ($) {
       $('a.role').click(selectRoleTab);
       $(user).bind('membership-change', syncRoleTabOnChange).
         bind('membership-change', syncRoleEditorOnChange);
+      $('input#username').keyup(syncUsername);
     },
 
     serializeRoleChanges: function () {
-      var changes = {}; changes[user.username] = user.changes;
-      return YAHOO.lang.JSON.stringify(changes);
+      if (user.username) {
+        var changes = {}; changes[user.username] = user.changes;
+        return YAHOO.lang.JSON.stringify(changes);
+      } else {
+        return "{}";
+      }
     }
   };
 })(jQuery);

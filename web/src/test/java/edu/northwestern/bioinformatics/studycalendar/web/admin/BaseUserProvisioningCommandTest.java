@@ -402,6 +402,12 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         assertEquals("new psc.admin.ProvisionableUser('jo', {})", command.getJavaScriptProvisionableUser());
     }
 
+    public void testJavaScriptUserForUnnamedUserHasNoUsername() throws Exception {
+        command.getUser().getCsmUser().setLoginName(null);
+        assertEquals("new psc.admin.ProvisionableUser(null, {})",
+            command.getJavaScriptProvisionableUser());
+    }
+
     public void testJavaScriptUserWithOneGroupOnlyRole() throws Exception {
         TestCommand actual = create(new PscUserBuilder("jo").add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
         assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}})",

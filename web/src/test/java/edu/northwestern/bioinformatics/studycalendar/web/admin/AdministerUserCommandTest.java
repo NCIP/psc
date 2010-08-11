@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createCsmUser;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.expectLastCall;
 
