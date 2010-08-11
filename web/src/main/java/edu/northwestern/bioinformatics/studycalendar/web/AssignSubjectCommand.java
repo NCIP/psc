@@ -1,16 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
@@ -21,11 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -39,7 +28,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
 
     private Site site;
     private Study study;
-    private User subjectCoordinator;
+    private PscUser subjectCoordinator;
     private Set<Population> populations;
 
     private SubjectService subjectService;
@@ -189,11 +178,11 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         this.studySegment = studySegment;
     }
 
-    public User getSubjectCoordinator() {
+    public PscUser getSubjectCoordinator() {
         return subjectCoordinator;
     }
 
-    public void setSubjectCoordinator(User subjectCoordinator) {
+    public void setSubjectCoordinator(PscUser subjectCoordinator) {
         this.subjectCoordinator = subjectCoordinator;
     }
 

@@ -1,21 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.apache.commons.lang.StringUtils;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
-import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -71,7 +73,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
 
 
         expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
-                EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null), (Set<Population>) EasyMock.notNull())).andReturn(assignment);
+                EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((PscUser)null), (Set<Population>) EasyMock.notNull())).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 

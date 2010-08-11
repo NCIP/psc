@@ -2,45 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.reset;
 
 /**
  * @author Rhett Sutphin
@@ -77,8 +54,9 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private Subject loadedSubject;
     private StudySegment loadedStudySegment;
     private ScheduledActivity loadedEvent;
-    private User user;
+    private PscUser user;
     private NotificationService notificationService;
+    private ApplicationSecurityManager mockApplicationSecurityManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -93,6 +71,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         notificationService=registerMockFor(NotificationService.class);
+        mockApplicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
 
         service = new DefaultScheduledCalendarService();
         service.setSubjectDao(subjectDao);
@@ -105,7 +84,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setStudySubjectAssignmentDao (assignmentDao);
         service.setUserDao(userDao);
         service.setNotificationService(notificationService);
-        service.setApplicationSecurityManager(applicationSecurityManager);
+        service.setApplicationSecurityManager(mockApplicationSecurityManager);
 
         parameterStudy = setGridId(STUDY_BIG_ID, new Study());
         parameterSite = setGridId(SITE_BIG_ID, new Site());
@@ -123,13 +102,13 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         loadedSubject = setGridId(PARTICIPANT_BIG_ID, createSubject("Edward", "Armor-o"));
 
-        user = new User();
-        Set<UserRole> userRoles = new HashSet<UserRole>();
-        UserRole userRole = new UserRole();
-        userRole.setRole(Role.SUBJECT_COORDINATOR);
-        userRoles.add(userRole);
-        
-        user.setUserRoles(userRoles);
+        user = new PscUser();
+//        Set<UserRole> userRoles = new HashSet<UserRole>();
+//        UserRole userRole = new UserRole();
+//        userRole.setRole(Role.SUBJECT_COORDINATOR);
+//        userRoles.add(userRole);
+//
+//        user.getLegacyUser().setUserRoles(userRoles);
 
         expect(studyDao.getByGridId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
         expect(siteDao.getByGridId(parameterSite)).andReturn(loadedSite).times(0, 1);
@@ -263,7 +242,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
             loadedSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)).andReturn(newAssignment);
-        expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
+        expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
             service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID));
@@ -281,7 +260,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(subjectService.assignSubject(
             parameterSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)
             ).andReturn(newAssignment);
-        expect(userDao.getByName(null)).andReturn(user).anyTimes();
+        expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
             service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID));
@@ -352,7 +331,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
             loadedSubject, loadedStudy.getStudySites().get(0), defaultStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user, null)).andReturn(newAssignment);
-        expect(userDao.getByName(null)).andReturn(user).anyTimes();
+        expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         service.assignSubject(parameterStudy, parameterSubject, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);
         verifyMocks();
