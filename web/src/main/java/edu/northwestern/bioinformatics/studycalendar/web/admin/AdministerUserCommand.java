@@ -108,24 +108,24 @@ public class AdministerUserCommand
 
     public void validate(Errors errors) {
         if (StringUtils.isBlank(getUser().getCsmUser().getLoginName())) {
-            errors.rejectValue("user.loginName", "error.user.name.not.specified");
+            errors.rejectValue("user.csmUser.loginName", "error.user.name.not.specified");
         } else {
             User existing = authorizationManager.getUser(getUser().getCsmUser().getLoginName());
             boolean existingMismatch = existing != null && !existing.getUserId().equals(getUser().getCsmUser().getUserId());
             if (!lookUpBoundUser && ((isNewUser() && existing != null) || existingMismatch)) {
-                errors.rejectValue("user.loginName", "error.user.name.already.exists");
+                errors.rejectValue("user.csmUser.loginName", "error.user.name.already.exists");
             }
         }
 
         if (StringUtils.isBlank(getUser().getCsmUser().getFirstName())) {
-            errors.rejectValue("user.firstName", "error.user.firstName.not.specified");
+            errors.rejectValue("user.csmUser.firstName", "error.user.firstName.not.specified");
         }
         if (StringUtils.isBlank(getUser().getCsmUser().getLastName())) {
-            errors.rejectValue("user.lastName", "error.user.lastName.not.specified");
+            errors.rejectValue("user.csmUser.lastName", "error.user.lastName.not.specified");
         }
 
         if (!GenericValidator.isEmail(getUser().getCsmUser().getEmailId())) {
-            errors.rejectValue("user.emailId", "error.user.email.invalid");
+            errors.rejectValue("user.csmUser.emailId", "error.user.email.invalid");
         }
 
         if (isNewUser() && getUsesLocalPasswords() && (StringUtils.isBlank(getPassword()))) {

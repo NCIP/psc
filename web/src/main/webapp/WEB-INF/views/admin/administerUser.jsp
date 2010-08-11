@@ -4,7 +4,10 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:useBean id="command" scope="request" type="edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand"/>
+<jsp:useBean id="command" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand"/>
+<jsp:useBean id="startingNewUser" scope="request"
+             type="java.lang.Boolean"/>
 
 <html>
 <head>
@@ -104,9 +107,11 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        <div class="row">
-            <div class="value"><tags:errors path="*"/></div>
-        </div>
+        <c:if test="${not startingNewUser}">
+            <div class="row">
+                <div class="value"><tags:errors path="*"/></div>
+            </div>
+        </c:if>
         <div class="row">
             <div class="label">
                 <form:label path="user.csmUser.emailId">E-mail address</form:label>

@@ -98,7 +98,10 @@ public class AdministerUserController
             command.apply();
             return new ModelAndView("redirectToUserList");
         } else {
-            return new ModelAndView("admin/administerUser", errors.getModel());
+            ModelAndView mv = new ModelAndView("admin/administerUser", errors.getModel());
+            mv.addObject("startingNewUser", 
+                command.isNewUser() && "GET".equals(request.getMethod()));
+            return mv;
         }
     }
 

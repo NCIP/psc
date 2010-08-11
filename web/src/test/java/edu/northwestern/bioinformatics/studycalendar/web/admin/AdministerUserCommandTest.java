@@ -337,7 +337,7 @@ public class AdministerUserCommandTest extends WebTestCase {
     public void testInvalidWhenBlankUsername() throws Exception {
         command.getUser().getCsmUser().setLoginName("\t");
         doValidate();
-        assertFieldErrorCount("user.loginName", 1);
+        assertFieldErrorCount("user.csmUser.loginName", 1);
     }
 
     public void testInvalidWhenNewInstanceWithDuplicateUsernameAndLookupNotConfigured() throws Exception {
@@ -351,7 +351,7 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         doValidate();
 
-        assertFieldErrorCount("user.loginName", 1);
+        assertFieldErrorCount("user.csmUser.loginName", 1);
     }
 
     public void testValidWhenNewInstanceWithDuplicateUsernameAndLookupIsConfigured() throws Exception {
@@ -365,7 +365,7 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         doValidate();
 
-        assertFieldErrorCount("user.loginName", 0);
+        assertFieldErrorCount("user.csmUser.loginName", 0);
     }
 
     public void testValidWhenDuplicateUsernameAndEditingSavedInstance() throws Exception {
@@ -374,7 +374,7 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         doValidate();
 
-        assertFieldErrorCount("user.loginName", 0);
+        assertFieldErrorCount("user.csmUser.loginName", 0);
     }
 
     public void testInvalidWhenDuplicateUsernameAndEditingDifferentInstance() throws Exception {
@@ -386,28 +386,28 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         doValidate();
 
-        assertFieldErrorCount("user.loginName", 1);
+        assertFieldErrorCount("user.csmUser.loginName", 1);
     }
 
     public void testInvalidWithBlankEmailAddress() throws Exception {
         command.getUser().getCsmUser().setEmailId("\n\t");
 
         doValidate();
-        assertFieldErrorCount("user.emailId", 1);
+        assertFieldErrorCount("user.csmUser.emailId", 1);
     }
 
     public void testInvalidWithNonAddressEmailAddress() throws Exception {
         command.getUser().getCsmUser().setEmailId("hello");
 
         doValidate();
-        assertFieldErrorCount("user.emailId", 1);
+        assertFieldErrorCount("user.csmUser.emailId", 1);
     }
 
     public void testValidWithReasonableEmailAddress() throws Exception {
         command.getUser().getCsmUser().setEmailId("someguy@nemo.it");
 
         doValidate();
-        assertFieldErrorCount("user.emailId", 0);
+        assertFieldErrorCount("user.csmUser.emailId", 0);
     }
 
     public void testPasswordRequiredForNewUserIfLocalPasswordsUsed() throws Exception {
@@ -456,28 +456,28 @@ public class AdministerUserCommandTest extends WebTestCase {
         command.getUser().getCsmUser().setFirstName(" ");
         
         doValidate();
-        assertFieldErrorCount("user.firstName", 1);
+        assertFieldErrorCount("user.csmUser.firstName", 1);
     }
     
     public void testSetFirstNameIsValid() throws Exception {
         command.getUser().getCsmUser().setFirstName("Jo");
         
         doValidate();
-        assertFieldErrorCount("user.firstName", 0);
+        assertFieldErrorCount("user.csmUser.firstName", 0);
     }
     
     public void testBlankLastNameIsInvalid() throws Exception {
         command.getUser().getCsmUser().setLastName(" ");
         
         doValidate();
-        assertFieldErrorCount("user.lastName", 1);
+        assertFieldErrorCount("user.csmUser.lastName", 1);
     }
     
     public void testSetLastNameIsValid() throws Exception {
         command.getUser().getCsmUser().setLastName("Jo");
         
         doValidate();
-        assertFieldErrorCount("user.lastName", 0);
+        assertFieldErrorCount("user.csmUser.lastName", 0);
     }
     
     private void assertFieldErrorCount(String field, int expectedCount) {
