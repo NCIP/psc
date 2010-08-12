@@ -38,11 +38,6 @@ public enum QueryParameters {
                 : null;
     }
 
-    public boolean hasParameter(Request request) {
-        return request.getResourceRef().hasQuery()
-            && request.getResourceRef().getQueryAsForm().getFirst(attributeName()) != null;
-    }
-
     public void putIn(Request request, String value) {
         request.getResourceRef().addQueryParameter(attributeName(), value);
     }
