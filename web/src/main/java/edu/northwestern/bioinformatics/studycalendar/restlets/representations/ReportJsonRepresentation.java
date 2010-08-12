@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import java.util.List;
-import java.io.IOException;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import org.codehaus.jackson.JsonGenerator;
-import org.json.JSONArray;
-import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 
 /**
  * @author Nataliya Shurupova
@@ -92,7 +91,11 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
             JacksonTools.nullSafeWriteStringField(generator, "condition", row.getScheduledActivity().getPlannedActivity().getCondition());
 
             if (!row.getScheduledActivity().getLabels().isEmpty()) {
-                JacksonTools.nullSafeWriteStringField(generator, "label", StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ", "));
+                generator.writeArrayFieldStart("labels");
+                for (String label : row.getScheduledActivity().getLabels()) {
+                    generator.writeString(label);
+                }
+                generator.writeEndArray();
             }
             JacksonTools.nullSafeWriteStringField(generator, "subject_name", row.getSubject().getFullName());
             JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());

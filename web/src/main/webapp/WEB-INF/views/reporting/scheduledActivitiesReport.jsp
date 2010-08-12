@@ -92,7 +92,11 @@
                         { key: "scheduled_date", label:"Scheduled Date", sortable:true},
                         { key: "details", label: "Details", sortable: true, width: 200},
                         { key: "condition", label: "Condition", sortable: true, width: 200},
-                        { key: "label", label: "Labels", sortable: true},
+                        { key: "labels", label: "Labels", sortable: false,
+                            formatter: function (elCell, oRecord, oColumn, oData) {
+                                elCell.innerHTML = oData.join(" ")
+                            }
+                        },
                         { key: "ideal_date", label: "Ideal Date", sortable: true},
                         { key: "subject_name", label: "Subject", sortable: true},
                         { key: "person_id", label: "Person ID", sortable: true},
@@ -112,7 +116,7 @@
                             { key: "scheduled_date"},
                             { key: "details"},
                             { key: "condition"},
-                            { key: "label" },
+                            { key: "labels" },
                             { key: "ideal_date"},
                             { key: "subject_name"},
                             { key: "person_id"},

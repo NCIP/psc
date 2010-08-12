@@ -111,8 +111,12 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Wrong site", "Mayo", writeAndGetRow(0).getString("site"));
     }
 
-    public void testLabelCSVIncluded() throws Exception {
-        assertEquals("Wrong labels", "L1, L2", writeAndGetRow(0).getString("label"));
+    public void testLabelsIncluded() throws Exception {
+        JSONArray actual = writeAndGetRow(0).optJSONArray("labels");
+        assertNotNull("No labels present", actual);
+        assertEquals("Wrong number of labels", 2, actual.length());
+        assertEquals("Wrong first label", "L1", actual.getString(0));
+        assertEquals("Wrong second label", "L2", actual.getString(1));
     }
 
     public void testActivityNameIncluded() throws Exception {
