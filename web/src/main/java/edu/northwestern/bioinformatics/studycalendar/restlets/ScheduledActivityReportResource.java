@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static java.lang.String.format;
 
 /**
  * @author Nataliya Shurupova
@@ -91,7 +92,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
             return getApiDateFormat().parse(dateString);
         } catch (ParseException pe) {
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                String.format("Unparseable value for %s filter: %s.  Expected format is %s.",
+                format("Unparseable value for %s filter: %s.  Expected format is %s.",
                     dateParam.attributeName(), dateString, API_DATE_FORMAT_STRING));
         }
     }
@@ -103,7 +104,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
             if (csmUser == null) {
                 throw new ResourceException(
                     Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                    String.format("Unknown user for %s filter: %s",
+                    format("Unknown user for %s filter: %s",
                         FilterParameters.RESPONSIBLE_USER.attributeName(), responsible_user));
             } else {
                 filters.setResponsibleUser(csmUser);
@@ -126,11 +127,18 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
         }
     }
 
-    private void applyActivityTypeFilter(ScheduledActivitiesReportFilters filters) {
+    private void applyActivityTypeFilter(
+        ScheduledActivitiesReportFilters filters
+    ) throws ResourceException {
         String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());
         if (activity_type != null) {
-            ActivityType activityType = activityTypeDao.getById(new Integer(activity_type));
-            filters.setActivityType(activityType);
+            ActivityType activityType = activityTypeDao.getByNameIgnoringCase(activity_type);
+            if (activityType != null) {
+                filters.setActivityType(activityType);
+            } else {
+                throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                    format("Unknown activity type for activity-type filter: %s", activity_type));
+            }
         }
     }
 

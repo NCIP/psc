@@ -1,8 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
+
+import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 
 /**
  * @author Nataliya Shurupova
@@ -37,6 +42,13 @@ public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<Activit
             return activityTypes.get(0);
         }
         return null;
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public ActivityType getByNameIgnoringCase(String name) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(domainClass()).
+            add(Restrictions.ilike("name", name, MatchMode.EXACT));
+        return (ActivityType) firstElement(getHibernateTemplate().findByCriteria(criteria));
     }
 
     /**

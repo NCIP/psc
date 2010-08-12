@@ -1,7 +1,10 @@
 <dataset>
     <ACTIVITY_TYPES
         id="-10"
-        name="My Activity"/>
+        name="Intervention"/>
+    <ACTIVITY_TYPES
+        id="-20"
+        name="Disease Measure"/>
     <ACTIVITIES
         id="-1001"
         version="0"

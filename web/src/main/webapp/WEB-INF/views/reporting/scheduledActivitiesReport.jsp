@@ -197,8 +197,7 @@
                         <select id="activity-type" class="filter-value direct">
                             <option></option>
                             <c:forEach items="${types}" var="type">
-                                <%-- TODO (#1143) --%>
-                                <option value="${type.id}">${type.name}</option>
+                                <option>${type.name}</option>
                             </c:forEach>
                         </select>
                     </label>

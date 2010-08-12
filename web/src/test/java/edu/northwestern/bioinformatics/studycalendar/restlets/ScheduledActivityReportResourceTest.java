@@ -215,13 +215,27 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForActivityType() throws Exception {
-        // TODO: this is very wrong (#1143)
         ActivityType type = Fixtures.setId(111, createActivityType("Measure"));
-        FilterParameters.ACTIVITY_TYPE.putIn(request, "111");
-        expect(activityTypeDao.getById(type.getId())).andReturn(type);
+        FilterParameters.ACTIVITY_TYPE.putIn(request, "MEASure");
+        expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(type);
         replayMocks();
         assertOnlyFilterIs("activityType", type);
         verifyMocks();
+    }
+
+    public void testGetFilterForInvalidActivityType() throws Exception {
+        FilterParameters.ACTIVITY_TYPE.putIn(request, "MEASure");
+        expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(null);
+        replayMocks();
+        try {
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unknown activity type for activity-type filter: MEASure",
+                re.getStatus().getDescription());
+        }
     }
 
     private void assertOnlyFilterIs(String filterProperty, Object expectedValue) throws ResourceException {
