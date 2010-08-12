@@ -7,9 +7,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.easymock.IArgumentMatcher;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -49,6 +52,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
     private ActivityTypeDao activityTypeDao;
     private ReportService reportService;
+    private AuthorizationManager csmAuthorizationManager;
 
     private ScheduledActivitiesReportFilters filters;
     private List<ScheduledActivitiesReportRow> rows;
@@ -59,11 +63,11 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
         reportService = registerMockFor(ReportService.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
-        filters = new ScheduledActivitiesReportFilters();
+        csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
 
+        filters = new ScheduledActivitiesReportFilters();
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow(); row1.setId(1001);
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow(); row2.setId(1002);
-
         rows = Arrays.asList(row1, row2);
 
         SecurityContextHolderTestHelper.setUserAndReturnMembership("jo", PscRole.DATA_READER);
@@ -75,6 +79,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         ReportsResource resource = new ReportsResource();
         resource.setActivityTypeDao(activityTypeDao);
         resource.setReportService(reportService);
+        resource.setCsmAuthorizationManager(csmAuthorizationManager);
         return resource;
     }
 
@@ -109,6 +114,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
+    // TODO: need tests for parse failures
     public void testGetFilterForRangeOfDates() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         FilterParameters.END_DATE.putIn(request, "2010-03-08");
@@ -133,27 +139,32 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.LABEL.putIn(request, "labelA");
         assertOnlyFilterIs("label", "labelA");
     }
-    /* TODO: #1111
+
     public void testGetFilterForResponsibleUser() throws Exception {
-        String responsibleUserId = "2";
-        User responsibleUser = Fixtures.createUser("mayo mayo");
-        responsibleUser.setId(new Integer(responsibleUserId));
-        FilterParameters.RESPONSIBLE_USER.putIn(request, responsibleUserId);
-        expect(userDao.getById(new Integer(responsibleUserId))).andReturn(responsibleUser);
+        User expectedUser = AuthorizationObjectFactory.createCsmUser("josephine");
+        FilterParameters.RESPONSIBLE_USER.putIn(request, "josephine");
+        expect(csmAuthorizationManager.getUser("josephine")).andReturn(expectedUser);
+
         replayMocks();
-            ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertOnlyFilterIs("responsibleUser", expectedUser);
         verifyMocks();
-        assertNotNull("Actual Filter is Null", actualFilter);
-        assertSame("Actual Filter doesn't contain responsible user", responsibleUser, actualFilter.getSubjectCoordinator());
-        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
-        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
-        assertNull("Actual Filter has site name", actualFilter.getSiteName());
-        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
-        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
-        assertNull("Actual Filter has label", actualFilter.getLabel());
-        assertNull("Actual Filter has activity state", actualFilter.getCurrentStateMode());
     }
-    */
+
+    public void testGetFilterForResponsibleUserWhenUnknown() throws Exception {
+        FilterParameters.RESPONSIBLE_USER.putIn(request, "josephine");
+        expect(csmAuthorizationManager.getUser("josephine")).andReturn(null);
+        replayMocks();
+
+        try {
+            getResource().getFilters();
+            fail("Resource exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unknown user for responsible_user filter", re.getStatus().getDescription());
+        }
+    }
+
     public void testGetFilterForCurrentState() throws Exception {
         // TODO: this is very wrong (#1143)
         FilterParameters.STATE.putIn(request, "1");

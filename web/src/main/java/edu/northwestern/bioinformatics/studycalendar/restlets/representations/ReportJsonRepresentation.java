@@ -69,8 +69,8 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
                 JacksonTools.nullSafeWriteStringField(generator, "end_date", getApiDateFormat().format(filters.getActualActivityDate().getStop()));
             }
         }
-        if (filters.getSubjectCoordinator() != null) {
-            JacksonTools.nullSafeWriteStringField(generator, "responsible_user", filters.getSubjectCoordinator().getDisplayName());
+        if (filters.getResponsibleUser() != null) {
+            JacksonTools.nullSafeWriteStringField(generator, "responsible_user", filters.getResponsibleUser().getLoginName());
         }
         if (filters.getSiteName() != null) {
             JacksonTools.nullSafeWriteStringField(generator, "site", filters.getSiteName());

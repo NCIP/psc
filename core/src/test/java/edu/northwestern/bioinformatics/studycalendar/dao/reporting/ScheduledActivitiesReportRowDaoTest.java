@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
@@ -137,19 +138,15 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertSearchWithResults();
     }
 
-    // TODO: issue #1111
-    // Also: actually test filtering -- some positive, some negative
-    /*
-    public void testSearchWithSubjectCoordinatorFilter_Pos() {
-        filters.setSubjectCoordinator(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId(-200, new User()));
-        assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16);
+    public void testSearchResponsibleUserFilter_Pos() {
+        filters.setResponsibleUser(AuthorizationObjectFactory.createCsmUser(-200, "jo"));
+        assertSearchWithResults(NEG_19, NEG_17, NEG_16);
     }
 
     public void testSearchWithSubjectCoordinatorFilter_Neg() {
-        filters.setSubjectCoordinator(setId(-100, new User()));
+        filters.setResponsibleUser(AuthorizationObjectFactory.createCsmUser(-201, "bad"));
         assertSearchWithResults();
     }
-    */
 
     public void testSearchWithNoFiltersIsEmpty() {
         assertSearchWithResults();

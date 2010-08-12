@@ -28,7 +28,7 @@
                 sites.id AS site_id,
                 sites.name AS site_name,
                 -- users.name AS subject_coordinator_name,
-                -- users.id AS subject_coordinator_id,
+                assign.manager_csm_user_id,
                 pa.condition,
                 assign.study_subject_id,
                 ssites.id AS study_site_id
@@ -105,9 +105,7 @@
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
         <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
-        <!--
-        <filter name="filter_subjectCoordinator" condition="subject_coordinator_id = :subjectCoordinator_id"/>
-        -->
+        <filter name="filter_responsibleUser" condition="manager_csm_user_id = :responsibleUser"/>
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
         <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(grid_id) = :personId)"/>
         <filter name="filter_authorizedStudySiteIds" condition="study_site_id IN (:authorizedStudySiteIds)"/>
@@ -130,11 +128,9 @@
     <filter-def name="filter_activityType">
         <filter-param name="activityType_id" type="integer"/>
     </filter-def>
-    <!--
-    <filter-def name="filter_subjectCoordinator">
-        <filter-param name="subjectCoordinator_id" type="integer"/>
+    <filter-def name="filter_responsibleUser">
+        <filter-param name="responsibleUser" type="long"/>
     </filter-def>
-    -->
     <filter-def name="filter_label">
         <filter-param name="label" type="string"/>
     </filter-def>

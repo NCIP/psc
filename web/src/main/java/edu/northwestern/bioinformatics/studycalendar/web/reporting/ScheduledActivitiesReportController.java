@@ -37,6 +37,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author John Dzak
  */
+// TODO: the binding/execution parts of this controller are no longer used.  Remove them.
 @AccessControl(roles = {Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR})
 public class ScheduledActivitiesReportController
     extends PscAbstractCommandController<ScheduledActivitiesReportCommand>

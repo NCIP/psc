@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -11,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.restlets.representations.Re
 import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -36,6 +37,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 public class ReportsResource extends AbstractCollectionResource<ScheduledActivitiesReportRow> {
     private ActivityTypeDao activityTypeDao;
     private ReportService reportService;
+    private AuthorizationManager csmAuthorizationManager;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -81,8 +83,14 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         }
 
         if (responsible_user != null) {
-            // TODO: #1111
-            throw new StudyCalendarError("TODO: issue #1111");
+            User csmUser = csmAuthorizationManager.getUser(responsible_user);
+            if (csmUser == null) {
+                throw new ResourceException(
+                    Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                    "Unknown user for responsible_user filter");
+            } else {
+                filters.setResponsibleUser(csmUser);
+            }
         }
 
         filters.setSiteName(site);
@@ -138,7 +146,13 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         this.activityTypeDao = activityTypeDao;
     }
 
+    @Required
     public void setReportService(ReportService reportService) {
         this.reportService = reportService;
+    }
+
+    @Required
+    public void setCsmAuthorizationManager(AuthorizationManager csmAuthorizationManager) {
+        this.csmAuthorizationManager = csmAuthorizationManager;
     }
 }

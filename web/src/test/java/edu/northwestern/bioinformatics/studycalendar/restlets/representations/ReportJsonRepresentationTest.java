@@ -7,12 +7,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
@@ -57,10 +60,6 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         allRows.add(row2);
 
         filters = new ScheduledActivitiesReportFilters();
-        filters.setSubjectCoordinator(createUser("mayo mayo"));
-        filters.setCurrentStateMode(saState.getMode());
-        filters.setActivityType(createActivityType("activityType"));
-        filters.setCurrentStateMode(ScheduledActivityMode.SCHEDULED);
     }
 
     public void testHiddenItemsMessageAddedWhenThereAreSome() throws Exception {
@@ -106,14 +105,53 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Wrong number of rows", 2, rows.length());
     }
 
-    public void testFilterValue() throws Exception {
-        JSONObject actual = writeAndParseObject(actual());
-        assertEquals("activity_type has different value ", "activityType",
-            actual.getJSONObject("filters").get("activity_type"));
-        assertEquals("Responsible_user has different value", "mayo mayo",
-            actual.getJSONObject("filters").get("responsible_user"));
-        assertEquals("State has different value", "Scheduled",
-            actual.getJSONObject("filters").get("state"));
+    public void testReturnedFiltersIncludeStudy() throws Exception {
+        filters.setStudyAssignedIdentifier("AT AT");
+        assertEquals("Wrong value", "AT AT", writeAndGetFilters().optString("study"));
+    }
+
+    public void testReturnedFiltersIncludeCurrentStateMode() throws Exception {
+        filters.setCurrentStateMode(ScheduledActivityMode.MISSED);
+        assertEquals("Wrong value", "Missed", writeAndGetFilters().optString("state"));
+    }
+
+    public void testReturnedFiltersIncludeSiteName() throws Exception {
+        filters.setSiteName("France");
+        assertEquals("Wrong value", "France", writeAndGetFilters().optString("site"));
+    }
+
+    public void testReturnedFiltersIncludeStartDate() throws Exception {
+        filters.getActualActivityDate().setStart(DateTools.createDate(2009, Calendar.APRIL, 8));
+        assertEquals("Wrong value", "2009-04-08", writeAndGetFilters().optString("start_date"));
+    }
+
+    public void testReturnedFiltersIncludeEndDate() throws Exception {
+        filters.getActualActivityDate().setStop(DateTools.createDate(2009, Calendar.APRIL, 19));
+        assertEquals("Wrong value", "2009-04-19", writeAndGetFilters().optString("end_date"));
+    }
+
+    public void testReturnedFiltersIncludeActivityType() throws Exception {
+        filters.setActivityType(createActivityType("Measure"));
+        assertEquals("Wrong value", "Measure", writeAndGetFilters().optString("activity_type"));
+    }
+
+    public void testReturnedFiltersIncludeLabel() throws Exception {
+        filters.setLabel("THL");
+        assertEquals("Wrong value", "THL", writeAndGetFilters().optString("label"));
+    }
+
+    public void testReturnedFiltersIncludeResponsibleUsername() throws Exception {
+        filters.setResponsibleUser(AuthorizationObjectFactory.createCsmUser(7, "zap"));
+        assertEquals("Wrong value", "zap", writeAndGetFilters().optString("responsible_user"));
+    }
+
+    public void testReturnedFiltersIncludePersonId() throws Exception {
+        filters.setPersonId("123321");
+        assertEquals("Wrong value", "123321", writeAndGetFilters().optString("person_id"));
+    }
+
+    public void testReturnedFiltersOmitsKeysForUnsetFilters() throws Exception {
+        assertEquals("Should be no filters set", 0, writeAndGetFilters().length());
     }
 
     public void testIdealDateIncluded() throws Exception {
@@ -157,6 +195,11 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
 
     private ReportJsonRepresentation actual() {
         return new ReportJsonRepresentation(filters, allRows, 0);
+    }
+
+    private JSONObject writeAndGetFilters() throws IOException, JSONException {
+        JSONObject report = writeAndParseObject(actual());
+        return report.getJSONObject("filters");
     }
 
     private JSONObject writeAndGetRow(int rowIndex) throws IOException, JSONException {

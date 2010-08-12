@@ -4,8 +4,6 @@
     <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
     <SCHEDULED_ACTIVITY_MODES id="4" name="missed"/>
 
-    <USERS id="-200" name="subject coordinor" csm_user_id="-200" active_flag="1" />
-
     <ACTIVITY_TYPES id="2" name="ActivityType2"/>
     <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>
 
@@ -31,7 +29,7 @@
     <SUBJECT_ASSIGNMENTS id="-1" subject_id="-1" study_site_id="-1" current_amendment_id="-17"
         start_date="2006-09-30" manager_csm_user_id="-200"/>
     <SUBJECT_ASSIGNMENTS id="-2" subject_id="-2" study_site_id="-2" current_amendment_id="-17"
-        start_date="2006-08-08" manager_csm_user_id="-200"/>
+        start_date="2006-08-08"/>
     <SUBJECT_ASSIGNMENTS id="-3" subject_id="-3" study_site_id="-1" current_amendment_id="-17"
         start_date="2006-09-09" manager_csm_user_id="-200"/>
 
@@ -174,5 +172,7 @@
         actual_date="2006-10-18"
         reason="Called to reschedule"
         />
+
+    <CSM_USER user_id="-200" login_name="fred" first_name="Fred" last_name="Jones"/>
 
 </dataset>

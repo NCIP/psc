@@ -158,14 +158,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         assertEquals("Wrong type", activityType, command.getFilters().getActivityType());
     }
 
-    public void testBindSubjectCoordinator() throws Exception {
-        expectActivityTypeDaoCall();
-        request.addParameter("filters.subjectCoordinator", "100");
-        expectFindUser(100, setId(100, new User()));
-        ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.subjectCoordinator");
-        assertEquals("Wrong user", 100, (int) command.getFilters().getSubjectCoordinator().getId());
-    }
-
     public void testGetMapOfColleagueUsers() throws Exception {
         String user2Name = "USER2";
         User user2 = Fixtures.createUser(user2Name, Role.SUBJECT_COORDINATOR);

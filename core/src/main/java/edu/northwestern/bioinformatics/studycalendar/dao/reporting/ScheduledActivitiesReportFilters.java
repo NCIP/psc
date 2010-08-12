@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +19,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
 
     private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
-    private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
+    private ResponsibleUserFilterLimit responsibleUser = new ResponsibleUserFilterLimit();
     private StringFilter label = new StringFilter("label");
     private StringFilter personId = new StringFilter("personId");
     private InListFilterLimit<Integer> authorizedStudySiteIds =
@@ -70,12 +70,12 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
         return activityType.getValue();
     }
 
-    public void setSubjectCoordinator(User user) {
-        subjectCoordinator.setValue(user);
+    public User getResponsibleUser() {
+        return responsibleUser.getValue();
     }
 
-    public User getSubjectCoordinator() {
-        return subjectCoordinator.getValue();
+    public void setResponsibleUser(User responsibleUser) {
+        this.responsibleUser.setValue(responsibleUser);
     }
 
     public String getLabel() {
@@ -100,5 +100,18 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public void setAuthorizedStudySiteIds(Collection<Integer> ids) {
         this.authorizedStudySiteIds.setValue(ids);
+    }
+
+    //////
+
+    private class ResponsibleUserFilterLimit extends SingleFilterFilterLimit<Long, User> {
+        private ResponsibleUserFilterLimit() {
+            super("responsibleUser");
+        }
+
+        @Override
+        protected Long getValueForFilter() {
+            return getValue().getUserId();
+        }
     }
 }
