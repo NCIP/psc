@@ -24,7 +24,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
  * @author Nataliya Shurupova
  */
 public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
-    private static final String EXPECTED_CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Details,Condition,Labels,Ideal Date,Subject Name,Patient Id,Study Subject Id,Subject Coorinator Name,Study,Site";
+    private static final String EXPECTED_CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Details,Condition,Labels,Ideal Date,Subject Name,Patient Id,Study Subject Id,Responsible User,Study,Site";
 
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportRow row2;

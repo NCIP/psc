@@ -22,7 +22,7 @@ public class ScheduledActivityReportCsvRepresentation extends OutputRepresentati
     private char delimiter;
     private static final String[] HEADERS = new String[] {
         "Activity Name", "Activity Status", "Scheduled Date", "Details", "Condition", "Labels",
-        "Ideal Date", "Subject Name", "Patient Id", "Study Subject Id", "Subject Coorinator Name",
+        "Ideal Date", "Subject Name", "Patient Id", "Study Subject Id", "Responsible User",
         "Study", "Site"
     };
 
