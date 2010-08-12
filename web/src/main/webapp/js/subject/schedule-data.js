@@ -3,7 +3,7 @@ psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {
-    var schedule, subjectCoordinator = null, focusDate = new Date();
+    var schedule, readOnly = false, subjectCoordinator = null, focusDate = new Date();
 
     
     function triggeredDateComparableFn(triggerData) {
@@ -109,6 +109,14 @@ psc.namespace("subject");
 
       getSubjectCoordinator: function() {
         return subjectCoordinator;
+      },
+
+      setReadOnly: function(v) {
+          readOnly = v;
+      },
+
+      isReadOnly: function() {
+          return readOnly;
       },
 
       errorMessage: function(XMLHttpRequest, textStatus, errorThrown) {

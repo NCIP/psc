@@ -81,6 +81,7 @@
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
+                psc.subject.ScheduleData.setReadOnly(${readOnly});
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
@@ -208,7 +209,7 @@
     <tags:resigTemplate id="list_day_sa_entry">
         <li class="[#= stateClasses() #] [#= mineClass() #] ">
             <label>
-                [# if (hasId()) { #]
+                [# if (hasId() && !isReadOnly()) { #]
                   <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
@@ -342,115 +343,117 @@
                 </div>
             </c:forEach>
         </div>
-          <%--************ Delay Or Advance Portion**********--%>
-        <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>
-        </div>
-
-        <div class="accordion-content" style="display: none">
-            <div class="accordionRow">
-                <select id="delay-or-advance">
-                    <option value="1" selected="selected">Delay</option>
-                    <option value="-1">Advance</option>
-                </select>
-                scheduled and conditional activities in
-                <select id="delay-assignment">
-                    <c:choose>
-                        <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
-                            <option value="" selected="selected">all studies</option>
-                            <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
-                                <option value="${row.gridId}">${row.name}</option>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${schedule.visibleAssignments[0].gridId}">
-                                ${schedule.visibleAssignments[0].name}
-                            </option>
-                        </c:otherwise>
-                    </c:choose>
-                </select>
-
-                by <input id="delay-amount" size="3" value="7"/> day(s)
-                as of <laf:dateInput local="true" path="delay-as-of"/>.
-                <br/>
-                Why? <input id="delay-reason"/>
+        <c:if test="${!readOnly}">
+              <%--************ Delay Or Advance Portion**********--%>
+            <div class="accordionDiv">
+                <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>
             </div>
-            <div>
-                <tags:activityIndicator id="delayOrAdvance-indicator"/>
-                <input type="submit" value="Apply" id="delay-submit"/>
-            </div>
-        </div>
 
-        <%--*********** Select and modify Portion****************--%>
-        <div class="accordionDiv">
-        <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
-        </div>
-        <div id="mark-select-content" class="accordion-content">
-            <p>
-                Within
-                <select id="mark-select-assignment">
-                    <c:choose>
-                        <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
-                            <option value="" selected="selected">all studies</option>
-                            <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
-                                <option value="${row.gridId}">${row.name}</option>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${schedule.visibleAssignments[0].gridId}">
-                                ${schedule.visibleAssignments[0].name}
-                            </option>
-                        </c:otherwise>
-                    </c:choose>
-                </select>
-                select
-                <a href="#" id="mark-select-all" class="mark-select">all activities</a>,
-                <a href="#" id="mark-select-none" class="mark-select">no activities</a>,
-                <a href="#" id="mark-select-past-due" class="mark-select">past due activities</a>,
-                <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>, 
-                or just check things off by hand.
-            </p>
-            <p>
-                When there is a set of activities selected, modify them here:
-            </p>
-            <p>
-                <select id="mark-new-mode">
-                    <option value="move-date-only">Leave the state the same</option>
-                    <option value="scheduled">Mark/keep as scheduled</option>
-                    <option value="occurred">Mark as occurred</option>
-                    <option value="canceled-or-na">Mark as canceled or NA</option>
-                    <option value="missed">Mark missed</option>
-                </select>
-                <span id="mark-date-group">
-                    <label>
-                        and
-                        <select id="mark-delay-or-advance">
-                            <option value="1" selected="selected">delay</option>
-                            <option value="-1">advance</option>
-                        </select>
+            <div class="accordion-content" style="display: none">
+                <div class="accordionRow">
+                    <select id="delay-or-advance">
+                        <option value="1" selected="selected">Delay</option>
+                        <option value="-1">Advance</option>
+                    </select>
+                    scheduled and conditional activities in
+                    <select id="delay-assignment">
+                        <c:choose>
+                            <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
+                                <option value="" selected="selected">all studies</option>
+                                <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
+                                    <option value="${row.gridId}">${row.name}</option>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${schedule.visibleAssignments[0].gridId}">
+                                    ${schedule.visibleAssignments[0].name}
+                                </option>
+                            </c:otherwise>
+                        </c:choose>
+                    </select>
+
+                    by <input id="delay-amount" size="3" value="7"/> day(s)
+                    as of <laf:dateInput local="true" path="delay-as-of"/>.
+                    <br/>
+                    Why? <input id="delay-reason"/>
+                </div>
+                <div>
+                    <tags:activityIndicator id="delayOrAdvance-indicator"/>
+                    <input type="submit" value="Apply" id="delay-submit"/>
+                </div>
+            </div>
+
+            <%--*********** Select and modify Portion****************--%>
+            <div class="accordionDiv">
+            <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
+            </div>
+            <div id="mark-select-content" class="accordion-content">
+                <p>
+                    Within
+                    <select id="mark-select-assignment">
+                        <c:choose>
+                            <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
+                                <option value="" selected="selected">all studies</option>
+                                <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
+                                    <option value="${row.gridId}">${row.name}</option>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${schedule.visibleAssignments[0].gridId}">
+                                    ${schedule.visibleAssignments[0].name}
+                                </option>
+                            </c:otherwise>
+                        </c:choose>
+                    </select>
+                    select
+                    <a href="#" id="mark-select-all" class="mark-select">all activities</a>,
+                    <a href="#" id="mark-select-none" class="mark-select">no activities</a>,
+                    <a href="#" id="mark-select-past-due" class="mark-select">past due activities</a>,
+                    <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>,
+                    or just check things off by hand.
+                </p>
+                <p>
+                    When there is a set of activities selected, modify them here:
+                </p>
+                <p>
+                    <select id="mark-new-mode">
+                        <option value="move-date-only">Leave the state the same</option>
+                        <option value="scheduled">Mark/keep as scheduled</option>
+                        <option value="occurred">Mark as occurred</option>
+                        <option value="canceled-or-na">Mark as canceled or NA</option>
+                        <option value="missed">Mark missed</option>
+                    </select>
+                    <span id="mark-date-group">
+                        <label>
+                            and
+                            <select id="mark-delay-or-advance">
+                                <option value="1" selected="selected">delay</option>
+                                <option value="-1">advance</option>
+                            </select>
+                        </label>
+                        <label>
+                            by
+                            <input type="text" id="mark-delay-amount" value="0" size="3"/>
+                            days.
+                        </label>
+                    </span>
+                    <label id="mark-reason-group">
+                        Why? <input type="text" id="mark-reason"/>
                     </label>
-                    <label>
-                        by
-                        <input type="text" id="mark-delay-amount" value="0" size="3"/>
-                        days.
-                    </label>
-                </span>
-                <label id="mark-reason-group">
-                    Why? <input type="text" id="mark-reason"/>
-                </label>
-            </p>
-            <div>
-                <tags:activityIndicator id="markUpdate-indicator"/>
-                <input type="submit" value="Apply" id="mark-submit"/>
-                <span id="mark-activities-count"></span>
+                </p>
+                <div>
+                    <tags:activityIndicator id="markUpdate-indicator"/>
+                    <input type="submit" value="Apply" id="mark-submit"/>
+                    <span id="mark-activities-count"></span>
+                </div>
             </div>
-        </div>
-        <div class="accordionDiv">
-          <h3><a class="accordionHeader" href="#">Next segment</a></h3>
-        </div>
-        <div class="accordion-content">
-            <markTag:scheduleStudySegment/>
-        </div>
+            <div class="accordionDiv">
+              <h3><a class="accordionHeader" href="#">Next segment</a></h3>
+            </div>
+            <div class="accordion-content">
+                <markTag:scheduleStudySegment/>
+            </div>
+        </c:if>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>

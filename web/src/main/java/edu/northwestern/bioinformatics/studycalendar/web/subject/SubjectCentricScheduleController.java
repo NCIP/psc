@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -19,6 +21,7 @@ import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.acegisecurity.GrantedAuthority;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -49,7 +52,7 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }
 
     @Override
@@ -84,6 +87,7 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         ModelMap model = new ModelMap("schedule", schedule);
         model.addAttribute(subject);
         model.addAttribute("schedulePreview", false);
+        model.addAttribute("readOnly", readOnlyMode());
         return new ModelAndView("subject/schedule", model);
     }
 
@@ -94,6 +98,11 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
         editor.setAsText(ServletRequestUtils.getStringParameter(request, paramName));
         return (T) editor.getValue();
+    }
+
+    private boolean readOnlyMode() {
+        PscUser user = applicationSecurityManager.getUser();
+        return (user.hasRole(STUDY_SUBJECT_CALENDAR_MANAGER)) ? false : user.hasRole(DATA_READER) || user.hasRole(STUDY_TEAM_ADMINISTRATOR);
     }
 
     ////// CONFIGURATION

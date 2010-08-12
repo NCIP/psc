@@ -90,6 +90,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return sa.assignment !== undefined;
       },
 
+      isReadOnly: function() {
+        return psc.subject.ScheduleData.isReadOnly();
+      },
+
       planNotes: function () {
         var notes = [];
         if (this.details) notes.push(this.details);
