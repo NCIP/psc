@@ -2,13 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -19,14 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author John Dzak
@@ -37,11 +29,15 @@ public class ScheduledActivitiesReportController
     extends PscAbstractController
     implements PscAuthorizedHandler
 {
-    private UserDao userDao;
+    public static PscRole[] REPORT_AUTHORIZED_ROLES = {
+        PscRole.STUDY_TEAM_ADMINISTRATOR,
+        PscRole.DATA_READER,
+        PscRole.STUDY_SUBJECT_CALENDAR_MANAGER
+    };
+
     private ActivityTypeDao activityTypeDao;
     private ApplicationSecurityManager applicationSecurityManager;
-    private AuthorizationService authorizationService;
-    private StudyDao studyDao;
+    private PscUserService pscUserService;
 
     public ScheduledActivitiesReportController() {
         setCrumb(new DefaultCrumb("Report"));
@@ -50,57 +46,29 @@ public class ScheduledActivitiesReportController
     public Collection<ResourceAuthorization> authorizations(
         String httpMethod, Map<String, String[]> queryParameters
     ) {
-        return ResourceAuthorization.createCollection(
-            DATA_READER,
-            STUDY_SUBJECT_CALENDAR_MANAGER,
-            STUDY_TEAM_ADMINISTRATOR
-        );
+        return ResourceAuthorization.createCollection(REPORT_AUTHORIZED_ROLES);
     }
 
     @Override
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(request));
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel());
     }
 
     @SuppressWarnings({"unchecked"})
-    protected Map createModel(HttpServletRequest request) {
+    private Map createModel() {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
-        model.put("coordinators", Collections.<User>emptyList());
-//        model.put("coordinators", getListOfColleagueUsers());
-        
+        model.put("potentialResponsibleUsers", pscUserService.getColleaguesOf(
+            applicationSecurityManager.getUser(), PscRole.STUDY_SUBJECT_CALENDAR_MANAGER,
+            REPORT_AUTHORIZED_ROLES));
+
         return model;
     }
 
-    public List<User> getListOfColleagueUsers() {
-        User signedUser = applicationSecurityManager.getUser().getLegacyUser();
-        List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, signedUser.getUserRole(Role.SUBJECT_COORDINATOR));
-        List<User> mapOfUsers = new ArrayList<User>();
-        List<User> allSubjCoord = new ArrayList<User>();
-        List<User> coord = userDao.getAllSubjectCoordinators();
-
-        for (User pcUser : coord) {
-            if (!pcUser.equals(signedUser)) {
-                allSubjCoord.add(pcUser);
-            }
-        }
-        allSubjCoord.add(signedUser);
-        for (User user : allSubjCoord) {
-            List<Study> studiesForUser = authorizationService.filterStudiesForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
-            if (studiesForUser != null && studiesForUser.size() > 0) {
-                mapOfUsers.add(user);
-            }
-        }
-        if (mapOfUsers.size() ==0) {
-            mapOfUsers.add(signedUser);
-        }
-
-        return mapOfUsers;
-    }
+    ////// CONFIGURATION
 
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
@@ -108,23 +76,12 @@ public class ScheduledActivitiesReportController
     }
 
     @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
-    }
-
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    ////// Bean Setters
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
+    }
+
+    @Required
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 }

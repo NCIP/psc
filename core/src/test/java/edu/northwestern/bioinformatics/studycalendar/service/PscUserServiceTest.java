@@ -517,6 +517,44 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong colleague included", "sally", colleagues.get(1).getUsername());
     }
 
+    public void testGetColleaguesRespectsCandidateRolesIfSpecified() throws Exception {
+        PscUser main = new PscUserBuilder().
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(northLiberty).forAllStudies().
+            add(PscRole.DATA_READER).forSites(solon).forAllStudies().
+            add(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(whatCheer).
+            toUser();
+
+        User sal = AuthorizationObjectFactory.createCsmUser(  6, "sally");
+        User joe = AuthorizationObjectFactory.createCsmUser( 16, "joe");
+        User sig = AuthorizationObjectFactory.createCsmUser( 96, "sigourney");
+        User gis = AuthorizationObjectFactory.createCsmUser(576, "giselle");
+
+        expectGetCsmUsersForSuiteRole(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER, sal, joe, sig, gis);
+
+        expect(suiteRoleMembershipLoader.getRoleMemberships(6)).andReturn(
+            Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
+                createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(whatCheer).forAllStudies()));
+        expect(suiteRoleMembershipLoader.getRoleMemberships(16)).andReturn(
+            Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
+                createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(northLiberty).forAllStudies()));
+        expect(suiteRoleMembershipLoader.getRoleMemberships(96)).andReturn(
+            Collections.singletonMap(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
+                createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon).forAllStudies()));
+        // gis is only partially provisioned, so she is in the group but doesn't have the membership
+        expect(suiteRoleMembershipLoader.getRoleMemberships(576)).andReturn(
+            Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
+
+        replayMocks();
+        List<PscUser> colleagues = service.getColleaguesOf(main,
+            PscRole.STUDY_SUBJECT_CALENDAR_MANAGER,
+            PscRole.DATA_READER, PscRole.STUDY_TEAM_ADMINISTRATOR);
+        verifyMocks();
+
+        assertEquals("Wrong number of colleagues: " + colleagues, 2, colleagues.size());
+        assertEquals("Wrong colleague included", "sally", colleagues.get(0).getUsername());
+        assertEquals("Wrong colleague included", "sigourney", colleagues.get(1).getUsername());
+    }
+
     public void testGetColleaguesDoesNothingForNonMatchingRole() throws Exception {
         PscUser someGuy = new PscUserBuilder().add(PscRole.SYSTEM_ADMINISTRATOR).toUser();
 

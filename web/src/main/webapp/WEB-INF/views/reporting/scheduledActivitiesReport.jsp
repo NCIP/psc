@@ -5,8 +5,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<jsp:useBean id="coordinators" scope="request"
-             type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.User>"/>
+<jsp:useBean id="potentialResponsibleUsers" scope="request"
+             type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser>"/>
 <jsp:useBean id="types" scope="request"
              type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.ActivityType>"/>
 <jsp:useBean id="modes" scope="request"
@@ -225,18 +225,15 @@
                 </div>
 
                 <div class="filterGroup">
-                    <span class="filterInput">
-<%--
-                        <form:label path="filters.subjectCoordinator" >
-                            Subject coordinator:
-                        </form:label>
-
-                        <form:select path="filters.subjectCoordinator" id="filters.subjectCoordinator" >
-                            <form:option value="" label=""/>
-                            <form:options items="${coordinators}" itemLabel="displayName" itemValue="id"/>
-                        </form:select>
---%>
-                    </span>
+                    <label class="filterInput">
+                        Responsible user:
+                        <select id="responsible-user" class="filter-value direct">
+                            <option></option>
+                            <c:forEach items="${potentialResponsibleUsers}" var="sscm">
+                                <option value="${sscm.name}">${sscm.name}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
                 </div>
 
                 <div class="filterGroup">

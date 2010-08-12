@@ -160,21 +160,51 @@ public class PscUserService implements PscUserDetailsService {
     }
 
     /**
-     * Finds all the users in the system who share some role membership scope with the
-     * given user in the given role.
+     * Finds all the users in the system who have the role "collegialRole" and who
+     * have overlapping scope in that role with the given user in any of the specified
+     * roles.  If no candidate roles are specified, the collegial role is used.
+     * <p>
+     * For example, say you have these users (simplified by omitting study scope):
+     * <ul>
+     *   <li><tt>alice</tt>, a Data Reader for NU</li>
+     *   <li><tt>betsy</tt>, a SSCM for NU</li>
+     *   <li><tt>cally</tt>, a Data Reader for Mayo</li>
+     *   <li><tt>darlene</tt>, an SSCM and Data Reader for NU</li>
+     * </ul>
+     * You would have the following results:
+     * <ul>
+     *   <li><code>getColleaguesOf(alice, DATA_READER)</code> => <tt>[alice, darlene]</tt></li>
+     *   <li><code>getColleaguesOf(alice, SSCM, DATA_READER)</code> => <tt>[betsy, darlene]</tt></li>
+     *   <li><code>getColleaguesOf(betsy, DATA_READER)</code> => <tt>[betsy]</tt></li>
+     *   <li><code>getColleaguesOf(betsy, SSCM)</code> => <tt>[darlene]</tt></li>
+     *   <li><code>getColleaguesOf(betsy, DATA_READER, SSCM)</code> => <tt>[alice, darlene]</tt></li>
+     *   <li><code>getColleaguesOf(cally, DATA_READER)</code> => <tt>[cally]</tt></li>
+     * </ul>
      */
-    public List<PscUser> getColleaguesOf(PscUser user, PscRole collegialRole) {
-        SuiteRoleMembership primaryMembership = user.getMembership(collegialRole);
-        if (primaryMembership == null) return Collections.emptyList();
+    public List<PscUser> getColleaguesOf(
+        PscUser primaryUser, PscRole collegialRole, PscRole... primaryRoles
+    ) {
+        if (primaryRoles.length == 0) primaryRoles = new PscRole[] { collegialRole };
+
+        List<SuiteRoleMembership> primaryMemberships =
+            new ArrayList<SuiteRoleMembership>(primaryRoles.length);
+        for (PscRole primaryRole : primaryRoles) {
+            SuiteRoleMembership srm = primaryUser.getMembership(primaryRole);
+            if (srm != null) primaryMemberships.add(srm);
+        }
+        if (primaryMemberships.isEmpty()) return Collections.emptyList();
 
         Collection<User> csmUsers = getCsmUsers(collegialRole);
         List<PscUser> candidates = getPscUsers(csmUsers, false);
-        for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
+        CANDIDATES: for (Iterator<PscUser> it = candidates.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
             SuiteRoleMembership candidateMembership = candidate.getMembership(collegialRole);
-            if (candidateMembership != null &&
-                candidateMembership.intersect(primaryMembership) != null) {
-                continue;
+            if (candidateMembership != null) {
+                for (SuiteRoleMembership primaryMembership : primaryMemberships) {
+                    if (candidateMembership.intersect(primaryMembership) != null) {
+                        continue CANDIDATES;
+                    }
+                }
             }
             it.remove();
         }
