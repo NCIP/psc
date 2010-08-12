@@ -4,12 +4,27 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 
 /**
+ * An enum of all the query parameters used by any resource in the system.
+ * The semantics of the parameters are not defined here.
+ * <p>
+ * Among other things, this enum is intended to promote the use of similarly named
+ * parameters for similar uses in different resources.
+ *
  * @author Rhett Sutphin
  */
 public enum QueryParameters {
     Q,
     TYPE_ID, /* deprecated */
-    TYPE
+    TYPE,  /* TODO: deprecate TYPE and replace with ACTIVITY_TYPE */
+    ACTIVITY_TYPE,
+    STUDY,
+    SITE,
+    STATE,
+    LABEL,
+    START_DATE,
+    END_DATE,
+    RESPONSIBLE_USER,
+    PERSON_ID
     ;
 
     public String attributeName() {

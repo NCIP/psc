@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivityType;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.*;
 
@@ -92,7 +93,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void test200ForSupportedCSVMediaType() throws Exception {
-        FilterParameters.STATE.putIn(request, "NA");
+        STATE.putIn(request, "NA");
         expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
             andReturn(rows);
         makeRequestType(PscMetadataService.TEXT_CSV);
@@ -101,7 +102,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void test200ForSupportedJSONMediaType() throws Exception {
-        FilterParameters.STATE.putIn(request, "NA");
+        STATE.putIn(request, "NA");
         expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
             andReturn(rows);
         makeRequestType(MediaType.APPLICATION_JSON);
@@ -110,8 +111,8 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForRangeOfDates() throws Exception {
-        FilterParameters.START_DATE.putIn(request, "2010-03-01");
-        FilterParameters.END_DATE.putIn(request, "2010-03-08");
+        START_DATE.putIn(request, "2010-03-01");
+        END_DATE.putIn(request, "2010-03-08");
         ScheduledActivitiesReportFilters actualFilter = getResource().buildFilters();
         assertNotNull("No filters built", actualFilter);
         assertNotNull("Filter doesn't contain the actual activity date range", actualFilter.getActualActivityDate());
@@ -120,13 +121,13 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForEndDate() throws Exception {
-        FilterParameters.END_DATE.putIn(request, "2010-03-08");
+        END_DATE.putIn(request, "2010-03-08");
         assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 8, 0, 0, 0));
     }
 
     public void testGetFilterForEndDateWhenImproperlyFormatted() throws Exception {
         try {
-            FilterParameters.END_DATE.putIn(request, "03/08/2010");
+            END_DATE.putIn(request, "03/08/2010");
             getResource().buildFilters();
             fail("Exception not thrown");
         } catch (ResourceException re) {
@@ -138,13 +139,13 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForStartDate() throws Exception {
-        FilterParameters.START_DATE.putIn(request, "2010-03-01");
+        START_DATE.putIn(request, "2010-03-01");
         assertOnlyFilterIs("actualActivityDate.start", DateTools.createDate(2010, Calendar.MARCH, 1, 0, 0, 0));
     }
 
     public void testGetFilterForStartDateWhenImproperlyFormatted() throws Exception {
         try {
-            FilterParameters.START_DATE.putIn(request, "03/01/2010");
+            START_DATE.putIn(request, "03/01/2010");
             getResource().buildFilters();
             fail("Exception not thrown");
         } catch (ResourceException re) {
@@ -156,13 +157,13 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForLabel() throws Exception {
-        FilterParameters.LABEL.putIn(request, "labelA");
+        LABEL.putIn(request, "labelA");
         assertOnlyFilterIs("label", "labelA");
     }
 
     public void testGetFilterForResponsibleUser() throws Exception {
         User expectedUser = AuthorizationObjectFactory.createCsmUser("josephine");
-        FilterParameters.RESPONSIBLE_USER.putIn(request, "josephine");
+        RESPONSIBLE_USER.putIn(request, "josephine");
         expect(csmAuthorizationManager.getUser("josephine")).andReturn(expectedUser);
 
         replayMocks();
@@ -171,7 +172,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForResponsibleUserWhenUnknown() throws Exception {
-        FilterParameters.RESPONSIBLE_USER.putIn(request, "josephine");
+        RESPONSIBLE_USER.putIn(request, "josephine");
         expect(csmAuthorizationManager.getUser("josephine")).andReturn(null);
         replayMocks();
 
@@ -187,13 +188,13 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForCurrentState() throws Exception {
-        FilterParameters.STATE.putIn(request, "SchEDulEd");
+        STATE.putIn(request, "SchEDulEd");
         assertOnlyFilterIs("currentStateMode", ScheduledActivityMode.SCHEDULED);
     }
 
     public void testGetFilterForCurrentStateWhenNotFound() throws Exception {
         try {
-            FilterParameters.STATE.putIn(request, "Sparkly");
+            STATE.putIn(request, "Sparkly");
             getResource().buildFilters();
             fail("Exception not thrown");
         } catch (ResourceException re) {
@@ -205,18 +206,18 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForStudyAssignedIdentifier() throws Exception {
-        FilterParameters.STUDY.putIn(request, "EG 1701");
+        STUDY.putIn(request, "EG 1701");
         assertOnlyFilterIs("studyAssignedIdentifier", "EG 1701");
     }
 
     public void testGetFilterForSiteAssignedIdendtifier() throws Exception {
-        FilterParameters.SITE.putIn(request, "Belgium, man");
+        SITE.putIn(request, "Belgium, man");
         assertOnlyFilterIs("siteName", "Belgium, man");
     }
 
     public void testGetFilterForActivityType() throws Exception {
         ActivityType type = Fixtures.setId(111, createActivityType("Measure"));
-        FilterParameters.ACTIVITY_TYPE.putIn(request, "MEASure");
+        ACTIVITY_TYPE.putIn(request, "MEASure");
         expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(type);
         replayMocks();
         assertOnlyFilterIs("activityType", type);
@@ -224,7 +225,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForInvalidActivityType() throws Exception {
-        FilterParameters.ACTIVITY_TYPE.putIn(request, "MEASure");
+        ACTIVITY_TYPE.putIn(request, "MEASure");
         expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(null);
         replayMocks();
         try {
@@ -251,7 +252,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetJSONRepresentation() throws Exception {
-        FilterParameters.STATE.putIn(request, "NA");
+        STATE.putIn(request, "NA");
 
         expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
             andReturn(rows);

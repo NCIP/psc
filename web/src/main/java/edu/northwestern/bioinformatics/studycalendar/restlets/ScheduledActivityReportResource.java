@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static java.lang.String.format;
 
@@ -70,22 +71,22 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
         applyResponsibleUserFilter(filters);
         applyDateRangeFilters(filters);
 
-        filters.setSiteName(FilterParameters.SITE.extractFrom(getRequest()));
-        filters.setLabel(FilterParameters.LABEL.extractFrom(getRequest()));
-        filters.setStudyAssignedIdentifier(FilterParameters.STUDY.extractFrom(getRequest()));
-        filters.setPersonId(FilterParameters.PERSON_ID.extractFrom(getRequest()));
+        filters.setSiteName(SITE.extractFrom(getRequest()));
+        filters.setLabel(LABEL.extractFrom(getRequest()));
+        filters.setStudyAssignedIdentifier(STUDY.extractFrom(getRequest()));
+        filters.setPersonId(PERSON_ID.extractFrom(getRequest()));
 
         return filters;
     }
 
     private void applyDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
         MutableRange<Date> range = new MutableRange<Date>();
-        range.setStart(parseDateFilter(FilterParameters.START_DATE));
-        range.setStop(parseDateFilter(FilterParameters.END_DATE));
+        range.setStart(parseDateFilter(START_DATE));
+        range.setStop(parseDateFilter(END_DATE));
         filters.setActualActivityDate(range);
     }
 
-    private Date parseDateFilter(FilterParameters dateParam) throws ResourceException {
+    private Date parseDateFilter(QueryParameters dateParam) throws ResourceException {
         String dateString = dateParam.extractFrom(getRequest());
         if (dateString == null) return null;
         try {
@@ -98,14 +99,14 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     }
 
     private void applyResponsibleUserFilter(ScheduledActivitiesReportFilters filters) throws ResourceException {
-        String responsible_user = FilterParameters.RESPONSIBLE_USER.extractFrom(getRequest());
+        String responsible_user = RESPONSIBLE_USER.extractFrom(getRequest());
         if (responsible_user != null) {
             User csmUser = csmAuthorizationManager.getUser(responsible_user);
             if (csmUser == null) {
                 throw new ResourceException(
                     Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
                     format("Unknown user for %s filter: %s",
-                        FilterParameters.RESPONSIBLE_USER.attributeName(), responsible_user));
+                        RESPONSIBLE_USER.attributeName(), responsible_user));
             } else {
                 filters.setResponsibleUser(csmUser);
             }
@@ -115,7 +116,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyStateFilter(
         ScheduledActivitiesReportFilters filters
     ) throws ResourceException {
-        String state = FilterParameters.STATE.extractFrom(getRequest());
+        String state = STATE.extractFrom(getRequest());
         if (state != null) {
             ScheduledActivityMode scheduledActivityMode = ScheduledActivityMode.getByName(state);
             if (scheduledActivityMode != null) {
@@ -130,7 +131,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyActivityTypeFilter(
         ScheduledActivitiesReportFilters filters
     ) throws ResourceException {
-        String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());
+        String activity_type = ACTIVITY_TYPE.extractFrom(getRequest());
         if (activity_type != null) {
             ActivityType activityType = activityTypeDao.getByNameIgnoringCase(activity_type);
             if (activityType != null) {
