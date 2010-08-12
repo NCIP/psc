@@ -156,7 +156,8 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         } catch (ResourceException re) {
             assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
             assertEquals("Wrong message",
-                "Unknown user for responsible_user filter", re.getStatus().getDescription());
+                "Unknown user for responsible-user filter: josephine",
+                re.getStatus().getDescription());
         }
     }
 

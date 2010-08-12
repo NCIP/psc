@@ -109,7 +109,8 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
             if (csmUser == null) {
                 throw new ResourceException(
                     Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                    "Unknown user for responsible_user filter");
+                    String.format("Unknown user for %s filter: %s",
+                        FilterParameters.RESPONSIBLE_USER.attributeName(), responsible_user));
             } else {
                 filters.setResponsibleUser(csmUser);
             }
