@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import java.util.Collection;
@@ -17,8 +18,24 @@ public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite>
     @Override public Class<StudySite> domainClass() { return StudySite.class; }
 
     @SuppressWarnings({ "unchecked" })
-    public List<StudySite> getIntersections(Collection<Integer> studyIds, Collection<Integer> siteIds) {
-        if (studyIds == null && siteIds == null) return getAll();
+    public List<Integer> getIntersectionIds(
+        Collection<Integer> studyIds, Collection<Integer> siteIds
+    ) {
+        if (studyIds == null && siteIds == null) return null;
+        return getHibernateTemplate().findByCriteria(
+            createIntersectionCriteria(studyIds, siteIds).setProjection(Projections.id()));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<StudySite> getIntersections(
+        Collection<Integer> studyIds, Collection<Integer> siteIds
+    ) {
+        return getHibernateTemplate().findByCriteria(createIntersectionCriteria(studyIds, siteIds));
+    }
+
+    private DetachedCriteria createIntersectionCriteria(
+        Collection<Integer> studyIds, Collection<Integer> siteIds
+    ) {
         DetachedCriteria criteria = DetachedCriteria.forClass(StudySite.class);
 
         Conjunction and = Restrictions.conjunction();
@@ -29,7 +46,7 @@ public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite>
             and.add(MoreRestrictions.in("study.id", studyIds));
         }
         criteria.add(and);
-        return getHibernateTemplate().findByCriteria(criteria);
+        return criteria;
     }
 
     /**

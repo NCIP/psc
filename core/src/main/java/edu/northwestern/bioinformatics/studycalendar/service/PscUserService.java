@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
@@ -54,6 +55,7 @@ public class PscUserService implements PscUserDetailsService {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private StudySiteDao studySiteDao;
 
     public PscUser getProvisionableUser(String username) {
         User user = loadCsmUser(username);
@@ -218,12 +220,10 @@ public class PscUserService implements PscUserDetailsService {
      * Get all the assignments the user can see.
      */
     public List<UserStudySubjectAssignmentRelationship> getVisibleAssignments(PscUser user) {
-        Collection<Integer> sites = siteDao.getVisibleSiteIds(
-            user.getVisibleSiteParameters(PscRoleUse.SUBJECT_MANAGEMENT.roles()));
-        Collection<Integer> studies = studyDao.getVisibleStudyIds(
-            user.getVisibleStudyParameters(PscRoleUse.SUBJECT_MANAGEMENT.roles()));
         List<StudySubjectAssignment> assignments =
-            studySubjectAssignmentDao.getAssignmentsInIntersection(sites, studies);
+            studySubjectAssignmentDao.getAssignmentsInIntersection(
+                getVisibleStudyIds(user, PscRoleUse.SUBJECT_MANAGEMENT.roles()),
+                getVisibleSiteIds(user, PscRoleUse.SUBJECT_MANAGEMENT.roles()));
         List<UserStudySubjectAssignmentRelationship> result =
             new ArrayList<UserStudySubjectAssignmentRelationship>(assignments.size());
         for (StudySubjectAssignment assignment : assignments) {
@@ -255,6 +255,23 @@ public class PscUserService implements PscUserDetailsService {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns the internal IDs for the StudySites which the user can see in the
+     * given roles.  If no roles are specified, it will use all the user's roles.
+     */
+    public Collection<Integer> getVisibleStudySiteIds(PscUser user, PscRole... roles) {
+        return studySiteDao.getIntersectionIds(
+            getVisibleStudyIds(user, roles), getVisibleSiteIds(user, roles));
+    }
+
+    private Collection<Integer> getVisibleStudyIds(PscUser user, PscRole... roles) {
+        return studyDao.getVisibleStudyIds(user.getVisibleStudyParameters(roles));
+    }
+
+    private Collection<Integer> getVisibleSiteIds(PscUser user, PscRole... roles) {
+        return siteDao.getVisibleSiteIds(user.getVisibleSiteParameters(roles));
     }
 
     ////// CONFIGURATION
@@ -302,5 +319,10 @@ public class PscUserService implements PscUserDetailsService {
     @Required
     public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
         this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+    }
+
+    @Required
+    public void setStudySiteDao(StudySiteDao studySiteDao) {
+        this.studySiteDao = studySiteDao;
     }
 }

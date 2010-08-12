@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static org.easymock.EasyMock.*;
 
 public class PscUserServiceTest extends StudyCalendarTestCase {
@@ -58,6 +59,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     private UserService userService;
     private SiteDao siteDao;
     private StudyDao studyDao;
+    private StudySiteDao studySiteDao;
     private StudySubjectAssignmentDao assignmentDao;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private AuthorizationManager csmAuthorizationManager;
@@ -74,6 +76,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
+        studySiteDao = registerDaoMockFor(StudySiteDao.class);
         assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
 
         CsmHelper csmHelper = registerMockFor(CsmHelper.class);
@@ -95,6 +98,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setCsmHelper(csmHelper);
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
+        service.setStudySiteDao(studySiteDao);
         service.setStudySubjectAssignmentDao(assignmentDao);
 
         csmUser = AuthorizationObjectFactory.createCsmUser(5, "John");
@@ -288,7 +292,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         expect(studyDao.getVisibleStudyIds(
             new VisibleStudyParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
             andReturn(Arrays.asList(4));
-        expect(assignmentDao.getAssignmentsInIntersection(Arrays.asList(3, 7), Arrays.asList(4))).
+        expect(assignmentDao.getAssignmentsInIntersection(Arrays.asList(4), Arrays.asList(3, 7))).
             andReturn(Arrays.asList(expectedAssignment));
 
         replayMocks();
@@ -317,6 +321,53 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong number of assignments returned", 0, actual.size());
+    }
+
+    public void testGetVisibleStudySiteIds() throws Exception {
+        PscUser guy = new PscUserBuilder().
+            add(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(whatCheer).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon).forAllStudies().
+            toUser();
+
+        expect(siteDao.getVisibleSiteIds(
+            new VisibleSiteParameters().forParticipatingSiteIdentifiers("IA987"))).
+            andReturn(Arrays.asList(4));
+        expect(studyDao.getVisibleStudyIds(
+            new VisibleStudyParameters().forParticipatingSiteIdentifiers("IA987"))).
+            andReturn(Arrays.asList(3, 7));
+        expect(studySiteDao.getIntersectionIds(Arrays.asList(3, 7), Arrays.asList(4))).
+            andReturn(Arrays.asList(34, 47));
+
+        replayMocks();
+        Collection<Integer> actual = service.getVisibleStudySiteIds(guy, PscRole.STUDY_TEAM_ADMINISTRATOR);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible study sites", 2, actual.size());
+        assertContains("Wrong study site IDs", actual, 34);
+        assertContains("Wrong study site IDs", actual, 47);
+    }
+
+    public void testGetVisibleStudySiteIdsWhenNoRolesSpecified() throws Exception {
+        PscUser guy = new PscUserBuilder().
+            add(PscRole.STUDY_TEAM_ADMINISTRATOR).forSites(whatCheer).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(solon).forAllStudies().
+            toUser();
+
+        expect(siteDao.getVisibleSiteIds(
+            new VisibleSiteParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
+            andReturn(Arrays.asList(21));
+        expect(studyDao.getVisibleStudyIds(
+            new VisibleStudyParameters().forParticipatingSiteIdentifiers("IA987", "IA846"))).
+            andReturn(Arrays.asList(4, 84));
+        expect(studySiteDao.getIntersectionIds(Arrays.asList(4, 84), Arrays.asList(21))).
+            andReturn(Arrays.asList(336));
+
+        replayMocks();
+        Collection<Integer> actual = service.getVisibleStudySiteIds(guy);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible study sites", 1, actual.size());
+        assertContains("Wrong study site IDs", actual, 336);
     }
 
     public void testGetManagedAssignments() throws Exception {

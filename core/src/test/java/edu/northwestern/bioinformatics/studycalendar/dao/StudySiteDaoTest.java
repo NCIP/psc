@@ -27,6 +27,20 @@ public class StudySiteDaoTest  extends ContextDaoTestCase<StudySiteDao> {
         assertEquals("Last approval should be latest", -1048, (int) ss.getAmendmentApprovals().get(2).getId());
     }
 
+    // further tests under getIntersections
+    public void testGetIntersectionIdsForFoundIntersection() throws Exception {
+        List<Integer> actual = getDao().getIntersectionIds(Arrays.asList(-100), Arrays.asList(-200));
+
+        assertEquals("Wrong number of study sites IDs: " + actual, 1, actual.size());
+        assertEquals("Wrong intersection", -300, (int) actual.get(0));
+    }
+
+    public void testGetIntersectionIdsForAll() throws Exception {
+        List<Integer> actual = getDao().getIntersectionIds(null, null);
+
+        assertNull("Should be for all (i.e., null): " + actual, actual);
+    }
+
     public void testGetIntersectionsForFoundIntersection() throws Exception {
         List<StudySite> actual = getDao().getIntersections(Arrays.asList(-100), Arrays.asList(-200));
 
