@@ -150,7 +150,6 @@ public abstract class ReportFilters {
         protected String getValueForFilter() {
             return stringParametrize(getValue());
         }
-
     }
 
     protected class ControlledVocabularyObjectFilterLimit<V extends AbstractControlledVocabularyObject> extends SingleFilterFilterLimit<Integer, V> {
@@ -218,6 +217,28 @@ public abstract class ReportFilters {
         public void appendDescription(StringBuilder builder) {
             builder.append(baseName).append(" in [")
                     .append(getValue().getStart()).append(", ").append(getValue().getStop()).append(']');
+        }
+    }
+
+    protected class InListFilterLimit<E>
+        extends FilterLimit<Collection<E>>
+    {
+        private String baseName;
+
+        public InListFilterLimit(String baseName) {
+            this.baseName = baseName;
+        }
+
+        @Override
+        public void apply(Session session) throws HibernateException {
+            session.enableFilter(qualifyFilterName(baseName)).
+                setParameterList(baseName, getValue());
+        }
+
+        @Override
+        public void appendDescription(StringBuilder builder) {
+            throw new UnsupportedOperationException("appendDescription not implemented");
+
         }
     }
 }

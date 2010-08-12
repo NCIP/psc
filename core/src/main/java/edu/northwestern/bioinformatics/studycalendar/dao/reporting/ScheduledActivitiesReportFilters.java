@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -21,6 +22,8 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
     private StringFilter label = new StringFilter("label");
     private StringFilter personId = new StringFilter("personId");
+    private InListFilterLimit<Integer> authorizedStudySiteIds =
+        new InListFilterLimit<Integer>("authorizedStudySiteIds");
 
     @Override
     protected String getHibernateFilterPrefix() {
@@ -89,5 +92,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public void setPersonId(String value) {
         personId.setValue(value);
+    }
+
+    public Collection<Integer> getAuthorizedStudySiteIds() {
+        return authorizedStudySiteIds.getValue();
+    }
+
+    public void setAuthorizedStudySiteIds(Collection<Integer> ids) {
+        this.authorizedStudySiteIds.setValue(ids);
     }
 }

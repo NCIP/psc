@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ContextDaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ public abstract class ReportDaoTestCase<F extends ReportFilters, R extends Domai
     private D dao;
     protected F filters;
 
+    @Override
+    @SuppressWarnings({ "unchecked" })
     protected void setUp() throws Exception {
         super.setUp();
         dao = (D) getApplicationContext().getBean(getDaoBeanName());
@@ -23,10 +26,11 @@ public abstract class ReportDaoTestCase<F extends ReportFilters, R extends Domai
 
     protected List<R> assertSearchWithResults(long... expectedIds) {
         List<R> rows = doSearch();
-        assertEquals("Wrong number of results: " + DomainObjectTools.collectIds(rows), expectedIds.length, rows.size());
+        Collection<Integer> actualIds = DomainObjectTools.collectIds(rows);
+        assertEquals("Wrong number of results: " + actualIds, expectedIds.length, rows.size());
         for (int i = 0; i < expectedIds.length; i++) {
             long id = expectedIds[i];
-            assertEquals("Wrong row " + i, id, (long) rows.get(i).getId());
+            assertEquals("Wrong row " + i + ": " + actualIds, id, (long) rows.get(i).getId());
         }
         return rows;
     }
@@ -35,6 +39,7 @@ public abstract class ReportDaoTestCase<F extends ReportFilters, R extends Domai
         return dao.search(filters);
     }
 
+    @Override
     protected D getDao() {
         return dao;
     }

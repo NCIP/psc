@@ -30,8 +30,8 @@
                 -- users.name AS subject_coordinator_name,
                 -- users.id AS subject_coordinator_id,
                 pa.condition,
-                assign.study_subject_id
-
+                assign.study_subject_id,
+                ssites.id AS study_site_id
             FROM
                 scheduled_activities s_actv
                 LEFT JOIN activities a ON a.id = s_actv.activity_id
@@ -110,6 +110,7 @@
         -->
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
         <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(grid_id) = :personId)"/>
+        <filter name="filter_authorizedStudySiteIds" condition="study_site_id IN (:authorizedStudySiteIds)"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
@@ -139,5 +140,8 @@
     </filter-def>
     <filter-def name="filter_personId">
         <filter-param name="personId" type="string"/>
+    </filter-def>
+    <filter-def name="filter_authorizedStudySiteIds">
+        <filter-param name="authorizedStudySiteIds" type="integer"/>
     </filter-def>
 </hibernate-mapping>

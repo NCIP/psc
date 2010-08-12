@@ -11,6 +11,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -156,8 +157,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testRowWithPersonIdFilter() {
         filters.setPersonId("UNIVERSAL");
-        List<ScheduledActivitiesReportRow> rows = assertSearchWithResults(NEG_18, NEG_17, NEG_16);
-        assertEquals("Returns different number of rows ", 3, rows.size());
+        assertSearchWithResults(NEG_18, NEG_17, NEG_16);
     }
 
     public void testRowWithPersonIdAndStartAndEndDate() {
@@ -174,8 +174,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         range.setStart(startDate);
         range.setStop(endDate);
         filters.setActualActivityDate(range);
-        List<ScheduledActivitiesReportRow> rows = assertSearchWithResults(NEG_18);
-        assertEquals("Returns different number of rows ", 1, rows.size());
+        assertSearchWithResults(NEG_18);
     }
 
     public void testRowWithLabelFilter() {
@@ -186,8 +185,12 @@ public class ScheduledActivitiesReportRowDaoTest extends
         }
     }
 
+    public void testAuthorizedStudySiteIdsFilter() throws Exception {
+        filters.setAuthorizedStudySiteIds(Arrays.asList(-2));
+        assertSearchWithResults(NEG_18);
+    }
+
     private static final ThreadLocal<DateFormat> API_DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override protected DateFormat initialValue() { return new SimpleDateFormat("yyyy-MM-dd"); }
     };
-
 }
