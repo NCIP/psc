@@ -15,41 +15,49 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
 public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
-    private boolean messageIndicator;
+    private int hiddenItemsCount;
 
-    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows, boolean messageIndicator) {
+    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows, int hiddenItemsCount) {
         this.filters = filters;
         this.allRows = allRows;
-        this.messageIndicator = messageIndicator;
+        this.hiddenItemsCount = hiddenItemsCount;
     }
 
     @Override
     public void generate(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
-            if (messageIndicator) {
-                generator.writeFieldName("messages");
-                generator.writeStartObject();
-                    JacksonTools.nullSafeWriteStringField(generator, "limitedAccess", "There are some activities that you do not have access to");
-                generator.writeEndObject();
-            }
+            generator.writeObjectFieldStart("messages");
+                if (hiddenItemsCount > 0) {
+                    writeHiddenResultsMessage(generator);
+                }
+            generator.writeEndObject();
             generator.writeFieldName("filters");
             generator.writeStartObject();
                 if (filters != null) {
-                    createJSONFilters(generator, filters);
+                    writeFilters(generator, filters);
                 }
             generator.writeEndObject();
             generator.writeFieldName("rows");
             generator.writeStartArray();
                 if (allRows != null) {
                     for (ScheduledActivitiesReportRow row: allRows) {
-                        createJSONRow(generator, row);
+                        writeRow(generator, row);
                     }
                 }
             generator.writeEndArray();
         generator.writeEndObject();
     }
 
-    public static void createJSONFilters(JsonGenerator generator, ScheduledActivitiesReportFilters filters) throws IOException{
+    private void writeHiddenResultsMessage(JsonGenerator generator) throws IOException {
+        JacksonTools.nullSafeWriteStringField(generator, "hidden_results",
+            String.format(
+                "There %s %d additional result%s that you are not authorized to see.",
+                hiddenItemsCount == 1 ? "is" : "are",
+                hiddenItemsCount,
+                hiddenItemsCount == 1 ? "" : "s"));
+    }
+
+    public static void writeFilters(JsonGenerator generator, ScheduledActivitiesReportFilters filters) throws IOException{
         if (filters.getActivityType()!= null) {
             JacksonTools.nullSafeWriteStringField(generator, "activity_type", filters.getActivityType().getName());
         }
@@ -81,7 +89,7 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
         }
     }
 
-    public static void createJSONRow(JsonGenerator generator, ScheduledActivitiesReportRow row) throws IOException {
+    public static void writeRow(JsonGenerator generator, ScheduledActivitiesReportRow row) throws IOException {
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "activity_name", row.getScheduledActivity().getActivity().getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());

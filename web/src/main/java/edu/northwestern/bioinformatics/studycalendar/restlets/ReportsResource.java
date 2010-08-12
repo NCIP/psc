@@ -137,12 +137,9 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         List<ScheduledActivitiesReportRow> filteredRows = filteredRows(allRows);
-        boolean messageIndicator = false;
-        if (allRows.size() > filteredRows.size()) {
-            messageIndicator = true;
-        }
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ReportJsonRepresentation(getFilters(), filteredRows, messageIndicator);
+            return new ReportJsonRepresentation(getFilters(), filteredRows,
+                allRows.size() - filteredRows.size());
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
             return new ReportCsvRepresentation(filteredRows, ',');

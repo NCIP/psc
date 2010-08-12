@@ -63,13 +63,38 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         filters.setCurrentStateMode(ScheduledActivityMode.SCHEDULED);
     }
 
+    public void testHiddenItemsMessageAddedWhenThereAreSome() throws Exception {
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 15));
+        JSONObject messages = actual.optJSONObject("messages");
+        assertNotNull("Messages missing", messages);
+        assertEquals("Wrong number of messages", 1, messages.length());
+        assertEquals("Hidden items message wrong", messages.optString("hidden_results"),
+            "There are 15 additional results that you are not authorized to see.");
+    }
+
+    public void testHiddenItemsMessageAddedWhenThereIsOne() throws Exception {
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 1));
+        JSONObject messages = actual.optJSONObject("messages");
+        assertNotNull("Messages missing", messages);
+        assertEquals("Wrong number of messages", 1, messages.length());
+        assertEquals("Hidden items message wrong", messages.optString("hidden_results"),
+            "There is 1 additional result that you are not authorized to see.");
+    }
+
+    public void testNoHiddenItemsMessageAddedWhenThereAreNotAny() throws Exception {
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 0));
+        JSONObject messages = actual.optJSONObject("messages");
+        assertNotNull("Messages missing", messages);
+        assertEquals("Wrong number of messages", 0, messages.length());
+    }
+
     public void testFilterKey() throws Exception {
         JSONObject actual = writeAndParseObject(actual());
         assertNotNull("Missing key filters", actual.getJSONObject("filters"));
     }
 
     public void testMissingFiltersValues() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(null, allRows, false));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(null, allRows, 0));
         assertNotNull("Missing key filters", actual.getJSONObject("filters"));
         JSONObject filters = actual.getJSONObject("filters");
         assertEquals("Filter is empty", 0, filters.length());
@@ -89,10 +114,6 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
             actual.getJSONObject("filters").get("responsible_user"));
         assertEquals("State has different value", "Scheduled",
             actual.getJSONObject("filters").get("state"));
-    }
-
-    private ReportJsonRepresentation actual() {
-        return new ReportJsonRepresentation(filters, allRows, false);
     }
 
     public void testIdealDateIncluded() throws Exception {
@@ -132,6 +153,10 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
     public void testSubjectNameIncluded() throws Exception {
         assertEquals("Wrong subject name", "subject one",
             writeAndGetRow(0).getString("subject_name"));
+    }
+
+    private ReportJsonRepresentation actual() {
+        return new ReportJsonRepresentation(filters, allRows, 0);
     }
 
     private JSONObject writeAndGetRow(int rowIndex) throws IOException, JSONException {

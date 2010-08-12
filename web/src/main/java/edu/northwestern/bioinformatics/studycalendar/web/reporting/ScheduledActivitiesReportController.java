@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,8 @@ public class ScheduledActivitiesReportController
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
-        model.put("coordinators", getListOfColleagueUsers());
+        model.put("coordinators", Collections.<User>emptyList());
+//        model.put("coordinators", getListOfColleagueUsers());
         return model;
     }
 

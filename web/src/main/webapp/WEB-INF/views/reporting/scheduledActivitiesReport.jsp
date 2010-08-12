@@ -76,15 +76,14 @@
         }
 
         function submitFilters() {
-            $('messagesInfo').innerHTML = ""
-            var uri = getUri(".json")
+            var uri = getUri(".json");
             var params = getParams();
 
             SC.asyncRequest(uri, {
               method: "GET", parameters: params,
               onSuccess: function(response) {
                    var resp = response.responseJSON
-                   fillInMessagesInfo(resp);
+                   displayResultMessages(resp);
                   
                    var bundleListColumns = [
                         { key: "activity_name", label: "Activity", sortable: true},
@@ -135,15 +134,11 @@
             })
         }
 
-        function fillInMessagesInfo(resp) {
-            var messageList = resp.messages
-            if (messageList != null) {
-                messageList = messageList.limitedAccess
-            }
-            if (messageList != null) {
-                $('messagesInfo').innerHTML = messageList;
-            }
-
+        function displayResultMessages(resp) {
+            jQuery('#messages').empty();
+            _(resp.messages).chain().values().each(function (msg) {
+                jQuery('#messages').append("<li>" + msg + "</li>");
+            });
         }
 
         function resetFilters() {
@@ -156,7 +151,7 @@
            $("filters.subjectCoordinator").value = "";
            $("filters.personId").value ="";
            $("bundle-list").hide();
-           $('messagesInfo').innerHTML = "";
+           $('messages').innerHTML = "";
            $("labels-autocompleter-input").value = "";
         }
 
@@ -287,7 +282,7 @@
             </div>
 
           <br style="clear:both"/>
-          <div id="messagesInfo" class="messagesInfo"> </div>
+          <ul id="messages" class="messages"> </ul>
           <div id="bundle-list" class="bundle-list">
           </div>
           <div class="export">
