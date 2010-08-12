@@ -13,7 +13,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import org.easymock.IArgumentMatcher;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -31,7 +30,7 @@ import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Nataliya Shurupova
@@ -54,7 +53,6 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     private ReportService reportService;
     private AuthorizationManager csmAuthorizationManager;
 
-    private ScheduledActivitiesReportFilters filters;
     private List<ScheduledActivitiesReportRow> rows;
 
     @Override
@@ -65,7 +63,6 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
 
-        filters = new ScheduledActivitiesReportFilters();
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow(); row1.setId(1001);
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow(); row2.setId(1002);
         rows = Arrays.asList(row1, row2);
@@ -96,8 +93,8 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
 
     public void test200ForSupportedCSVMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "NA");
-        filters = getResource().buildFilters();
-        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
+        expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
+            andReturn(rows);
         makeRequestType(PscMetadataService.TEXT_CSV);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
@@ -105,8 +102,8 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
 
     public void test200ForSupportedJSONMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "NA");
-        filters = getResource().buildFilters();
-        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
+        expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
+            andReturn(rows);
         makeRequestType(MediaType.APPLICATION_JSON);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
@@ -214,12 +211,10 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetJSONRepresentation() throws Exception {
-        FilterParameters.START_DATE.putIn(request, "2010-03-01");
-        FilterParameters.END_DATE.putIn(request, "2010-03-05");
         FilterParameters.STATE.putIn(request, "NA");
 
-        filters = getResource().buildFilters();
-        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
+        expect(reportService.searchScheduledActivities((ScheduledActivitiesReportFilters) notNull())).
+            andReturn(rows);
 
         makeRequestType(MediaType.APPLICATION_JSON);
 
@@ -231,56 +226,5 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
 
     private void makeRequestType(MediaType requestType) {
         request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(requestType)));
-    }
-
-     ////// Custom Matchers
-    public static ScheduledActivitiesReportFilters eqFilters(ScheduledActivitiesReportFilters in) {
-        org.easymock.EasyMock.reportMatcher(new FilterMatcher(in));
-        return null;
-    }
-
-    public static class FilterMatcher implements IArgumentMatcher {
-        private ScheduledActivitiesReportFilters expected;
-
-        public FilterMatcher(ScheduledActivitiesReportFilters expected) {
-            this.expected = expected;
-        }
-       
-        public boolean matches(Object actual) {
-            if (!(actual instanceof ScheduledActivitiesReportFilters)) {
-                return false;
-            }
-            ScheduledActivitiesReportFilters actualFilter = (ScheduledActivitiesReportFilters)actual;
-            if (expected.getActivityType() != null && actualFilter.getActivityType() != null) {
-                assertNotEquals("mismatched activity type", expected.getActivityType().equals(actualFilter.getActivityType()));
-            }
-            if (expected.getActualActivityDate() != null && actualFilter.getActualActivityDate() != null) {
-                assertNotEquals("mismatched actual activity date", expected.getActualActivityDate().equals(actualFilter.getActualActivityDate()));
-            }
-            if (expected.getCurrentStateMode()!=null && actualFilter.getCurrentStateMode()!=null){
-                assertNotEquals("mismatched current state mode", expected.getCurrentStateMode().equals(actualFilter.getCurrentStateMode()));
-            }
-            if (expected.getLabel()!=null && actualFilter.getLabel()!=null){
-                assertNotEquals("mismatched current state mode", expected.getLabel().equals(actualFilter.getLabel()));
-            }
-            if (expected.getSiteName()!=null && actualFilter.getSiteName()!=null){
-                assertNotEquals("mismatched current state mode", expected.getSiteName().equals(actualFilter.getSiteName()));
-            }
-            if (expected.getStudyAssignedIdentifier()!=null && actualFilter.getStudyAssignedIdentifier()!=null){
-                assertNotEquals("mismatched current state mode", expected.getStudyAssignedIdentifier().equals(actualFilter.getStudyAssignedIdentifier()));
-            }
-//            if (expected.getSubjectCoordinator()!=null && actualFilter.getSubjectCoordinator()!=null){
-//                assertNotEquals("mismatched current state mode", expected.getSubjectCoordinator().equals(actualFilter.getSubjectCoordinator()));
-//            }
-            return true;
-        }
-
-        public void appendTo(StringBuffer buffer) {
-            buffer.append("eqFilters(");
-            buffer.append(expected.getClass().getName());
-            buffer.append(" filter \"");
-            buffer.append(expected);
-            buffer.append("\")");
-        }
     }
 }
