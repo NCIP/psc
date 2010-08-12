@@ -14,7 +14,9 @@ import java.util.List;
 /**
  * @author John Dzak
  */
-public abstract class ReportDao<F extends ReportFilters, R extends DomainObject> extends StudyCalendarDao<R> {
+public abstract class ReportDao<F extends ReportFilters, R extends DomainObject>
+    extends StudyCalendarDao<R>
+{
     @SuppressWarnings("unchecked")
     public List<R> search(final F filters) {
         return getHibernateTemplate().executeFind(new HibernateCallback() {
@@ -24,10 +26,10 @@ public abstract class ReportDao<F extends ReportFilters, R extends DomainObject>
                     log.debug("No filters selected, skipping search: " + filters);
                     return Collections.emptyList();
                 } else {
-                    Criteria criteria = session.createCriteria(domainClass()).addOrder(Order.asc("id"));
+                    Criteria criteria =
+                        session.createCriteria(domainClass()).addOrder(Order.asc("id"));
                     filters.apply(session);
                     return (List<R>) criteria.list();
-
                 }
             }
         });

@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledA
  * @author John Dzak
  */
 public class ScheduledActivitiesReportRowDao extends ReportDao<ScheduledActivitiesReportFilters, ScheduledActivitiesReportRow> {
-
+    @Override
     public Class<ScheduledActivitiesReportRow> domainClass() {
         return ScheduledActivitiesReportRow.class;
     }

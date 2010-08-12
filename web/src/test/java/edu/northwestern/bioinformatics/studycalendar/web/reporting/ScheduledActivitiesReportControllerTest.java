@@ -114,7 +114,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     public void testCreateModel() {
         expectActivityTypeDaoCall();
         replayMocks();
-            Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY), command);
+            Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY));
         verifyMocks();
         assertNotNull("Model should contain modes", model.get("modes"));
     }

@@ -1,9 +1,14 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<jsp:useBean id="command" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.web.reporting.ScheduledActivitiesReportCommand"/>
+<jsp:useBean id="coordinators" scope="request"
+             type="java.util.List<edu.northwestern.bioinformatics.studycalendar.domain.User>"/>
 
 <tags:javascriptLink name="psc-tools/misc"/>
 <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
@@ -29,7 +34,6 @@
     <tags:stylesheetLink name="main"/>
     <tags:sassLink name="labels"/>
 
-    <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
     <script type="text/javascript">
 
         var bundleList;
@@ -160,9 +164,9 @@
         }
 
         function setUpFiltersWithValues() {
-            $("filters.personId").value = '${personId}'
-            $("actual-date-start").value = '${startDate}'
-            $("actual-date-stop").value = '${endDate}'
+            $("filters.personId").value = '${command.personId}';
+            $("actual-date-start").value = '${command.startDate}';
+            $("actual-date-stop").value = '${command.endDate}';
         }
 
         Event.observe(window, "load", setUpFiltersWithValues)
@@ -179,7 +183,6 @@
             <tags:errors path="*"/>
              <div class="search_box">
                  <input type="submit" value="Search" class="button" onclick="submitFilters()"/>
-                    <%--<span id="searchResult">${fn:length(results)} results</span>--%>
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
             <div class="search-filters">
@@ -285,8 +288,8 @@
           </div>
           <div class="export">
             <span id="exportOptions"> Export Options:</span>
-            <a id="exportActivitiesLinkCSV" class="underlined" id="xls-report" href="#" onclick="generateExport('.csv')">CSV</a> |
-            <a id="exportActivitiesLinkXLS" class="underlined" id="csv-report" href="#" onclick="generateExport('.xls')">Excel</a>
+            <a class="underlined" id="xls-report" href="#" onclick="generateExport('.csv')">CSV</a> |
+            <a class="underlined" id="csv-report" href="#" onclick="generateExport('.xls')">Excel</a>
           </div>
           
         </form:form>

@@ -86,23 +86,15 @@ public class ScheduledActivitiesReportController
         ScheduledActivitiesReportCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, command));
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors));
     }
 
     @SuppressWarnings({"unchecked"})
-    protected Map createModel(BindException errors, ScheduledActivitiesReportCommand command) {
+    protected Map createModel(BindException errors) {
         Map<String, Object> model = errors.getModel();
-        List<User> users = getListOfColleagueUsers();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
-        model.put("coordinators", users);
-        model.put("personId", command.getPersonId());
-        if (command.getStartDate()!=null){
-            model.put("startDate", command.getStartDate());
-        }
-        if (command.getEndDate() !=null) {
-            model.put("endDate", command.getEndDate());
-        }
+        model.put("coordinators", getListOfColleagueUsers());
         return model;
     }
 

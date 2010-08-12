@@ -16,7 +16,7 @@ public class ScheduledActivitiesReportRow implements DomainObject {
     private Study study;
     private Site site;
     private String subjectCoordinatorName;
-    String studySubjectId;
+    private String studySubjectId;
 
     public Integer getId() {
         return id;

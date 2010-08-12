@@ -6,12 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
  * @author John Dzak
  */
 public class ScheduledActivitiesReportCommand {
-    ScheduledActivitiesReportFilters filters;
-    String label;
+    private ScheduledActivitiesReportFilters filters;
+    private String label;
 
-    String personId;
-    String startDate;
-    String endDate;
+    private String personId;
+    private String startDate;
+    private String endDate;
 
     public ScheduledActivitiesReportCommand(ScheduledActivitiesReportFilters filters) {
         this.filters = filters;
@@ -21,21 +21,12 @@ public class ScheduledActivitiesReportCommand {
         return filters;
     }
 
-    public void setFilters(ScheduledActivitiesReportFilters filters) {
-        this.filters = filters;
-    }
-
-
     public String getLabel() {
         return label;
     }
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public void setLabelFilter() {
-        filters.setLabel(getLabel());
     }
 
     public String getPersonId() {
