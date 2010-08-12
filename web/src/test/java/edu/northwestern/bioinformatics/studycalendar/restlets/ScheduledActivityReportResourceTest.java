@@ -96,7 +96,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
 
     public void test200ForSupportedCSVMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
-        filters = getResource().getFilters();
+        filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
         request.getResourceRef().addQueryParameter("state", "1");
         makeRequestType(PscMetadataService.TEXT_CSV);
@@ -106,7 +106,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
 
     public void test200ForSupportedJSONMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
-        filters = getResource().getFilters();
+        filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
         request.getResourceRef().addQueryParameter("state", "1");
         makeRequestType(MediaType.APPLICATION_JSON);
@@ -118,7 +118,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     public void testGetFilterForRangeOfDates() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         FilterParameters.END_DATE.putIn(request, "2010-03-08");
-        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        ScheduledActivitiesReportFilters actualFilter = getResource().buildFilters();
         assertNotNull("No filters built", actualFilter);
         assertNotNull("Filter doesn't contain the actual activity date range", actualFilter.getActualActivityDate());
         assertDayOfDate("Incorrect start date", 2010, Calendar.MARCH, 1, actualFilter.getActualActivityDate().getStart());
@@ -156,7 +156,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         replayMocks();
 
         try {
-            getResource().getFilters();
+            getResource().buildFilters();
             fail("Resource exception not thrown");
         } catch (ResourceException re) {
             assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
@@ -192,7 +192,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     private void assertOnlyFilterIs(String filterProperty, Object expectedValue) throws ResourceException {
-        BeanWrapper filterBean = new BeanWrapperImpl(getResource().getFilters());
+        BeanWrapper filterBean = new BeanWrapperImpl(getResource().buildFilters());
         assertEquals("Filter property " + filterProperty + " not set to expected value",
             expectedValue, filterBean.getPropertyValue(filterProperty));
         for (String otherProperty : FILTER_PROPERTIES) {
@@ -208,7 +208,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         FilterParameters.END_DATE.putIn(request, "2010-03-05");
         FilterParameters.STATE.putIn(request, "1");
 
-        filters = getResource().getFilters();
+        filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
 
         makeRequestType(MediaType.APPLICATION_JSON);

@@ -57,48 +57,29 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Collection<ScheduledActivitiesReportRow> getAllObjects() throws ResourceException {
-        return reportService.searchScheduledActivities(getFilters());
+        return reportService.searchScheduledActivities(buildFilters());
     }
 
     // exposed for testing
-    ScheduledActivitiesReportFilters getFilters() throws ResourceException {
-        String study = FilterParameters.STUDY.extractFrom(getRequest());
-        String site = FilterParameters.SITE.extractFrom(getRequest());
-        String state = FilterParameters.STATE.extractFrom(getRequest());
-        String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());               
-        String label = FilterParameters.LABEL.extractFrom(getRequest());
+    ScheduledActivitiesReportFilters buildFilters() throws ResourceException {
+        ScheduledActivitiesReportFilters filters = new ScheduledActivitiesReportFilters();
+
+        applyActivityTypeFilter(filters);
+        applyStateFilter(filters);
+        applyResponsibleUserFilter(filters);
+        applyDateRangeFilters(filters);
+
+        filters.setSiteName(FilterParameters.SITE.extractFrom(getRequest()));
+        filters.setLabel(FilterParameters.LABEL.extractFrom(getRequest()));
+        filters.setStudyAssignedIdentifier(FilterParameters.STUDY.extractFrom(getRequest()));
+        filters.setPersonId(FilterParameters.PERSON_ID.extractFrom(getRequest()));
+
+        return filters;
+    }
+
+    private void applyDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
         String start_date = FilterParameters.START_DATE.extractFrom(getRequest());
         String end_date = FilterParameters.END_DATE.extractFrom(getRequest());
-        String responsible_user = FilterParameters.RESPONSIBLE_USER.extractFrom(getRequest());
-        String person_id = FilterParameters.PERSON_ID.extractFrom(getRequest());
-
-        ScheduledActivitiesReportFilters filters = new ScheduledActivitiesReportFilters();
-        if (activity_type != null) {
-            ActivityType activityType = activityTypeDao.getById(new Integer(activity_type));
-            filters.setActivityType(activityType);
-        }
-
-        if (state != null) {
-            ScheduledActivityMode scheduledActivityMode = ScheduledActivityMode.getById(new Integer(state));
-            filters.setCurrentStateMode(scheduledActivityMode);
-        }
-
-        if (responsible_user != null) {
-            User csmUser = csmAuthorizationManager.getUser(responsible_user);
-            if (csmUser == null) {
-                throw new ResourceException(
-                    Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                    "Unknown user for responsible_user filter");
-            } else {
-                filters.setResponsibleUser(csmUser);
-            }
-        }
-
-        filters.setSiteName(site);
-        filters.setLabel(label);
-        filters.setStudyAssignedIdentifier(study);
-        filters.setPersonId(person_id);
-
         MutableRange<Date> range = new MutableRange<Date>();
         if (start_date != null) {
             try {
@@ -119,14 +100,43 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
         }
 
         filters.setActualActivityDate(range);
-        return filters;
+    }
+
+    private void applyResponsibleUserFilter(ScheduledActivitiesReportFilters filters) throws ResourceException {
+        String responsible_user = FilterParameters.RESPONSIBLE_USER.extractFrom(getRequest());
+        if (responsible_user != null) {
+            User csmUser = csmAuthorizationManager.getUser(responsible_user);
+            if (csmUser == null) {
+                throw new ResourceException(
+                    Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                    "Unknown user for responsible_user filter");
+            } else {
+                filters.setResponsibleUser(csmUser);
+            }
+        }
+    }
+
+    private void applyStateFilter(ScheduledActivitiesReportFilters filters) {
+        String state = FilterParameters.STATE.extractFrom(getRequest());
+        if (state != null) {
+            ScheduledActivityMode scheduledActivityMode = ScheduledActivityMode.getById(new Integer(state));
+            filters.setCurrentStateMode(scheduledActivityMode);
+        }
+    }
+
+    private void applyActivityTypeFilter(ScheduledActivitiesReportFilters filters) {
+        String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());
+        if (activity_type != null) {
+            ActivityType activityType = activityTypeDao.getById(new Integer(activity_type));
+            filters.setActivityType(activityType);
+        }
     }
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ScheduledActivityReportJsonRepresentation(getFilters(), allRows);
+            return new ScheduledActivityReportJsonRepresentation(buildFilters(), allRows);
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
             return new ScheduledActivityReportCsvRepresentation(allRows, ',');
