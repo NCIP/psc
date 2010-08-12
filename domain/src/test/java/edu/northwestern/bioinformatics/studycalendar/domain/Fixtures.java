@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TreeSet;
 
 /**
  * Methods to ease the creation of domain objects for testing.
@@ -398,6 +399,12 @@ public class Fixtures {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
         return createScheduledActivity(baseEvent, year, month, day, new Conditional());
+    }
+
+    public static ScheduledActivity addLabels(ScheduledActivity sa, String... labels) {
+        if (sa.getLabels() == null) sa.setLabels(new TreeSet<String>());
+        for (String label : labels) sa.addLabel(label);
+        return sa;
     }
 
     public static Source createSource(final String name) {
