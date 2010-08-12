@@ -109,7 +109,6 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
-    // TODO: need tests for parse failures
     public void testGetFilterForRangeOfDates() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         FilterParameters.END_DATE.putIn(request, "2010-03-08");
@@ -125,9 +124,35 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 8, 0, 0, 0));
     }
 
+    public void testGetFilterForEndDateWhenImproperlyFormatted() throws Exception {
+        try {
+            FilterParameters.END_DATE.putIn(request, "03/08/2010");
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unparseable value for end-date filter: 03/08/2010.  Expected format is yyyy-MM-dd.",
+                re.getStatus().getDescription());
+        }
+    }
+
     public void testGetFilterForStartDate() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         assertOnlyFilterIs("actualActivityDate.start", DateTools.createDate(2010, Calendar.MARCH, 1, 0, 0, 0));
+    }
+
+    public void testGetFilterForStartDateWhenImproperlyFormatted() throws Exception {
+        try {
+            FilterParameters.START_DATE.putIn(request, "03/01/2010");
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unparseable value for start-date filter: 03/01/2010.  Expected format is yyyy-MM-dd.",
+                re.getStatus().getDescription());
+        }
     }
 
     public void testGetFilterForLabel() throws Exception {

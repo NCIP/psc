@@ -36,8 +36,13 @@ import java.util.Map;
 public class AbstractPscResource extends Resource implements AuthorizedResource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** For error messages and the like */
+    protected static final String API_DATE_FORMAT_STRING = "yyyy-MM-dd";
     private static final ThreadLocal<DateFormat> API_DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override protected DateFormat initialValue() { return new SimpleDateFormat("yyyy-MM-dd"); }
+        @Override
+        protected DateFormat initialValue() { 
+            return new SimpleDateFormat(API_DATE_FORMAT_STRING);
+        }
     };
 
     @Deprecated private static final Collection<Role> NO_ROLES = Collections.emptySet();

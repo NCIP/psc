@@ -78,28 +78,22 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     }
 
     private void applyDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
-        String start_date = FilterParameters.START_DATE.extractFrom(getRequest());
-        String end_date = FilterParameters.END_DATE.extractFrom(getRequest());
         MutableRange<Date> range = new MutableRange<Date>();
-        if (start_date != null) {
-            try {
-                Date startDate = getApiDateFormat().parse(start_date);
-                range.setStart(startDate);
-            } catch (ParseException pe) {
-              throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable entity", pe);
-            }
-        }
-        if (end_date != null) {
-            try {
-                Date endDate = getApiDateFormat().parse(end_date);
-                range.setStop(endDate);
-                filters.setActualActivityDate(range);
-            } catch (ParseException pe) {
-              throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable entity", pe);
-            }
-        }
-
+        range.setStart(parseDateFilter(FilterParameters.START_DATE));
+        range.setStop(parseDateFilter(FilterParameters.END_DATE));
         filters.setActualActivityDate(range);
+    }
+
+    private Date parseDateFilter(FilterParameters dateParam) throws ResourceException {
+        String dateString = dateParam.extractFrom(getRequest());
+        if (dateString == null) return null;
+        try {
+            return getApiDateFormat().parse(dateString);
+        } catch (ParseException pe) {
+            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                String.format("Unparseable value for %s filter: %s.  Expected format is %s.",
+                    dateParam.attributeName(), dateString, API_DATE_FORMAT_STRING));
+        }
     }
 
     private void applyResponsibleUserFilter(ScheduledActivitiesReportFilters filters) throws ResourceException {
