@@ -178,21 +178,23 @@ function addToBeginSentence(){
     $('enterStudyNameSentence').appendChild(controlBox)
 }
 
-function hideShowReleaseTemplateButton() {
+function hideShowEnterStudyName() {
     if ($('study-name').innerHTML.startsWith('[ABC ')) {
         $('enterStudyName').show()
-        $('errorMessages').hide()
         $('admin-options').hide()
     } else {
-       if ($('errorMessages').empty()) {
-            $('enterStudyName').hide()
-            $('errorMessages').hide()
-            $('admin-options').show()
-       } else {
-            $('errorMessages').show()
-            $('admin-options').hide()
-            $('enterStudyName').hide()
-       }
+        $('admin-options').hide()
+        $('enterStudyName').hide()
+    }
+}
+
+function hideShowReleaseTemplateButton() {
+    if ($('errorMessages').empty()) {
+        $('errorMessages').hide()
+        $('admin-options').show()
+    } else {
+        $('errorMessages').show()
+        $('admin-options').hide()
     }
 }
 
@@ -210,7 +212,7 @@ function createStudyControls(anyProvidersAvailable) {
     
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
-        clickToEditText: "Click to rename", onComplete:function() {hideShowReleaseTemplateButton()}
+        clickToEditText: "Click to rename", onComplete:function() {hideShowEnterStudyName()}
     })
 
     controlBox.appendChild(renameControl)

@@ -477,6 +477,38 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
                 getCanSeeReleasedVersions());
     }
 
+    ////// canAssignIdentifiers
+
+    public void testCanAssignIdentifiersIfCreatorAndInDev() throws Exception {
+        study.addManagingSite(nu);
+        study.setDevelopmentAmendment(new Amendment());
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
+                getCanAssignIdentifiers());
+    }
+
+    public void testCanAssignIdentifiersIfNotManaging() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        study.addManagingSite(mayo);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
+                getCanAssignIdentifiers());
+    }
+
+    public void testCanAssignIdentifiersIfNotCreator() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        study.addManagingSite(nu);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(nu).forAllStudies()).
+                getCanAssignIdentifiers());
+    }
+
+    public void testCanAssignIdentifiersIfNotInDevelopment() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
+                getCanAssignIdentifiers());
+    }
+
     ////// HELPERS
 
     private UserTemplateRelationship actual(SuiteRoleMembership membership) {

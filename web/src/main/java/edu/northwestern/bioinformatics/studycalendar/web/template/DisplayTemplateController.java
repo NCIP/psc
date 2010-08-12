@@ -95,7 +95,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
             getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
             model.put("studySegment", new StudySegmentTemplate(studySegment));
             model.put("epochs", study.getPlannedCalendar().getEpochs());
-
+            model.put("canAssignIdentifiers", isDevelopmentRequest(model) && utr.getCanAssignIdentifiers());
             model.put("canEdit", isDevelopmentRequest(model) && utr.getCanDevelop());
             model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
 

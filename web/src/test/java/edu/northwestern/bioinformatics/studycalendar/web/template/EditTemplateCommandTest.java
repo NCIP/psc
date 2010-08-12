@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import static org.easymock.classextension.EasyMock.*;
 
@@ -70,10 +71,22 @@ public class EditTemplateCommandTest extends StudyCalendarTestCase {
         study.addManagingSite(Fixtures.createSite("B", "B'"));
 
         Collection<ResourceAuthorization> actual = command.authorizations(null);
-        assertEquals("Wrong number of authorizations", 1, actual.size());
+        assertEquals("Wrong number of authorizations", 2, actual.size());
         ResourceAuthorization actualAuth = actual.iterator().next();
         assertEquals("Wrong role", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actualAuth.getRole());
         assertEquals("Wrong study", "Study 1234", actualAuth.getScope(ScopeType.STUDY));
         assertEquals("Wrong site", "B'", actualAuth.getScope(ScopeType.SITE));
+    }
+
+    public void testAuthorizesForBuilderAndCreator() throws Exception {
+        command.setStudy(study);
+        study.addManagingSite(Fixtures.createSite("B", "B'"));
+        Collection<ResourceAuthorization> actual = command.authorizations(null);
+        assertEquals("Wrong number of authorizations", 2, actual.size());
+        Iterator itr = actual.iterator();
+        ResourceAuthorization actualAuth1 = (ResourceAuthorization)itr.next();
+        ResourceAuthorization actualAuth2 = (ResourceAuthorization)itr.next();
+        assertEquals("Wrong role", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actualAuth1.getRole());
+        assertEquals("Wrong role", PscRole.STUDY_CREATOR, actualAuth2.getRole());
     }
 }

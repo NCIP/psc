@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CREATOR;
 
 /**
  * @author Rhett Sutphin
@@ -27,7 +27,7 @@ public class NewStudyController extends PscAbstractCommandController<NewStudyCom
 
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        return ResourceAuthorization.createCollection(STUDY_CREATOR);
     }    
 
     @Override

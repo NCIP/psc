@@ -145,6 +145,14 @@ public class UserTemplateRelationship {
         return visible;
     }
 
+    /**
+     * The user can assign identifiers to study in the current development amendment.  False if no
+     * development amendment regardless of role.
+     */
+    public boolean getCanAssignIdentifiers() {
+        return getStudy().isInDevelopment() && tools.isManagingAsOneOf(STUDY_CREATOR);
+    }
+
     ////// ACCESSORS
 
     public PscUser getUser() {

@@ -2,11 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -18,10 +14,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base class for commands invoked from the main display template page.
@@ -47,7 +40,7 @@ public abstract class EditTemplateCommand implements EditCommand {
 
     public Collection<ResourceAuthorization> authorizations(Errors bindErrors) {
         return ResourceAuthorization.createTemplateManagementAuthorizations(
-            getStudy(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+            getStudy(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, PscRole.STUDY_CREATOR);
     }
 
     public boolean apply() {

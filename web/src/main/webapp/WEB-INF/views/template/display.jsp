@@ -10,6 +10,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <jsp:useBean scope="request" id="canEdit" type="java.lang.Boolean"/>
+<jsp:useBean scope="request" id="canAssignIdentifiers" type="java.lang.Boolean"/>
 <jsp:useBean scope="request" id="study" type="edu.northwestern.bioinformatics.studycalendar.domain.Study"/>
 <jsp:useBean scope="request" id="relationship" type="edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship"/>
 <jsp:useBean scope="request" id="amendment" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"/>
@@ -276,7 +277,7 @@
             }
         </style>
 
-        <c:if test="${canEdit}">
+        <c:if test="${canEdit || canAssignIdentifiers}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
         </c:if>
         <script type="text/javascript">
@@ -659,6 +660,7 @@
             function epochsAreaSetup() {
                 registerSelectStudySegmentHandlers()
                 <c:if test="${canEdit}">
+                createAddEpochControl()
                 createAllStudySegmentControls()
                 epochControls()
                 createAllEpochControls()
@@ -755,14 +757,14 @@
                 </c:choose>
 
                 generalSetup();
-                if(typeof createStudyControls == 'function')
-                    createStudyControls(anyProvidersAvailable);
-                if(typeof createAddEpochControl == 'function')
-                    createAddEpochControl();
-                if(typeof addToBeginSentence == 'function')
+                <c:if test="${canAssignIdentifiers}">
+                    hideShowEnterStudyName()
                     addToBeginSentence();
-                if(typeof hideShowReleaseTemplateButton == 'function')
+                    createStudyControls(anyProvidersAvailable);
+                </c:if>
+                 <c:if test="${canEdit}">
                     hideShowReleaseTemplateButton();
+                </c:if>
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
