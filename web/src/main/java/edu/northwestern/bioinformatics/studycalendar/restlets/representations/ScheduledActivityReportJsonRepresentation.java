@@ -16,25 +16,17 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
 public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepresentation  {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
-    private int hiddenItemsCount;
 
     public ScheduledActivityReportJsonRepresentation(
-        ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows,
-        int hiddenItemsCount
+        ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows
     ) {
         this.filters = filters;
         this.allRows = allRows;
-        this.hiddenItemsCount = hiddenItemsCount;
     }
 
     @Override
     public void generate(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
-            generator.writeObjectFieldStart("messages");
-                if (hiddenItemsCount > 0) {
-                    writeHiddenResultsMessage(generator);
-                }
-            generator.writeEndObject();
             generator.writeFieldName("filters");
             generator.writeStartObject();
                 if (filters != null) {
@@ -50,15 +42,6 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
                 }
             generator.writeEndArray();
         generator.writeEndObject();
-    }
-
-    private void writeHiddenResultsMessage(JsonGenerator generator) throws IOException {
-        JacksonTools.nullSafeWriteStringField(generator, "hidden_results",
-            String.format(
-                "There %s %d additional result%s that you are not authorized to see.",
-                hiddenItemsCount == 1 ? "is" : "are",
-                hiddenItemsCount,
-                hiddenItemsCount == 1 ? "" : "s"));
     }
 
     public static void writeFilters(JsonGenerator generator, ScheduledActivitiesReportFilters filters) throws IOException{

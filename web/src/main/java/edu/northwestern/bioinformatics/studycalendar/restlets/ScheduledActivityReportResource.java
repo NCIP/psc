@@ -126,7 +126,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ScheduledActivityReportJsonRepresentation(getFilters(), allRows, 0);
+            return new ScheduledActivityReportJsonRepresentation(getFilters(), allRows);
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
             return new ScheduledActivityReportCsvRepresentation(allRows, ',');

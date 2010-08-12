@@ -83,8 +83,6 @@
               method: "GET", parameters: params,
               onSuccess: function(response) {
                    var resp = response.responseJSON
-                   displayResultMessages(resp);
-                  
                    var bundleListColumns = [
                         { key: "activity_name", label: "Activity", sortable: true},
                         { key: "activity_status", label: "Activity Status", sortable: true },
@@ -134,13 +132,6 @@
             })
         }
 
-        function displayResultMessages(resp) {
-            jQuery('#messages').empty();
-            _(resp.messages).chain().values().each(function (msg) {
-                jQuery('#messages').append("<li>" + msg + "</li>");
-            });
-        }
-
         function resetFilters() {
            $("filters.studyAssignedIdentifier").value = "";
            $("filters.siteName").value = "";
@@ -176,10 +167,7 @@
     <laf:division>
         <c:set var="action"><c:url value="/pages/report/scheduledActivitiesReport"/></c:set>
         <form:form action="${action}"method="post" onsubmit="return false">
-            <div id="errors">
-                <form:errors path="*"/>
-            </div>
-            <tags:errors path="*"/>
+            <div id="errors"></div>
              <div class="search_box">
                  <input type="submit" value="Search" class="button" onclick="submitFilters()"/>
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
@@ -258,6 +246,7 @@
 
                 <div class="filterGroup">
                     <span class="filterInput">
+<%--
                         <form:label path="filters.subjectCoordinator" >
                             Subject coordinator:
                         </form:label>
@@ -266,7 +255,7 @@
                             <form:option value="" label=""/>
                             <form:options items="${coordinators}" itemLabel="displayName" itemValue="id"/>
                         </form:select>
-
+--%>
                     </span>
                 </div>
 
@@ -281,15 +270,18 @@
 
             </div>
 
-          <br style="clear:both"/>
-          <ul id="messages" class="messages"> </ul>
-          <div id="bundle-list" class="bundle-list">
-          </div>
-          <div class="export">
-            <span id="exportOptions"> Export Options:</span>
-            <a class="underlined" id="xls-report" href="#" onclick="generateExport('.csv')">CSV</a> |
-            <a class="underlined" id="csv-report" href="#" onclick="generateExport('.xls')">Excel</a>
-          </div>
+            <br style="clear:both"/>
+            <div id="bundle-list" class="bundle-list">
+            </div>
+            <div class="export">
+                Export to
+                <a id="xls-report" href="#" onclick="generateExport('.csv')">CSV</a> |
+                <a id="csv-report" href="#" onclick="generateExport('.xls')">Excel</a> &mdash;
+                <span id="authorization-disclaimer">
+                    Please note: this report only shows information for subjects and studies
+                    you are authorized to see.
+                </span>
+            </div>
           
         </form:form>
     </laf:division>
