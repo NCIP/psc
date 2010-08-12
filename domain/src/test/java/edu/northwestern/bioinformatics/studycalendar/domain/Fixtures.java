@@ -334,21 +334,13 @@ public class Fixtures {
         ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(planned);
         event.setActivity(planned.getActivity());
-        event.setIdealDate(DateTools.createDate(year, month, day - 2));
-        event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
-        return event;
-    }
-
-    public static ScheduledActivity createScheduledActivityWithLabels(PlannedActivity planned, int year, int month, int day) {
-        ScheduledActivity event = new ScheduledActivity();
-        event.setPlannedActivity(planned);
-        event.setActivity(planned.getActivity());
         event.setRepetitionNumber(0);
         event.setLabels(planned.getLabels());
         event.setIdealDate(DateTools.createDate(year, month, day - 2));
         event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
         return event;
     }
+
     public static ScheduledActivity createScheduledActivityWithStudy(PlannedActivity planned, int year, int month, int day) {
         planned.setPeriod(createTemplateWithPeriod());
         return createScheduledActivity(planned, year, month, day);

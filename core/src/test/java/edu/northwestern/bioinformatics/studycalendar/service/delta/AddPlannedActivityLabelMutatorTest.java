@@ -1,22 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.Calendar;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static org.easymock.EasyMock.expect;
 
 
@@ -56,7 +58,7 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyToOneScheduledActivityWithOneLabel() throws Exception {
-        ScheduledActivity expectedSA = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSA = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSA));
         expectedSA.addLabel("newLabel");
@@ -80,8 +82,8 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
 
 
     public void testApplyToManyScheduledActivity() throws Exception {
-        ScheduledActivity sa1 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
-        ScheduledActivity sa2 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
+        ScheduledActivity sa1 = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity sa2 = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 5);
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);

@@ -52,7 +52,7 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     }
 
     public void testRemoveLabelFromOneScheduledActivity() throws Exception {
-        ScheduledActivity expectedSA = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSA = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
                 .andReturn(Arrays.asList(expectedSA));
         expectedSA.removeLabel(paLabel.getLabel());
@@ -63,8 +63,8 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     }
 
     public void testRemoveLabelFromManyScheduledActivity() throws Exception {
-        ScheduledActivity sa1 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
-        ScheduledActivity sa2 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
+        ScheduledActivity sa1 = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity sa2 = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 5);
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);
