@@ -97,7 +97,7 @@
                         { key: "subject_name", label: "Subject", sortable: true},
                         { key: "person_id", label: "Person ID", sortable: true},
                         { key: "study_subject_id", label: "Study Subject Id", sortable: true},
-                        { key: "subject_coorinator_name", label: "Subject Coordinator", sortable: true},
+                        { key: "subject_coordinator_name", label: "Subject Coordinator", sortable: true},
                         { key: "study", label: "Study", sortable: true},
                         { key: "site", label: "Site", sortable: true}
                    ];

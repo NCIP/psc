@@ -97,7 +97,7 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
             JacksonTools.nullSafeWriteStringField(generator, "subject_name", row.getSubject().getFullName());
             JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());
             JacksonTools.nullSafeWriteStringField(generator, "study_subject_id", row.getStudySubjectId());
-            JacksonTools.nullSafeWriteStringField(generator, "subject_coorinator_name", row.getSubjectCoordinatorName());
+            JacksonTools.nullSafeWriteStringField(generator, "subject_coordinator_name", row.getSubjectCoordinatorName());
             JacksonTools.nullSafeWriteStringField(generator, "study", row.getStudy().getName());
             JacksonTools.nullSafeWriteStringField(generator, "site", row.getSite().getName());
         generator.writeEndObject();

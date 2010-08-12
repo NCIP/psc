@@ -1,20 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 
 /**
  * @author Nataliya Shurupova
@@ -125,8 +128,8 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertNotNull("Activity_name doesn't exist ", first.get("activity_name"));
         assertEquals("Value for activity_name is incorrect ", row1.getScheduledActivity().getActivity().getName(), first.get("activity_name"));
 
-        assertNotNull("Subject_coorinator_name doesn't exist ", first.get("subject_coorinator_name"));
-        assertEquals("Value for subject_coorinator_name is incorrect ", row1.getSubjectCoordinatorName(), first.get("subject_coorinator_name"));
+        assertNotNull("Subject_coorinator_name doesn't exist ", first.get("subject_coordinator_name"));
+        assertEquals("Value for subject_coorinator_name is incorrect ", row1.getSubjectCoordinatorName(), first.get("subject_coordinator_name"));
 
         assertNotNull("Subject_name doesn't exist ", first.get("subject_name"));
         assertEquals("Value for subject_name is incorrect ", row1.getSubject().getFullName(), first.get("subject_name"));
