@@ -1,28 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportCsvRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import org.restlet.data.*;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-import org.restlet.resource.Representation;
-import org.restlet.Context;
 import org.springframework.beans.factory.annotation.Required;
-import java.util.*;
-import java.util.Date;
+
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -30,18 +34,12 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Nataliya Shurupova
  */
 public class ReportsResource extends AbstractCollectionResource<ScheduledActivitiesReportRow> {
-    private ScheduledActivitiesReportRowDao scheduledActivitiesReportRowDao;
-    private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
-    private ApplicationSecurityManager applicationSecurityManager;
-    private AuthorizationService authorizationService;
-    private StudyDao studyDao;
-
+    private ReportService reportService;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR);
 
         addAuthorizationsFor(Method.GET,
             STUDY_SUBJECT_CALENDAR_MANAGER,
@@ -56,29 +54,11 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Collection<ScheduledActivitiesReportRow> getAllObjects() throws ResourceException {
-        ScheduledActivitiesReportFilters filters = getFilters();
-        List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = scheduledActivitiesReportRowDao.search(filters);
-
-        return scheduledActivitiesReportRow;
+        return reportService.searchScheduledActivities(getFilters());
     }
 
-    public List<ScheduledActivitiesReportRow> filteredRows(List<ScheduledActivitiesReportRow> rows) {
-        List<ScheduledActivitiesReportRow> filteredRows = new ArrayList<ScheduledActivitiesReportRow>();
-        User user = getLegacyCurrentUser();
-        List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
-        List<StudySite> ownedStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
-        for (ScheduledActivitiesReportRow row : rows) {
-            for (StudySite studySite : ownedStudySites) {
-                if (row.getStudy().getId().equals(studySite.getStudy().getId()) && row.getSite().getId().equals(studySite.getSite().getId())) {
-                    filteredRows.add(row);
-                }
-            }
-        }
-        return filteredRows;
-    }
-
-    public ScheduledActivitiesReportFilters getFilters() throws ResourceException {
+    // exposed for testing
+    ScheduledActivitiesReportFilters getFilters() throws ResourceException {
         String study = FilterParameters.STUDY.extractFrom(getRequest());
         String site = FilterParameters.SITE.extractFrom(getRequest());
         String state = FilterParameters.STATE.extractFrom(getRequest());
@@ -136,16 +116,14 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
-        List<ScheduledActivitiesReportRow> filteredRows = filteredRows(allRows);
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ReportJsonRepresentation(getFilters(), filteredRows,
-                allRows.size() - filteredRows.size());
+            return new ReportJsonRepresentation(getFilters(), allRows, 0);
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
-            return new ReportCsvRepresentation(filteredRows, ',');
+            return new ReportCsvRepresentation(allRows, ',');
         }
         if (variant.getMediaType().equals(MediaType.APPLICATION_EXCEL)) {
-            return new ReportCsvRepresentation(filteredRows, '\t');
+            return new ReportCsvRepresentation(allRows, '\t');
         }
         return null;
     }
@@ -156,32 +134,11 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }     
-
-    @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
     }
 
-    @Required
-    public void setScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao scheduledActivitiesReportRowDao) {
-        this.scheduledActivitiesReportRowDao = scheduledActivitiesReportRowDao;
-    }
-
-    @Required
-    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
-        this.applicationSecurityManager = applicationSecurityManager;
-    }
-
-    @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
-    }
-
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
+    public void setReportService(ReportService reportService) {
+        this.reportService = reportService;
     }
 }

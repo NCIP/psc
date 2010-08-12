@@ -1,158 +1,58 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
 import org.easymock.IArgumentMatcher;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 
 /**
  * @author Nataliya Shurupova
  */
-public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResource>{
-
-    private ScheduledActivitiesReportRowDao scheduledActivitiesReportRowDao;
-    private UserDao userDao;
+public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResource> {
     private ActivityTypeDao activityTypeDao;
+    private ReportService reportService;
+
     private ScheduledActivitiesReportFilters filters;
     private List<ScheduledActivitiesReportRow> rows;
-
-    private Study studyA, studyB, studyZ;
-    private Site siteA, siteB, siteZ;
-
-    private StudySite ssAa, ssBb, ssZz;
-
-    private User user;
-    private StudyDao studyDao;
-    private List<Study> studies, ownedStudies;
-    private AuthorizationService authorizationService;
-    private List<StudySite> ownedStudySites;
-
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        scheduledActivitiesReportRowDao = registerDaoMockFor(ScheduledActivitiesReportRowDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
+        reportService = registerMockFor(ReportService.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
-
         filters = new ScheduledActivitiesReportFilters();
 
-        siteA = Fixtures.createSite("Site for whatever study");
-        siteA.setId(500);
-        studyA = createNamedInstance("Whatever Study", Study.class);
-        studyA.setId(1001);
-        ScheduledActivityState saState = new Scheduled();
+        ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow(); row1.setId(1001);
+        ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow(); row2.setId(1002);
 
-        ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
-        row1.setId(1001);
-        ScheduledActivity activity1 = Fixtures.createScheduledActivity("activity1 ", 2010, 03, 02, saState);
-        SortedSet<String> labels1 = new TreeSet<String>();
-        labels1.add("label1");
-        activity1.setLabels(labels1);
-        row1.setScheduledActivity(activity1);
-        row1.setSubjectCoordinatorName("mayo mayo");
-        row1.setSubject(Fixtures.createSubject("subject", "one"));
-        row1.setSite(siteA);
-        row1.setStudy(studyA);
+        rows = Arrays.asList(row1, row2);
 
-        ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow();
-        row2.setId(1002);
-        ScheduledActivity activity2 = Fixtures.createScheduledActivity("activity2 ", 2010, 03, 04, saState);
-        SortedSet<String> labels2 = new TreeSet<String>();
-        labels2.add("label2");
-        row2.setScheduledActivity(activity2);
-        row2.setSubjectCoordinatorName("mayo mayo");
-        row2.setSubject(Fixtures.createSubject("subject", "two"));
-        row2.setSite(siteA);
-        row2.setStudy(studyA);
-
-        rows = new ArrayList<ScheduledActivitiesReportRow>();
-        rows.add(row1);
-        rows.add(row2);
-
-        studyB  = createNamedInstance("B", Study.class);
-        studyB.setId(1001);
-        studyZ  = createNamedInstance("Z", Study.class);
-        studyZ.setId(1002);
-
-        siteB = createNamedInstance("b", Site.class);
-        siteB.setId(10001);
-        siteZ = createNamedInstance("z", Site.class);
-        siteZ.setId(10002);
-
-        ssAa  = createStudySite(studyA, siteA);
-        ssBb  = createStudySite(studyB, siteB);
-        ssZz  = createStudySite(studyZ, siteZ);
-
-        user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
-        user.getUserRole(Role.SITE_COORDINATOR).addSite(siteB);
-        user.getUserRole(Role.SUBJECT_COORDINATOR).addSite(siteZ);
-        SecurityContextHolderTestHelper.setSecurityContext(user, null);
-
-        studies = new ArrayList<Study>();
-        studies.add(studyA);
-        studies.add(studyB);
-        studies.add(studyZ);
-
-        ownedStudies = new ArrayList<Study>();
-        ownedStudies.add(studyB);
-        ownedStudies.add(studyZ);
-        studyDao = registerDaoMockFor(StudyDao.class);
-
-        ownedStudySites = new ArrayList<StudySite>();
-        ownedStudySites.add(ssBb);
-        ownedStudySites.add(ssZz);
-
-        applicationSecurityManager.setUserService(registerMockFor(UserService.class));
-        authorizationService = registerMockFor(AuthorizationService.class);
+        SecurityContextHolderTestHelper.setUserAndReturnMembership("jo", PscRole.DATA_READER);
     }
 
     @Override
     @SuppressWarnings({ "unchecked" })
     protected ReportsResource createAuthorizedResource() {
         ReportsResource resource = new ReportsResource();
-        resource.setUserDao(userDao);
         resource.setActivityTypeDao(activityTypeDao);
-        resource.setScheduledActivitiesReportRowDao(scheduledActivitiesReportRowDao);
-        resource.setAuthorizationService(authorizationService);
-        resource.setApplicationSecurityManager(applicationSecurityManager);
-        resource.setStudyDao(studyDao);
+        resource.setReportService(reportService);
         return resource;
     }
 
@@ -167,76 +67,12 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
             DATA_READER);
     }
 
-    public void testFilteredRowsForUserWithoutRightStudySitePermissions() throws Exception {
-        FilterParameters.STATE.putIn(request, "1");
-
-        filters = getResource().getFilters();
-        User userOne = getLegacyCurrentUser();
-        List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
-                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
-            );
-        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setLegacyCurrentUser(userOne);
-
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
-        replayMocks();
-        List<ScheduledActivitiesReportRow> filteredRows = getResource().filteredRows(rows);
-        verifyMocks();
-        assertEquals("The filtered rows are not empty", 0, filteredRows.size());
-    }
-
-    public void testFilteredRowsForUserWithPartialStudySitePermissions() throws Exception {
-        FilterParameters.STUDY.putIn(request, "1001");
-
-        filters = getResource().getFilters();
-        User userOne = getLegacyCurrentUser();
-        List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
-                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
-            );
-        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setLegacyCurrentUser(userOne);
-        ScheduledActivitiesReportRow row3 = new ScheduledActivitiesReportRow();
-        row3.setId(1003);
-        ScheduledActivityState sa3State = new Conditional();
-        ScheduledActivity activity3 = Fixtures.createScheduledActivity("activity2 ", 2010, 03, 04, sa3State);
-        row3.setScheduledActivity(activity3);
-        row3.setSubjectCoordinatorName(userOne.getName());
-        row3.setSubject(Fixtures.createSubject("subject", "two"));
-        row3.setSite(siteB);
-        row3.setStudy(studyB);
-        rows.add(row3);
-
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
-        replayMocks();
-        List<ScheduledActivitiesReportRow> filteredRows = getResource().filteredRows(rows);
-        verifyMocks();
-        assertEquals("The filtered rows have more than ONE element", 1, filteredRows.size());
-        assertEquals("The first element does not belong to StudyB ", studyB, filteredRows.get(0).getStudy());
-        assertEquals("The first element does not belong to SiteB ", siteB, filteredRows.get(0).getSite());
-    }
-
     public void test200ForSupportedCSVMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
-        User userOne = getLegacyCurrentUser();
-        List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
-                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
-            );
-        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setLegacyCurrentUser(userOne);
-        expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
         request.getResourceRef().addQueryParameter("state", "1");
-        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(PscMetadataService.TEXT_CSV)));
+        makeRequestType(PscMetadataService.TEXT_CSV);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
     }
@@ -244,19 +80,9 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
     public void test200ForSupportedJSONMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
-        User userOne = getLegacyCurrentUser();
-        List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
-                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
-            );
-        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setLegacyCurrentUser(userOne);
-        expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
         request.getResourceRef().addQueryParameter("state", "1");
-        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(MediaType.APPLICATION_JSON)));
+        makeRequestType(MediaType.APPLICATION_JSON);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
     }
@@ -414,23 +240,14 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.STATE.putIn(request, "1");
 
         filters = getResource().getFilters();
-        expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        User user = getLegacyCurrentUser();
+        expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
 
-        List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(user, Role.SITE_COORDINATOR, siteB),
-                createUserRole(user, Role.SUBJECT_COORDINATOR, siteZ)
-            );
-        user.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setLegacyCurrentUser(user);
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
-        assertEquals("Result is not of right content type", MediaType.APPLICATION_JSON, response.getEntity().getMediaType());
+        assertEquals("Result is not of right content type",
+            MediaType.APPLICATION_JSON, response.getEntity().getMediaType());
     }
 
     public void testGetFilters() throws Exception {
