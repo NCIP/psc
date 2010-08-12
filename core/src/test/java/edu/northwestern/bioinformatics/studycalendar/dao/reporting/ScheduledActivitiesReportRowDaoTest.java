@@ -35,6 +35,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         return new ScheduledActivitiesReportFilters();
     }
 
+    // TODO: separate out test for bound values
     public void testSearchWithStudyFilter_Pos() {
         filters.setStudyAssignedIdentifier("Foo");
         ScheduledActivitiesReportRow row = assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16).get(2);
@@ -57,8 +58,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertNotNull("Study should not be null", row.getStudy());
 
         assertNotNull("Site should not be null", row.getSite());
-        // TODO: #1111
-//        assertNotNull("Site coordinator name should not be null", row.getSubjectCoordinatorName());
+        assertEquals("Manager ID is wrong", new Long(-200L), row.getResponsibleUserCsmUserId());
     }
 
     public void testSearchWithStudyFilter_Neg() {

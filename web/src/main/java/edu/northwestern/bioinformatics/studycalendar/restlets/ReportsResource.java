@@ -33,6 +33,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 
 /**
  * @author Nataliya Shurupova
+ * @author Rhett Sutphin
  */
 public class ReportsResource extends AbstractCollectionResource<ScheduledActivitiesReportRow> {
     private ActivityTypeDao activityTypeDao;

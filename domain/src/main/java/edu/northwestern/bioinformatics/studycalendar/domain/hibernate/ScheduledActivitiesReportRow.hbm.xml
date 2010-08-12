@@ -27,7 +27,6 @@
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
                 sites.name AS site_name,
-                -- users.name AS subject_coordinator_name,
                 assign.manager_csm_user_id,
                 pa.condition,
                 assign.study_subject_id,
@@ -94,9 +93,7 @@
             <property name="name" column="site_name"/>
         </component>
 
-        <!--
-        <property name="subjectCoordinatorName" column="subject_coordinator_name"/>
-        -->
+        <property name="responsibleUserCsmUserId" column="manager_csm_user_id"/>
         <property name="studySubjectId" column="study_subject_id"/>
 
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>

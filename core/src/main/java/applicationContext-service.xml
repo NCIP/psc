@@ -74,6 +74,7 @@
     <bean id="reportService" class="edu.northwestern.bioinformatics.studycalendar.service.ReportService">
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="pscUserService" ref="pscUserService"/>
+        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
         <property name="scheduledActivitiesReportRowDao" ref="scheduledActivitiesReportRowDao"/>
     </bean>
 

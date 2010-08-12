@@ -23,6 +23,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 
 /**
  * @author Nataliya Shurupova
+ * @author Rhett Sutphin
  */
 public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
 
@@ -41,16 +42,15 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         row1.setId(1001);
         row1.setScheduledActivity(
             addLabels(createScheduledActivity("activity1", 2009, 11, 12, saState), "L1", "L2"));
-        row1.setSubjectCoordinatorName("mayo mayo");
         row1.setSubject(createSubject("subject", "one"));
         row1.setSite(site);
         row1.setStudy(study);
+        row1.setResponsibleUser(AuthorizationObjectFactory.createCsmUser("betsy"));
 
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow();
         row2.setId(1002);
         row2.setScheduledActivity(
             addLabels(createScheduledActivity("activity2", 2009, 10, 15, saState), "L2"));
-        row2.setSubjectCoordinatorName("mayo mayo");
         row2.setSubject(createSubject("subject", "two"));
         row2.setSite(site);
         row2.setStudy(study);
@@ -154,23 +154,23 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Should be no filters set", 0, writeAndGetFilters().length());
     }
 
-    public void testIdealDateIncluded() throws Exception {
+    public void testIdealDateIncludedInData() throws Exception {
         assertEquals("Wrong date", "2009-12-10", writeAndGetRow(0).getString("ideal_date"));
     }
 
-    public void testScheduledDateIncluded() throws Exception {
+    public void testScheduledDateIncludedInData() throws Exception {
         assertEquals("Wrong date", "2009-12-12", writeAndGetRow(0).getString("scheduled_date"));
     }
 
-    public void testStudyIncluded() throws Exception {
+    public void testStudyIncludedInData() throws Exception {
         assertEquals("Wrong study", "Whatever Study", writeAndGetRow(0).getString("study"));
     }
 
-    public void testSiteIncluded() throws Exception {
+    public void testSiteIncludedInData() throws Exception {
         assertEquals("Wrong site", "Mayo", writeAndGetRow(0).getString("site"));
     }
 
-    public void testLabelsIncluded() throws Exception {
+    public void testLabelsIncludedInData() throws Exception {
         JSONArray actual = writeAndGetRow(0).optJSONArray("labels");
         assertNotNull("No labels present", actual);
         assertEquals("Wrong number of labels", 2, actual.length());
@@ -178,17 +178,20 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Wrong second label", "L2", actual.getString(1));
     }
 
-    public void testActivityNameIncluded() throws Exception {
+    public void testActivityNameIncludedInData() throws Exception {
         assertEquals("Wrong activity name", "activity1",
             writeAndGetRow(0).getString("activity_name"));
     }
 
-    public void testSubjectCoordinatorNameIncluded() throws Exception {
-        assertEquals("Wrong coordinator", "mayo mayo",
-            writeAndGetRow(0).getString("subject_coordinator_name"));
+    public void testResponsibleUserUsernameIncludedInData() throws Exception {
+        assertEquals("Wrong user", "betsy", writeAndGetRow(0).opt("responsible_user"));
     }
 
-    public void testSubjectNameIncluded() throws Exception {
+    public void testResponsibleUserUsernameNotIncludedInDataWhenNoResponsibleUser() throws Exception {
+        assertNull("Should have no user", writeAndGetRow(1).opt("responsible_user"));
+    }
+
+    public void testSubjectNameIncludedInData() throws Exception {
         assertEquals("Wrong subject name", "subject one",
             writeAndGetRow(0).getString("subject_name"));
     }

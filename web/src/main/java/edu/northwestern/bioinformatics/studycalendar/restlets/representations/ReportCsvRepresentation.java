@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
+import com.csvreader.CsvWriter;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService;
+import org.apache.commons.lang.StringUtils;
+import org.restlet.resource.OutputRepresentation;
+
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.List;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
-import edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService;
-import com.csvreader.CsvWriter;
-import org.restlet.resource.OutputRepresentation;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Nataliya Shurupova
@@ -67,7 +68,7 @@ public class ReportCsvRepresentation extends OutputRepresentation {
            row.getSubject().getFullName(),
            row.getSubject().getPersonId(),
            row.getStudySubjectId(),
-           row.getSubjectCoordinatorName(),
+           row.getResponsibleUser() == null ? null : row.getResponsibleUser().getLoginName(),
            row.getStudy().getName(),
            row.getSite().getName()
        });

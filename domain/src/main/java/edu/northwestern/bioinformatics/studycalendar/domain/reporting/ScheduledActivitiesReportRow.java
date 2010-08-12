@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 /**
  * @author John Dzak
@@ -15,8 +16,29 @@ public class ScheduledActivitiesReportRow implements DomainObject {
     private Subject subject;
     private Study study;
     private Site site;
-    private String subjectCoordinatorName;
     private String studySubjectId;
+    private Long responsibleUserCsmUserId;
+    private User responsibleUser;
+
+    ////// SEPARATELY RESOLVED PROPERTIES
+
+    /*
+      TODO: I would prefer that this field's type be PscUser.  However, that would introduce
+      a dependency on psc:authorization from psc:domain.  psc:authorization's legacy mode support
+      forces a dependency on psc:domain, so the reverse dependency isn't possible until legacy
+      mode can be completely removed.
+     */
+
+    public User getResponsibleUser() {
+        return responsibleUser;
+    }
+
+    public void setResponsibleUser(User responsibleUser) {
+        this.responsibleUser = responsibleUser;
+        if (responsibleUser != null) this.setResponsibleUserCsmUserId(responsibleUser.getUserId());
+    }
+
+    ////// BOUND PROPERTIES
 
     public Integer getId() {
         return id;
@@ -58,12 +80,12 @@ public class ScheduledActivitiesReportRow implements DomainObject {
         this.site = site;
     }
 
-    public String getSubjectCoordinatorName() {
-        return subjectCoordinatorName;
+    public Long getResponsibleUserCsmUserId() {
+        return responsibleUserCsmUserId;
     }
 
-    public void setSubjectCoordinatorName(String subjectCoordinatorName) {
-        this.subjectCoordinatorName = subjectCoordinatorName;
+    public void setResponsibleUserCsmUserId(Long responsibleUserCsmUserId) {
+        this.responsibleUserCsmUserId = responsibleUserCsmUserId;
     }
 
     public String getStudySubjectId() {
