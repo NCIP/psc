@@ -47,7 +47,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSiteMissingWhenMissing() throws Exception {
-        expect(siteDao.getCount()).andReturn(0);
+        expectNoSites();
         replayMocks();
 
         status.recheck();
@@ -65,7 +65,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSourceMissingWhenMissing() throws Exception {
-        expect(sourceDao.getManualTargetSource()).andReturn(null);
+        expectNoManualActivityTargetSource();
         replayMocks();
 
         status.recheck();
@@ -83,8 +83,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testAdministratorMissingWhenMissing() throws Exception {
-        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
-            andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
+        expectNoSystemAdministrators();
         replayMocks();
 
         status.recheck();
@@ -103,7 +102,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testAuthenticationSystemConfiguredWhenNotConfigured() throws Exception {
-        expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).andReturn(0);
+        expectNoAuthenticationSystem();
         replayMocks();
 
         status.recheck();
@@ -120,9 +119,61 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testPreAuthenticationSetupNeededWhenNoAdministrator() throws Exception {
+        expectNoSystemAdministrators();
+        replayMocks();
+
+        status.recheck();
+        assertTrue(status.isPreAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
+    public void testPreAuthenticationSetupNeededWhenNoAuthSystem() throws Exception {
+        expectNoAuthenticationSystem();
+        replayMocks();
+
+        status.recheck();
+        assertTrue(status.isPreAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
+    public void testPreAuthenticationSetupNotNeededWhenSatisfied() throws Exception {
+        replayMocks();
+
+        status.recheck();
+        assertFalse(status.isPreAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
+    public void testExpectPostAuthenticationSetupNeededWithNoSites() throws Exception {
+        expectNoSites();
+        replayMocks();
+
+        status.recheck();
+        assertTrue(status.isPostAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
+    public void testExpectPostAuthenticationSetupNeededWithNoManualSource() throws Exception {
+        expectNoManualActivityTargetSource();
+        replayMocks();
+
+        status.recheck();
+        assertTrue(status.isPostAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
+    public void testExpectPostAuthenticationSetupNotNeededWhenSatisfied() throws Exception {
+        replayMocks();
+
+        status.recheck();
+        assertFalse(status.isPostAuthenticationSetupNeeded());
+        verifyMocks();
+    }
+
     public void testPostAuthenticationSetupGoesToSiteFirst() throws Exception {
-        expect(siteDao.getCount()).andReturn(0);
-        expect(sourceDao.getManualTargetSource()).andReturn(null);
+        expectNoSites();
+        expectNoManualActivityTargetSource();
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.SITE, status.postAuthenticationSetup());
@@ -131,28 +182,45 @@ public class SetupStatusTest extends StudyCalendarTestCase {
 
     public void testPostAuthenticationSetupGoesToSourceSecond() throws Exception {
         expect(siteDao.getCount()).andReturn(1);
-        expect(sourceDao.getManualTargetSource()).andReturn(null);
+        expectNoManualActivityTargetSource();
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.SOURCE, status.postAuthenticationSetup());
         verifyMocks();
     }
-    
+
     public void testPreAuthenticationSetupGoesToAuthenticationSystemFirst() throws Exception {
-        expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).andReturn(0);
-        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
-            andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
+        expectNoAuthenticationSystem();
+        expectNoSystemAdministrators();
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.AUTHENTICATION_SYSTEM, status.preAuthenticationSetup());
     }
 
     public void testPreAuthenticationSetupGoesToAdminSecond() throws Exception {
-        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
-            andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
+        expectNoSystemAdministrators();
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.ADMINISTRATOR, status.preAuthenticationSetup());
         verifyMocks();
+    }
+
+    ////// HELPERS
+
+    private void expectNoManualActivityTargetSource() {
+        expect(sourceDao.getManualTargetSource()).andReturn(null);
+    }
+
+    private void expectNoSites() {
+        expect(siteDao.getCount()).andReturn(0);
+    }
+
+    private void expectNoAuthenticationSystem() {
+        expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).andReturn(0);
+    }
+
+    private void expectNoSystemAdministrators() {
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
+            andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
     }
 }
