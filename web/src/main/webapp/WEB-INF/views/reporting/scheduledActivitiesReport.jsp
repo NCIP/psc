@@ -187,8 +187,7 @@
                         <select id="state" class="filter-value direct">
                             <option></option>
                             <c:forEach items="${modes}" var="mode">
-                                <%-- TODO (#1143) --%>
-                                <option value="${mode.id}">${mode.name}</option>
+                                <option>${mode.name}</option>
                             </c:forEach>
                         </select>
                     </label>

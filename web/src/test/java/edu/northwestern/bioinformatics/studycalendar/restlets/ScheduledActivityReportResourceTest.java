@@ -95,20 +95,18 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void test200ForSupportedCSVMediaType() throws Exception {
-        FilterParameters.STATE.putIn(request, "1");
+        FilterParameters.STATE.putIn(request, "NA");
         filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
-        request.getResourceRef().addQueryParameter("state", "1");
         makeRequestType(PscMetadataService.TEXT_CSV);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
     public void test200ForSupportedJSONMediaType() throws Exception {
-        FilterParameters.STATE.putIn(request, "1");
+        FilterParameters.STATE.putIn(request, "NA");
         filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
-        request.getResourceRef().addQueryParameter("state", "1");
         makeRequestType(MediaType.APPLICATION_JSON);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
@@ -166,9 +164,21 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     }
 
     public void testGetFilterForCurrentState() throws Exception {
-        // TODO: this is very wrong (#1143)
-        FilterParameters.STATE.putIn(request, "1");
+        FilterParameters.STATE.putIn(request, "SchEDulEd");
         assertOnlyFilterIs("currentStateMode", ScheduledActivityMode.SCHEDULED);
+    }
+
+    public void testGetFilterForCurrentStateWhenNotFound() throws Exception {
+        try {
+            FilterParameters.STATE.putIn(request, "Sparkly");
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Invalid scheduled activity state name for state filter: Sparkly",
+                re.getStatus().getDescription());
+        }
     }
 
     public void testGetFilterForStudyAssignedIdentifier() throws Exception {
@@ -206,7 +216,7 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
     public void testGetJSONRepresentation() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         FilterParameters.END_DATE.putIn(request, "2010-03-05");
-        FilterParameters.STATE.putIn(request, "1");
+        FilterParameters.STATE.putIn(request, "NA");
 
         filters = getResource().buildFilters();
         expect(reportService.searchScheduledActivities(eqFilters(filters))).andReturn(rows);
