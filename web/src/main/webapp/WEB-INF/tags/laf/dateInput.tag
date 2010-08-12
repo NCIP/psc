@@ -3,12 +3,13 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@attribute name="path"%>
 <%@attribute name="local" type="java.lang.Boolean" required="false" %>
+<%@attribute name="cssClass" type="java.lang.String" required="false" %>
 <c:choose>
     <c:when test="${!local}">
-        <form:input path="${path}" cssClass="date"/>
+        <form:input path="${path}" cssClass="date ${cssClass}"/>
     </c:when>
     <c:otherwise>
-        <input id="${path}" class="date" name="${path}"/>
+        <input id="${path}" class="date ${cssClass}" name="${path}"/>
     </c:otherwise>
 </c:choose>
 <a href="#" id="${path}-calbutton">

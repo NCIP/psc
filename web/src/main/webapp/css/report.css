@@ -20,9 +20,9 @@ input.button {
 .odd  { background: lavender; }
 
 .filterInput {
-    font-size: 10pt;
     white-space: nowrap ;
     padding: 0 0.5em;
+    line-height: 1.5em;
 }
 
 .filterGroup {

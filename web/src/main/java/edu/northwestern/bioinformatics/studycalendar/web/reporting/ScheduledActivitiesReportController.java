@@ -4,23 +4,17 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +34,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 // TODO: the binding/execution parts of this controller are no longer used.  Remove them.
 @AccessControl(roles = {Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR})
 public class ScheduledActivitiesReportController
-    extends PscAbstractCommandController<ScheduledActivitiesReportCommand>
+    extends PscAbstractController
     implements PscAuthorizedHandler
 {
     private UserDao userDao;
@@ -49,13 +43,10 @@ public class ScheduledActivitiesReportController
     private AuthorizationService authorizationService;
     private StudyDao studyDao;
 
-
     public ScheduledActivitiesReportController() {
-        setCommandClass(ScheduledActivitiesReportCommand.class);
         setCrumb(new DefaultCrumb("Report"));
     }
 
-    @Override
     public Collection<ResourceAuthorization> authorizations(
         String httpMethod, Map<String, String[]> queryParameters
     ) {
@@ -67,37 +58,20 @@ public class ScheduledActivitiesReportController
     }
 
     @Override
-    protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new ScheduledActivitiesReportCommand(new ScheduledActivitiesReportFilters());
-    }
-
-    @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        super.initBinder(request, binder);
-        binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
-            new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
-        getControllerTools().registerDomainObjectEditor(binder, "filters.activityType", activityTypeDao);
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", getControllerTools().getDateEditor(false));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", getControllerTools().getDateEditor(false));
-        binder.registerCustomEditor(User.class, "filters.subjectCoordinator", new DaoBasedEditor(userDao));
-    }
-
-    @Override
-    protected ModelAndView handle(
-        ScheduledActivitiesReportCommand command, BindException errors,
+    protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors));
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(request));
     }
 
     @SuppressWarnings({"unchecked"})
-    protected Map createModel(BindException errors) {
-        Map<String, Object> model = errors.getModel();
+    protected Map createModel(HttpServletRequest request) {
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
         model.put("coordinators", Collections.<User>emptyList());
 //        model.put("coordinators", getListOfColleagueUsers());
+        
         return model;
     }
 
