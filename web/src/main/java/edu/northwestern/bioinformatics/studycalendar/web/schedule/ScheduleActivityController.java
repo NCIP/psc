@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
@@ -27,7 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
@@ -37,6 +39,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ScheduleActivityController() {
         setBindOnNewForm(true);
@@ -45,7 +48,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }    
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -70,6 +73,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         Map<String,String> uriMap = scheduleService.generateActivityTemplateUri(command.getEvent());
         model.put("uriMap",uriMap);
         model.put("modes", command.getEventSpecificMode());
+        model.put("readOnly", readOnlyMode());
         return new ModelAndView("schedule/event", model);
     }
 
@@ -80,6 +84,11 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         ScheduledStudySegment studySegment = command.getEvent().getScheduledStudySegment();
         model.put("subject", studySegment.getScheduledCalendar().getAssignment().getSubject().getId());
         return new ModelAndView("redirectToSchedule", model);
+    }
+
+    private boolean readOnlyMode() {
+        PscUser user = applicationSecurityManager.getUser();
+        return (user.hasRole(STUDY_SUBJECT_CALENDAR_MANAGER)) ? false : user.hasRole(DATA_READER) || user.hasRole(STUDY_TEAM_ADMINISTRATOR);
     }
 
     ////// CONFIGURATION
@@ -94,6 +103,10 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
 
     public void setScheduleService(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
+    }
+
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private class Crumb extends DefaultCrumb {

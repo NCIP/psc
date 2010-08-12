@@ -4,9 +4,15 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
+
+<c:set var="modeTitle" value="Edit"/>
+<c:if test="${readOnly}">
+    <c:set var="modeTitle" value="View"/>
+</c:if>
+
 <html>
 <head>
-    <title>Edit activity</title>
+    <title>${modeTitle} activity</title>
     <style type="text/css">
         #states li.previous {
             display: none;
@@ -72,7 +78,7 @@
     </script>
 </head>
 <body>
-<laf:box title="Edit activity for ${subject.fullName}">
+<laf:box title="${modeTitle} activity for ${subject.fullName}">
     <laf:division>
         <form:form>
             <c:set var="count" value="0"/>
@@ -137,14 +143,16 @@
                         </c:forEach>
                         <li class="current">${scheduledActivity.currentState.textSummary}</li>
                     </ul>
-                    <label id="new-mode-selector-group">Change to
-                        <form:select path="newMode" id="new-mode-selector">
-                            <form:option value="" label=""/>
-                            <form:options items="${modes}" itemValue="id" itemLabel="name"/>
-                        </form:select>
-                    </label>
-                    <label id="new-date-input-group">Date <laf:dateInput path="newDate"/></label>
-                    <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
+                    <c:if test="${!readOnly}">
+                        <label id="new-mode-selector-group">Change to
+                            <form:select path="newMode" id="new-mode-selector">
+                                <form:option value="" label=""/>
+                                <form:options items="${modes}" itemValue="id" itemLabel="name"/>
+                            </form:select>
+                        </label>
+                        <label id="new-date-input-group">Date <laf:dateInput path="newDate"/></label>
+                        <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
+                    </c:if>
                 </div>
             </div>
             <c:set var="count" value="${count + 1}"/>
@@ -152,14 +160,21 @@
             <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
                 <div class="value">
-                    <form:textarea path="newNotes" rows="6" cols="30"/>
+                    <c:if test="${!readOnly}">
+                        <form:textarea path="newNotes" rows="6" cols="30"/>
+                    </c:if>
+                    <c:if test="${readOnly}">
+                        ${command.newNotes}
+                    </c:if>
                 </div>
             </div>
             <c:set var="count" value="${count + 1}"/>
 
-            <div class="row submit">
-                <input type="submit" value="Save"/>
-            </div>
+            <c:if test="${!readOnly}">
+                <div class="row submit">
+                    <input type="submit" value="Save"/>
+                </div>
+            </c:if> 
         </form:form>
     </laf:division>
 </laf:box>
