@@ -25,8 +25,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
  * @author Nataliya Shurupova
  * @author Rhett Sutphin
  */
-public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
-
+public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresentationTestCase {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
 
@@ -63,7 +62,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testHiddenItemsMessageAddedWhenThereAreSome() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 15));
+        JSONObject actual = writeAndParseObject(new ScheduledActivityReportJsonRepresentation(filters, allRows, 15));
         JSONObject messages = actual.optJSONObject("messages");
         assertNotNull("Messages missing", messages);
         assertEquals("Wrong number of messages", 1, messages.length());
@@ -72,7 +71,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testHiddenItemsMessageAddedWhenThereIsOne() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 1));
+        JSONObject actual = writeAndParseObject(new ScheduledActivityReportJsonRepresentation(filters, allRows, 1));
         JSONObject messages = actual.optJSONObject("messages");
         assertNotNull("Messages missing", messages);
         assertEquals("Wrong number of messages", 1, messages.length());
@@ -81,7 +80,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testNoHiddenItemsMessageAddedWhenThereAreNotAny() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows, 0));
+        JSONObject actual = writeAndParseObject(new ScheduledActivityReportJsonRepresentation(filters, allRows, 0));
         JSONObject messages = actual.optJSONObject("messages");
         assertNotNull("Messages missing", messages);
         assertEquals("Wrong number of messages", 0, messages.length());
@@ -93,7 +92,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testMissingFiltersValues() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(null, allRows, 0));
+        JSONObject actual = writeAndParseObject(new ScheduledActivityReportJsonRepresentation(null, allRows, 0));
         assertNotNull("Missing key filters", actual.getJSONObject("filters"));
         JSONObject filters = actual.getJSONObject("filters");
         assertEquals("Filter is empty", 0, filters.length());
@@ -196,8 +195,8 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
             writeAndGetRow(0).getString("subject_name"));
     }
 
-    private ReportJsonRepresentation actual() {
-        return new ReportJsonRepresentation(filters, allRows, 0);
+    private ScheduledActivityReportJsonRepresentation actual() {
+        return new ScheduledActivityReportJsonRepresentation(filters, allRows, 0);
     }
 
     private JSONObject writeAndGetFilters() throws IOException, JSONException {

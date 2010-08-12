@@ -38,7 +38,7 @@
 
     <bean name="/reports/scheduled-activities"
           id="reportsResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.ReportsResource">
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityReportResource">
     </bean>
 
     <bean name="/studies"

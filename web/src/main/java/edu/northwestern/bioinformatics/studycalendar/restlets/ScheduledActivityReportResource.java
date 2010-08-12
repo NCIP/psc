@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportCsvRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduledActivityReportCsvRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduledActivityReportJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
@@ -35,7 +35,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Nataliya Shurupova
  * @author Rhett Sutphin
  */
-public class ReportsResource extends AbstractCollectionResource<ScheduledActivitiesReportRow> {
+public class ScheduledActivityReportResource extends AbstractCollectionResource<ScheduledActivitiesReportRow> {
     private ActivityTypeDao activityTypeDao;
     private ReportService reportService;
     private AuthorizationManager csmAuthorizationManager;
@@ -126,13 +126,13 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ReportJsonRepresentation(getFilters(), allRows, 0);
+            return new ScheduledActivityReportJsonRepresentation(getFilters(), allRows, 0);
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
-            return new ReportCsvRepresentation(allRows, ',');
+            return new ScheduledActivityReportCsvRepresentation(allRows, ',');
         }
         if (variant.getMediaType().equals(MediaType.APPLICATION_EXCEL)) {
-            return new ReportCsvRepresentation(allRows, '\t');
+            return new ScheduledActivityReportCsvRepresentation(allRows, '\t');
         }
         return null;
     }

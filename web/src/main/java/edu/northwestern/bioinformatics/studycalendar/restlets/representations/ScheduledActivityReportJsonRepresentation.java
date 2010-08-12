@@ -13,12 +13,15 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
  * @author Nataliya Shurupova
  * @author Rhett Sutphin
  */
-public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
+public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepresentation  {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
     private int hiddenItemsCount;
 
-    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows, int hiddenItemsCount) {
+    public ScheduledActivityReportJsonRepresentation(
+        ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows,
+        int hiddenItemsCount
+    ) {
         this.filters = filters;
         this.allRows = allRows;
         this.hiddenItemsCount = hiddenItemsCount;

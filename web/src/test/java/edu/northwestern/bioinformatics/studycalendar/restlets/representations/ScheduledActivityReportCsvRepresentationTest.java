@@ -23,7 +23,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 /**
  * @author Nataliya Shurupova
  */
-public class ReportCsvRepresentationTest extends TestCase {
+public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
 
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
@@ -75,7 +75,7 @@ public class ReportCsvRepresentationTest extends TestCase {
     }
 
     public void testCSV() throws Exception {
-        ReportCsvRepresentation rr = new ReportCsvRepresentation(allRows, ',');
+        ScheduledActivityReportCsvRepresentation rr = new ScheduledActivityReportCsvRepresentation(allRows, ',');
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);
@@ -90,7 +90,7 @@ public class ReportCsvRepresentationTest extends TestCase {
     public void testCSVForLabelsWithCommas() throws Exception {
         row2.getScheduledActivity().getLabels().remove("label2");
         row2.getScheduledActivity().getLabels().add("labelA, labelB, labelC");
-        ReportCsvRepresentation rr = new ReportCsvRepresentation(allRows, ',');
+        ScheduledActivityReportCsvRepresentation rr = new ScheduledActivityReportCsvRepresentation(allRows, ',');
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);
@@ -102,7 +102,7 @@ public class ReportCsvRepresentationTest extends TestCase {
     public void testCSVForLabelsWithQuotes() throws Exception {
         row2.getScheduledActivity().getLabels().remove("label2");
         row2.getScheduledActivity().getLabels().add("\"labelA\", \"labelB\", \"labelC\"");
-        ReportCsvRepresentation rr = new ReportCsvRepresentation(allRows, ',');
+        ScheduledActivityReportCsvRepresentation rr = new ScheduledActivityReportCsvRepresentation(allRows, ',');
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);

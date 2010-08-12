@@ -36,7 +36,7 @@ import static org.easymock.EasyMock.expect;
 /**
  * @author Nataliya Shurupova
  */
-public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResource> {
+public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestCase<ScheduledActivityReportResource> {
     private static final Collection<String> FILTER_PROPERTIES = new HashSet<String>();
     static {
         BeanWrapperImpl filter = new BeanWrapperImpl(new ScheduledActivitiesReportFilters());
@@ -75,8 +75,8 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected ReportsResource createAuthorizedResource() {
-        ReportsResource resource = new ReportsResource();
+    protected ScheduledActivityReportResource createAuthorizedResource() {
+        ScheduledActivityReportResource resource = new ScheduledActivityReportResource();
         resource.setActivityTypeDao(activityTypeDao);
         resource.setReportService(reportService);
         resource.setCsmAuthorizationManager(csmAuthorizationManager);

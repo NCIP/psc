@@ -17,14 +17,14 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
 /**
  * @author Nataliya Shurupova
  */
-public class ReportCsvRepresentation extends OutputRepresentation {
+public class ScheduledActivityReportCsvRepresentation extends OutputRepresentation {
 
     private List<ScheduledActivitiesReportRow> allRows;
     private char delimeter;
     private static final String[] ROW_COLUMNS = new String[] {"Activity Name","Activity Status","Scheduled Date","Details","Condition","Labels","Ideal Date",
                 "Subject Name","Patient Id","Study Subject Id","Subject Coorinator Name","Study","Site"};
 
-    public ReportCsvRepresentation(List<ScheduledActivitiesReportRow> allRows, char delimeter) {
+    public ScheduledActivityReportCsvRepresentation(List<ScheduledActivitiesReportRow> allRows, char delimeter) {
         super(PscMetadataService.TEXT_CSV);
         this.allRows = allRows;
         this.delimeter = delimeter;
