@@ -1,15 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,8 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.TreeMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -30,11 +32,14 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     private ScheduleService scheduleService;
     private ScheduledActivity event;
     private ScheduleActivityCommand command;
+    private ApplicationSecurityManager mockApplicationSecurityManager;
+
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         scheduleService = registerMockFor(ScheduleService.class);
+        mockApplicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
         command = registerMockFor(ScheduleActivityCommand.class,
             ScheduleActivityCommand.class.getMethod("apply"));
 
@@ -47,13 +52,14 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         controller.setScheduledCalendarDao(scheduledCalendarDao);
         controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setControllerTools(controllerTools);
+        controller.setApplicationSecurityManager(mockApplicationSecurityManager);
 
         request.setMethod("GET");
     }
     
     public void testAuthorizedRoles() {
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }
 
     public void testBindEvent() throws Exception {
@@ -143,6 +149,8 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         Map<String,String> uriListMap = new TreeMap<String, String>();
         expect(scheduleService.generateActivityTemplateUri(event)).andReturn(uriListMap);
         request.setParameter("event", "16");
+        PscUserBuilder builder = new PscUserBuilder();
+        expect(mockApplicationSecurityManager.getUser()).andReturn(builder.add(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().toUser());
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
