@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import org.codehaus.jackson.JsonGenerator;
 
@@ -45,8 +46,12 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
     }
 
     public static void writeFilters(JsonGenerator generator, ScheduledActivitiesReportFilters filters) throws IOException{
-        if (filters.getActivityType()!= null) {
-            JacksonTools.nullSafeWriteStringField(generator, "activity_type", filters.getActivityType().getName());
+        if (filters.getActivityTypes() != null) {
+            generator.writeArrayFieldStart("activity_types");
+            for (ActivityType type : filters.getActivityTypes()) {
+                generator.writeString(type.getName());
+            }
+            generator.writeEndArray();
         }
         if (filters.getActualActivityDate() != null ) {
             if (filters.getActualActivityDate().getStart() != null) {

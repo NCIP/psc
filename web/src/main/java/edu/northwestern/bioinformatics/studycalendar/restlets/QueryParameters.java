@@ -1,7 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * An enum of all the query parameters used by any resource in the system.
@@ -32,10 +36,12 @@ public enum QueryParameters {
     }
 
     public String extractFrom(Request request) {
+        return CollectionUtils.firstElement(extractAllFrom(request));
+    }
+
+    public Collection<String> extractAllFrom(Request request) {
         Form query = request.getResourceRef().getQueryAsForm();
-        return query != null
-                ? query.getFirstValue(attributeName())
-                : null;
+        return Arrays.asList(query.getValuesArray(attributeName()));
     }
 
     public void putIn(Request request, String value) {

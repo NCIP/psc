@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
@@ -16,8 +17,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 
 /**
  * @author John Dzak
@@ -125,16 +124,21 @@ public class ScheduledActivitiesReportRowDaoTest extends
     }
 
     public void testSearchWithActivityTypeFilter_Pos() {
-        ActivityType activityType = createNamedInstance("INTERVENTION", ActivityType.class);
-        activityType.setId(2);
-        filters.setActivityType(activityType);
+        ActivityType activityType = Fixtures.setId(2, new ActivityType());
+        filters.setActivityTypes(Arrays.asList(activityType));
+        assertSearchWithResults(NEG_19, NEG_17);
+    }
+
+    public void testSearchWithActivityTypeFilter_Multiple() {
+        ActivityType type1 = Fixtures.setId(1, new ActivityType());
+        ActivityType type2 = Fixtures.setId(2, new ActivityType());
+        filters.setActivityTypes(Arrays.asList(type1, type2));
         assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16);
     }
 
     public void testSearchWithActivityTypeFilter_Neg() {
-        ActivityType activityType = createNamedInstance("DISEASE_MEASURE", ActivityType.class);
-        activityType.setId(3);
-        filters.setActivityType(activityType);
+        ActivityType activityType = Fixtures.setId(3, new ActivityType());
+        filters.setActivityTypes(Arrays.asList(activityType));
         assertSearchWithResults();
     }
 

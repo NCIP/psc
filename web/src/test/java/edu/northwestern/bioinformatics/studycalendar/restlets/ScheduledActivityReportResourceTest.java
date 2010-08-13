@@ -220,7 +220,22 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         ACTIVITY_TYPE.putIn(request, "MEASure");
         expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(type);
         replayMocks();
-        assertOnlyFilterIs("activityType", type);
+        assertOnlyFilterIs("activityTypes", Arrays.asList(type));
+        verifyMocks();
+    }
+
+    public void testGetFilterForMultipleActivityTypes() throws Exception {
+        ActivityType type0 = createActivityType("Measure");
+        ActivityType type1 = createActivityType("Proc");
+        ActivityType type2 = createActivityType("Other");
+        ACTIVITY_TYPE.putIn(request, "MEASure");
+        ACTIVITY_TYPE.putIn(request, "pROc");
+        ACTIVITY_TYPE.putIn(request, "Other");
+        expect(activityTypeDao.getByNameIgnoringCase("MEASure")).andReturn(type0);
+        expect(activityTypeDao.getByNameIgnoringCase("pROc")).andReturn(type1);
+        expect(activityTypeDao.getByNameIgnoringCase("Other")).andReturn(type2);
+        replayMocks();
+        assertOnlyFilterIs("activityTypes", Arrays.asList(type0, type1, type2));
         verifyMocks();
     }
 

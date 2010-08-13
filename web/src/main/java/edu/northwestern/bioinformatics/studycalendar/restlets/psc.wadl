@@ -1486,7 +1486,10 @@
                         <doc>Limit to those scheduled activities currently in the given state.</doc>
                     </param>
                     <param style="query" name="activity-type" type="xsd:string">
-                        <doc>Limit to those scheduled activities whose activity type matches the given value.</doc>
+                        <doc>
+                            Limit to those scheduled activities whose activity type matches the given value.
+                            This parameter may be specified several times to include activities of several types.
+                        </doc>
                     </param>
                     <param style="query" name="label" type="xsd:string">
                         <doc>Limit to those scheduled activities which have the given label.</doc>

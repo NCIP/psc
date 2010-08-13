@@ -4,8 +4,10 @@
     <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
     <SCHEDULED_ACTIVITY_MODES id="4" name="missed"/>
 
-    <ACTIVITY_TYPES id="2" name="ActivityType2"/>
-    <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>
+    <ACTIVITY_TYPES id="1" name="Disease Measure"/>
+    <ACTIVITY_TYPES id="2" name="Procedure"/>
+    <ACTIVITIES id="-102" name="Infusion" activity_type_id="2"/>
+    <ACTIVITIES id="-101" name="CBC" activity_type_id="1"/>
 
     <AMENDMENTS id="-17" amendment_date="2007-06-14"/>
     <STUDIES id="-1" assigned_identifier="Foo" amendment_id="-17" long_title="Foo"/>
@@ -13,8 +15,8 @@
     <EPOCHS id="-2" planned_calendar_id="-1" name="Treatment"/>
     <STUDY_SEGMENTS id="-3" epoch_id="-2" name="A"/>
     <PERIODS id="-5" study_segment_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
-    <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
-    <PLANNED_ACTIVITIES id="-7" period_id="-5" day="4" activity_id="-100"/>
+    <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-101" details="Nice Details!!"/>
+    <PLANNED_ACTIVITIES id="-7" period_id="-5" day="4" activity_id="-102"/>
 
     <SITES id="-1" name="DC" assigned_identifier="DC"/>
     <SITES id="-2" name="DC2" assigned_identifier="DC2"/>
@@ -80,7 +82,7 @@
         current_state_mode_id="1"
         current_state_date="2006-10-30"
         ideal_date="2006-11-02"
-        activity_id="-100"
+        activity_id="-101"
         details="Nice Details!!"
         source_amendment_id="-17"
         />
@@ -91,7 +93,7 @@
         current_state_mode_id="3"
         current_state_date="2006-11-10"
         ideal_date="2006-11-01"
-        activity_id="-100"
+        activity_id="-102"
         details="Nice Details!!"
         source_amendment_id="-17"
         />
@@ -103,7 +105,7 @@
         current_state_mode_id="4"
         current_state_date="2007-10-20"
         ideal_date="2007-11-20"
-        activity_id="-100"
+        activity_id="-101"
         details="Some Details!!"
         source_amendment_id="-17"
         />
@@ -114,7 +116,7 @@
         current_state_mode_id="4"
         current_state_date="2007-10-25"
         ideal_date="2007-11-25"
-        activity_id="-100"
+        activity_id="-102"
         details="Some Other Details!!"
         source_amendment_id="-17"
         />

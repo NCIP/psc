@@ -18,12 +18,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
         new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
 
-    private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
+    private DomainObjectInListFilterLimit<ActivityType> activityTypes
+        = new DomainObjectInListFilterLimit<ActivityType>("activityTypes");
     private ResponsibleUserFilterLimit responsibleUser = new ResponsibleUserFilterLimit();
     private StringFilter label = new StringFilter("label");
     private StringFilter personId = new StringFilter("personId");
-    private InListFilterLimit<Integer> authorizedStudySiteIds =
-        new InListFilterLimit<Integer>("authorizedStudySiteIds");
+    private IdentityInListFilterLimit<Integer> authorizedStudySiteIds =
+        new IdentityInListFilterLimit<Integer>("authorizedStudySiteIds");
 
     @Override
     protected String getHibernateFilterPrefix() {
@@ -62,12 +63,12 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
         this.actualActivityDate.setValue(range);
     }
 
-    public void setActivityType(ActivityType type) {
-        activityType.setValue(type);
+    public Collection<ActivityType> getActivityTypes() {
+        return activityTypes.getValue();
     }
 
-    public ActivityType getActivityType() {
-        return activityType.getValue();
+    public void setActivityTypes(Collection<ActivityType> types) {
+        activityTypes.setValue(types);
     }
 
     public User getResponsibleUser() {

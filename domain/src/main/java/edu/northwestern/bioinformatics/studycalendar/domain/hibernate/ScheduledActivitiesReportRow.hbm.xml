@@ -101,7 +101,7 @@
         <filter name="filter_currentStateMode" condition="current_state_mode_id = :currentStateMode_id"/>
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
-        <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
+        <filter name="filter_activityTypes" condition="activity_type_id IN (:activityTypes)"/>
         <filter name="filter_responsibleUser" condition="manager_csm_user_id = :responsibleUser"/>
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
         <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(grid_id) = :personId)"/>
@@ -122,8 +122,8 @@
     <filter-def name="filter_actualActivityDate_stop">
         <filter-param name="stop" type="date"/>
     </filter-def>
-    <filter-def name="filter_activityType">
-        <filter-param name="activityType_id" type="integer"/>
+    <filter-def name="filter_activityTypes">
+        <filter-param name="activityTypes" type="integer"/>
     </filter-def>
     <filter-def name="filter_responsibleUser">
         <filter-param name="responsibleUser" type="long"/>

@@ -131,15 +131,19 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyActivityTypeFilter(
         ScheduledActivitiesReportFilters filters
     ) throws ResourceException {
-        String activity_type = ACTIVITY_TYPE.extractFrom(getRequest());
-        if (activity_type != null) {
-            ActivityType activityType = activityTypeDao.getByNameIgnoringCase(activity_type);
-            if (activityType != null) {
-                filters.setActivityType(activityType);
-            } else {
-                throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                    format("Unknown activity type for activity-type filter: %s", activity_type));
+        Collection<String> typeNames = ACTIVITY_TYPE.extractAllFrom(getRequest());
+        if (!typeNames.isEmpty()) {
+            List<ActivityType> activityTypes = new ArrayList<ActivityType>(typeNames.size());
+            for (String typeName : typeNames) {
+                ActivityType activityType = activityTypeDao.getByNameIgnoringCase(typeName);
+                if (activityType != null) {
+                    activityTypes.add(activityType);
+                } else {
+                    throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                        format("Unknown activity type for activity-type filter: %s", typeName));
+                }
             }
+            filters.setActivityTypes(activityTypes);
         }
     }
 

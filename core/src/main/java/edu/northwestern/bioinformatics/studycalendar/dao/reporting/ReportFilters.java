@@ -3,12 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.hibernate.Filter;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -220,9 +222,7 @@ public abstract class ReportFilters {
         }
     }
 
-    protected class InListFilterLimit<E>
-        extends FilterLimit<Collection<E>>
-    {
+    protected abstract class InListFilterLimit<F, E> extends FilterLimit<Collection<E>> {
         private String baseName;
 
         public InListFilterLimit(String baseName) {
@@ -232,13 +232,34 @@ public abstract class ReportFilters {
         @Override
         public void apply(Session session) throws HibernateException {
             session.enableFilter(qualifyFilterName(baseName)).
-                setParameterList(baseName, getValue());
+                setParameterList(baseName, getValueForFilter());
         }
+
+        private Collection<F> getValueForFilter() {
+            List<F> forFilter = new ArrayList<F>(getValue().size());
+            for (E e : getValue()) {
+                forFilter.add(transformElementForFilter(e));
+            }
+            return forFilter;
+        }
+
+        public abstract F transformElementForFilter(E element);
 
         @Override
         public void appendDescription(StringBuilder builder) {
-            throw new UnsupportedOperationException("appendDescription not implemented");
-
+            builder.append(baseName).append(" is one of ").append(getValue());
         }
+    }
+
+    protected class IdentityInListFilterLimit<E> extends InListFilterLimit<E, E> {
+        public IdentityInListFilterLimit(String baseName) { super(baseName); }
+        @Override public E transformElementForFilter(E element) { return element; }
+    }
+
+    protected class DomainObjectInListFilterLimit<D extends DomainObject>
+        extends InListFilterLimit<Integer, D>
+    {
+        public DomainObjectInListFilterLimit(String baseName) { super(baseName); }
+        @Override public Integer transformElementForFilter(D element) { return element.getId(); }
     }
 }

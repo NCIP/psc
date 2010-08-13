@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -104,9 +105,14 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         assertEquals("Wrong value", "2009-04-19", writeAndGetFilters().optString("end_date"));
     }
 
-    public void testReturnedFiltersIncludeActivityType() throws Exception {
-        filters.setActivityType(createActivityType("Measure"));
-        assertEquals("Wrong value", "Measure", writeAndGetFilters().optString("activity_type"));
+    public void testReturnedFiltersIncludeActivityTypes() throws Exception {
+        filters.setActivityTypes(Arrays.asList(
+            createActivityType("Measure"), createActivityType("Intervention")));
+        JSONArray actualTypes = writeAndGetFilters().optJSONArray("activity_types");
+        assertNotNull(actualTypes);
+        assertEquals("Wrong number of results", 2, actualTypes.length());
+        assertEquals("Wrong value 0", "Measure", actualTypes.get(0));
+        assertEquals("Wrong value 1", "Intervention", actualTypes.get(1));
     }
 
     public void testReturnedFiltersIncludeLabel() throws Exception {
