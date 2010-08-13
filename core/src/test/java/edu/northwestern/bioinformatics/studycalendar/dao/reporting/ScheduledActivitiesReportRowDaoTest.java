@@ -53,6 +53,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertNotNull("Actiivty type should not be null", acivity.getType());
 
         assertNotNull("Subject should not be null", row.getSubject());
+        assertEquals("Subject grid ID is wrong", row.getSubject().getGridId(), "123");
 
         assertNotNull("Study should not be null", row.getStudy());
 

@@ -42,7 +42,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         row1.setId(1001);
         row1.setScheduledActivity(
             addLabels(createScheduledActivity("activity1", 2009, 11, 12, saState), "L1", "L2"));
-        row1.setSubject(createSubject("subject", "one"));
+        row1.setSubject(setGridId("GRID-1",
+            createSubject("1111", "subject", "one", DateTools.createDate(1950, 4, 5))));
         row1.setSite(site);
         row1.setStudy(study);
         row1.setResponsibleUser(AuthorizationObjectFactory.createCsmUser("betsy"));
@@ -51,7 +52,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         row2.setId(1002);
         row2.setScheduledActivity(
             addLabels(createScheduledActivity("activity2", 2009, 10, 15, saState), "L2"));
-        row2.setSubject(createSubject("subject", "two"));
+        row2.setSubject(setGridId("GRID-2",
+            createSubject("2222", "subject", "two", DateTools.createDate(1950, 4, 5))));
         row2.setSite(site);
         row2.setStudy(study);
 
@@ -173,7 +175,17 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
     public void testSubjectNameIncludedInData() throws Exception {
         assertEquals("Wrong subject name", "subject one",
-            writeAndGetRow(0).getString("subject_name"));
+            writeAndGetRow(0).getJSONObject("subject").optString("name"));
+    }
+
+    public void testSubjectGridIdIncludedInData() throws Exception {
+        assertEquals("Wrong subject grid ID", "GRID-1",
+            writeAndGetRow(0).getJSONObject("subject").optString("grid_id"));
+    }
+
+    public void testSubjectPersonIdIncludedInData() throws Exception {
+        assertEquals("Wrong person ID", "2222",
+            writeAndGetRow(1).getJSONObject("subject").optString("person_id"));
     }
 
     private ScheduledActivityReportJsonRepresentation actual() {

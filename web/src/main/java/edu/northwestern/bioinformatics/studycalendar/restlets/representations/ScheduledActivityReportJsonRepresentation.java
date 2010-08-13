@@ -97,9 +97,12 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
                 }
                 generator.writeEndArray();
             }
-            JacksonTools.nullSafeWriteStringField(generator, "subject_name", row.getSubject().getFullName());
-            JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());
             JacksonTools.nullSafeWriteStringField(generator, "study_subject_id", row.getStudySubjectId());
+            generator.writeObjectFieldStart("subject");
+                JacksonTools.nullSafeWriteStringField(generator, "name", row.getSubject().getFullName());
+                JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());
+                JacksonTools.nullSafeWriteStringField(generator, "grid_id", row.getSubject().getGridId());
+            generator.writeEndObject();
             if (row.getResponsibleUser() != null) {
                 JacksonTools.nullSafeWriteStringField(generator, "responsible_user",
                     row.getResponsibleUser().getLoginName());

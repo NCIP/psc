@@ -92,8 +92,16 @@
                             }
                         },
                         { key: "ideal_date", label: "Ideal Date", sortable: true},
-                        { key: "subject_name", label: "Subject", sortable: true},
-                        { key: "person_id", label: "Person ID", sortable: true},
+                        { key: "subject_name", label: "Subject", sortable: true,
+                            formatter: function (elCell, oRecord, oColumn, oData) {
+                                elCell.innerHTML = oRecord.getData('subject').name;
+                            }
+                        },
+                        { key: "person_id", label: "Person ID", sortable: true,
+                            formatter: function (elCell, oRecord, oColumn, oData) {
+                                elCell.innerHTML = oRecord.getData('subject').person_id;
+                            }
+                        },
                         { key: "study_subject_id", label: "Study Subject Id", sortable: true},
                         { key: "responsible_user", label: "Responsible User", sortable: true},
                         { key: "study", label: "Study", sortable: true},
@@ -112,8 +120,7 @@
                             { key: "condition"},
                             { key: "labels" },
                             { key: "ideal_date"},
-                            { key: "subject_name"},
-                            { key: "person_id"},
+                            { key: "subject"},
                             { key: "study_subject_id"},
                             { key: "responsible_user"},
                             { key: "study"},
@@ -149,9 +156,7 @@
 
         jQuery(function () {
             setInitialFilterValues();
-            console.log(jQuery('#search-form'));
             jQuery('#search-form').submit(function (evt) {
-                console.log("Submit handler called");
                 evt.preventDefault();
                 submitFilters();
                 return false;
