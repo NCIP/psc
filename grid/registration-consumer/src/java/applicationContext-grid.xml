@@ -26,7 +26,6 @@
         <property name="studyService" ref="studyService"/>
         <property name="subjectDao" ref="subjectDao"/>
         <property name="subjectService" ref="subjectService"/>
-        <property name="userDao" ref="userDao"/>
         <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
         <property name="pscUserDetailsService" ref="pscUserService"/> 
     </bean>

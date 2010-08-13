@@ -4,9 +4,7 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -72,8 +70,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
     private SubjectDao subjectDao;
 
-    private UserDao userDao;
-
     private SubjectService subjectService;
 
     private AuditHistoryRepository auditHistoryRepository;
@@ -81,9 +77,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private String registrationConsumerGridServiceUrl;
 
     private String rollbackTimeOut;
-    	
-    private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
-    
+
     private PscUserDetailsService pscUserDetailsService;
 
     private RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
@@ -322,11 +316,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     			}
     		}
 
-
-    		String userName = applicationSecurityManager.getUserName();
-    		// FIXME:Saurabh: check for correct implementation of userDao
-    		// User user = userDao.getByName(userName);
-
     		String registrationGridId = registration.getGridId();
     		// Using the informed consent date as the calendar start date
     		Date startDate = registration.getInformedConsentFormSignedDate();
@@ -465,11 +454,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     @Required
     public void setSubjectDao(SubjectDao subjectDao) {
         this.subjectDao = subjectDao;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Required
