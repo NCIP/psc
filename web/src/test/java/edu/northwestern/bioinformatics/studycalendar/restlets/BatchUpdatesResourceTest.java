@@ -4,7 +4,14 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledStudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
@@ -18,10 +25,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.EasyMock.*;
+
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -95,11 +107,119 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
         scheduledActivityDao.save(sa2);
         createResponseMessage(SA2_GRID, Status.SUCCESS_CREATED.getCode());
         response.setEntity(new JsonRepresentation(responseEntity));
+
         doPost();
         assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
         JSONObject responseText = new JSONObject(response.getEntity().getText());
         assertEquals("Wrong Status code for activity with Invalid gridid",
                 Status.CLIENT_ERROR_NOT_FOUND.getCode(), ((JSONObject)responseText.get(SA1_GRID)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity",
+                Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
+
+        assertStateContents(SCHEDULED, 2008, Calendar.MARCH, 11, "Move by 1 day", sa2.getCurrentState());
+    }
+
+
+    public void testPostForTwoAssignmentsThatBelongsToUser() throws Exception {
+        String SA1_GRID ="1111111";
+        String SA2_GRID ="2222222";
+        ScheduledActivity sa1 = setGridId(SA1_GRID, setId(12, createScheduledActivity("A1", 2008, Calendar.MARCH, 4)));
+        ScheduledActivity sa2 = setGridId(SA2_GRID, setId(13, createScheduledActivity("B2", 2008, Calendar.MARCH, 10)));
+
+        Subject subject = createSubject("Perry", "Duglas");
+        Study study = createBasicTemplate("Study");
+        Study study2 = createBasicTemplate("Study2");
+        Site site = createSite("NU");
+
+        StudySubjectAssignment studySubjectAssignment1 = createAssignment(study,site,subject);
+        StudySubjectAssignment studySubjectAssignment2 = createAssignment(study2,site,subject);
+        studySubjectAssignment1.setGridId("ssa11111");
+        studySubjectAssignment2.setGridId("ssa22222");
+
+        ScheduledStudySegment scheduledStudySegment1 =  createScheduledStudySegment(DateTools.createDate(2008, Calendar.MARCH, 1), 21);
+        ScheduledStudySegment scheduledStudySegment2 =  createScheduledStudySegment(DateTools.createDate(2008, Calendar.MARCH, 2), 22);
+        studySubjectAssignment1.getScheduledCalendar().addStudySegment(scheduledStudySegment1);
+        studySubjectAssignment2.getScheduledCalendar().addStudySegment(scheduledStudySegment2);
+        sa1.setScheduledStudySegment(scheduledStudySegment1);
+        sa2.setScheduledStudySegment(scheduledStudySegment2);
+
+        JSONObject activityState1 = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
+        JSONObject activityState2 = createJSONFormatForRequest("scheduled", "2008-03-11", "Move by 1 day");
+        JSONObject entity = new JSONObject();
+        entity.put(SA1_GRID, activityState1);
+        entity.put(SA2_GRID, activityState2);
+        request.setEntity(new JsonRepresentation(entity));
+
+
+        expect(scheduledActivityDao.getByGridId(SA1_GRID)).andReturn(sa1);
+        expect(scheduledActivityDao.getByGridId(SA2_GRID)).andReturn(sa2);
+
+        scheduledActivityDao.save(sa1);
+        createResponseMessage(SA1_GRID, Status.SUCCESS_CREATED.getCode());
+        scheduledActivityDao.save(sa2);
+        createResponseMessage(SA2_GRID, Status.SUCCESS_CREATED.getCode());
+        response.setEntity(new JsonRepresentation(responseEntity));
+
+        doPost();
+        assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
+        JSONObject responseText = new JSONObject(response.getEntity().getText());
+        assertEquals("Wrong Status code for secaond activity",
+                Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(SA1_GRID)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity",
+                Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
+
+        assertStateContents(SCHEDULED, 2008, Calendar.MARCH, 11, "Move by 1 day", sa2.getCurrentState());
+    }
+
+
+    public void testPostForTwoAssignmentsWhereOneBelongsToUser() throws Exception {
+        String SA1_GRID ="1111111";
+        String SA2_GRID ="2222222";
+        ScheduledActivity sa1 = setGridId(SA1_GRID, setId(12, createScheduledActivity("A1", 2008, Calendar.MARCH, 4)));
+        ScheduledActivity sa2 = setGridId(SA2_GRID, setId(13, createScheduledActivity("B2", 2008, Calendar.MARCH, 10)));
+
+        Subject subject = createSubject("Perry", "Duglas");
+        Study study = createBasicTemplate("Study");
+        study.setAssignedIdentifier("assignedeIdForStudy");
+        Study study2 = createBasicTemplate("Study2");
+        study2.setAssignedIdentifier("assignedIdForStudy2");
+        Site site = createSite("NU", "assignedIdForSite");
+
+        PscUser user = new PscUserBuilder("TestUser").add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(site).forStudies(study2).toUser();
+        setCurrentUser(user);
+
+        StudySubjectAssignment studySubjectAssignment1 = setId(1, createAssignment(study,site,subject));
+        StudySubjectAssignment studySubjectAssignment2 = setId(2, createAssignment(study2,site,subject));
+        studySubjectAssignment1.setGridId("ssa11111");
+        studySubjectAssignment2.setGridId("ssa22222");
+
+        ScheduledStudySegment scheduledStudySegment1 =  createScheduledStudySegment(DateTools.createDate(2008, Calendar.MARCH, 1), 21);
+        ScheduledStudySegment scheduledStudySegment2 =  createScheduledStudySegment(DateTools.createDate(2008, Calendar.MARCH, 2), 22);
+        studySubjectAssignment1.getScheduledCalendar().addStudySegment(scheduledStudySegment1);
+        studySubjectAssignment2.getScheduledCalendar().addStudySegment(scheduledStudySegment2);
+        sa1.setScheduledStudySegment(scheduledStudySegment1);
+        sa2.setScheduledStudySegment(scheduledStudySegment2);
+
+        JSONObject activityState1 = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
+        JSONObject activityState2 = createJSONFormatForRequest("scheduled", "2008-03-11", "Move by 1 day");
+        JSONObject entity = new JSONObject();
+        entity.put(SA1_GRID, activityState1);
+        entity.put(SA2_GRID, activityState2);
+        request.setEntity(new JsonRepresentation(entity));
+
+
+        expect(scheduledActivityDao.getByGridId(SA1_GRID)).andReturn(sa1);
+        expect(scheduledActivityDao.getByGridId(SA2_GRID)).andReturn(sa2);
+
+        scheduledActivityDao.save(sa2);
+        createResponseMessage(SA2_GRID, Status.SUCCESS_CREATED.getCode());
+        response.setEntity(new JsonRepresentation(responseEntity));
+
+        doPost();
+        assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
+        JSONObject responseText = new JSONObject(response.getEntity().getText());
+        assertEquals("Wrong Status code for secaond activity",
+                Status.CLIENT_ERROR_FORBIDDEN.getCode(), ((JSONObject)responseText.get(SA1_GRID)).get("Status"));
         assertEquals("Wrong Status code for secaond activity",
                 Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
 

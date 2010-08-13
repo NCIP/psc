@@ -1,10 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.Context;
@@ -22,8 +26,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
@@ -33,6 +36,9 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 public class BatchUpdatesResource extends AbstractPscResource{
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
+
+    private Map<Integer, UserStudySubjectAssignmentRelationship> ussars =
+        new HashMap<Integer, UserStudySubjectAssignmentRelationship>();
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -53,6 +59,7 @@ public class BatchUpdatesResource extends AbstractPscResource{
     @Override
     @SuppressWarnings("unused")
     public void acceptRepresentation(Representation representation) throws ResourceException {
+        PscUser user = getCurrentUser();
         if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
             try {
                 JSONObject entity = new JSONObject(representation.getText());
@@ -66,25 +73,34 @@ public class BatchUpdatesResource extends AbstractPscResource{
                         statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_NOT_FOUND, "Activity does not exist with grid id " + activityId);
                         responseEntity.put(activityId, statusMessage);
                     } else {
-                        JSONObject activityState = (JSONObject)(entity.get(activityId));
-                        String state = activityState.get("state").toString();
-                        String reason = activityState.get("reason").toString();
-                        String dateString = activityState.get("date").toString();
-                        try {
-                            Date date = getApiDateFormat().parse(dateString);
-                            ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
-                            if (newMode == null) {
-                                statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
-                            } else {
-                                scheduledActivity.changeState(newMode.createStateInstance(date, reason));
-                                String target = store(scheduledActivity);
-                                statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
-                                statusMessage.put("Location",getRequest().getRootRef()+target);
+                        StudySubjectAssignment scheduledStudyAssignment = scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment();
+                        UserStudySubjectAssignmentRelationship ussar = findUserStudySubjectAssignmentRelationship(scheduledStudyAssignment);
+
+                        if (ussar.getCanUpdateSchedule()) {
+                            JSONObject activityState = (JSONObject)(entity.get(activityId));
+                            String state = activityState.get("state").toString();
+                            String reason = activityState.get("reason").toString();
+                            String dateString = activityState.get("date").toString();
+                            try {
+                                Date date = getApiDateFormat().parse(dateString);
+                                ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
+                                if (newMode == null) {
+                                    statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
+                                } else {
+                                    scheduledActivity.changeState(newMode.createStateInstance(date, reason));
+                                    String target = store(scheduledActivity);
+                                    statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
+                                    statusMessage.put("Location",getRequest().getRootRef()+target);
+                                }
+                                responseEntity.put(activityId, statusMessage);
+                            } catch (ParseException pe) {
+                                responseEntity.put(activityId,
+                                   createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date "+dateString));
                             }
-                            responseEntity.put(activityId, statusMessage);
-                        } catch (ParseException pe) {
+
+                        } else {
                             responseEntity.put(activityId,
-                               createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date "+dateString));
+                                   createResponseStatusMessage(Status.CLIENT_ERROR_FORBIDDEN, "Does not have proper credentials to modify the activity "+ scheduledActivity.getGridId()));
                         }
                     }
                 }
@@ -99,6 +115,13 @@ public class BatchUpdatesResource extends AbstractPscResource{
             throw new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
+    }
+
+    private UserStudySubjectAssignmentRelationship findUserStudySubjectAssignmentRelationship(StudySubjectAssignment scheduledStudyAssignment) {
+        if (!ussars.containsKey(scheduledStudyAssignment.getId())) {
+            ussars.put(scheduledStudyAssignment.getId(), new UserStudySubjectAssignmentRelationship(getCurrentUser(), scheduledStudyAssignment));
+        }
+        return ussars.get(scheduledStudyAssignment.getId());
     }
 
     public String store(ScheduledActivity scheduledActivity){
