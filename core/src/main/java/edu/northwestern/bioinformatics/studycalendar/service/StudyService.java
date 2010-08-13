@@ -48,6 +48,9 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -87,6 +90,7 @@ public class StudyService {
     private DaoFinder daoFinder;
     private WorkflowService workflowService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private ProvisioningSessionFactory provisioningSessionFactory;
 
     private static final String COPY = "copy";
 
@@ -144,6 +148,7 @@ public class StudyService {
     public void save(final Study study) {
         if (study.getId() == null) {
             applyDefaultManagingSites(study);
+            applyDefaultStudyAccess(study);
         }
         studyDao.save(study);
         if (study.getAmendment() != null) {
@@ -166,6 +171,28 @@ public class StudyService {
                 study.addManagingSite((Site) site);
             }
         }
+    }
+
+    private void applyDefaultStudyAccess(Study study) {
+        PscUser user = applicationSecurityManager.getUser();
+        if (user == null) return;
+        ProvisioningSession session = provisioningSessionFactory.createSession(
+                user.getCsmUser().getUserId());
+        SuiteRoleMembership mem1 =
+           session.getProvisionableRoleMembership(SuiteRole.STUDY_CREATOR);
+        SuiteRoleMembership mem2 =
+            session.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        if (mem1 != null && mem2 != null && !mem2.isAllStudies()) {
+            List<?> mem1Sites = mem1.getSites();
+            for (Object site : mem2.getSites()) {
+                if (mem1Sites.contains(site)) {
+                    mem2.addStudy(study);
+                    session.replaceRole(mem2);
+                    break;
+                }
+            }
+        }
+        user.setStale(true);
     }
 
     /**
@@ -548,6 +575,11 @@ public class StudyService {
     @Required
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
+    }
+
+    @Required
+    public void setProvisioningSessionFactory(ProvisioningSessionFactory provisioningSessionFactory) {
+        this.provisioningSessionFactory = provisioningSessionFactory;
     }
 
     public void purge(Study study) {

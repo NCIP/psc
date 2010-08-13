@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
@@ -32,6 +33,10 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowM
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.easymock.classextension.EasyMock;
 
 import java.sql.Timestamp;
@@ -62,10 +67,14 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     private DeltaService deltaService;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
+    private ProvisioningSession pSession;
+    private ProvisioningSessionFactory psFactory;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        pSession = registerMockFor(ProvisioningSession.class);
+        psFactory = registerMockFor(ProvisioningSessionFactory.class);
 
         studyDao = registerMockFor(StudyDao.class);
         deltaService = registerMockFor(DeltaService.class);
@@ -89,6 +98,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.setNotificationService(notificationService);
         service.setApplicationSecurityManager(applicationSecurityManager);
         service.setWorkflowService(ws);
+        service.setProvisioningSessionFactory(psFactory);
 
         study = setId(1 , new Study());
 
@@ -198,12 +208,14 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDefaultManagingSitesSetFromUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(
-            createPscUser("sherry",
-                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
-                    forSites(createSite("A", "A"), createSite("B", "B"))),
-            "secret"
-        );
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+                    forSites(createSite("A", "A"), createSite("B", "B"));
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, mem);
+
+        createAndExpectSession(principal);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
 
         Study expected = createNamedInstance("A", Study.class);
 
@@ -220,11 +232,13 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDefaultManagingSitesForAllSitesUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(
-            createPscUser("sherry",
-                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites()),
-                "secret"
-        );
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites();
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, mem);
+
+        createAndExpectSession(principal);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
 
         Study expected = createNamedInstance("A", Study.class);
 
@@ -238,12 +252,15 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testNoManagingSitesSetFromNonBuilderUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(
-            createPscUser("sherry",
-                createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).
-                    forSites(createSite("A", "A"), createSite("B", "B"))),
-            "secret"
-        );
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).
+                    forSites(createSite("A", "A"), createSite("B", "B"));
+        principal.getMemberships().put(SuiteRole.STUDY_QA_MANAGER, mem);
+
+        createAndExpectSession(principal);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
+        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
+
 
         Study expected = createNamedInstance("A", Study.class);
 
@@ -291,7 +308,108 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Iterator<Site> siteIterator = expected.getManagingSites().iterator();
         assertEquals("Wrong 1st managing site", "C", siteIterator.next().getName());
     }
-    
+
+    public void testApplyDefaultStudyAccess() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+        createAndExpectSession(principal);
+        pSession.replaceRole(SCTB);
+        studyDao.save(expected);
+        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertFalse("Membership made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Membership not made for specified study", 1, SCTB.getStudyIdentifiers().size());
+        assertTrue("Membership not made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
+    public void testApplyDefaultStudyAccessWhenUserHasNoAccessToSite() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Site site2 = createSite("Site2", "Site2");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site2);
+        createAndExpectSession(principal);
+        studyDao.save(expected);
+
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertFalse("Membership made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
+    public void testApplyDefaultStudyAccessWhenUserIsNotBuilderAndCreator() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, site1);
+        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+        createAndExpectSession(principal);
+        studyDao.save(expected);
+
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertFalse("Membership made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
+    public void testApplyDefaultStudyAccessWhenBuilderUserHasAllStudies() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site1).forAllStudies();
+        createAndExpectSession(principal);
+        expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)).andReturn(SCTB);
+        studyDao.save(expected);
+
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+    }
+
+    //Helper Methods
+    private SuiteRoleMembership expectCreateAndGetMembership(SuiteRole expectedRole, Boolean isNull, Site site){
+        SuiteRoleMembership srm =
+            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.valueOf(expectedRole)).forSites(site);
+        if (isNull) {
+            expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(null);
+        } else {
+            expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(srm);
+        }
+        return srm;
+    }
+
+    private PscUser createUserAndSetCsmId() {
+        PscUser principal = createPscUser("sherry");
+        principal.getCsmUser().setUserId(111L);
+        return principal;
+    }
+
+    private void createAndExpectSession(PscUser principal) {
+        SecurityContextHolderTestHelper.setSecurityContext(principal,"secret");
+        expect(psFactory.createSession(principal.getCsmUser().getUserId())).andStubReturn(pSession);
+    }
+
     public void testGetNewStudyName() {
         Study study1 = createNamedInstance("[ABC 1000]", Study.class);
         Study study2 = createNamedInstance("[ABC temp]", Study.class);
