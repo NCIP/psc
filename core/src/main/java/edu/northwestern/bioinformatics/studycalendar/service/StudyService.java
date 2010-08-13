@@ -165,7 +165,7 @@ public class StudyService {
         PscUser user = applicationSecurityManager.getUser();
         if (user == null) return;
         SuiteRoleMembership mem =
-            user.getMemberships().get(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getSuiteRole());
+            user.getMemberships().get(PscRole.STUDY_CREATOR.getSuiteRole());
         if (mem != null && !mem.isAllSites()) {
             for (Object site : mem.getSites()) {
                 study.addManagingSite((Site) site);

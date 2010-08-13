@@ -209,9 +209,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
     public void testDefaultManagingSitesSetFromUser() throws Exception {
         PscUser principal = createUserAndSetCsmId();
-        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).
                     forSites(createSite("A", "A"), createSite("B", "B"));
-        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, mem);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
 
         createAndExpectSession(principal);
         expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
@@ -233,8 +233,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
     public void testDefaultManagingSitesForAllSitesUser() throws Exception {
         PscUser principal = createUserAndSetCsmId();
-        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites();
-        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, mem);
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forAllSites();
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
 
         createAndExpectSession(principal);
         expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
