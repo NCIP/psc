@@ -21,7 +21,7 @@ import javax.servlet.Filter;
  * @author Rhett Sutphin
  */
 public interface AuthenticationSystem {
-    String DEFAULT_TARGET_PATH = "/pages/dashboard";
+    String DEFAULT_TARGET_PATH = "/";
 
     String PSC_URL_CONFIGURATION_PROPERTY_NAME = "psc.url";
 
