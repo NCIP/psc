@@ -1,0 +1,31 @@
+<dataset>
+    <CSM_APPLICATION application_id="2" application_name="STUDY_CALENDAR" application_description="Pretty great"/>
+
+    <STUDIES id="90" assigned_identifier="EG 1701"/>
+    <CSM_PROTECTION_ELEMENT
+        application_id="2"
+        protection_element_id="190"
+        protection_element_name="Study.EG 1701"
+        object_id="Study.EG 1701"
+        />
+    <CSM_PROTECTION_GROUP
+        application_id="2"
+        protection_group_id="290"
+        protection_group_name="Study.EG 1701"
+        large_element_count_flag="0"
+        />
+
+    <SITES id="75" assigned_identifier="IL036" name="NU"/>
+    <CSM_PROTECTION_ELEMENT
+        application_id="2"
+        protection_element_id="175"
+        protection_element_name="HealthcareSite.IL036"
+        object_id="HealthcareSite.IL036"
+        />
+    <CSM_PROTECTION_GROUP
+        application_id="2"
+        protection_group_id="275"
+        protection_group_name="HealthcareSite.IL036"
+        large_element_count_flag="0"
+        />
+</dataset>
