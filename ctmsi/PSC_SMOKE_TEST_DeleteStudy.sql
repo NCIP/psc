@@ -15,4 +15,5 @@ delete from amendments  where id=-1;
 delete from activities  where id=-1;
 delete from user_role_sites  where site_id=-1;
 delete from sites  where id=-1;
+delete from sources where id=-1;
 delete from notifications where grid_id='6115c43c-851e-425c-8312-fd78367aaef3';
