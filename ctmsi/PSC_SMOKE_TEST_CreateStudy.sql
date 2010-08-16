@@ -1,5 +1,6 @@
 insert into sites (id, name, version, assigned_identifier) values (-1, 'National Cancer Institute', 0, 'NCI');
-insert into activities (id, name, activity_type_id, source_id, code) values (-1, 'Sample Activity', 1, 1, 'SAMPLE_ACTIVITY');
+insert into sources(id, name, version, grid_id, manual_flag) values (-1,'Test Source', 0, 'test_grid_id', true);
+insert into activities (id, name, activity_type_id, source_id, code) values (-1, 'Sample Activity', 5, -1, 'SAMPLE_ACTIVITY');
 insert into amendments (id, name, mandatory, amendment_date) values(-1, '[Original]', true, current_date);
 insert into studies (id, assigned_identifier, amendment_id, load_status) values (-1, 'SMOKE_TEST', -1, 1) ;
 insert into planned_calendars(id, study_id) values (-1, -1);
