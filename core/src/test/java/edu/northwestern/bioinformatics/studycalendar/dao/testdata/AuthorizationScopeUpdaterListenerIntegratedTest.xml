@@ -1,6 +1,4 @@
 <dataset>
-    <CSM_APPLICATION application_id="2" application_name="STUDY_CALENDAR" application_description="Pretty great"/>
-
     <STUDIES id="90" assigned_identifier="EG 1701"/>
     <CSM_PROTECTION_ELEMENT
         application_id="2"
