@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -28,7 +29,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
 
     private Site site;
     private Study study;
-    private PscUser subjectCoordinator;
+    private PscUser studySubjectCalendarManager;
     private Set<Population> populations;
 
     private SubjectService subjectService;
@@ -101,7 +102,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     public StudySubjectAssignment assignSubject() {
         Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
-            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getSubjectCoordinator(), getPopulations());
+            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getPopulations(), getStudySubjectCalendarManager());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
@@ -119,8 +120,13 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     public Subject createAndSaveNewOrExtractExistingSubject() {
         Subject subject;
         if (creatingNewSubject()) {
-            subject = createSubject();
-            subjectDao.save(subject);
+            if (canCreateNewSubject()) {
+               subject = createSubject();
+               subjectDao.save(subject);
+            } else {
+                 throw new StudyCalendarSystemException(
+                "%s has insufficient privilege to create new subject.", getStudySubjectCalendarManager());
+            }
         } else {
             subject = subjectDao.findSubjectByGridOrPersonId(getIdentifier());
         }
@@ -148,6 +154,14 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
 
         }
         return convertedDate;
+    }
+
+    public boolean canCreateNewSubject() {
+        PscUser user = getStudySubjectCalendarManager();
+        if (user != null && user.getMembership(PscRole.SUBJECT_MANAGER) != null) {
+           return true;
+        }
+        return false;
     }
 
     ////// CONFIGURATION
@@ -178,12 +192,12 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         this.studySegment = studySegment;
     }
 
-    public PscUser getSubjectCoordinator() {
-        return subjectCoordinator;
+    public PscUser getStudySubjectCalendarManager() {
+        return studySubjectCalendarManager;
     }
 
-    public void setSubjectCoordinator(PscUser subjectCoordinator) {
-        this.subjectCoordinator = subjectCoordinator;
+    public void setStudySubjectCalendarManager(PscUser studySubjectCalendarManager) {
+        this.studySubjectCalendarManager = studySubjectCalendarManager;
     }
 
     public Site getSite() {

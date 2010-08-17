@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
@@ -30,9 +31,12 @@ public class RegistrationService {
         }
         registration.setFirstStudySegment(segment);
 
+        PscUser studySubjectCalendarManager = registration.getStudySubjectCalendarManager();
         Subject subject = subjectService.findSubject(registration.getSubject());
         if (subject != null) {
             registration.setSubject(subject);
+        } else if (studySubjectCalendarManager != null && studySubjectCalendarManager.getMembership(PscRole.SUBJECT_MANAGER) == null) {
+            throw new StudyCalendarValidationException("%s has insufficient privilege to create new subject.", studySubjectCalendarManager);
         }
         return registration;
     }

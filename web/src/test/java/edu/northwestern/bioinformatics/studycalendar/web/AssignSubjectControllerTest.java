@@ -93,7 +93,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         mockableController.setApplicationSecurityManager(applicationSecurityManager);
 
         // TODO #1105
-        mockCommand.setSubjectCoordinator((PscUser) EasyMock.notNull());
+        mockCommand.setStudySubjectCalendarManager((PscUser) EasyMock.notNull());
         mockCommand.setStudy(study);
         StudySubjectAssignment assignment = setId(14, new StudySubjectAssignment());
         expect(mockCommand.assignSubject()).andReturn(assignment);

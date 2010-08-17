@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -10,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static java.util.Calendar.JANUARY;
@@ -27,6 +29,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     private Registration registration;
     private Subject subject;
     private StudySegment segment;
+    private PscUser sammyc;
 
     @Override
     public void setUp() throws Exception {
@@ -38,7 +41,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         segment = new StudySegment();
         segment.setGridId("segment1");
 
-        PscUser sammyc = createPscUser("sammyc", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+        sammyc = createPscUser("sammyc", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
 
         PscUserService userService = registerMockFor(PscUserService.class);
         expect(userService.loadUserByUsername("sammyc")).andStubReturn(
@@ -85,12 +88,25 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         assertNotNull("Subject is not present in system", registration.getSubject().getId());
     }
 
-    public void testResolveRegistrationWhenMatchingSubjectNotFound() throws Exception {
+    public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubject() throws Exception {
+        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER));
         expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
         service.resolveRegistration(registration);
         verifyMocks();
         assertNull("Subject is present in system, No new Subject", registration.getSubject().getId());
+    }
+
+    public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubject() throws Exception {
+        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
+        expect(subjectService.findSubject(subject)).andReturn(null);
+        replayMocks();
+         try {
+            service.resolveRegistration(registration);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("sammyc has insufficient privilege to create new subject.", scve.getMessage());
+        }
     }
 }

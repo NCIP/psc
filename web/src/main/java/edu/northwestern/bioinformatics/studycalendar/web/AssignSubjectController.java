@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.springframework.beans.factory.annotation.Required;
@@ -22,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * @author Padmaja Vedula
@@ -46,6 +49,10 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         setValidator(new ValidatableValidator());
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+    }
+
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
@@ -67,6 +74,8 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         Study study = command.getStudy();
 
         addAvailableSitesRefdata(refdata, study);
+        PscUser user = applicationSecurityManager.getUser();
+        SuiteRoleMembership mem = user.getMembership(PscRole.SUBJECT_MANAGER);
         refdata.put("study", study);
         refdata.put("subjects", subjects);
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
@@ -83,6 +92,11 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         } else {
             refdata.put("studySegments", Collections.emptyList());
         }
+        Boolean canCreateNewSubject = false;
+        if (mem != null) {
+           canCreateNewSubject = true;
+        }
+        refdata.put("canCreateNewSubject", canCreateNewSubject);
         refdata.put("populations", study.getPopulations());
 
         Map<String, String> genders = Gender.getGenderMap();
@@ -96,7 +110,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
         PscUser user = applicationSecurityManager.getUser();
-        command.setSubjectCoordinator(user);
+        command.setStudySubjectCalendarManager(user);
         StudySubjectAssignment assignment = command.assignSubject();
         return new ModelAndView(getSuccessView(), "assignment", assignment.getId());
     }

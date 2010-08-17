@@ -36,7 +36,7 @@
             vertical-align:top;
         }
 
-        .bundle-list {
+        .subject-list {
             padding-top:5em;
             padding-left:1em;
             width:50%
@@ -96,7 +96,7 @@
             );
         }
 
-        var bundleList;
+        var subjectList;
 
         function subjectAutocompleterChoices(str, callback) {
             var searchString = $F("subjects-autocompleter-input")
@@ -116,7 +116,7 @@
                 method: "GET", parameters: params,
                 onSuccess: function(response) {
 
-                     var bundleListColumns = [
+                     var subjectListColumns = [
 
                        {key: "check", name:"checkbox", label: "",
                             formatter:  checkboxFormatter
@@ -150,18 +150,18 @@
                         ]
                     };
 
-                    bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
+                    subjectList = new YAHOO.widget.DataTable("subject-list", subjectListColumns, myDataSource, {scrollable:true});
 
-                    bundleList.subscribe('checkboxClickEvent',function (e) {
+                    subjectList.subscribe('checkboxClickEvent',function (e) {
                          var select = e.target.checked;
                          this.unselectAllRows();
                          if (select) {
                              this.selectRow(e.target);
                          }
                      });
-                     bundleList.subscribe('rowSelectEvent', check);
-                     bundleList.subscribe('rowUnselectEvent',uncheck);
-                     bundleList.subscribe('unselectAllRowsEvent',uncheckAll);
+                     subjectList.subscribe('rowSelectEvent', check);
+                     subjectList.subscribe('rowUnselectEvent',uncheck);
+                     subjectList.subscribe('unselectAllRowsEvent',uncheckAll);
 
 
                 }
@@ -264,13 +264,17 @@
 
         function toggleAlert(buttonName) {
             if(buttonName.className == "newSubjRadioButton"){
-                disableEnableElementsOfDiv1(true)
-                disableEnableElementsOfDiv2(false)
+                disableEnableElementsOfExistingSubject(true)
+                <c:if test="${canCreateNewSubject}">
+                    disableEnableElementsOfNewSubject(false)
+                </c:if>
                 disableEnableElementsForCommonDiv(false)
                 $('submitBtn').disabled=false
             } else if (buttonName.className == "existingSubjRadioButton") {
-                disableEnableElementsOfDiv2(true)
-                disableEnableElementsOfDiv1(false)
+                <c:if test="${canCreateNewSubject}">
+                    disableEnableElementsOfNewSubject(true)
+                </c:if>
+                disableEnableElementsOfExistingSubject(false)
                 disableEnableElementsForCommonDiv(false)
                 $('submitBtn').disabled=false
             } else {
@@ -279,16 +283,16 @@
 
         }
 
-        function disableEnableElementsOfDiv1(flag) {
+        function disableEnableElementsOfExistingSubject(flag) {
             $('subjects-autocompleter-input').disabled = flag;
             if (flag) {
-                $('bundle-list').hide()
+                $('subject-list').hide()
             } else {
-                $('bundle-list').show()
+                $('subject-list').show()
             }
         }
 
-        function disableEnableElementsOfDiv2(flag) {
+        function disableEnableElementsOfNewSubject(flag) {
             $('firstName').disabled = flag;
             $('lastName').disabled = flag;
             $('dateOfBirth').disabled = flag;
@@ -310,12 +314,21 @@
             }
         }
 
-       function disableFields() {
-            $('submitBtn').disabled='true'
+        function disableFields() {
             createSubjectsAutocompleter()
-            disableEnableElementsForCommonDiv(true)
-            disableEnableElementsOfDiv1(true)
-            disableEnableElementsOfDiv2(true)
+            <c:choose>
+                <c:when test="${canCreateNewSubject}">
+                    $('submitBtn').disabled='true'
+                    disableEnableElementsForCommonDiv(true)
+                    disableEnableElementsOfExistingSubject(true)
+                    disableEnableElementsOfNewSubject(true)
+                </c:when>
+                <c:otherwise>
+                    $('submitBtn').disabled= false
+                    disableEnableElementsForCommonDiv(false)
+                    disableEnableElementsOfExistingSubject(false)
+                </c:otherwise>
+            </c:choose>
        }
 
        Event.observe(window, "load", disableFields)
@@ -330,6 +343,7 @@
     <table class="mainTable">
         <tr><form:errors path="*"/></tr>
         <tr class="subjectContent">
+            <c:if test="${canCreateNewSubject}">
             <td class="newSubjectContent">
                 <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
                 <c:if test="${not empty sites}">
@@ -386,8 +400,10 @@
                     </laf:division>
                 </c:if>
             </td>
+            </c:if>
             <td class="existingSubjectContent">
-                <Input type = radio class="existingSubjRadioButton" Name = radioButton Value = "existing" onclick="toggleAlert(this)" > Existing Subject
+                <Input type = radio <c:if test="${!canCreateNewSubject}"> checked="true"</c:if>
+                       class="existingSubjRadioButton" Name = radioButton Value = "existing" onclick="toggleAlert(this)" > Existing Subject
                 <div class="commonDivToDisable2">
                     <div class="row">
                         <div class="label"> Name: </div>
@@ -397,7 +413,7 @@
                         </div>
                     </div>
 
-                    <div id="bundle-list" class="bundle-list">
+                    <div id="subject-list" class="subject-list">
                     </div>
                 </div>
             </td>

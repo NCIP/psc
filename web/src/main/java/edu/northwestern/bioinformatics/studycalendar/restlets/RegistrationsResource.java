@@ -53,10 +53,10 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     @Override
     protected String acceptValue(Registration value) throws ResourceException {
         try {
-            registrationService.resolveRegistration(value);
             if (value.getStudySubjectCalendarManager() == null) {
                 value.setStudySubjectCalendarManager(getCurrentUser());
             }
+            registrationService.resolveRegistration(value);
             StudySubjectAssignment assigned = subjectService.assignSubject(
                 value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
                 value.getDesiredStudySubjectAssignmentId(), null,
@@ -65,6 +65,9 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
                 Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
                 Reference.encode(assigned.getGridId()));
         } catch (StudyCalendarValidationException scve) {
+            if (scve.getMessage().contains("to create new subject.")) {
+               throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, scve.getMessage());
+            }
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
         }
     }
