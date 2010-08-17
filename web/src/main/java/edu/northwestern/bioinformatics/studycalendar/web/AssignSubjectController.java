@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -74,8 +75,6 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         Study study = command.getStudy();
 
         addAvailableSitesRefdata(refdata, study);
-        PscUser user = applicationSecurityManager.getUser();
-        SuiteRoleMembership mem = user.getMembership(PscRole.SUBJECT_MANAGER);
         refdata.put("study", study);
         refdata.put("subjects", subjects);
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
@@ -92,11 +91,12 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         } else {
             refdata.put("studySegments", Collections.emptyList());
         }
-        Boolean canCreateNewSubject = false;
-        if (mem != null) {
-           canCreateNewSubject = true;
+        StudySite studySite = command.getStudySite();
+        PscUser user = applicationSecurityManager.getUser();
+        if (user != null && studySite != null) {
+            UserStudySiteRelationship ussr = new UserStudySiteRelationship(user, studySite);
+            refdata.put("canCreateSubjects", ussr.getCanCreateSubjects());
         }
-        refdata.put("canCreateNewSubject", canCreateNewSubject);
         refdata.put("populations", study.getPopulations());
 
         Map<String, String> genders = Gender.getGenderMap();

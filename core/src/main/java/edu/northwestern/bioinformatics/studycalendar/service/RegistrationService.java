@@ -3,10 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -18,7 +19,7 @@ public class RegistrationService {
     private SubjectService subjectService;
     private PscUserDetailsService userService;
 
-    public Registration resolveRegistration(Registration registration) {
+    public Registration resolveRegistration(Registration registration, StudySite studySite) {
         if (registration.getStudySubjectCalendarManager() != null) {
             registration.setStudySubjectCalendarManager(
                 resolvePscUser(registration.getStudySubjectCalendarManager()));
@@ -32,10 +33,11 @@ public class RegistrationService {
         registration.setFirstStudySegment(segment);
 
         PscUser studySubjectCalendarManager = registration.getStudySubjectCalendarManager();
+        UserStudySiteRelationship ussr = new UserStudySiteRelationship(studySubjectCalendarManager, studySite);
         Subject subject = subjectService.findSubject(registration.getSubject());
         if (subject != null) {
             registration.setSubject(subject);
-        } else if (studySubjectCalendarManager != null && studySubjectCalendarManager.getMembership(PscRole.SUBJECT_MANAGER) == null) {
+        } else if (!ussr.getCanCreateSubjects()) {
             throw new StudyCalendarValidationException("%s has insufficient privilege to create new subject.", studySubjectCalendarManager);
         }
         return registration;

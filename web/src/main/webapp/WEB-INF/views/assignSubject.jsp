@@ -265,13 +265,13 @@
         function toggleAlert(buttonName) {
             if(buttonName.className == "newSubjRadioButton"){
                 disableEnableElementsOfExistingSubject(true)
-                <c:if test="${canCreateNewSubject}">
+                <c:if test="${canCreateSubjects}">
                     disableEnableElementsOfNewSubject(false)
                 </c:if>
                 disableEnableElementsForCommonDiv(false)
                 $('submitBtn').disabled=false
             } else if (buttonName.className == "existingSubjRadioButton") {
-                <c:if test="${canCreateNewSubject}">
+                <c:if test="${canCreateSubjects}">
                     disableEnableElementsOfNewSubject(true)
                 </c:if>
                 disableEnableElementsOfExistingSubject(false)
@@ -317,7 +317,7 @@
         function disableFields() {
             createSubjectsAutocompleter()
             <c:choose>
-                <c:when test="${canCreateNewSubject}">
+                <c:when test="${canCreateSubjects}">
                     $('submitBtn').disabled='true'
                     disableEnableElementsForCommonDiv(true)
                     disableEnableElementsOfExistingSubject(true)
@@ -343,7 +343,7 @@
     <table class="mainTable">
         <tr><form:errors path="*"/></tr>
         <tr class="subjectContent">
-            <c:if test="${canCreateNewSubject}">
+            <c:if test="${canCreateSubjects}">
             <td class="newSubjectContent">
                 <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
                 <c:if test="${not empty sites}">
@@ -402,7 +402,7 @@
             </td>
             </c:if>
             <td class="existingSubjectContent">
-                <Input type = radio <c:if test="${!canCreateNewSubject}"> checked="true"</c:if>
+                <Input type = radio <c:if test="${!canCreateSubjects}"> checked="true"</c:if>
                        class="existingSubjRadioButton" Name = radioButton Value = "existing" onclick="toggleAlert(this)" > Existing Subject
                 <div class="commonDivToDisable2">
                     <div class="row">

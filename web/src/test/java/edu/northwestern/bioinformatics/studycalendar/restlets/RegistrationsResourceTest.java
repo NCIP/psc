@@ -243,6 +243,6 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     }
 
     private void expectResolvedRegistration(Registration registration) {
-        expect(registrationService.resolveRegistration(registration)).andReturn(registration);
+        expect(registrationService.resolveRegistration(registration, studySite)).andReturn(registration);
     }
 }

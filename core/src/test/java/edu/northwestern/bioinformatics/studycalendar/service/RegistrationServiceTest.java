@@ -4,15 +4,16 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static java.util.Calendar.JANUARY;
 import static org.easymock.EasyMock.expect;
@@ -30,6 +31,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     private Subject subject;
     private StudySegment segment;
     private PscUser sammyc;
+    private StudySite studySite;
 
     @Override
     public void setUp() throws Exception {
@@ -43,6 +45,10 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
 
         sammyc = createPscUser("sammyc", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
 
+        Study study = createBasicTemplate();
+        study.setAssignedIdentifier("study");
+        Site site = createSite("site", "site");
+        studySite = createStudySite(study, site);
         PscUserService userService = registerMockFor(PscUserService.class);
         expect(userService.loadUserByUsername("sammyc")).andStubReturn(
             sammyc);
@@ -60,7 +66,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(subject);
         replayMocks();
-        service.resolveRegistration(registration);
+        service.resolveRegistration(registration, studySite);
         verifyMocks();
 
         assertEquals("Manager not resolved", 1, registration.getStudySubjectCalendarManager().getMemberships().size());
@@ -70,7 +76,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(null);
         replayMocks();
         try {
-            service.resolveRegistration(registration);
+            service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("Study Segment with grid id segment1 not found.", scve.getMessage());
@@ -83,19 +89,32 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(subjectFound );
         replayMocks();
-        service.resolveRegistration(registration);
+        service.resolveRegistration(registration, studySite);
         verifyMocks();
         assertNotNull("Subject is not present in system", registration.getSubject().getId());
     }
 
-    public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubject() throws Exception {
-        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER));
+    public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubjectForStudySite() throws Exception {
+        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forAllSites());
         expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
-        service.resolveRegistration(registration);
+        service.resolveRegistration(registration, studySite);
         verifyMocks();
         assertNull("Subject is present in system, No new Subject", registration.getSubject().getId());
+    }
+
+    public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubjectForStudySite() throws Exception {
+        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forSites(new Site()));
+        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
+        expect(subjectService.findSubject(subject)).andReturn(null);
+        replayMocks();
+         try {
+            service.resolveRegistration(registration, studySite);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("sammyc has insufficient privilege to create new subject.", scve.getMessage());
+        }
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubject() throws Exception {
@@ -103,7 +122,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
          try {
-            service.resolveRegistration(registration);
+            service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("sammyc has insufficient privilege to create new subject.", scve.getMessage());

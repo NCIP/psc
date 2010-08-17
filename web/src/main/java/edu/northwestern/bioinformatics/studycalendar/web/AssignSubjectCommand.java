@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -120,7 +121,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     public Subject createAndSaveNewOrExtractExistingSubject() {
         Subject subject;
         if (creatingNewSubject()) {
-            if (canCreateNewSubject()) {
+            if (canCreateSubjects()) {
                subject = createSubject();
                subjectDao.save(subject);
             } else {
@@ -141,7 +142,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return effectiveStudySegment;
     }
 
-    private StudySite getStudySite() {
+    public StudySite getStudySite() {
         return StudySite.findStudySite(getStudy(), getSite());
     }
 
@@ -156,12 +157,10 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return convertedDate;
     }
 
-    public boolean canCreateNewSubject() {
-        PscUser user = getStudySubjectCalendarManager();
-        if (user != null && user.getMembership(PscRole.SUBJECT_MANAGER) != null) {
-           return true;
-        }
-        return false;
+    public boolean canCreateSubjects() {
+        UserStudySiteRelationship ussr =
+                new UserStudySiteRelationship(getStudySubjectCalendarManager(), getStudySite());
+        return ussr.getCanCreateSubjects();
     }
 
     ////// CONFIGURATION

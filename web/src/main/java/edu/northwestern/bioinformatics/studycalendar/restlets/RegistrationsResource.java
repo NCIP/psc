@@ -56,7 +56,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
             if (value.getStudySubjectCalendarManager() == null) {
                 value.setStudySubjectCalendarManager(getCurrentUser());
             }
-            registrationService.resolveRegistration(value);
+            registrationService.resolveRegistration(value, getStudySite());
             StudySubjectAssignment assigned = subjectService.assignSubject(
                 value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
                 value.getDesiredStudySubjectAssignmentId(), null,
