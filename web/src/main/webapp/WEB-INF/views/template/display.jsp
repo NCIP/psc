@@ -757,14 +757,21 @@
                 </c:choose>
 
                 generalSetup();
-                <c:if test="${canAssignIdentifiers}">
-                    hideShowEnterStudyName()
-                    addToBeginSentence();
-                    createStudyControls(anyProvidersAvailable);
-                </c:if>
-                 <c:if test="${canEdit}">
-                    hideShowReleaseTemplateButton();
-                </c:if>
+                <c:choose>
+                    <c:when test="${canAssignIdentifiers && canEdit}">
+                        addToBeginSentence();
+                        hideShowAllControls();
+                        createStudyControls(anyProvidersAvailable, true);
+                    </c:when>
+                    <c:when test="${canAssignIdentifiers && !canEdit}">
+                        addToBeginSentence();
+                        hideShowEnterStudyName();
+                        createStudyControls(anyProvidersAvailable, false);
+                    </c:when>                
+                    <c:when test="${!canAssignIdentifiers && canEdit}">
+                        hideShowReleaseTemplateButton();
+                    </c:when>
+                </c:choose>
                 arrowsHideShowSetup();
                 showChangesSetup()
             }

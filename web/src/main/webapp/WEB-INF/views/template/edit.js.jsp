@@ -198,7 +198,25 @@ function hideShowReleaseTemplateButton() {
     }
 }
 
-function createStudyControls(anyProvidersAvailable) {
+function hideShowAllControls() {
+    if ($('study-name').innerHTML.startsWith('[ABC ')) {
+        $('enterStudyName').show()
+        $('errorMessages').hide()
+        $('admin-options').hide()
+    } else {
+       if ($('errorMessages').empty()) {
+            $('enterStudyName').hide()
+            $('errorMessages').hide()
+            $('admin-options').show()
+       } else {
+            $('errorMessages').show()
+            $('admin-options').hide()
+            $('enterStudyName').hide()
+       }
+    }
+}
+
+function createStudyControls(anyProvidersAvailable, canEdit) {
     var h1 = $$("h1")[0];
     var studyId = ${param.study}
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
@@ -212,7 +230,13 @@ function createStudyControls(anyProvidersAvailable) {
     
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
-        clickToEditText: "Click to rename", onComplete:function() {hideShowEnterStudyName()}
+        clickToEditText: "Click to rename", onComplete:function() {
+            if (canEdit) {
+               hideShowAllControls()
+            } else {
+               hideShowEnterStudyName() 
+            }
+        }
     })
 
     controlBox.appendChild(renameControl)
