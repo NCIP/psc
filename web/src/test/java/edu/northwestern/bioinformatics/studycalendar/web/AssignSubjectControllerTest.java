@@ -188,37 +188,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void testSitesMapInRefdata() throws Exception {
-        Amendment current = Fixtures.createAmendments(
-            DateTools.createDate(2001, Calendar.JANUARY, 1),
-            DateTools.createDate(2004, Calendar.APRIL, 4),
-            DateTools.createDate(2007, Calendar.JULY, 7)
-        );
-        Amendment prev = current.getPreviousAmendment();
-        study.setAmendment(current);
-        seattleSS.approveAmendment(prev, DateTools.createDate(2004, Calendar.MAY, 5));
-        seattleSS.approveAmendment(current, DateTools.createDate(2007, Calendar.AUGUST, 5));
-        tacomaSS.approveAmendment(prev, DateTools.createDate(2004, Calendar.JUNE, 1));
-        olympiaSS.getAmendmentApprovals().clear();
-
-        Map<String, Object> refdata = getRefdata();
-        Map<Site, String> actualSites = (Map<Site, String>) refdata.get("sites");
-        assertNotNull("Missing sites refdata", actualSites);
-        assertEquals("Wrong number of assignable sites", 2, actualSites.size());
-        assertContainsKey("Seattle not in sites map", actualSites, seattle);
-        assertEquals("Wrong label for seattle", "Seattle - amendment 07/07/2007 (current)",
-            actualSites.get(seattle));
-        assertContainsKey("Tacoma not in sites map", actualSites, tacoma);
-        assertEquals("Wrong label for tacoma", "Tacoma - amendment 04/04/2004",
-            actualSites.get(tacoma));
-
-        assertContainsKey(refdata, "unapprovedSites");
-        Collection<Site> unapproved = (Collection<Site>) refdata.get("unapprovedSites");
-        assertEquals("Wrong number of unapproved sites", 1, unapproved.size());
-        assertSame(olympia, unapproved.iterator().next());
-    }
-
-    @SuppressWarnings({ "unchecked" })
     public void testRefdataIncludesNoStudySegmentsWhenFirstEpochHasNoStudySegments() throws Exception {
         study.getPlannedCalendar().setEpochs(new LinkedList<Epoch>());
         study.getPlannedCalendar().addEpoch(Epoch.create("Screening"));

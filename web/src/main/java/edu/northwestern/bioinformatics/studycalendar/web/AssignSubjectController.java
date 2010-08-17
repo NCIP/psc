@@ -3,9 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -14,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -74,7 +70,6 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         Collection<Subject> subjects = subjectDao.getAll();
         Study study = command.getStudy();
 
-        addAvailableSitesRefdata(refdata, study);
         refdata.put("study", study);
         refdata.put("subjects", subjects);
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
@@ -102,7 +97,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         Map<String, String> genders = Gender.getGenderMap();
         refdata.put("genders", genders);
         refdata.put("action", "New");
-        refdata.put("defaultSite",httpServletRequest.getParameter("site"));
+        refdata.put("site", command.getSite());
         return refdata;
     }
 
@@ -121,50 +116,6 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         command.setSubjectService(subjectService);
         command.setSubjectDao(subjectDao);
         return command;
-    }
-
-    private void addAvailableSitesRefdata(Map<String, Object> refdata, Study study) {
-        List<StudySite> applicableStudySites = findUserApplicableStudySites(study);
-        Map<Site, String> sites = new TreeMap<Site, String>(NamedComparator.INSTANCE);
-        SortedSet<Site> unapproved = new TreeSet<Site>(NamedComparator.INSTANCE);
-        for (StudySite studySite : applicableStudySites) {
-            Site site = studySite.getSite();
-            Amendment currentApproved = studySite.getCurrentApprovedAmendment();
-            if (currentApproved == null) {
-                log.debug("{} has not approved any amendments for {}", site.getName(), study.getName());
-                unapproved.add(site);
-            } else {
-                log.debug("{} has approved up to {}", site.getName(), currentApproved);
-                StringBuilder title = new StringBuilder(site.getName());
-                if (!currentApproved.isFirst()) {
-                    title.append(" - amendment ").append(currentApproved.getDisplayName());
-                    if (study.getAmendment().equals(currentApproved)) {
-                        title.append(" (current)");
-                    }
-                }
-                sites.put(site, title.toString());
-            }
-        }
-
-        refdata.put("sites", sites);
-        refdata.put("unapprovedSites", unapproved);
-    }
-
-    // TODO: use UserTemplateRelationship instead
-    private List<StudySite> findUserApplicableStudySites(Study study) {
-        SuiteRoleMembership sscmMembership = applicationSecurityManager.getUser().
-            getMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
-        List<StudySite> applicableStudySites;
-        if (sscmMembership.isAllSites()) {
-            applicableStudySites = study.getStudySites();
-        } else {
-            Collection<?> coordSites = sscmMembership.getSites();
-            applicableStudySites = new LinkedList<StudySite>();
-            for (StudySite studySite : study.getStudySites()) {
-                if (coordSites.contains(studySite.getSite())) applicableStudySites.add(studySite);
-            }
-        }
-        return applicableStudySites;
     }
 
     ////// CONFIGURATION

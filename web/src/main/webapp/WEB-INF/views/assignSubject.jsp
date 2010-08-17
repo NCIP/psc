@@ -346,8 +346,6 @@
             <c:if test="${canCreateSubjects}">
             <td class="newSubjectContent">
                 <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
-                <c:if test="${not empty sites}">
-
                     <laf:division cssClass="divisionClass">
                             <div class="row">
                                 <div class="label">
@@ -398,7 +396,6 @@
                             <br />
 
                     </laf:division>
-                </c:if>
             </td>
             </c:if>
             <td class="existingSubjectContent">
@@ -422,40 +419,13 @@
             <td class="commonForBothColumns" colspan="2">
                 <div class="commonDivToDisableForBoth">
                     <input type="hidden" name="study" value="${study.id}"/>
+                    <input type="hidden" name="site" value="${site.id}"/>
                     <div class="row">
                         <div class="label">
                             <form:label path="site">Site</form:label>
                         </div>
                         <div class="value">
-                            <c:if test="${fn:length(sites) gt 1}">
-                                <form:select path="site">
-                                   <c:choose>
-                                    <c:when test="${defaultSite != null}">
-                                        <c:forEach items="${sites}" var="pair">
-                                           <c:if test="${defaultSite eq pair.key.id}">
-                                              <form:option value="${pair.key.id}" label="${pair.value}"/>
-                                           </c:if>
-                                        </c:forEach>
-                                        <c:forEach items="${sites}" var="pair">
-                                           <c:if test="${defaultSite != pair.key.id}">
-                                              <form:option value="${pair.key.id}" label="${pair.value}"/>
-                                           </c:if>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:forEach items="${sites}" var="pair">
-                                            <form:option value="${pair.key.id}" label="${pair.value}"/>
-                                        </c:forEach>
-                                    </c:otherwise>
-                                    </c:choose>
-                                </form:select>
-                            </c:if>
-                            <c:if test="${fn:length(sites) eq 1}">
-                                <c:forEach items="${sites}" var="pair">
-                                    ${pair.value}
-                                    <input type="hidden" name="site" value="${pair.key.id}"/>
-                                </c:forEach>
-                            </c:if>
+                            ${site.assignedIdentifier}
                         </div>
                     </div>
                     <div class="row">
@@ -520,21 +490,6 @@
 
     </table>
  </form:form>
-    <c:if test="${not empty unapprovedSites}">
-        <h3>Unapproved sites</h3>
-        <laf:division>
-            <p>
-                Please note:  the following sites are participating in the study, but the template
-                has not yet been approved for them.  No subjects may be assigned until this happens.
-                Please speak to a site coordinator if you have any questions.
-            </p>
-            <ul>
-                <c:forEach items="${unapprovedSites}" var="site">
-                    <li>${site.name}</li>
-                </c:forEach>
-            </ul>
-        </laf:division>
-    </c:if>
 </laf:box>
 </body>
 </html>
