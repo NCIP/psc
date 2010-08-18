@@ -307,6 +307,7 @@
         <property name="crumb.parent">
             <ref local="displayTemplateController"/>
         </property>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
     <bean name="/cal/template/amendments" id="viewAmendmentsController" autowire="byName"

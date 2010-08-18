@@ -63,11 +63,6 @@
         <property name="url" value="/pages/activities"/>
     </bean>
 
-    <bean id="redirectToAssignSubjectCoordinatorByStudy" class="org.springframework.web.servlet.view.RedirectView">
-        <property name="contextRelative" value="true"/>
-        <property name="url" value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>
-    </bean>
-
     <bean id="redirectToUserList" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/admin/users"/>
@@ -76,5 +71,10 @@
     <bean id="redirectToTeamAdmin" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/admin/team"/>
+    </bean>
+
+    <bean id="redirectToTeamAdminByStudy" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative" value="true"/>
+        <property name="url" value="/pages/admin/team/study"/>
     </bean>
 </beans>

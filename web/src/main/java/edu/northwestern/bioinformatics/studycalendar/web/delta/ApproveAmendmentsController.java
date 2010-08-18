@@ -1,31 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
@@ -35,6 +36,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
     private StudySiteDao studySiteDao;
     private NowFactory nowFactory;
     private AmendmentService amendmentService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ApproveAmendmentsController() {
         super();
@@ -83,9 +85,12 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
         command.apply();
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("selected", command.getStudySite().getStudy().getId());
-        return new ModelAndView("redirectToAssignSubjectCoordinatorByStudy", model);
+        UserStudySiteRelationship rel =
+            new UserStudySiteRelationship(applicationSecurityManager.getUser(), command.getStudySite());
+        String viewName = rel.getCanAdministerTeam() ?
+            "redirectToTeamAdminByStudy" : "redirectToCalendarTemplate";
+        return new ModelAndView(viewName,
+            "study", command.getStudySite().getStudy().getId());
     }
 
     ////// CONFIGURATION
@@ -103,6 +108,11 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private static class Crumb extends DefaultCrumb {
