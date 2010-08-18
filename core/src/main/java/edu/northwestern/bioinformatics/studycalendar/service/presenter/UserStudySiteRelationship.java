@@ -130,4 +130,14 @@ public class UserStudySiteRelationship {
         }
         return false;
     }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[user=").append(getUser()).
+            append("; studySite=").append(getStudySite()).
+            append(']').toString();
+    }
 }

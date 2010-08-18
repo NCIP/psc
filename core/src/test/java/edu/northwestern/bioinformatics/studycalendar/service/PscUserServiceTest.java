@@ -118,7 +118,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         eg1701 = createBasicTemplate("EG 1701");
     }
 
-    public void testLoadKnownUser() throws Exception {
+    public void testLoadKnownUserForAcegi() throws Exception {
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         expect(userService.getUserByName("John")).andReturn(legacyUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
@@ -134,7 +134,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertSame("Wrong legacy user", legacyUser, actual.getLegacyUser());
     }
 
-    public void testNullCsmUserThrowsException() throws Exception {
+    public void testNullCsmUserThrowsExceptionForAcegi() throws Exception {
         expect(csmAuthorizationManager.getUser("John")).andReturn(null);
         replayMocks();
 
@@ -147,7 +147,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testDeactivatedCsmUserThrowsException() throws Exception {
+    public void testDeactivatedCsmUserThrowsExceptionForAcegi() throws Exception {
         aSwitch.setOn(false);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
@@ -162,6 +162,51 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
              // good
         }
         verifyMocks();
+    }
+
+    public void testGetKnownAuthorizableUser() throws Exception {
+        aSwitch.setOn(false);
+
+        expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
+        Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
+            SuiteRole.SYSTEM_ADMINISTRATOR,
+            new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
+            expectedMemberships);
+        replayMocks();
+
+        PscUser actual = service.getAuthorizableUser("John");
+        assertNotNull(actual);
+        assertSame("Wrong user", "John", actual.getUsername());
+        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+    }
+
+    public void testExpiredAuthorizableUserIsStillReturned() throws Exception {
+        aSwitch.setOn(false);
+
+        expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
+        csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
+        Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
+            SuiteRole.SYSTEM_ADMINISTRATOR,
+            new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
+            expectedMemberships);
+        replayMocks();
+
+        PscUser actual = service.getAuthorizableUser("John");
+        assertNotNull(actual);
+        assertSame("Wrong user", "John", actual.getUsername());
+        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+    }
+
+    public void testUnknownAuthorizableUserReturnsNull() throws Exception {
+        aSwitch.setOn(false);
+
+        expect(csmAuthorizationManager.getUser("John")).andReturn(null);
+        replayMocks();
+
+        PscUser actual = service.getAuthorizableUser("John");
+        assertNull(actual);
     }
 
     public void testGetKnownUserForProvisioning() throws Exception {

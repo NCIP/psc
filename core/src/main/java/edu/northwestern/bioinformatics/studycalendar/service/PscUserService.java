@@ -67,17 +67,23 @@ public class PscUserService implements PscUserDetailsService {
     }
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
+        PscUser pscUser = getAuthorizableUser(username);
+        if (pscUser == null) {
+            throw new UsernameNotFoundException("Unknown user " + username);
+        } else if (!pscUser.isActive()) {
+            throw new LockedException(username + " is not an active account");
+        }
+        return pscUser;
+    }
+
+    public PscUser getAuthorizableUser(String username) {
         User user = loadCsmUser(username);
-        if (user == null) throw new UsernameNotFoundException("Unknown user " + username);
-        PscUser pscUser = new PscUser(
+        if (user == null) return null;
+        return new PscUser(
             user,
             suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
             legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
         );
-        if (!pscUser.isActive()) {
-            throw new LockedException(username + " is not an active account");
-        }
-        return pscUser;
     }
 
     private User loadCsmUser(String username) {
