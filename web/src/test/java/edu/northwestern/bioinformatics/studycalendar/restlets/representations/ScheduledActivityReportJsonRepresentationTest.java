@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -174,6 +175,11 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
     public void testActivityNameIncludedInData() throws Exception {
         assertEquals("Wrong activity name", "activity1",
             writeAndGetRow(0).getString("activity_name"));
+    }
+
+    public void testActivityTypeIncludedInData() throws Exception {
+        assertEquals("Wrong activity type", Fixtures.DEFAULT_ACTIVITY_TYPE.getName(),
+            writeAndGetRow(0).optString("activity_type"));
     }
 
     public void testResponsibleUserUsernameIncludedInData() throws Exception {

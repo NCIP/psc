@@ -90,6 +90,7 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "grid_id", row.getScheduledActivity().getGridId());
             JacksonTools.nullSafeWriteStringField(generator, "activity_name", row.getScheduledActivity().getActivity().getName());
+            JacksonTools.nullSafeWriteStringField(generator, "activity_type", row.getScheduledActivity().getActivity().getType().getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
             JacksonTools.nullSafeWriteStringField(generator, "ideal_date", getApiDateFormat().format(row.getScheduledActivity().getIdealDate()));

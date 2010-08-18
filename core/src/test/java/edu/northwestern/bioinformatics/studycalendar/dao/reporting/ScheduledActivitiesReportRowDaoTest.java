@@ -51,7 +51,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         Activity acivity = schd.getActivity();
         assertNotNull("Activity id should not be null", acivity.getId());
         assertNotNull("Activity name should not be null", acivity.getName());
-        assertNotNull("Actiivty type should not be null", acivity.getType());
+        assertEquals("Wrong activity type", "Procedure", acivity.getType().getName());
 
         assertNotNull("Subject should not be null", row.getSubject());
         assertEquals("Subject grid ID is wrong", row.getSubject().getGridId(), "123");
