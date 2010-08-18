@@ -289,11 +289,26 @@ public class PscUserService implements PscUserDetailsService {
 
     /**
      * Returns the internal IDs for the StudySites which the user can see in the
-     * given roles.  If no roles are specified, it will use all the user's roles.
+     * given roles.  If no roles are specified, it will use all the user's site
+     * participation roles. If the user has access to all the study sites in
+     * the system, it may return null.
      */
     public Collection<Integer> getVisibleStudySiteIds(PscUser user, PscRole... roles) {
+        PscRole[] effective = roles.length == 0 ? PscRoleUse.SITE_PARTICIPATION.roles() : roles;
         return studySiteDao.getIntersectionIds(
-            getVisibleStudyIds(user, roles), getVisibleSiteIds(user, roles));
+            getVisibleStudyIds(user, effective), getVisibleSiteIds(user, effective));
+    }
+
+    /**
+     * Returns the internal IDs for the StudySubjectAssignments which the user
+     * can see in the given roles.  If no roles are specified, it will use all
+     * the user's roles which can see subject data. If the user has access to
+     * all the assignments in the system, it may return null.
+     */
+    public Collection<Integer> getVisibleAssignmentIds(PscUser user, PscRole... roles) {
+        PscRole[] effective = roles.length == 0 ? PscRoleUse.SUBJECT_MANAGEMENT.roles() : roles;
+        return studySubjectAssignmentDao.getAssignmentIdsInIntersection(
+            getVisibleStudyIds(user, effective), getVisibleSiteIds(user, effective));
     }
 
     private Collection<Integer> getVisibleStudyIds(PscUser user, PscRole... roles) {

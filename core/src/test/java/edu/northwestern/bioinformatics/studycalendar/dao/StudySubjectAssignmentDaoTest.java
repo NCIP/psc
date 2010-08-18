@@ -85,6 +85,20 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         assertEquals("Wrong SSA found", -13, (int) ssa.getId());
     }
 
+    public void testGetAssignmentIdsInIntersection() throws Exception {
+        List<Integer> actual = getDao().
+            getAssignmentIdsInIntersection(Arrays.asList(-101), Arrays.asList(-200));
+
+        assertEquals("Wrong number of assignments found", 1, actual.size());
+        assertEquals("Wrong assignment found", -13, (int) actual.get(0));
+    }
+
+    public void testGetAssignmentIdsInIntersectionIsNullForAllStudyAndAllSite() throws Exception {
+        List<Integer> actual = getDao().getAssignmentIdsInIntersection(null, null);
+
+        assertNull("Should signal 'all'", actual);
+    }
+
     public void testGetAssignmentsInIntersection() throws Exception {
         List<StudySubjectAssignment> actual = getDao().
             getAssignmentsInIntersection(Arrays.asList(-101), Arrays.asList(-200));
