@@ -88,6 +88,9 @@
                     <div class="value"><label for="scope-study-[#= study.identifier #]">[#= study.name #]</label></div>
                 </div>
                 [# }); #]
+                [# if (role.study_team_member) { #]
+                    <p>A Study Team Administrator will also be able to set study scope for this role.</p>
+                [# } #]
             </div>
         </div>
         [# } #]

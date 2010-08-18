@@ -10,6 +10,8 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 
+import static java.util.Arrays.asList;
+
 /**
 * @author Rhett Sutphin
 */
@@ -66,6 +68,9 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
                 safePut(o, "uses", uses);
             }
             safePut(o, "scope_description", pscRole.getScopeDescription());
+            if (asList(PscRole.valuesProvisionableByStudyTeamAdministrator()).contains(pscRole)) {
+                safePut(o, "study_team_member", true);
+            }
         }
         return o;
     }

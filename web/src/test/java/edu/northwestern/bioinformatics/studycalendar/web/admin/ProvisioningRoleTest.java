@@ -73,11 +73,23 @@ public class ProvisioningRoleTest extends TestCase {
         assertEquals("Wrong use", "template_management", uses.get(0));
     }
 
-    public void testJSONDoesNotIncludesPscRoleUsesForSuiteOnlyRole() throws Exception {
+    public void testJSONDoesNotIncludePscRoleUsesForSuiteOnlyRole() throws Exception {
         JSONObject actual =
             new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();
         JSONArray uses = actual.optJSONArray("uses");
         assertNull(uses);
+    }
+
+    public void testJSONIncludesSTAFlagWhenStudyTeamAdministerable() throws Exception {
+        JSONObject actual =
+            new ProvisioningRole(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER).toJSON();
+        assertTrue(actual.optBoolean("study_team_member"));
+    }
+
+    public void testJSONDoesNotIncludeSTAFlagWhenNotStudyTeamAdministerable() throws Exception {
+        JSONObject actual =
+            new ProvisioningRole(SuiteRole.DATA_ANALYST).toJSON();
+        assertNull(actual.opt("study_team_member"));
     }
 
     public void testNaturalOrderAlphabetizesSuiteOnlyRoles() throws Exception {
