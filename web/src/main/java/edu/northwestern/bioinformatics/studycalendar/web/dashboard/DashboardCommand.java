@@ -33,6 +33,7 @@ public class DashboardCommand {
     private Map<Study, List<UserStudySiteRelationship>> assignableStudies;
     private List<PscUser> colleagues;
     private Map<Subject, List<Notification>> pendingNotifications;
+    private List<UserStudySubjectAssignmentRelationship> managedAssignments;
 
     public DashboardCommand(PscUser loggedInUser, PscUserService pscUserService, StudyDao studyDao) {
         this.loggedInUser = loggedInUser;
@@ -126,6 +127,23 @@ public class DashboardCommand {
             }
         }
         return pendingNotifications;
+    }
+
+    public List<UserStudySubjectAssignmentRelationship> getManagedAssignments() {
+        if (managedAssignments == null) {
+            managedAssignments = pscUserService.getManagedAssignments(getUser());
+            if (isColleagueDashboard()) {
+                List<UserStudySubjectAssignmentRelationship> rewrapped =
+                    new ArrayList<UserStudySubjectAssignmentRelationship>(managedAssignments.size());
+                for (UserStudySubjectAssignmentRelationship rel : managedAssignments) {
+                    UserStudySubjectAssignmentRelationship newRel =
+                        new UserStudySubjectAssignmentRelationship(loggedInUser, rel.getAssignment());
+                    if (newRel.getCanUpdateSchedule()) rewrapped.add(newRel);
+                }
+                managedAssignments = rewrapped;
+            }
+        }
+        return managedAssignments;
     }
 
     ////// BOUND PROPERTIES
