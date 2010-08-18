@@ -58,7 +58,12 @@
             <div id="sites" class="content">
                 [# _(sites).each(function (site) { #]
                 <div class="row">
-                    <div class="label"><input id="scope-site-[#= site.identifier #]" site-identifier="[#= site.identifier #]" class="scope-site" type="checkbox"/></div>
+                    <div class="label">
+                        <input id="scope-site-[#= site.identifier #]"
+                               site-identifier="[#= site.identifier #]"
+                               class="scope-site [#= site.identifier == '__ALL__' ? 'all' : 'one' #]"
+                               type="checkbox"/>
+                    </div>
                     <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
                 </div>
                 [# }); #]
@@ -71,7 +76,12 @@
             <div id="studies" class="content">
                 [# _(studies).each(function (study) { #]
                 <div class="row">
-                    <div class="label"><input id="scope-study-[#= study.identifier #]" study-identifier="[#= study.identifier #]" class="scope-study" type="checkbox"/></div>
+                    <div class="label">
+                        <input id="scope-study-[#= study.identifier #]"
+                               study-identifier="[#= study.identifier #]"
+                               class="scope-study [#= study.identifier == '__ALL__' ? 'all' : 'one' #]" 
+                               type="checkbox"/>
+                    </div>
                     <div class="value"><label for="scope-study-[#= study.identifier #]">[#= study.name #]</label></div>
                 </div>
                 [# }); #]

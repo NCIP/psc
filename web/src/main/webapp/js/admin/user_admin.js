@@ -87,10 +87,27 @@ psc.admin.UserAdmin = (function ($) {
     var input;
     if (data.scopeType) {
       input = $('#role-editor input#scope-' + data.scopeType + '-' + data.scopeIdentifier);
+      setTimeout(syncAllVsOne, 0);
     } else {
       input = $('#role-editor input#group-' + data.role);
     }
     input.attr('checked', data.kind === 'add');
+  }
+
+  function syncAllVsOne() {
+    _(['scope-study', 'scope-site']).each(function (scopeClass) {
+      var isAll = $('#role-editor input.all.' + scopeClass + ":checked").length > 0;
+      if (isAll) {
+        $('#role-editor input.one.' + scopeClass).
+          filter(':checked').click().end().
+          attr("disabled", true).
+          closest('div.row').addClass('disabled');
+      } else {
+        $('#role-editor input.one.' + scopeClass).
+          attr("disabled", false).
+          closest('div.row').removeClass('disabled');
+      }
+    });
   }
 
   function syncUsername() {
@@ -114,6 +131,7 @@ psc.admin.UserAdmin = (function ($) {
       $(user).bind('membership-change', syncRoleTabOnChange).
         bind('membership-change', syncRoleEditorOnChange);
       $('input#username').keyup(syncUsername);
+      syncAllVsOne();
     },
 
     serializeRoleChanges: function () {
