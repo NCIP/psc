@@ -6,16 +6,23 @@ ul
     padding: 0
     margin: 0
 
-li.site
-  position: relative
-  width: 35em
-  .controls
-    position: absolute
-    right: 0
-    top: 0
-li.assignment, li.colleague
-  list-style-type: disc
-  margin-left: 2em
+#available-studies
+  li.site
+    position: relative
+    width: 25em
+    min-height: 3em
+    .controls
+      position: absolute
+      width: 18em
+      right: -18em
+      top: 0
+  li.assignment
+    list-style-type: disc
+    margin-left: 2em
+    &.off-study
+      font-style: italic
+    &.owned
+      font-weight: bold
 
 #past-due
   display: none

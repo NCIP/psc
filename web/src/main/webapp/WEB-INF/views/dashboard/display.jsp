@@ -156,7 +156,7 @@
                 <c:when test="${fn:length(activityTypes) >= 8 || param['long-types']}">
                     <label id="activity-type-multiple">
                         From these activity types:
-                        <select name="activity-types" multiple>
+                        <select name="activity-types" multiple size="4">
                             <c:forEach items="${activityTypes}" var="type">
                                 <option selected>${type.name}</option>
                             </c:forEach>
@@ -215,13 +215,12 @@
                         </div>
                         <ul class="assignments">
                             <c:forEach items="${ussr.visibleAssignments}" var="ussar">
-                                <c:if test="${not ussar.assignment.off}">
-                                    <li class="assignment ${ussar.assignment.managerCsmUserId == command.user.csmUser.userId ? 'owned' : ''}">
-                                        <a href="<c:url value="/pages/subject?subject=${ussar.assignment.subject.id}"/>">
-                                            ${ussar.assignment.subject.fullName}
-                                        </a>
-                                    </li>
-                                </c:if>
+                                <li class="assignment ${ussar.assignment.managerCsmUserId == command.user.csmUser.userId ? 'owned' : 'unowned'} ${ussar.assignment.off ? 'off-study' : 'on-study'}">
+                                    <a href="<c:url value="/pages/subject?subject=${ussar.assignment.subject.id}"/>">
+                                        ${ussar.assignment.subject.fullName}
+                                    </a>
+                                    <c:if test="${ussar.assignment.off}">(off study)</c:if>
+                                </li>
                             </c:forEach>
                         </ul>
                     </li>
