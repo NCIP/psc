@@ -239,44 +239,10 @@
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
-    <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Subject coordinator"/>
-                <property name="parent">
-                    <ref local="dashboardController"/>
-                </property>
-            </bean>
-        </property>
-    </bean>
-
-    <bean name="/dashboard/subjectCoordinatorSchedule/dismissNotification"
-          id="dashboardSubjectCoordinatorControllerDismissNotification" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
-    </bean>
-
-    <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
-        <property name="crumb.parent">
-            <ref local="dashboardSubjectCoordinatorController"/>
-        </property>
-    </bean>
-
     <bean name="/cal/template/externalStudy" id="externalStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ExternalStudyController">
         <property name="crumb.parent">
             <ref local="displayTemplateController"/>
-        </property>
-    </bean>
-
-    <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"
-          id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Change ownership of subject schedules"/>
-            </bean>
         </property>
     </bean>
 
