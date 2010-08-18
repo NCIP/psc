@@ -7,6 +7,11 @@
 <%@attribute name="logoutUrl" required="true"%>
 <%@attribute name="preLogoutHtml" required="false"%>
 
+<c:if test="${not empty requestScope['currentUser']}">
+    <jsp:useBean id="currentUser" scope="request"
+                 type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser"/>
+</c:if>
+
 <%-- The fragment provided for this attribute will be invoked for each section --%>
 <%@attribute name="renderSection" fragment="true" required="true"%>
 <%@variable name-given="section" %>
@@ -23,7 +28,11 @@
     </div>
 
     <div id="login-action">
-        ${preLogoutHtml}<a href="${logoutUrl}">Log out</a>
+        ${preLogoutHtml}
+        <c:choose>
+            <c:when test="${not empty currentUser}"><a href="${logoutUrl}">Log out</a></c:when>
+            <c:otherwise><a href="<c:url value="/public/login"/>">Log in</a></c:otherwise>
+        </c:choose>
     </div>
 
     <ul id="sections" class="tabs">
