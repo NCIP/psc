@@ -184,8 +184,11 @@ public class AdministerUserCommandTest extends WebTestCase {
             toUser();
         AdministerUserCommand actual = create(pscUser, provisioner);
 
+        // expect to be able to provision all non-scoped roles
+        int expectedRoleCount = 0;
+        for (SuiteRole role : SuiteRole.values()) if (role.isScoped()) expectedRoleCount++;
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
-            SuiteRole.values().length, actual.getProvisionableRoles().size());
+            expectedRoleCount, actual.getProvisionableRoles().size());
 
         assertEquals("Should be able to provision for the specific site",
             1, actual.getProvisionableSites().size());

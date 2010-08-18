@@ -33,10 +33,12 @@ import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -81,15 +83,21 @@ public class AdministerUserCommand
 
         if (provisioner.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
             SuiteRoleMembership ua = provisioner.getMembership(PscRole.USER_ADMINISTRATOR);
-            command.setProvisionableRoles(SuiteRole.values());
             command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
             command.setCanProvisionAllSites(ua.isAllSites());
             VisibleStudyParameters provisionable = new VisibleStudyParameters();
             if (ua.isAllSites()) {
                 provisionable.forAllManagingSites().forAllParticipatingSites();
+                command.setProvisionableRoles(SuiteRole.values());
             } else {
                 provisionable.forManagingSiteIdentifiers(ua.getSiteIdentifiers()).
                     forParticipatingSiteIdentifiers(ua.getSiteIdentifiers());
+                List<SuiteRole> nonGlobal = new ArrayList<SuiteRole>(Arrays.asList(SuiteRole.values()));
+                for (Iterator<SuiteRole> it = nonGlobal.iterator(); it.hasNext();) {
+                    SuiteRole role = it.next();
+                    if (!role.isScoped()) it.remove();
+                }
+                command.setProvisionableRoles(nonGlobal.toArray(new SuiteRole[nonGlobal.size()]));
             }
             command.setProvisionableManagedStudies(
                 studyDao.getVisibleStudiesForTemplateManagement(provisionable));
