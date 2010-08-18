@@ -271,6 +271,7 @@ public class TemplateImportService {
         if (oldStudy == null) {
             study = newStudy;
             toApply = newStudy.getAmendmentsListInReverseOrder();
+            study.setAmendment(null);
         } else {
             study = oldStudy;
             toApply = newStudy.getAmendmentsListInReverseOrder().subList(oldStudy.getAmendmentsList().size(), newStudy.getAmendmentsList().size());
@@ -280,12 +281,12 @@ public class TemplateImportService {
         studyDao.save(study);
         for (Amendment amendment: toApply) {
             study.setDevelopmentAmendment(amendment);
-            resolveDeltaNodesAndChangeChildren(amendment);
+            resolveDeltaNodesAndChangeChildren(amendment, study);
             amendmentService.amend(study);
         }
 
         if (newDevelopment != null) {
-            resolveDeltaNodesAndChangeChildren(newDevelopment);
+            resolveDeltaNodesAndChangeChildren(newDevelopment, study);
             study.setDevelopmentAmendment(newDevelopment);
         }
 
@@ -307,16 +308,20 @@ public class TemplateImportService {
         }
     }
 
-    private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {
+    private void resolveDeltaNodesAndChangeChildren(Amendment amendment, Study study) {
         Map<String, Child> referencedChildren = new HashMap<String, Child>();
         for (Delta delta : amendment.getDeltas()) {
-            // resolve node
-            Changeable deltaNode = findRealNode(delta.getNode());
-            if (deltaNode != null) {
-                delta.setNode(deltaNode);
+            if (delta instanceof StudyDelta) {
+                delta.setNode(study);
             } else {
-                throw new StudyCalendarValidationException(String.format("Delta with id %s references unknown node with id %s. Please check the node id."
-                        , delta.getGridId() ,delta.getNode().getGridId()));
+                // resolve node
+                Changeable deltaNode = findRealNode(delta.getNode());
+                if (deltaNode != null) {
+                    delta.setNode(deltaNode);
+                } else {
+                    throw new StudyCalendarValidationException(String.format("Delta with id %s references unknown node with id %s. Please check the node id."
+                            , delta.getGridId() ,delta.getNode().getGridId()));
+                }
             }
             // resolve child nodes
             for (Object oChange : delta.getChanges()) {
