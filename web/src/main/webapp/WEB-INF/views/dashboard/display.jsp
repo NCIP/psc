@@ -3,6 +3,7 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions" %>
 
 <jsp:useBean id="command" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.web.dashboard.DashboardCommand"/>
@@ -25,6 +26,7 @@
     <tags:javascriptLink name="dashboard/main"/>
     <tags:javascriptLink name="dashboard/past-due"/>
     <tags:javascriptLink name="dashboard/upcoming"/>
+    <tags:javascriptLink name="dashboard/notifications"/>
 
     <tags:resigTemplate id="past_due_subject">
         <li class="past-due-subject">
@@ -79,6 +81,7 @@
             psc.dashboard.Main.init('${command.user.username}');
             psc.dashboard.PastDue.load();
             psc.dashboard.Upcoming.init();
+            psc.dashboard.Notifications.init();
         });
     </script>
 </head>
@@ -107,6 +110,39 @@
 <laf:box title="Past due activities" id="past-due" autopad="true">
     <ul id="past-due-subjects"></ul>
 </laf:box>
+
+<%-- ////// NOTIFICATIONS --%>
+
+<c:if test="${not empty command.pendingNotifications}">
+    <laf:box title="Unaddressed notifications" id="notifications" autopad="true">
+        <div id="notification-error" class="error"></div>
+        <ul id="notification-subjects">
+            <c:forEach items="${command.pendingNotifications}" var="entry" varStatus="noteStatus">
+                <li class="notification-subject ${commons:parity(noteStatus.index)}">
+                    <a href="<c:url value="/pages/subject?subject=${entry.key.gridId}"/>">${entry.key.fullName}</a>
+                    <ul class="subject-notifications">
+                        <c:forEach items="${entry.value}" var="notification">
+                            <li id="notification-${notification.id}" class="notification">
+                                <%-- TODO: the notification system really needs refactoring.  This is gross. --%>
+                                <c:choose>
+                                    <c:when test="${fn:contains(notification.message,'pages/cal')}">
+                                        <a href= "<c:url value="${notification.message}"/>">
+                                            ${notification.title}
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>${notification.message}</c:otherwise>
+                                </c:choose>
+                                <span class="controls">
+                                    <a class="control dismiss" href="#">Dismiss</a>
+                                </span>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </li>
+            </c:forEach>
+        </ul>
+    </laf:box>
+</c:if>
 
 <%-- ////// UPCOMING --%>
 

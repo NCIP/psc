@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import org.apache.commons.collections15.CollectionUtils;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class DashboardCommand {
 
     private Map<Study, List<UserStudySiteRelationship>> assignableStudies;
     private List<PscUser> colleagues;
+    private Map<Subject, List<Notification>> pendingNotifications;
 
     public DashboardCommand(PscUser loggedInUser, PscUserService pscUserService, StudyDao studyDao) {
         this.loggedInUser = loggedInUser;
@@ -100,6 +104,28 @@ public class DashboardCommand {
             }
         }
         return colleagues;
+    }
+
+    public Map<Subject, List<Notification>> getPendingNotifications() {
+        if (pendingNotifications == null) {
+            pendingNotifications = new LinkedHashMap<Subject, List<Notification>>();
+            for (UserStudySubjectAssignmentRelationship managed : pscUserService.getManagedAssignments(getUser())) {
+                UserStudySubjectAssignmentRelationship loggedIn =
+                    new UserStudySubjectAssignmentRelationship(loggedInUser, managed.getAssignment());
+                if (loggedIn.getCanUpdateSchedule()) {
+                    for (Notification notification : loggedIn.getAssignment().getNotifications()) {
+                        if (!notification.isDismissed()) {
+                            Subject subject = loggedIn.getAssignment().getSubject();
+                            if (!pendingNotifications.containsKey(subject)) {
+                                pendingNotifications.put(subject, new ArrayList<Notification>());
+                            }
+                            pendingNotifications.get(subject).add(notification);
+                        }
+                    }
+                }
+            }
+        }
+        return pendingNotifications;
     }
 
     ////// BOUND PROPERTIES

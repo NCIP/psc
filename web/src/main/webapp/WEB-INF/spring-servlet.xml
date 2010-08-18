@@ -231,6 +231,14 @@
         <property name="controllerTools" ref="controllerTools"/>
     </bean>
 
+    <bean name="/dashboard/dismiss-notification"
+          id="dismissNotificationController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.DismissNotificationController">
+        <property name="controllerTools" ref="controllerTools"/>
+        <property name="notificationDao" ref="notificationDao"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+    </bean>
+
     <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
         <property name="crumb">
