@@ -38,6 +38,9 @@
             <h3>[#= role.name #]</h3>
             <div class="content">
                 <p>[#= role.description #]</p>
+                [# if (role.scope_description) { #]
+                <p>[#= role.scope_description #]</p>
+                [# } #]
                 <div class="row">
                     <div class="label"><input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/></div>
                     <div class="value">

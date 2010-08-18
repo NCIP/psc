@@ -30,6 +30,14 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
         return suiteRole.getDisplayName();
     }
 
+    public String getDescription() {
+        if (isPscRole()) {
+            return pscRole.getDescription();
+        } else {
+            return suiteRole.getDescription();
+        }
+    }
+
     public String getKey() {
         return suiteRole.getCsmName();
     }
@@ -47,7 +55,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
         JSONObject o = new JSONObject();
         safePut(o, "name", suiteRole.getDisplayName());
         safePut(o, "key", suiteRole.getCsmName());
-        safePut(o, "description", suiteRole.getDescription());
+        safePut(o, "description", getDescription());
         if (suiteRole.isScoped()) {
             JSONArray scopes = buildEnumArray(suiteRole.getScopes());
             safePut(o, "scopes", scopes);
@@ -57,6 +65,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
                 JSONArray uses = buildEnumArray(pscRole.getUses());
                 safePut(o, "uses", uses);
             }
+            safePut(o, "scope_description", pscRole.getScopeDescription());
         }
         return o;
     }

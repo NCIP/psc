@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import junit.framework.TestCase;
 import org.json.JSONArray;
@@ -31,9 +32,23 @@ public class ProvisioningRoleTest extends TestCase {
         assertEquals("data_analyst", actual.optString("key"));
     }
 
-    public void testJSONIncludesDescription() throws Exception {
+    public void testJSONIncludesDescriptionForPscRoles() throws Exception {
         JSONObject actual = new ProvisioningRole(SuiteRole.DATA_IMPORTER).toJSON();
-        assertEquals(SuiteRole.DATA_IMPORTER.getDescription(), actual.optString("description"));
+        assertEquals(PscRole.DATA_IMPORTER.getDescription(), actual.optString("description"));
+    }
+
+    public void testJSONIncludesDescriptionForSuiteOnlyRoles() throws Exception {
+        JSONObject actual =
+            new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();
+        assertEquals(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER.getDescription(),
+            actual.optString("description"));
+    }
+
+    public void testJSONIncludesScopeDescriptionForPscRoles() throws Exception {
+        JSONObject actual =
+            new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER).toJSON();
+        assertEquals(PscRole.STUDY_QA_MANAGER.getScopeDescription(),
+            actual.optString("scope_description"));
     }
 
     public void testJSONIncludesScopesWhenScoped() throws Exception {

@@ -67,8 +67,25 @@ public enum PscRole implements GrantedAuthority {
         return corresponding;
     }
 
-    public String getDescription() {
+    public String getSuiteDescription() {
         return getSuiteRole().getDescription();
+    }
+
+    public String getDescription() {
+        return getRoleProperties().getProperty(getCsmName() + ".description");
+    }
+
+    public String getScopeDescription() {
+        String custom = getRoleProperties().getProperty(getCsmName() + ".scopeDescription");
+        if (custom != null) {
+            return custom;
+        } else if (isStudyScoped()) {
+            return getRoleProperties().getProperty("defaultScopeDescription.site+study");
+        } else if (isSiteScoped()) {
+            return getRoleProperties().getProperty("defaultScopeDescription.site");
+        } else {
+            return getRoleProperties().getProperty("defaultScopeDescription.global");
+        }
     }
 
     public String getDisplayName() {

@@ -23,10 +23,36 @@ public class PscRoleTest extends TestCase {
         // no exceptions
     }
 
-    public void testDescriptionDelegatesToSuiteRole() throws Exception {
+    public void testAllRolesHavePscDescriptions() throws Exception {
+        for (PscRole role : PscRole.values()) {
+            assertNotNull("Role missing description: " + role, role.getDescription());
+        }
+    }
+
+    public void testScopeDescriptionForGlobalRole() throws Exception {
+        assertEquals("This user's actions are global, meaning that they affect the entire application and are not limited by site or study.",
+            PscRole.DATA_IMPORTER.getScopeDescription());
+    }
+
+    public void testScopeDescriptionForSiteScopedRole() throws Exception {
+        assertEquals("This user's actions can be limited to one, many, or opened to all sites.",
+            PscRole.STUDY_TEAM_ADMINISTRATOR.getScopeDescription());
+    }
+
+    public void testScopeDescriptionForSiteAndStudyScopedRole() throws Exception {
+        assertEquals("This user's actions can be limited to one, many, or opened to all sites and further limited to one, many, or all studies within those sites.",
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getScopeDescription());
+    }
+
+    public void testScopeDescriptionForRoleSpecificCustomDescription() throws Exception {
+        assertEquals("This user's actions can be limited to one, many, or opened to all sites. This user's actions are further refined by the role the site is playing in the study: either participating or managing.",
+            PscRole.STUDY_QA_MANAGER.getScopeDescription());
+    }
+
+    public void testSuiteDescriptionDelegatesToSuiteRole() throws Exception {
         assertEquals(
             SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getDescription(),
-            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getDescription()
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getSuiteDescription()
         );
     }
 
