@@ -797,24 +797,30 @@
             <div id="errors" class="error"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
 
-            <c:if test="${study.managed}">
-                <c:set var="sites" value="${study.managingSites}"/>
-                <c:set var="listOfSiteName" value=""/>
-                <c:if test="${empty sites}">
-                    <c:set var="listOfSiteName" value="Unmanaged"/>
-                </c:if>
-                <c:if test="${not empty sites}">
-                    <c:forEach items="${sites}" var="site" varStatus="siteIndex">
-                        <c:set var="listOfSiteName" value="${listOfSiteName} ${site.name}"/>
-                    </c:forEach>
-                </c:if>
-                <c:set var="listOfSiteName" value='${fn:replace(fn:trim(listOfSiteName), " ", ", ")}'/>
+            <c:set var="sites" value="${study.managingSites}"/>
+            <c:set var="listOfSiteName" value=""/>
+            <c:if test="${empty sites}">
+                  <c:set var="listOfSiteName" value="Unmanaged"/>
             </c:if>
+            <c:if test="${not empty sites}">
+                <c:forEach items="${sites}" var="site" varStatus="siteIndex">
+                    <c:set var="listOfSiteName" value="${listOfSiteName} ${site.name}"/>
+                </c:forEach>
+            </c:if>
+            <c:set var="listOfSiteName" value='${fn:replace(fn:trim(listOfSiteName), " ", ", ")}'/>
 
             <div class="row odd">
                 <div class="label">Managing sites</div>
                 <div class="value">
-                    ${listOfSiteName}
+                    <c:choose>
+                        <c:when test="${listOfSiteName == 'Unmanaged'}">
+                            <i>${listOfSiteName}</i>
+                        </c:when>
+                        <c:otherwise>
+                            ${listOfSiteName}   
+                        </c:otherwise>
+                    </c:choose>
+
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}"/>">change</a></span>
                 </div>
             </div>
