@@ -16,14 +16,39 @@
     <title>Dashboard for ${command.user.displayName}</title>
     <tags:stylesheetLink name="main"/>
     <tags:sassLink name="dashboard"/>
+
+    <tags:javascriptLink name="jquery/jquery.query" />
+    <tags:javascriptLink name="psc-tools/misc"/>
+    <tags:javascriptLink name="resig-templates"/>
+    <tags:javascriptLink name="dashboard/main"/>
+    <tags:javascriptLink name="dashboard/past-due"/>
+
+    <tags:resigTemplate id="past_due_subject">
+        <li class="past-due-subject">
+            <a href="<c:url value="/pages/subject?subject=[#= subject.grid_id #]"/>">[#= subject.name #]</a>
+            has [#= count #] past due activit[#= count == 1 ? 'y' : 'ies' #].
+            [#= (count == 1) ? 'It is from' : 'The earliest is from' #]
+            [#= psc.tools.Dates.apiDateToDisplayDate(earliestApiDate) #].
+        </li>
+    </tags:resigTemplate>
+
+    <script type="text/javascript">
+        jQuery(function () {
+            psc.dashboard.Main.init('${command.user.username}');
+            psc.dashboard.PastDue.load();
+        });
+    </script>
 </head>
 <body>
+<div id="loading">
+    <tags:activityIndicator/> Loading
+</div>
 <c:choose>
     <c:when test="${!command.colleagueDashboard}">
-        <h1>Welcome, ${command.user.displayName}</h1>
+        <h1 class="autoclear">Welcome, ${command.user.displayName}</h1>
     </c:when>
     <c:otherwise>
-        <h1>The dashboard for your colleague ${command.user.displayName}</h1>
+        <h1 class="autoclear">The dashboard for your colleague ${command.user.displayName}</h1>
     </c:otherwise>
 </c:choose>
 <c:if test="${command.hasHiddenInformation}">
@@ -33,6 +58,12 @@
         this page.
     </p>
 </c:if>
+
+<%-- ////// PAST DUE --%>
+
+<laf:box title="Past due activities" id="past-due" autopad="true">
+    <ul id="past-due-subjects"></ul>
+</laf:box>
 
 <%-- ////// AVAILABLE STUDIES --%>
 
