@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -26,6 +27,7 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
     private ApplicationSecurityManager applicationSecurityManager;
     private StudyDao studyDao;
     private PscUserService pscUserService;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     public Collection<ResourceAuthorization> authorizations(
@@ -50,7 +52,9 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
         DashboardCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        return new ModelAndView("dashboard/display", errors.getModel());
+        ModelAndView mv = new ModelAndView("dashboard/display", errors.getModel());
+        mv.addObject("activityTypes", activityTypeDao.getAll());
+        return mv;
     }
 
     ////// CONFIGURATION
@@ -68,5 +72,10 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
     @Required
     public void setPscUserService(PscUserService pscUserService) {
         this.pscUserService = pscUserService;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

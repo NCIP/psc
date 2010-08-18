@@ -217,7 +217,7 @@
         </property>
     </bean>
 
-    <bean name="/dashboard" id="dashboardController" autowire="byName"
+    <bean name="/dashboard" id="dashboardController"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.DashboardController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
@@ -226,6 +226,9 @@
         </property>
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="studyDao" ref="studyDao"/>
+        <property name="activityTypeDao" ref="activityTypeDao"/>
+        <property name="pscUserService" ref="pscUserService"/>
+        <property name="controllerTools" ref="controllerTools"/>
     </bean>
 
     <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"

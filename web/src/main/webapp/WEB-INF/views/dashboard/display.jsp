@@ -6,6 +6,8 @@
 
 <jsp:useBean id="command" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.web.dashboard.DashboardCommand"/>
+<jsp:useBean id="activityTypes" scope="request"
+             type="java.util.List<edu.northwestern.bioinformatics.studycalendar.domain.ActivityType>"/>
 <jsp:useBean id="currentUser" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser"/>
 <jsp:useBean id="configuration" scope="request"
@@ -22,6 +24,7 @@
     <tags:javascriptLink name="resig-templates"/>
     <tags:javascriptLink name="dashboard/main"/>
     <tags:javascriptLink name="dashboard/past-due"/>
+    <tags:javascriptLink name="dashboard/upcoming"/>
 
     <tags:resigTemplate id="past_due_subject">
         <li class="past-due-subject">
@@ -32,10 +35,50 @@
         </li>
     </tags:resigTemplate>
 
+    <tags:resigTemplate id="upcoming_day">
+        <h3>
+            [#= psc.tools.Dates.weekdayName(psc.tools.Dates.apiDateToUtc(day)) #]
+            [#= psc.tools.Dates.apiDateToDisplayDate(day) #]
+        </h3>
+        <laf:division>
+            <ul class="upcoming-day">
+                [# _(subjects).each(function (subject, i) { #]
+                    <li class="subject autoclear [#= (i % 2 == 0 ? 'even' : 'odd') #]">
+                        <a href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
+                            [#= subject.subject_name #]
+                        </a>
+                        <ul class="subject-day-activities">
+                            [# _(subject.activities).each(function (activity) { #]
+                                <li>
+                                    <a href="<c:url value=""/>">
+                                        <a href="<c:url value="/pages/cal/scheduleActivity?event=[#= activity.id #]"/>">[#= activity.activity_name #]</a>
+                                    </a>
+                                </li>
+                            [# }); #]
+                        </ul>
+                    </li>
+                [# }); #]
+            </ul>
+        </laf:division>
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="none_upcoming">
+        <laf:division>
+            There are no pending scheduled activities matching the given criteria.
+        </laf:division>
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="error_upcoming">
+        <laf:division>
+            <p class="error">Error retrieving upcoming activities: [#= error #]</p>
+        </laf:division>
+    </tags:resigTemplate>
+
     <script type="text/javascript">
         jQuery(function () {
             psc.dashboard.Main.init('${command.user.username}');
             psc.dashboard.PastDue.load();
+            psc.dashboard.Upcoming.init();
         });
     </script>
 </head>
@@ -63,6 +106,42 @@
 
 <laf:box title="Past due activities" id="past-due" autopad="true">
     <ul id="past-due-subjects"></ul>
+</laf:box>
+
+<%-- ////// UPCOMING --%>
+
+<laf:box title="Upcoming activities" id="upcoming">
+    <laf:division>
+        <p><label>
+            Show activities for the next <input id="upcoming-days" size="3" value="7"/> days.
+        </label></p>
+        <p>
+            <c:choose>
+                <c:when test="${fn:length(activityTypes) >= 8 || param['long-types']}">
+                    <label id="activity-type-multiple">
+                        From these activity types:
+                        <select name="activity-types" multiple>
+                            <c:forEach items="${activityTypes}" var="type">
+                                <option selected>${type.name}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
+                    <a href="#" class="control" id="upcoming-all">all</a>
+                    <a href="#" class="control" id="upcoming-none">none</a>
+                </c:when>
+                <c:otherwise>
+                    From these activity types:
+                    <c:forEach items="${activityTypes}" var="type">
+                        <label>
+                            <input type="checkbox" name="activity-types" value="${type.name}" checked/>
+                            ${type.name}
+                        </label>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
+        </p>
+    </laf:division>
+    <div id="upcoming-activity-days"></div>
 </laf:box>
 
 <%-- ////// AVAILABLE STUDIES --%>
