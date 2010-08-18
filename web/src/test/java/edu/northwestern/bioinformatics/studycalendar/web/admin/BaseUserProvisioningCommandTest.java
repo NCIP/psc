@@ -74,6 +74,28 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         return command;
     }
 
+    ////// configuration
+
+    public void testSetProvisionableRolesSortsTheRoles() throws Exception {
+        command.setProvisionableRoles(
+            SuiteRole.AE_EXPEDITED_REPORT_REVIEWER,
+            SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER,
+            SuiteRole.USER_ADMINISTRATOR,
+            SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+
+        assertEquals("Wrong number of roles", 4, command.getProvisionableRoles().size());
+        assertEquals("Wrong 1st role", "study_calendar_template_builder",
+            command.getProvisionableRoles().get(0).getKey());
+        assertEquals("Wrong 2nd role", "study_subject_calendar_manager",
+            command.getProvisionableRoles().get(1).getKey());
+        assertEquals("Wrong 3rd role", "user_administrator",
+            command.getProvisionableRoles().get(2).getKey());
+        assertEquals("Wrong 4th role", "ae_expedited_report_reviewer",
+            command.getProvisionableRoles().get(3).getKey());
+    }
+
+    ////// apply
+
     public void testApplyAppliesAddAllSiteScope() throws Exception {
         expectRoleChange("data_reader", "add", "site", "__ALL__");
 

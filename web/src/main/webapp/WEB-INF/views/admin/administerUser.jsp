@@ -34,32 +34,35 @@
     <tags:javascriptLink name="admin/user_admin"/>
 
     <tags:resigTemplate id="role_editor_template">
-        <div id="role-description">
+        <div id="role-general">
             <h3>[#= role.name #]</h3>
-            <p class="content">[#= role.description #]</p>
-        </div>
-        <div class="row">
-            <div class="label"><input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/></div>
-            <div class="value">
-                <label for="group-[#= role.key #]">
-                    Grant this user the [#= role.name #] role.
-                    [# if (role.scopes) { #]
-                    Since this role is scoped, you will also need to specify one or more scopes below.
-                    [# } #]
-                </label>
+            <div class="content">
+                <p>[#= role.description #]</p>
+                <div class="row">
+                    <div class="label"><input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/></div>
+                    <div class="value">
+                        <label for="group-[#= role.key #]">
+                            Grant this user the [#= role.name #] role.
+                            [# if (role.scopes) { #]
+                            Since this role is scoped, you will also need to specify one or more
+                            scopes below.
+                            [# } #]
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
         [# if (_(role.scopes || []).include("site")) { #]
         <div>
             <h3>Sites</h3>
-            <table id="sites" class="content">
+            <div id="sites" class="content">
                 [# _(sites).each(function (site) { #]
                 <div class="row">
                     <div class="label"><input id="scope-site-[#= site.identifier #]" site-identifier="[#= site.identifier #]" class="scope-site" type="checkbox"/></div>
                     <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
                 </div>
                 [# }); #]
-            </table>
+            </div>
         </div>
         [# } #]
         [# if (_(role.scopes || []).include("study")) { #]
@@ -89,7 +92,7 @@
     </script>
 </head>
 <body>
-<laf:box title="Set properties and permissions for ${empty command.newUser ? 'new user' : command.user.displayName}">
+<laf:box title="Set properties and permissions for ${empty command.newUser ? 'new user' : command.user.displayName}" autopad="true">
     <form:form method="post" id="user-admin">
         <div class="row">
             <c:choose>

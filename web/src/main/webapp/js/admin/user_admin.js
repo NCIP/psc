@@ -103,7 +103,13 @@ psc.admin.UserAdmin = (function ($) {
       _(user.memberships).each(function (scopes, roleKey) {
         $('#role-' + roleKey).addClass('member');
       }, this);
-      selectRole('system_administrator');
+      var firstRole;
+      if ($('a.role.member').length > 0) {
+        firstRole = $('a.role.member')[0].id.substring("role-".length);
+      } else {
+        firstRole = 'study_subject_calendar_manager';
+      }
+      selectRole(firstRole);
       $('a.role').click(selectRoleTab);
       $(user).bind('membership-change', syncRoleTabOnChange).
         bind('membership-change', syncRoleEditorOnChange);

@@ -13,7 +13,7 @@ import java.util.Collection;
 /**
 * @author Rhett Sutphin
 */
-public class ProvisioningRole {
+public class ProvisioningRole implements Comparable<ProvisioningRole> {
     private SuiteRole suiteRole;
     private PscRole pscRole;
 
@@ -76,6 +76,22 @@ public class ProvisioningRole {
             throw new StudyCalendarError("Adding %s: %s to %s unexpectedly failed", e, key, value, target);
         }
     }
+
+    ////// COMPARABLE
+
+    public int compareTo(ProvisioningRole other) {
+        if (isPscRole() && !other.isPscRole()) {
+            return -1;
+        } else if (!isPscRole() && other.isPscRole()) {
+            return 1;
+        } else if (isPscRole()) { // both PSC roles
+            return pscRole.ordinal() - other.pscRole.ordinal();
+        } else {
+            return getDisplayName().compareTo(other.getDisplayName());
+        }
+    }
+
+    ////// OBJECT METHODS
 
     @Override
     public boolean equals(Object o) {

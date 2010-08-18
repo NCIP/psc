@@ -335,6 +335,7 @@ public abstract class BaseUserProvisioningCommand {
         for (SuiteRole role : roles) {
             this.provisionableRoles.add(new ProvisioningRole(role));
         }
+        Collections.sort(this.provisionableRoles);
     }
 
     public void setProvisionableRoles(PscRole... roles) {

@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+
 /**
  * @author Rhett Sutphin
  */
@@ -57,8 +59,34 @@ public class ProvisioningRoleTest extends TestCase {
     }
 
     public void testJSONDoesNotIncludesPscRoleUsesForSuiteOnlyRole() throws Exception {
-        JSONObject actual = new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();
+        JSONObject actual =
+            new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();
         JSONArray uses = actual.optJSONArray("uses");
         assertNull(uses);
+    }
+
+    public void testNaturalOrderAlphabetizesSuiteOnlyRoles() throws Exception {
+        assertNaturalOrder(
+            SuiteRole.REGISTRATION_QA_MANAGER, SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER);
+        assertNaturalOrder(
+            SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, SuiteRole.AE_RULE_AND_REPORT_MANAGER);
+    }
+
+    public void testNaturalOrderPutsPscRolesInPscOrdinalOrder() throws Exception {
+        assertNaturalOrder(SuiteRole.STUDY_CREATOR, SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertNaturalOrder(SuiteRole.STUDY_QA_MANAGER, SuiteRole.STUDY_TEAM_ADMINISTRATOR);
+        assertNaturalOrder(SuiteRole.SYSTEM_ADMINISTRATOR, SuiteRole.BUSINESS_ADMINISTRATOR);
+    }
+
+    public void testNaturalOrderPutsPscRolesBeforeSuiteOnlyRoles() throws Exception {
+        assertNaturalOrder(SuiteRole.STUDY_QA_MANAGER, SuiteRole.AE_REPORTER);
+    }
+
+    private void assertNaturalOrder(SuiteRole first, SuiteRole second) {
+        ProvisioningRole pFirst = new ProvisioningRole(first);
+        ProvisioningRole pSecond = new ProvisioningRole(second);
+
+        assertNegative(pFirst.compareTo(pSecond));
+        assertPositive(pSecond.compareTo(pFirst));
     }
 }

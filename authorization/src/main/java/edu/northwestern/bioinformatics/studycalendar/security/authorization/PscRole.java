@@ -21,22 +21,28 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 public enum PscRole implements GrantedAuthority {
-    SYSTEM_ADMINISTRATOR,
-    BUSINESS_ADMINISTRATOR,
-    PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
-    DATA_IMPORTER,
-    USER_ADMINISTRATOR,
-    STUDY_QA_MANAGER,
+    // the order here is intended to roughly reflect workflow and is
+    // the order the roles will appear in the user provisioning page
     STUDY_CREATOR,
-    STUDY_TEAM_ADMINISTRATOR,
-    STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
     STUDY_CALENDAR_TEMPLATE_BUILDER,
+    STUDY_QA_MANAGER,
+    STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+
+    STUDY_TEAM_ADMINISTRATOR,
     SUBJECT_MANAGER,
     STUDY_SUBJECT_CALENDAR_MANAGER,
-    REGISTRAR,
+
+    DATA_READER,
+
+    SYSTEM_ADMINISTRATOR,
+    USER_ADMINISTRATOR,
+    DATA_IMPORTER,
+    BUSINESS_ADMINISTRATOR,
+    PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+
     AE_REPORTER,
     LAB_DATA_USER,
-    DATA_READER,
+    REGISTRAR
     ;
 
     private SuiteRole corresponding;

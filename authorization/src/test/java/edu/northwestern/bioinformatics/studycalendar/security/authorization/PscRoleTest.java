@@ -73,4 +73,10 @@ public class PscRoleTest extends TestCase {
         assertTrue(PscRole.STUDY_QA_MANAGER.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT));
         assertTrue(PscRole.STUDY_QA_MANAGER.getUses().contains(PscRoleUse.SITE_PARTICIPATION));
     }
+
+    public void testAllRolesHaveAtLeastOneUse() throws Exception {
+        for (PscRole role : PscRole.values()) {
+            assertFalse("No uses for " + role, role.getUses().isEmpty());
+        }
+    }
 }
