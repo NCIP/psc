@@ -77,6 +77,7 @@
   
     <SCHEDULED_ACTIVITIES
         id="-16"
+        grid_id="G16"
         scheduled_study_segment_id="-21"
         planned_activity_id="-6"
         current_state_mode_id="1"
@@ -88,6 +89,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-17"
+        grid_id="G17"
         scheduled_study_segment_id="-21"
         planned_activity_id="-6"
         current_state_mode_id="3"
@@ -100,6 +102,7 @@
 
     <SCHEDULED_ACTIVITIES
         id="-18"
+        grid_id="G18"
         scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="4"
@@ -111,6 +114,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-19"
+        grid_id="G19"
         scheduled_study_segment_id="-23"
         planned_activity_id="-6"
         current_state_mode_id="4"

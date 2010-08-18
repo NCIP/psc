@@ -46,6 +46,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertNotNull("Scheduled Activity id should not be null", schd.getId());
         assertNotNull("Scheduled Activity actual date should not be null", schd.getCurrentState());
         assertNotNull("Scheduled Activity ideal date should not be null", schd.getIdealDate());
+        assertEquals("Scheduled activity grid ID is wrong", "G17", schd.getGridId());
 
         Activity acivity = schd.getActivity();
         assertNotNull("Activity id should not be null", acivity.getId());

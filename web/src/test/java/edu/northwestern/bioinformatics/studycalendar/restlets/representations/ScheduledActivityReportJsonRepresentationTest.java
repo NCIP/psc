@@ -40,8 +40,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);
-        row1.setScheduledActivity(
-            addLabels(createScheduledActivity("activity1", 2009, 11, 12, saState), "L1", "L2"));
+        row1.setScheduledActivity(addLabels(setGridId("GA1",
+            createScheduledActivity("activity1", 2009, 11, 12, saState)), "L1", "L2"));
         row1.setSubject(setGridId("GRID-1",
             createSubject("1111", "subject", "one", DateTools.createDate(1950, 4, 5))));
         row1.setSite(site);
@@ -50,8 +50,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow();
         row2.setId(1002);
-        row2.setScheduledActivity(
-            addLabels(createScheduledActivity("activity2", 2009, 10, 15, saState), "L2"));
+        row2.setScheduledActivity(addLabels(
+            setGridId("GA2", createScheduledActivity("activity2", 2009, 10, 15, saState)), "L2"));
         row2.setSubject(setGridId("GRID-2",
             createSubject("2222", "subject", "two", DateTools.createDate(1950, 4, 5))));
         row2.setSite(site);
@@ -139,6 +139,12 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
     public void testReturnedFiltersOmitsKeysForUnsetFilters() throws Exception {
         assertEquals("Should be no filters set", 0, writeAndGetFilters().length());
+    }
+
+    ////// row contents
+
+    public void testScheduledActivityIdIncludedInData() throws Exception {
+        assertEquals("Wrong grid ID", "GA1", writeAndGetRow(0).optString("grid_id"));
     }
 
     public void testIdealDateIncludedInData() throws Exception {

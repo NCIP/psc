@@ -9,6 +9,7 @@
         <subselect>
             SELECT
                 s_actv.id,
+                s_actv.grid_id,
                 s_actv.current_state_date,
                 s_actv.current_state_reason,
                 s_actv.current_state_mode_id,
@@ -22,7 +23,7 @@
                 subj.first_name,
                 subj.last_name,
                 subj.person_id,
-                subj.grid_id,
+                subj.grid_id AS subject_grid_id,
                 studies.id AS study_id,
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
@@ -53,6 +54,7 @@
 
         <component name="scheduledActivity">
             <property name="id" column="id" insert="false" update="false"/>
+            <property name="gridId" column="grid_id"/>
             <property name="currentState" type="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.ScheduledActivityStateType">
                 <column name="current_state_mode_id"/>
                 <column name="current_state_reason"/>
@@ -80,7 +82,7 @@
             <property name="firstName" column="first_name"/>
             <property name="lastName" column="last_name"/>
             <property name="personId" column="person_id"/>
-            <property name="gridId" column="grid_id"/>
+            <property name="gridId" column="subject_grid_id"/>
         </component>
 
         <component name="study">
@@ -104,7 +106,7 @@
         <filter name="filter_activityTypes" condition="activity_type_id IN (:activityTypes)"/>
         <filter name="filter_responsibleUser" condition="manager_csm_user_id = :responsibleUser"/>
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
-        <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(grid_id) = :personId)"/>
+        <filter name="filter_personId" condition="(UPPER(person_id) = :personId OR UPPER(subject_grid_id) = :personId)"/>
         <filter name="filter_authorizedStudySiteIds" condition="study_site_id IN (:authorizedStudySiteIds)"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">

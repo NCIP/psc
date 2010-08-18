@@ -88,6 +88,7 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
 
     public static void writeRow(JsonGenerator generator, ScheduledActivitiesReportRow row) throws IOException {
         generator.writeStartObject();
+            JacksonTools.nullSafeWriteStringField(generator, "grid_id", row.getScheduledActivity().getGridId());
             JacksonTools.nullSafeWriteStringField(generator, "activity_name", row.getScheduledActivity().getActivity().getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
