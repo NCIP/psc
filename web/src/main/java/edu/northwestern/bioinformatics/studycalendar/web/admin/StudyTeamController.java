@@ -45,6 +45,8 @@ public class StudyTeamController extends PscAbstractController implements PscAut
         ModelAndView mv = new ModelAndView("admin/studyTeam");
         mv.addObject("teamJSON", buildTeam(teamAdmin).toString(4));
         mv.addObject("studiesJSON", visibleStudies(teamAdmin).toString(4));
+        mv.addObject("unclaimedSubjectsCount",
+            studySubjectAssignmentDao.getAssignmentsWithoutManagerCsmUserId().size());
         return mv;
     }
 

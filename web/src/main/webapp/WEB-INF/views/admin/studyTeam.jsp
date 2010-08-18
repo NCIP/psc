@@ -7,6 +7,7 @@
 
 <jsp:useBean id="teamJSON" scope="request" type="java.lang.String"/>
 <jsp:useBean id="studiesJSON" scope="request" type="java.lang.String"/>
+<jsp:useBean id="unclaimedSubjectsCount" scope="request" type="java.lang.Integer"/>
 
 <html>
 <head>
@@ -40,7 +41,7 @@
                             var count = oRecord.getData('managed_calendar_count');
                             if (count) {
                                 elCell.innerHTML =
-                                    "<a href='<c:url value="/pages/admin/team/subjects?user="/>" +
+                                    "<a href='<c:url value="/pages/admin/team/subjects?responsible="/>" +
                                         oRecord.getData('username') + "' class='control'>Reassign " +
                                         count + " subject" + (count == 1 ? '' : 's') + "</a>";
                             } else {
@@ -94,6 +95,13 @@
         <div id="team">
             <tags:activityIndicator/> Team loading...
         </div>
+        <c:if test="${unclaimedSubjectsCount > 0}">
+            <p class="controls">
+                <a href="<c:url value="/pages/admin/team/subjects"/>">
+                    Assign responsible user for ${unclaimedSubjectsCount} unclaimed subject schedule${unclaimedSubjectsCount == 1 ? '' :'s'}
+                </a>
+            </p>
+        </c:if>
     </laf:division>
     <a name="studies"></a>
     <h3>By study</h3>

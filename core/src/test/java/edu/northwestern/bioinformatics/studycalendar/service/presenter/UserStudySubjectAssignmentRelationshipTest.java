@@ -140,6 +140,32 @@ public class UserStudySubjectAssignmentRelationshipTest extends TestCase {
             isCalendarManager());
     }
 
+    ////// canSetCalendarManager
+
+    public void testCanSetCalendarManagerWhenMatchingTeamAdmin() throws Exception {
+        assertTrue(actual(
+            createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forSites(nu)).
+            getCanSetCalendarManager());
+    }
+
+    public void testCanSetCalendarManagerWhenTeamAdminForAllSites() throws Exception {
+        assertTrue(actual(
+            createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forAllSites()).
+            getCanSetCalendarManager());
+    }
+
+    public void testCannotSetCalendarManagerWhenTeamAdminForOtherSite() throws Exception {
+        assertFalse(actual(
+            createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forSites(mayo)).
+            getCanSetCalendarManager());
+    }
+
+    public void testCannotSetCalendarManagerWhenOtherRole() throws Exception {
+        assertFalse(actual(
+            createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forSites(nu)).
+            getCanSetCalendarManager());
+    }
+
     ////// HELPERS
 
     private UserStudySubjectAssignmentRelationship actual(SuiteRoleMembership membership) {

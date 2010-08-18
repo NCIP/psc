@@ -505,6 +505,26 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertSame("User not carried forward", manager, actual.get(0).getUser());
     }
 
+    public void testGetDesignatedManagedAssignmentsFiltersNothing() throws Exception {
+        PscUser manager = new PscUserBuilder().setCsmUserId(15L).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(whatCheer).forAllStudies().
+            toUser();
+        StudySubjectAssignment expectedOldAssignment =
+            createAssignment(eg1701, northLiberty, createSubject("F", "B"));
+        StudySubjectAssignment expectedStillManageableAssignment =
+            createAssignment(eg1701, whatCheer, createSubject("W", "C"));
+
+        expect(assignmentDao.getAssignmentsByManagerCsmUserId(15)).
+            andReturn(Arrays.asList(expectedOldAssignment, expectedStillManageableAssignment));
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual =
+            service.getDesignatedManagedAssignments(manager);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible assignments", 2, actual.size());
+    }
+
     public void testGetTeamMembersIncludesDataReadersAndCalendarManagers() throws Exception {
         PscUser teamAdmin = new PscUserBuilder().
             add(PscRole.STUDY_TEAM_ADMINISTRATOR).forAllSites().

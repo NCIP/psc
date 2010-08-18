@@ -102,6 +102,12 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
             criteria().add(Restrictions.eq("managerCsmUserId", csmUserId)));
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public List<StudySubjectAssignment> getAssignmentsWithoutManagerCsmUserId() {
+        return getHibernateTemplate().findByCriteria(
+            criteria().add(Restrictions.isNull("managerCsmUserId")));
+    }
+
     /**
      * Returns the CSM IDs for all the users who are marked as the primary for
      * an assignment.

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -8,9 +9,12 @@ import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -141,6 +145,16 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertEquals("Wrong number of assignments found", 1, actual.size());
         assertEquals("Wrong assignment found", -12, (int) actual.get(0).getId());
+    }
+
+    public void testGetAssignmentsWithoutManager() throws Exception {
+        List<StudySubjectAssignment> actual =
+            getDao().getAssignmentsWithoutManagerCsmUserId();
+
+        assertEquals("Wrong number of assignments found", 2, actual.size());
+        Collection<Integer> actualIds = DomainObjectTools.collectIds(actual);
+        assertContains("Wrong assignment found", actualIds, -11);
+        assertContains("Wrong assignment found", actualIds, -13);
     }
 
     public void testGetManagerCsmIds() throws Exception {

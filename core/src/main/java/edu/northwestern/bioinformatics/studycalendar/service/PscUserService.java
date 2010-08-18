@@ -275,6 +275,10 @@ public class PscUserService implements PscUserDetailsService {
      * can still manage.
      */
     public List<UserStudySubjectAssignmentRelationship> getManagedAssignments(PscUser user) {
+        return getManagedAssignments(user, false);
+    }
+
+    private List<UserStudySubjectAssignmentRelationship> getManagedAssignments(PscUser user, boolean includeUnmanageable) {
         List<StudySubjectAssignment> managed = studySubjectAssignmentDao.
             getAssignmentsByManagerCsmUserId(user.getCsmUser().getUserId().intValue());
         List<UserStudySubjectAssignmentRelationship> result =
@@ -282,7 +286,7 @@ public class PscUserService implements PscUserDetailsService {
         for (StudySubjectAssignment assignment : managed) {
             UserStudySubjectAssignmentRelationship rel =
                 new UserStudySubjectAssignmentRelationship(user, assignment);
-            if (rel.getCanUpdateSchedule()) {
+            if (includeUnmanageable || rel.getCanUpdateSchedule()) {
                 result.add(rel);
             } else {
                 log.warn(
@@ -291,6 +295,16 @@ public class PscUserService implements PscUserDetailsService {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns all the assignments for which the user is the designated manager whether or not the
+     * user can still manage them.
+     */
+    public List<UserStudySubjectAssignmentRelationship> getDesignatedManagedAssignments(
+        PscUser user
+    ) {
+        return getManagedAssignments(user, true);
     }
 
     /**
