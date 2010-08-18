@@ -159,7 +159,7 @@ public class VisibleStudyParametersTest extends TestCase {
         VisibleStudyParameters actual = actual(
             createMembership(STUDY_QA_MANAGER).forSites("T"),
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("K").forAllStudies());
-        assertEquals("VisibleStudyParameters[participatingSites=[T]; managingSites=[T, K]; specificStudies=[]]",
+        assertEquals("VisibleStudyParameters[participatingSites=[T]; managingSites=[K, T]; specificStudies=[]]",
             actual.toString());
     }
 

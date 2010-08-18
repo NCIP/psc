@@ -142,17 +142,17 @@ public class ResourceAuthorizationTest extends TestCase {
         assertEquals("Wrong number of authorizations", 1 + 2 * 5, actual.size());
 
         Iterator<ResourceAuthorization> it = actual.iterator();
-        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
-        assertResourceAuthorization("Missing SQM for site A", STUDY_QA_MANAGER, SITE_A_IDENT, null, it.next());
-        assertResourceAuthorization("Missing SQM for site B", STUDY_QA_MANAGER, SITE_B_IDENT, null, it.next());
         assertResourceAuthorization("Missing creator for site A", STUDY_CREATOR, SITE_A_IDENT, null, it.next());
         assertResourceAuthorization("Missing creator for site B", STUDY_CREATOR, SITE_B_IDENT, null, it.next());
-        assertResourceAuthorization("Missing SSPA for site A", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_A_IDENT, null, it.next());
-        assertResourceAuthorization("Missing SSPA for site B", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_B_IDENT, null, it.next());
         assertResourceAuthorization("Missing builder for site A", STUDY_CALENDAR_TEMPLATE_BUILDER, SITE_A_IDENT, "A", it.next());
         assertResourceAuthorization("Missing builder for site B", STUDY_CALENDAR_TEMPLATE_BUILDER, SITE_B_IDENT, "A", it.next());
+        assertResourceAuthorization("Missing SQM for site A", STUDY_QA_MANAGER, SITE_A_IDENT, null, it.next());
+        assertResourceAuthorization("Missing SQM for site B", STUDY_QA_MANAGER, SITE_B_IDENT, null, it.next());
+        assertResourceAuthorization("Missing SSPA for site A", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_A_IDENT, null, it.next());
+        assertResourceAuthorization("Missing SSPA for site B", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_B_IDENT, null, it.next());
         assertResourceAuthorization("Missing reader for site A", DATA_READER, SITE_A_IDENT, "A", it.next());
         assertResourceAuthorization("Missing reader for site B", DATA_READER, SITE_B_IDENT, "A", it.next());
+        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
     }
 
     public void testCreateManagingStudyAuthorizationsForNullStudy() throws Exception {
@@ -161,12 +161,12 @@ public class ResourceAuthorizationTest extends TestCase {
         assertEquals("Wrong number of authorizations", 6, actual.size());
 
         Iterator<ResourceAuthorization> it = actual.iterator();
-        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
-        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
         assertResourceAuthorization("Missing creator", STUDY_CREATOR, null, null, it.next());
-        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, null, null, it.next());
         assertResourceAuthorization("Missing builder", STUDY_CALENDAR_TEMPLATE_BUILDER, null, null, it.next());
+        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
+        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, null, null, it.next());
         assertResourceAuthorization("Missing reader", DATA_READER, null, null, it.next());
+        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
     }
 
     public void testCreateManagingStudyAuthorizationsForUnmanagedStudy() throws Exception {
@@ -176,12 +176,12 @@ public class ResourceAuthorizationTest extends TestCase {
         assertEquals("Wrong number of authorizations", 6, actual.size());
 
         Iterator<ResourceAuthorization> it = actual.iterator();
-        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
-        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
         assertResourceAuthorization("Missing creator", STUDY_CREATOR, null, null, it.next());
-        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, null, null, it.next());
         assertResourceAuthorization("Missing builder", STUDY_CALENDAR_TEMPLATE_BUILDER, null, "A", it.next());
+        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
+        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, null, null, it.next());
         assertResourceAuthorization("Missing reader", DATA_READER, null, "A", it.next());
+        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
     }
 
     public void testCreateSpecificRoleManagingStudyAuthorizationsForManagedStudy() throws Exception {
@@ -265,10 +265,10 @@ public class ResourceAuthorizationTest extends TestCase {
         assertResourceAuthorization("Missing reader for site B", DATA_READER, SITE_B_IDENT, "B", it.next());
 
         // management (but only the non-repeated ones)
-        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
         assertResourceAuthorization("Missing creator", STUDY_CREATOR, SITE_A_IDENT, null, it.next());
-        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_A_IDENT, null, it.next());
         assertResourceAuthorization("Missing builder", STUDY_CALENDAR_TEMPLATE_BUILDER, SITE_A_IDENT, "B", it.next());
+        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, SITE_A_IDENT, null, it.next());
+        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
     }
 
     public void testCreateAllScopedCollectionForSite() {
