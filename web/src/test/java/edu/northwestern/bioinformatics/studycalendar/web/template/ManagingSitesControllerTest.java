@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
@@ -7,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -23,8 +23,8 @@ import static org.easymock.EasyMock.expect;
 /**
  * @author Nataliya Shurupova
  */
-public class AssociateSiteControllerTest extends ControllerTestCase {
-    private AssociateSiteController controller;
+public class ManagingSitesControllerTest extends ControllerTestCase {
+    private ManagingSitesController controller;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private Study study;
@@ -38,7 +38,7 @@ public class AssociateSiteControllerTest extends ControllerTestCase {
         site1 = setId(11, createNamedInstance("NU", Site.class));
         site2 = setId(12, createNamedInstance("CMH", Site.class));
 
-        controller = new AssociateSiteController();
+        controller = new ManagingSitesController();
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         controller.setStudyDao(studyDao);
@@ -68,12 +68,19 @@ public class AssociateSiteControllerTest extends ControllerTestCase {
     public void testCommand() throws Exception {
         request.setParameter("id", study.getId().toString());
         expect(studyDao.getById(study.getId())).andReturn(study);
+        SuiteRoleMembership membershipForStudyQAManager = user.getMembership(PscRole.STUDY_QA_MANAGER);
+        SuiteRoleMembership membershipForCalendarTemplateBuilders = user.getMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
 
+        List<Site> sites = new ArrayList<Site>();
+        sites.add(site1);
+        sites.add(site2);
+        expect(siteDao.getByAssignedIdentifiers(membershipForCalendarTemplateBuilders.getSiteIdentifiers())).andReturn(sites);
+        expect(siteDao.getByAssignedIdentifiers(membershipForStudyQAManager.getSiteIdentifiers())).andReturn(sites);
         replayMocks();
             Object actual = controller.formBackingObject(request);
         verifyMocks();
-        assertTrue(actual instanceof AssociateSiteCommand);
-        AssociateSiteCommand command = (AssociateSiteCommand)actual;
+        assertTrue(actual instanceof ManagingSitesCommand);
+        ManagingSitesCommand command = (ManagingSitesCommand)actual;
         assertTrue("Command's grid is not populated", command.getUserSitesToManageGrid().size() ==2);
     }
 

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -31,20 +32,16 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Nataliya Shurupova
  */
-public class AssociateSiteController extends PscSimpleFormController implements PscAuthorizedHandler {
+public class ManagingSitesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private ApplicationSecurityManager applicationSecurityManager;
     private SiteDao siteDao;
-    private Set<Object> unique;
-    private Set<Site> managingSites;
-    private Boolean isAllSites;
-    private Study study;
     private StudyService studyService;
 
-    public AssociateSiteController() {
-        setCommandClass(AssociateSiteCommand.class);
+    public ManagingSitesController() {
+        setCommandClass(ManagingSitesCommand.class);
         setValidator(new ValidatableValidator());
-        setFormView("template/associateSite");
+        setFormView("template/managingSites");
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
@@ -64,53 +61,19 @@ public class AssociateSiteController extends PscSimpleFormController implements 
     @Override
      protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         PscUser user = applicationSecurityManager.getUser();
-        study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        isAllSites = false;
-        List<Site> sites = null;
-        List<Site> listOfSiteObj = new ArrayList<Site>();
-
+        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
         SuiteRoleMembership membershipForStudyQAManager = user.getMembership(PscRole.STUDY_QA_MANAGER);
         SuiteRoleMembership membershipForCalendarTemplateBuilders = user.getMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
 
         if (membershipForCalendarTemplateBuilders == null && membershipForStudyQAManager == null) {
-            throw new Exception("UserRoles don't exist for the specified user");
+            throw new StudyCalendarSystemException("UserRoles don't exist for the specified user");
         }
 
-        if (membershipForStudyQAManager != null) {
-            if (membershipForStudyQAManager.isAllSites()) {
-                sites = study.getSites();
-                isAllSites = true;
-            } else {
-                listOfSiteObj = (List<Site>) membershipForStudyQAManager.getSites();
-            }
-        }
+        List<SuiteRoleMembership> listOfRoles = new ArrayList<SuiteRoleMembership>();
+        listOfRoles.add(membershipForStudyQAManager);
+        listOfRoles.add(membershipForCalendarTemplateBuilders);
 
-        if (membershipForCalendarTemplateBuilders != null) {
-
-            if (membershipForCalendarTemplateBuilders.isAllSites()) {
-                if (sites == null) {
-                    sites = siteDao.getAll();
-                    isAllSites = true;
-                }
-            } else {
-                List<Site> siteObj1 = (List<Site>) membershipForCalendarTemplateBuilders.getSites();
-                if (siteObj1 != null) {
-                    listOfSiteObj.addAll(siteObj1);
-                }
-            }
-        }
-
-        if (sites != null && listOfSiteObj != null) {
-            listOfSiteObj.addAll(sites);
-        }
-
-        unique = new LinkedHashSet<Object>(listOfSiteObj);
-
-        managingSites = new HashSet<Site>();
-        if (study.isManaged()) {
-            managingSites = study.getManagingSites();
-        }
-        return new AssociateSiteCommand(study, studyService, unique, managingSites, isAllSites);
+        return new ManagingSitesCommand(study, studyService, siteDao, listOfRoles);
     }
 
     @Override
@@ -120,19 +83,21 @@ public class AssociateSiteController extends PscSimpleFormController implements 
     }
 
     @Override
-    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest, Object o, Errors errors) throws Exception {
+    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest, Object oCommand, Errors errors) throws Exception {
+        ManagingSitesCommand command = ((ManagingSitesCommand) oCommand);
         Map<String, Object> refdata = new HashMap<String, Object>();
-        refdata.put("isAllSites", isAllSites);
+        refdata.put("isAllSites", command.getAllSitesAccess());
+        Study study = command.getStudy();
         refdata.put("study", study);
         refdata.put("isManaged", study.isManaged());
-        refdata.put("userSitesToManage", unique);
-        refdata.put("managingSites", managingSites);
+        refdata.put("userSitesToManage", command.getSelectableSites());
+        refdata.put("managingSites", command.getManagingSites());
         return refdata;
     }
 
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        AssociateSiteCommand assignCommand = (AssociateSiteCommand) oCommand;
+        ManagingSitesCommand assignCommand = (ManagingSitesCommand) oCommand;
         assignCommand.apply();
         return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }

@@ -8,6 +8,7 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:useBean scope="request" id="canEdit" type="java.lang.Boolean"/>
 <jsp:useBean scope="request" id="canAssignIdentifiers" type="java.lang.Boolean"/>
@@ -795,8 +796,31 @@
             <div class="header">Study info</div>
             <div id="errors" class="error"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
+
+            <c:if test="${study.managed}">
+                <c:set var="sites" value="${study.managingSites}"/>
+                <c:set var="listOfSiteName" value=""/>
+                <c:if test="${empty sites}">
+                    <c:set var="listOfSiteName" value="Unmanaged"/>
+                </c:if>
+                <c:if test="${not empty sites}">
+                    <c:forEach items="${sites}" var="site" varStatus="siteIndex">
+                        <c:set var="listOfSiteName" value="${listOfSiteName} ${site.name}"/>
+                    </c:forEach>
+                </c:if>
+                <c:set var="listOfSiteName" value='${fn:replace(fn:trim(listOfSiteName), " ", ", ")}'/>
+            </c:if>
+
             <div class="row odd">
-                <div class="label">Amendment</div>
+                <div class="label">Managing sites</div>
+                <div class="value">
+                    ${listOfSiteName}
+                    <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}"/>">change</a></span>
+                </div>
+            </div>
+
+            <div class="row even">
+                <div class="label">Amendment 123</div>
                 <div class="value">
                     <a href="<c:url value="/pages/cal/template/amendments?study=${study.id}#amendment=${amendment.id}"/>">${amendment.displayName}</a>
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
@@ -804,14 +828,14 @@
             </div>
             <c:choose>
                 <c:when test="${not empty study.longTitle}">
-                    <div class="row even" style="width:100%">
+                    <div class="row odd" style="width:100%">
                         <div class="label">Long title</div>
                         <div class="value">${study.longTitle}</div>
                     </div>
-                    <div class="row odd">
+                    <div class="row even">
                 </c:when>
                 <c:otherwise>
-                    <div class="row even">
+                    <div class="row odd">
                 </c:otherwise>
             </c:choose>
                 <div class="label">Populations</div>
@@ -833,10 +857,10 @@
             </div>
             <c:choose>
                 <c:when test="${not empty study.longTitle}">
-                    <div class="row even">
+                    <div class="row odd">
                 </c:when>
                 <c:otherwise>
-                    <div class="row odd">
+                    <div class="row even">
                 </c:otherwise>
             </c:choose>
                 <div class="label">Other formats</div>
@@ -891,11 +915,11 @@
                     url="${studyUrl}">
                     ${configuration.map.ctmsName} study record
                 </tags:conditionalListItemLink>
-                <tags:restrictedListItem
-                    cssClass="control"
-                    url="/pages/cal/template/associateSite"
-                    queryString="id=${study.id}">Associate sites
-                </tags:restrictedListItem>
+                <%--<tags:restrictedListItem--%>
+                    <%--cssClass="control"--%>
+                    <%--url="/pages/cal/template/managingSites"--%>
+                    <%--queryString="id=${study.id}">Managing sites--%>
+                <%--</tags:restrictedListItem>--%>
             </ul>
 
             <c:if test="${empty developmentRevision}">

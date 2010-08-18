@@ -56,7 +56,7 @@
                 sites.
             </p>
 
-            <c:url value="/pages/cal/template/associateSite?id=${study.id}" var="formAction"/>
+            <c:url value="/pages/cal/template/managingSites?id=${study.id}" var="formAction"/>
 
             <form:form action="${formAction}" method="post">
                 <div id="errors" style="margin-right:10px; margin-left:0.5em;">
