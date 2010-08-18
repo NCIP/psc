@@ -1483,12 +1483,17 @@
                         <doc>Limit to those scheduled activities for subjects participating at the site with the specified identifier.</doc>
                     </param>
                     <param style="query" name="state" type="xsd:string">
-                        <doc>Limit to those scheduled activities currently in the given state.</doc>
+                        <doc>
+                            Limit to those scheduled activities currently in the given state. This
+                            parameter may be specified several times to include activities in
+                            different states.
+                        </doc>
                     </param>
                     <param style="query" name="activity-type" type="xsd:string">
                         <doc>
-                            Limit to those scheduled activities whose activity type matches the given value.
-                            This parameter may be specified several times to include activities of several types.
+                            Limit to those scheduled activities whose activity type matches the
+                            given value. This parameter may be specified several times to include
+                            activities of several types.
                         </doc>
                     </param>
                     <param style="query" name="label" type="xsd:string">

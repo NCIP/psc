@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import org.codehaus.jackson.JsonGenerator;
 
@@ -70,8 +71,12 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
         if (filters.getStudyAssignedIdentifier() != null) {
             JacksonTools.nullSafeWriteStringField(generator, "study", filters.getStudyAssignedIdentifier());
         }
-        if (filters.getCurrentStateMode() != null) {
-            JacksonTools.nullSafeWriteStringField(generator, "state", filters.getCurrentStateMode().getDisplayName());
+        if (filters.getCurrentStateModes() != null) {
+            generator.writeArrayFieldStart("states");
+            for (ScheduledActivityMode mode : filters.getCurrentStateModes()) {
+                generator.writeString(mode.getDisplayName());
+            }
+            generator.writeEndArray();
         }
         if (filters.getLabel() != null) {
             JacksonTools.nullSafeWriteStringField(generator, "label", filters.getLabel());

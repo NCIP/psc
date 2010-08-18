@@ -116,15 +116,19 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyStateFilter(
         ScheduledActivitiesReportFilters filters
     ) throws ResourceException {
-        String state = STATE.extractFrom(getRequest());
-        if (state != null) {
-            ScheduledActivityMode scheduledActivityMode = ScheduledActivityMode.getByName(state);
-            if (scheduledActivityMode != null) {
-                filters.setCurrentStateMode(scheduledActivityMode);
-            } else {
-                throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
-                    "Invalid scheduled activity state name for state filter: " + state);
+        Collection<String> states = STATE.extractAllFrom(getRequest());
+        if (!states.isEmpty()) {
+            List<ScheduledActivityMode> modes = new ArrayList<ScheduledActivityMode>(states.size());
+            for (String state : states) {
+                ScheduledActivityMode mode = ScheduledActivityMode.getByName(state);
+                if (mode != null) {
+                    modes.add(mode);
+                } else {
+                    throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                        "Invalid scheduled activity state name for state filter: " + state);
+                }
             }
+            filters.setCurrentStateModes(modes);
         }
     }
 

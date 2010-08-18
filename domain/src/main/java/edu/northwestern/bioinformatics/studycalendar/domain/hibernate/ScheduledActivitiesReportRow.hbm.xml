@@ -98,7 +98,7 @@
 
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
         <filter name="filter_siteName" condition="UPPER(site_name) LIKE :siteName"/>
-        <filter name="filter_currentStateMode" condition="current_state_mode_id = :currentStateMode_id"/>
+        <filter name="filter_currentStateModes" condition="current_state_mode_id IN (:currentStateModes)"/>
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
         <filter name="filter_activityTypes" condition="activity_type_id IN (:activityTypes)"/>
@@ -113,8 +113,8 @@
     <filter-def name="filter_siteName">
         <filter-param name="siteName" type="string"/>
     </filter-def>
-    <filter-def name="filter_currentStateMode">
-        <filter-param name="currentStateMode_id" type="integer"/>
+    <filter-def name="filter_currentStateModes">
+        <filter-param name="currentStateModes" type="integer"/>
     </filter-def>
         <filter-def name="filter_actualActivityDate_start">
         <filter-param name="start" type="date"/>

@@ -88,8 +88,13 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
     }
 
     public void testReturnedFiltersIncludeCurrentStateMode() throws Exception {
-        filters.setCurrentStateMode(ScheduledActivityMode.MISSED);
-        assertEquals("Wrong value", "Missed", writeAndGetFilters().optString("state"));
+        filters.setCurrentStateModes(Arrays.<ScheduledActivityMode>asList(
+            ScheduledActivityMode.MISSED, ScheduledActivityMode.CANCELED));
+        JSONArray actual = writeAndGetFilters().optJSONArray("states");
+        assertNotNull("states missing", actual);
+        assertEquals("Wrong number of values", 2, actual.length());
+        assertEquals("Wrong 1st value", "Missed", actual.getString(0));
+        assertEquals("Wrong 2nd value", "Canceled", actual.getString(1));
     }
 
     public void testReturnedFiltersIncludeSiteName() throws Exception {

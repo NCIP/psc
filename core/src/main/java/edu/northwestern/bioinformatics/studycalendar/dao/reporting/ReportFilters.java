@@ -262,4 +262,11 @@ public abstract class ReportFilters {
         public DomainObjectInListFilterLimit(String baseName) { super(baseName); }
         @Override public Integer transformElementForFilter(D element) { return element.getId(); }
     }
+
+    protected class ControlledVocabularyObjectInListFilterLimit<D extends AbstractControlledVocabularyObject>
+        extends InListFilterLimit<Integer, D>
+    {
+        public ControlledVocabularyObjectInListFilterLimit(String baseName) { super(baseName); }
+        @Override public Integer transformElementForFilter(D element) { return element.getId(); }
+    }
 }

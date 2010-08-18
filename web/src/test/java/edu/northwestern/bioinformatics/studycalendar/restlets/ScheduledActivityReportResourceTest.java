@@ -187,9 +187,11 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         }
     }
 
-    public void testGetFilterForCurrentState() throws Exception {
+    public void testGetFilterForCurrentStates() throws Exception {
         STATE.putIn(request, "SchEDulEd");
-        assertOnlyFilterIs("currentStateMode", ScheduledActivityMode.SCHEDULED);
+        STATE.putIn(request, "NA");
+        assertOnlyFilterIs("currentStateModes", Arrays.<ScheduledActivityMode>asList(
+            ScheduledActivityMode.SCHEDULED, ScheduledActivityMode.NOT_APPLICABLE));
     }
 
     public void testGetFilterForCurrentStateWhenNotFound() throws Exception {

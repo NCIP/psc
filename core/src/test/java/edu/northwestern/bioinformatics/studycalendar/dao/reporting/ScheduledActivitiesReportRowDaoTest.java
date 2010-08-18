@@ -67,18 +67,27 @@ public class ScheduledActivitiesReportRowDaoTest extends
     }
 
     public void testSearchWithScheduledActivityMode_Scheduled() {
-        filters.setCurrentStateMode(ScheduledActivityMode.SCHEDULED);
+        filters.setCurrentStateModes(
+            Arrays.<ScheduledActivityMode>asList(ScheduledActivityMode.SCHEDULED));
         assertSearchWithResults(NEG_16);
     }
 
     public void testSearchWithScheduledActivityMode_Canceled() {
-        filters.setCurrentStateMode(ScheduledActivityMode.CANCELED);
+        filters.setCurrentStateModes(
+            Arrays.<ScheduledActivityMode>asList(ScheduledActivityMode.CANCELED));
         assertSearchWithResults(NEG_17);
     }
 
     public void testSearchWithScheduledActivityMode_Occurred() {
-        filters.setCurrentStateMode(ScheduledActivityMode.OCCURRED);
+        filters.setCurrentStateModes(
+            Arrays.<ScheduledActivityMode>asList(ScheduledActivityMode.OCCURRED));
         assertSearchWithResults();
+    }
+
+    public void testSearchWithScheduledActivityMode_ScheduledAndCanceled() {
+        filters.setCurrentStateModes(Arrays.<ScheduledActivityMode>asList(
+            ScheduledActivityMode.SCHEDULED, ScheduledActivityMode.CANCELED));
+        assertSearchWithResults(NEG_17, NEG_16);
     }
 
     public void testSearchWithSiteFilter_Pos() {

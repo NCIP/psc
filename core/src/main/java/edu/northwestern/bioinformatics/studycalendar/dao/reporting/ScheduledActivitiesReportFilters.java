@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
@@ -14,8 +15,8 @@ import java.util.Date;
 public class ScheduledActivitiesReportFilters extends ReportFilters {
     private SubstringFilterLimit studyAssignedIdentifier = new SubstringFilterLimit("studyAssignedIdentifier");
     private SubstringFilterLimit siteName = new SubstringFilterLimit("siteName");
-    private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
-        new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
+    private ControlledVocabularyObjectInListFilterLimit<ScheduledActivityMode> currentStateModes =
+        new ControlledVocabularyObjectInListFilterLimit<ScheduledActivityMode>("currentStateModes");
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
 
     private DomainObjectInListFilterLimit<ActivityType> activityTypes
@@ -39,12 +40,20 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
         studyAssignedIdentifier.setValue(value);
     }
 
-    public void setCurrentStateMode(ScheduledActivityMode<?> mode) {
-        currentStateMode.setValue(mode);
+    public ScheduledActivityMode getCurrentStateMode() {
+        if (getCurrentStateModes() == null) {
+            return null;
+        } else {
+            return CollectionUtils.firstElement(getCurrentStateModes());
+        }
     }
 
-    public ScheduledActivityMode<?> getCurrentStateMode() {
-        return currentStateMode.getValue();
+    public void setCurrentStateModes(Collection<ScheduledActivityMode> mode) {
+        currentStateModes.setValue(mode);
+    }
+
+    public Collection<ScheduledActivityMode> getCurrentStateModes() {
+        return currentStateModes.getValue();
     }
 
     public String getSiteName() {
