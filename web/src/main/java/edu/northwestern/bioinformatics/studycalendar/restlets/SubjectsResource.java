@@ -2,8 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,11 +20,8 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * @author Nataliya Shurupova
@@ -31,16 +29,14 @@ import java.util.Set;
 public class SubjectsResource extends AbstractPscResource {
 
     private SubjectService subjectService;
-    private AuthorizationService authorizationService;
-
+    private PscUserService pscUserService;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
+        addAuthorizationsFor(Method.GET, STUDY_SUBJECT_CALENDAR_MANAGER);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
-
 
     public List <Subject> getAllObjects() throws ResourceException {
         String q = QueryParameters.Q.extractFrom(getRequest());
@@ -77,10 +73,20 @@ public class SubjectsResource extends AbstractPscResource {
             JSONObject jsonSubject = new JSONObject();
             JSONArray jsonStudySiteInfoArray = new JSONArray();
             List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
+            List<UserStudySubjectAssignmentRelationship> userStudySubjectAssignmentRelationships =
+                    pscUserService.getVisibleAssignments(getCurrentUser());
 
+            Set<StudySubjectAssignment> userVisibleAssignments =  new LinkedHashSet<StudySubjectAssignment>();
+            for (UserStudySubjectAssignmentRelationship rel : userStudySubjectAssignmentRelationships) {
+                userVisibleAssignments.add(rel.getAssignment());
+            }
 
-            List<StudySubjectAssignment> visibleAssignments
-                = authorizationService.filterAssignmentsForVisibility(studySubjectAssignments, getLegacyCurrentUser());
+            Set<StudySubjectAssignment> visibleAssignments = new LinkedHashSet<StudySubjectAssignment>();
+            for (StudySubjectAssignment assignment : studySubjectAssignments) {
+                if (userVisibleAssignments.contains(assignment)) {
+                    visibleAssignments.add(assignment);
+                }
+            }
 
             Set<StudySubjectAssignment> hiddenAssignments
                 = new LinkedHashSet<StudySubjectAssignment>(studySubjectAssignments);
@@ -140,8 +146,8 @@ public class SubjectsResource extends AbstractPscResource {
     }
 
     @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 }
 
