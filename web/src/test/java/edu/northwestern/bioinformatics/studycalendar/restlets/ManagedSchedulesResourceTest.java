@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -13,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import org.restlet.data.MediaType;
@@ -33,6 +33,7 @@ import static org.easymock.classextension.EasyMock.expect;
  */
 public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<ManagedSchedulesResource> {
     private PscUserService pscUserService;
+    private StudySubjectAssignmentXmlSerializer ssaXmlSerializer;
 
     private PscUser jo, alice;
     private StudySubjectAssignment a_nu_1;
@@ -41,6 +42,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
     protected void setUp() throws Exception {
         super.setUp();
         pscUserService = registerMockFor(PscUserService.class);
+        ssaXmlSerializer = registerNiceMockFor(StudySubjectAssignmentXmlSerializer.class);
 
         Site nu = createSite("NU", "IL036");
         Study a = createBasicTemplate("A");
@@ -70,7 +72,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
     protected ManagedSchedulesResource createAuthorizedResource() {
         ManagedSchedulesResource res = new ManagedSchedulesResource();
         res.setPscUserService(pscUserService);
-        res.setXmlSerializer(xmlSerializer);
+        res.setXmlSerializer(ssaXmlSerializer);
         res.setTemplateService(new TestingTemplateService());
         StaticNowFactory nf = new StaticNowFactory();
         nf.setNowTimestamp(DateTools.createTimestamp(2008, Calendar.MAY, 5));
@@ -90,7 +92,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
 
     public void testRenderXml() throws Exception {
         setAccept(MediaType.TEXT_XML);
-        expect(xmlSerializer.createDocumentString(Arrays.asList(a_nu_1))).
+        expect(ssaXmlSerializer.createDocumentString(Arrays.asList(a_nu_1))).
             andReturn(MOCK_XML);
 
         doGet();
