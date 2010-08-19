@@ -49,7 +49,6 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
             Site site = studySite.getSite();
             return ResourceAuthorization.createCollection(site, STUDY_SUBJECT_CALENDAR_MANAGER);
         } catch (Exception e) {
-            log.error("Assignment parameter is invalid " + e);
             return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
         }
     }

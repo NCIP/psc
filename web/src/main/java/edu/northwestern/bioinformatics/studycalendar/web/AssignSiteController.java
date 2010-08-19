@@ -52,7 +52,6 @@ public class AssignSiteController extends PscSimpleFormController implements Psc
             Study study = studyDao.getById(studyId);
             return ResourceAuthorization.createTemplateManagementAuthorizations(study, STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
         } catch (Exception e) {
-            log.error("StudySite parameter is invalid " + e);
             return ResourceAuthorization.createCollection(STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
         }
     }

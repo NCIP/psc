@@ -56,7 +56,7 @@ public class NewSiteController extends PscSimpleFormController implements PscAut
             try {
                 siteId = Integer.parseInt(siteArray[0]);
             } catch (NumberFormatException e) {
-                log.error("Site parameter is invalid " + e);
+                log.debug("Site parameter is invalid " + e);
             }
         }
 

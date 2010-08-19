@@ -52,7 +52,6 @@ public class ManagingSitesController extends PscSimpleFormController implements 
             Study study = studyDao.getById(studyId);
             return ResourceAuthorization.createTemplateManagementAuthorizations(study, STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER);
         } catch (Exception e) {
-            log.error("StudySite parameter is invalid " + e);
             return ResourceAuthorization.createCollection(STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER);
         }
     }
