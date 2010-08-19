@@ -110,18 +110,14 @@ public class DashboardCommand {
     public Map<Subject, List<Notification>> getPendingNotifications() {
         if (pendingNotifications == null) {
             pendingNotifications = new LinkedHashMap<Subject, List<Notification>>();
-            for (UserStudySubjectAssignmentRelationship managed : pscUserService.getManagedAssignments(getUser())) {
-                UserStudySubjectAssignmentRelationship loggedIn =
-                    new UserStudySubjectAssignmentRelationship(loggedInUser, managed.getAssignment());
-                if (loggedIn.getCanUpdateSchedule()) {
-                    for (Notification notification : loggedIn.getAssignment().getNotifications()) {
-                        if (!notification.isDismissed()) {
-                            Subject subject = loggedIn.getAssignment().getSubject();
-                            if (!pendingNotifications.containsKey(subject)) {
-                                pendingNotifications.put(subject, new ArrayList<Notification>());
-                            }
-                            pendingNotifications.get(subject).add(notification);
+            for (UserStudySubjectAssignmentRelationship assignment : getManagedAssignments()) {
+                for (Notification notification : assignment.getAssignment().getNotifications()) {
+                    if (!notification.isDismissed()) {
+                        Subject subject = assignment.getAssignment().getSubject();
+                        if (!pendingNotifications.containsKey(subject)) {
+                            pendingNotifications.put(subject, new ArrayList<Notification>());
                         }
+                        pendingNotifications.get(subject).add(notification);
                     }
                 }
             }
@@ -131,16 +127,11 @@ public class DashboardCommand {
 
     public List<UserStudySubjectAssignmentRelationship> getManagedAssignments() {
         if (managedAssignments == null) {
-            managedAssignments = pscUserService.getManagedAssignments(getUser());
+            managedAssignments = pscUserService.getManagedAssignments(getUser(), loggedInUser);
             if (isColleagueDashboard()) {
-                List<UserStudySubjectAssignmentRelationship> rewrapped =
-                    new ArrayList<UserStudySubjectAssignmentRelationship>(managedAssignments.size());
-                for (UserStudySubjectAssignmentRelationship rel : managedAssignments) {
-                    UserStudySubjectAssignmentRelationship newRel =
-                        new UserStudySubjectAssignmentRelationship(loggedInUser, rel.getAssignment());
-                    if (newRel.getCanUpdateSchedule()) rewrapped.add(newRel);
+                for (Iterator<UserStudySubjectAssignmentRelationship> it = managedAssignments.iterator(); it.hasNext();) {
+                    if (!it.next().getCanUpdateSchedule()) it.remove();
                 }
-                managedAssignments = rewrapped;
             }
         }
         return managedAssignments;

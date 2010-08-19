@@ -274,24 +274,30 @@ public class PscUserService implements PscUserDetailsService {
      * Returns all the assignments for which the user is the designated manager and which the user
      * can still manage.
      */
-    public List<UserStudySubjectAssignmentRelationship> getManagedAssignments(PscUser user) {
-        return getManagedAssignments(user, false);
+    public List<UserStudySubjectAssignmentRelationship> getManagedAssignments(
+        PscUser user, PscUser viewer
+    ) {
+        return getManagedAssignments(user, viewer, false);
     }
 
-    private List<UserStudySubjectAssignmentRelationship> getManagedAssignments(PscUser user, boolean includeUnmanageable) {
+    private List<UserStudySubjectAssignmentRelationship> getManagedAssignments(
+        PscUser manager, PscUser viewer, boolean includeAll
+    ) {
         List<StudySubjectAssignment> managed = studySubjectAssignmentDao.
-            getAssignmentsByManagerCsmUserId(user.getCsmUser().getUserId().intValue());
+            getAssignmentsByManagerCsmUserId(manager.getCsmUser().getUserId().intValue());
         List<UserStudySubjectAssignmentRelationship> result =
             new ArrayList<UserStudySubjectAssignmentRelationship>(managed.size());
         for (StudySubjectAssignment assignment : managed) {
-            UserStudySubjectAssignmentRelationship rel =
-                new UserStudySubjectAssignmentRelationship(user, assignment);
-            if (includeUnmanageable || rel.getCanUpdateSchedule()) {
-                result.add(rel);
+            UserStudySubjectAssignmentRelationship managerRel =
+                new UserStudySubjectAssignmentRelationship(manager, assignment);
+            if (includeAll || managerRel.getCanUpdateSchedule()) {
+                UserStudySubjectAssignmentRelationship viewerRel
+                    = new UserStudySubjectAssignmentRelationship(viewer, assignment);
+                if (includeAll || viewerRel.isVisible()) result.add(viewerRel);
             } else {
                 log.warn(
                     "The designated primary manager ({}) for assignment id={} can no longer manage it.",
-                    user.getUsername(), assignment.getId());
+                    manager.getUsername(), assignment.getId());
             }
         }
         return result;
@@ -299,12 +305,12 @@ public class PscUserService implements PscUserDetailsService {
 
     /**
      * Returns all the assignments for which the user is the designated manager whether or not the
-     * user can still manage them.
+     * user can still manage (or even see) them.
      */
     public List<UserStudySubjectAssignmentRelationship> getDesignatedManagedAssignments(
         PscUser user
     ) {
-        return getManagedAssignments(user, true);
+        return getManagedAssignments(user, user, true);
     }
 
     /**
