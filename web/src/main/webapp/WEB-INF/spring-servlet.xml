@@ -590,7 +590,7 @@
         <property name="basename" value="messages"/>
     </bean>
 
-    <bean name="/cal/takeSubjectOffStudy" id="subjectOffStudyController" autowire="byName"
+    <bean name="/subject/off-study" id="subjectOffStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.SubjectOffStudyController">
         <property name="crumb.parent">
             <ref local="subjectCentricScheduleController"/>
