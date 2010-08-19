@@ -258,10 +258,10 @@
 <c:if test="${not empty command.managedAssignments}">
     <laf:box title="Export to Calendar Applications" autopad="true">
         <a class="control ics-subscribe"
-           href="<c:url value="/api/v1/users/${command.user.username}/roles/subject-coordinator/schedules.ics"/>"
+           href="<c:url value="/api/v1/users/${command.user.username}/managed-schedules.ics"/>"
            title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
         <a class="control"
-           href="<c:url value="/api/v1/users/${command.user.username}/roles/subject-coordinator/schedules.ics"/>"
+           href="<c:url value="/api/v1/users/${command.user.username}/managed-schedules.ics"/>"
            title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Download ICS</a>
     </laf:box>
 </c:if>

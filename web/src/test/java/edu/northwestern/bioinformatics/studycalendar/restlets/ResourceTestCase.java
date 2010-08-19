@@ -3,9 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -19,6 +19,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -152,6 +154,10 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected ApplicationContext getApiServletApplicationContext() {
         return StudyCalendarTestWebApplicationContextBuilder.
             createWebApplicationContextForServlet("restful-api", servletContext);
+    }
+
+    protected void setAccept(MediaType requestType) {
+        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(requestType)));
     }
 
     private static class MockXmlRepresentation extends StringRepresentation {

@@ -256,7 +256,15 @@
         <property name="xmlSerializer" ref="notificationXmlSerializer"/>
     </bean>
     
-    <!--Users Role -->
+    <bean name="/users/{username}/managed-schedules"
+          id="managedSchedulesResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ManagedSchedulesResource"
+            >
+        <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
+        <property name="pscUserService" ref="pscUserService"/>
+        <property name="nowFactory" ref="nowFactory"/>
+        <property name="templateService" ref="templateService"/>
+    </bean>
     <bean name="/users/{username}/roles"
           id="userRolesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRolesResource"
@@ -270,11 +278,8 @@
         <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
     </bean>
     <bean name="/users/{username}/roles/subject-coordinator/schedules"
-          id="subjectCoordinatorSchedulesResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCoordinatorSchedulesResource"
-            >
-        <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
-    </bean>
+          id="subjectCoordinatorSchedulesResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCoordinatorSchedulesResource"/>
     <!-- bundle-id is optional -->
     <bean name="/osgi/bundles" id="osgiBundleListResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleResource"/>
