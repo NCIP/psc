@@ -476,12 +476,39 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(expectedAssignment));
 
         replayMocks();
-        List<UserStudySubjectAssignmentRelationship> actual = service.getManagedAssignments(manager);
+        List<UserStudySubjectAssignmentRelationship> actual
+            = service.getManagedAssignments(manager, manager);
         verifyMocks();
 
         assertEquals("Wrong number of visible assignments", 1, actual.size());
         assertSame("Wrong assignment visible", expectedAssignment, actual.get(0).getAssignment());
         assertSame("User not carried forward", manager, actual.get(0).getUser());
+    }
+
+    public void testGetManagedAssignmentsVisibleToOtherUser() throws Exception {
+        PscUser manager = new PscUserBuilder().setCsmUserId(15L).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().
+            toUser();
+        PscUser viewer = new PscUserBuilder().setCsmUserId(17L).
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forSites(northLiberty).forAllStudies().
+            toUser();
+        StudySubjectAssignment expectedVisibleAssignment =
+            createAssignment(eg1701, northLiberty, createSubject("F", "B"));
+        StudySubjectAssignment expectedHiddenAssignment =
+            createAssignment(eg1701, whatCheer, createSubject("W", "C"));
+
+        expect(assignmentDao.getAssignmentsByManagerCsmUserId(15)).
+            andReturn(Arrays.asList(expectedVisibleAssignment, expectedHiddenAssignment));
+
+        replayMocks();
+        List<UserStudySubjectAssignmentRelationship> actual
+            = service.getManagedAssignments(manager, viewer);
+        verifyMocks();
+
+        assertEquals("Wrong number of visible assignments", 1, actual.size());
+        assertSame("Wrong assignment visible",
+            expectedVisibleAssignment, actual.get(0).getAssignment());
+        assertSame("Wrong user carried forward", viewer, actual.get(0).getUser());
     }
 
     public void testGetManagedAssignmentsFiltersOutNoLongerManageableAssignments() throws Exception {
@@ -497,7 +524,8 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(expectedOldAssignment, expectedStillManageableAssignment));
 
         replayMocks();
-        List<UserStudySubjectAssignmentRelationship> actual = service.getManagedAssignments(manager);
+        List<UserStudySubjectAssignmentRelationship> actual
+            = service.getManagedAssignments(manager, manager);
         verifyMocks();
 
         assertEquals("Wrong number of visible assignments", 1, actual.size());
@@ -522,7 +550,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             service.getDesignatedManagedAssignments(manager);
         verifyMocks();
 
-        assertEquals("Wrong number of visible assignments", 2, actual.size());
+        assertEquals("Wrong number of visible assignments: " + actual, 2, actual.size());
     }
 
     public void testGetTeamMembersIncludesDataReadersAndCalendarManagers() throws Exception {

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -61,7 +60,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
 
     @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
-    // TODO: although the represent method was updated with #1110, this one is still wrong (waiting for #1105)
+    // TODO: although the represent method was updated with #1110, this one is still wrong (waiting for #1057)
     public Collection<StudySubjectAssignment> getAllObjects() throws ResourceException {
         String username = UriTemplateParameters.USERNAME.extractFrom(getRequest());
         if (username == null) {
