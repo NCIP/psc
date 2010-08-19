@@ -1296,6 +1296,33 @@
             </resource>
         </resource>
 
+        <resource path="users/{username}/managed-schedules">
+            <doc>
+                <html:p>
+                    A single schedule for all the subject schedules being managed by a particular
+                    user. A user may see the schedules for herself or any of her colleagues, though
+                    her colleagues' schedules will be limited to those where she has overlapping
+                    study and site access.
+                </html:p>
+            </doc>
+            <method name="GET">
+                <doc>
+                    <html:div class="roles">
+                        Authorized to:
+                        <html:ul>
+                            <html:li>Study Subject Calendar Manager</html:li>
+                            <html:li>Study Team Administrator</html:li>
+                            <html:li>Data Reader</html:li>
+                        </html:ul>
+                    </html:div>
+                </doc>
+                <response>
+                    <representation href="#subject-assignments-xml"/>
+                    <representation mediaType="application/json"/>
+                </response>
+            </method>
+        </resource>
+
         <resource path="users/{username}/roles">
             <doc>
                 <html:p>
@@ -1374,8 +1401,12 @@
             </resource>
             <resource path="subject-coordinator/schedules">
                 <doc>
-                   <html:p>The schedule for all the patients belonging to a particular subject coordinator user.
-                       Subject coordinator should able to see her own schedules or for any of her colleagues.</html:p>
+                    <html:em class="pending">Deprecated</html:em>
+                    <html:p>
+                        The schedule for all the patients belonging to a particular subject
+                        coordinator user. Subject coordinator should able to see her own schedules
+                        or for any of her colleagues.
+                    </html:p>
                 </doc>
                 <method name="GET">
                     <doc>
