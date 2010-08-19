@@ -315,6 +315,7 @@
                             <response>
                                 <representation href="#schedule-xml"/>
                                 <representation mediaType="application/json"/>
+                                <representation mediaType="text/calendar"/>
                             </response>
                         </method>
                     </resource>
@@ -697,6 +698,7 @@
                     <response>
                         <representation href="#schedule-xml"/>
                         <representation mediaType="application/json"/>
+                        <representation mediaType="text/calendar"/>
                     </response>
                 </method>
                 <method name="POST">
@@ -832,6 +834,7 @@
                 <response>
                     <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
+                    <representation mediaType="text/calendar"/>
                 </response>
             </method>
             <resource path="batchUpdate">
@@ -867,7 +870,7 @@
 
         <resource path="subjects/{subject-identifier}/schedules">
             <doc>
-               <html:p>The schedule for a single subject for all assign studies</html:p>
+               <html:p>The schedule for a single subject for all assigned studies</html:p>
             </doc>
             <param style="template" name="subject-identifier">
                 <doc>The persion id or generated identifier for subject.You can assign
@@ -890,6 +893,7 @@
                 <response>
                     <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
+                    <representation mediaType="text/calendar"/>
                 </response>
             </method>
             <resource path="activities">
@@ -1319,6 +1323,7 @@
                 <response>
                     <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
+                    <representation mediaType="text/calendar"/>
                 </response>
             </method>
         </resource>
@@ -1425,6 +1430,7 @@
                     <response>
                         <representation href="#subject-assignments-xml"/>
                         <representation mediaType="application/json"/>
+                        <representation mediaType="text/calendar"/>
                     </response>
                 </method>
             </resource>
