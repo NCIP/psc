@@ -58,7 +58,6 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
         try {
             study = templateService.findStudy(loadPeriod(Integer.parseInt(queryParameters.get("period")[0])));
         } catch (RuntimeException e) {
-            log.warn("Error while determining authorization information for request", e);
             study = null;
         }
         return ResourceAuthorization.createTemplateManagementAuthorizations(study);

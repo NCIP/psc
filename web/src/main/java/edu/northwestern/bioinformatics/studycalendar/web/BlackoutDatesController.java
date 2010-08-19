@@ -59,7 +59,7 @@ public class BlackoutDatesController extends PscSimpleFormController implements 
             try {
                 siteId = Integer.parseInt(siteArray[0]);
             } catch (NumberFormatException e) {
-                log.error("Site parameter is invalid " + e);
+                log.debug("Site parameter is invalid " + e);
             }
         }
 

@@ -54,7 +54,6 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
             Site site = studySite.getSite();
             return ResourceAuthorization.createCollection(site, STUDY_QA_MANAGER);
         } catch (Exception e) {
-            log.error("StudySite parameter is invalid " + e);
             return ResourceAuthorization.createCollection(STUDY_QA_MANAGER);
         }
     }

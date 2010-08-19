@@ -48,7 +48,6 @@ public class SubjectOffStudyController extends PscSimpleFormController implement
             Study study = studySite.getStudy();
             return ResourceAuthorization.createCollection(site, study, STUDY_SUBJECT_CALENDAR_MANAGER);
         } catch (Exception e) {
-            log.error("StudySite parameter is invalid " + e);
             return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
         }
     }
