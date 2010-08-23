@@ -17,7 +17,9 @@ psc.namespace('dashboard');
 
     var startDate = new Date();
     var endDate = new Date();
-    endDate.setDate(endDate.getDate() + days);
+
+    //since we count today as the day 1, we need to subtract  1 from the endDate to have the correct boundaries
+    endDate.setDate(endDate.getDate() + (days-1));
     var qs = $.param({
       "responsible-user": psc.dashboard.Main.username,
       "start-date": psc.tools.Dates.utcToApiDate(startDate),
