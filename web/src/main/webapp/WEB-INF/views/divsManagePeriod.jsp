@@ -10,7 +10,7 @@
 
 <jsp:useBean scope="request" id="activityTypes" type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.ActivityType>"/>
 <jsp:useBean scope="request" id="activitySources" type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.Source>"/>
-<c:if test="${requestScope['selectedActivity']}">
+<c:if test="${not empty requestScope['selectedActivity']}">
     <jsp:useBean scope="request" id="selectedActivity" type="edu.northwestern.bioinformatics.studycalendar.domain.Activity"/>
 </c:if>
 
