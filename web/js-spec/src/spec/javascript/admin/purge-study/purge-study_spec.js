@@ -33,7 +33,7 @@ Screw.Unit(function () {
                 var resp = {
                     responseJSON: {
                         studies: [
-                          {id: -99, assigned_identifier: 'NCT-123'}
+                          {id: -99, assigned_identifier: 'NCT-123', privileges: ["purge"]}
                         ]
                     }
                 }

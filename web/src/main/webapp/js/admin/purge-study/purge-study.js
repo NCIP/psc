@@ -34,6 +34,7 @@ psc.admin.ps.StudyAutocompleter = (function ($) {
         if (!searchString.blank()) {
             params.q = searchString;
         }
+        params.privilege = "purge"
 
         SC.asyncRequest(uri+".json", {
             method: "GET", parameters: params,
