@@ -126,7 +126,7 @@
                        { key: "date_of_birth", label: "Date of Birth", formatter: dateOfBirthFormat, sortable: true },
                        { key: "gender", label: "Gender", sortable: true },
                        { key: "person_id", label: "Person ID", sortable: true },
-                       { key: "assignments", label: "Other Assignments", formatter:YAHOO.widget.DataTable.formatLink }
+                       { key: "assignments", label: "Other Assignments", formatter: otherAssignmentsFormatter }
 
                     ];
 
@@ -144,7 +144,7 @@
                             { key: "date_of_birth", formatter: dateOfBirthFormat},
                             { key: "gender"},
                             { key: "person_id" },
-                            { key: "assignments",  formatter:YAHOO.widget.DataTable.formatLink },
+                            { key: "assignments",  formatter: otherAssignmentsFormatter },
                             { key: "hidden_assignments"},
                             { key: "grid_id"}
                         ]
@@ -159,26 +159,65 @@
                              this.selectRow(e.target);
                          }
                      });
-                     subjectList.subscribe('rowSelectEvent', check);
-                     subjectList.subscribe('rowUnselectEvent',uncheck);
-                     subjectList.subscribe('unselectAllRowsEvent',uncheckAll);
-
-
+                    subjectList.subscribe('rowSelectEvent', check);
+                    subjectList.subscribe('rowUnselectEvent',uncheck);
+                    subjectList.subscribe('unselectAllRowsEvent',uncheckAll);
+                    jQuery('.hide').hide()
                 }
             })
-
-            // Override the built-in formatter
-	        YAHOO.widget.DataTable.formatLink = function(elCell, oRecord, oColumn, oData) {
-               var defaultText = "The subject belongs to the "
-               elCell.innerHTML = defaultText;
-
-               var showMoreLink = jQuery('<a />').attr('href', '#').text('following studies').click(function () {
-                   getCellInfo(elCell, oRecord, oColumn, oData)
-                   return false;
-               });
-               jQuery(elCell).append(showMoreLink);
-	        };
         };
+
+       function otherAssignmentsFormatter (elCell, oRecord, oColumn, oData) {
+            var container = jQuery('<div class="assignments"/>');
+            var list = container.append('<ul class="myUl"/>')
+            var text = "";
+            var assignments = oRecord.getData('assignments');
+            for(var i = 0; i <assignments.length; i++) {
+                var listItem = jQuery('<li class="myLi hide" />');
+                var site = assignments[i].site;
+                var study = assignments[i].study;
+                var start_date_str = assignments[i].start_date.split(' ');
+                var start_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(start_date_str[0]));
+
+                text = "Subject is already enrolled to site '" + site + "' and study '" + study + "' as of start date '" + start_date +"'"
+                var end_date_str = assignments[i].end_date;
+                if (end_date_str != null && end_date_str.length> 0) {
+                    end_date_str = end_date_str.split(' ');
+                    var end_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(end_date_str[0]));
+                    text = text + " and till the end date '" + end_date + "'"
+                }
+                listItem.text(text)
+                list.append(listItem);
+            }
+
+            var hidden = oRecord.getData('hidden_assignments');
+            if (hidden){
+                listItem = jQuery('<li class="myLi hide" />');
+                text = "Note: There are one or more studies the subject belongs to and to which you don't have access."
+                listItem.text(text)
+                list.append(listItem);
+            }
+            var showHideLink = jQuery('<a class="show"/>').attr('href', '#').text('Show').click(function (evt) {
+                var elt = $(evt.target);
+                var parent = jQuery(elt.up());
+                var assignmentList = parent.children('.hide');
+                if (assignmentList[0].style.display == 'none') {
+                    for (var i = 0; i<assignmentList.length; i++){
+                        assignmentList[i].style.display ='block';
+                    }
+                    parent.children('.show')[0].innerHTML = 'Hide';
+                } else {
+                    for (var i = 0; i<assignmentList.length; i++) {
+                        assignmentList[i].style.display = 'none';
+                    }
+                    parent.children('.show')[0].innerHTML = 'Show';
+                }
+            });
+            container.append(showHideLink)
+            var defaultText = "The subject belongs to following studies."
+            elCell.innerHTML = defaultText;
+            jQuery(elCell).append(container);
+	    };
 
         // Create a custom formatter for the checkboxes
         var checkboxFormatter = function (liner,rec,col,data) {
@@ -214,55 +253,7 @@
            elCell.innerHTML = elCell.innerHTML + psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(date_of_birth_str[0]));
        };
 
-
-        // Define a custom format function
-        function getCellInfo(elCell, oRecord, oColumn, oData) {
-            var container = jQuery('<div class="day"/>');
-            var list = container.append('<ul class="myUl"/>')
-            var text = "";
-            var assignments = oRecord.getData('assignments'),
-                assignment = undefined,
-                i = 0;
-
-            for(i = 0; i < assignments.length; ++i) {
-                var listItem = jQuery('<li class="myLi" />');
-
-                assignment = assignments[i];
-                var site = assignment.site;
-                var study = assignment.study;
-                var start_date_str = assignment.start_date.split(' ');
-                var start_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(start_date_str[0]));
-
-                text = "Subject is already enrolled to site '" + site + "' and study '" + study + "' as of start date '" + start_date +"'"
-                var end_date_str = assignment.end_date;
-                if (end_date_str != null && end_date_str.length> 0) {
-                    end_date_str = end_date_str.split(' ');
-                    var end_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(end_date_str[0]));
-                    text = text + " and till the end date '" + end_date + "'"
-                }
-                listItem.text(text)
-                list.append(listItem);
-            }
-
-            jQuery(elCell).append(container);
-
-            var hidden = oRecord.getData('hidden_assignments');
-            if (oRecord.getData('hidden_assignments')){
-
-                text = text + '<br>' +"- Note: There are one or more studies the subject belongs to and to which you don't have access."
-                elCell.innerHTML = elCell.innerHTML + text + '<br>'
-            }
-
-            var showMoreLink = jQuery('<a />').attr('href', '#').text('Hide').click(function () {
-                   container.remove();
-                   return false;
-               });
-               container.append(showMoreLink);
-        };
-
-
-
-        function toggleAlert(buttonName) {
+       function toggleAlert(buttonName) {
             if(buttonName.className == "newSubjRadioButton"){
                 disableEnableElementsOfExistingSubject(true)
                 <c:if test="${canCreateSubjects}">
