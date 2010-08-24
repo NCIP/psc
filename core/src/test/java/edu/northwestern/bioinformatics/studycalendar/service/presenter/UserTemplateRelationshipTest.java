@@ -509,6 +509,29 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
                 getCanAssignIdentifiers());
     }
 
+    ////// canPurge
+
+    public void testCanPurgeIfQAManagerAndManaging() throws Exception {
+        study.addManagingSite(nu);
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
+                getCanPurge());
+    }
+
+    public void testCanPurgeIfNotManaging() throws Exception {
+        study.addManagingSite(mayo);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
+                getCanPurge());
+    }
+
+    public void testCanPurgeIfNotQAManager() throws Exception {
+        study.addManagingSite(nu);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
+                getCanPurge());
+    }
+
     ////// HELPERS
 
     private UserTemplateRelationship actual(SuiteRoleMembership membership) {

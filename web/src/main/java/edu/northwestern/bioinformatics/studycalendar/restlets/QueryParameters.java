@@ -28,7 +28,8 @@ public enum QueryParameters {
     START_DATE,
     END_DATE,
     RESPONSIBLE_USER,
-    PERSON_ID
+    PERSON_ID,
+    PRIVILEGE
     ;
 
     public String attributeName() {
