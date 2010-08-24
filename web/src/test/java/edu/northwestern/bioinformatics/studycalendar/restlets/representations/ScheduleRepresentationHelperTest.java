@@ -69,6 +69,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     private JsonGenerator generator;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private PscUser user;
 
     @Override
     public void setUp() throws Exception {
@@ -132,7 +133,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
         ssa.getScheduledCalendar().addStudySegment(createScheduledStudySegment(createDate(2006, Calendar.APRIL, 1), 365));
 
-        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
+        user = AuthorizationObjectFactory.createPscUser("jo",
             createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites());
         UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(user, ssa);
 
@@ -251,6 +252,34 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         JSONObject jsonSA = outputAsObject();
         assertEquals("Missing assignment name",
             "GRID-ASSIGN", ((JSONObject) jsonSA.getJSONObject("activities").get("assignment")).get("id"));
+    }
+
+    public void testScheduledActivityHasUpdatePrivilege() throws Exception {
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonSA = outputAsObject();
+        assertEquals("Missing update privilege",
+            "update", ((JSONObject) jsonSA.getJSONObject("activities").get("assignment")).getJSONArray("privileges").get(0));
+    }
+
+    public void testScheduledActivityWithoutUpdatePrivilege() throws Exception {
+        user.getMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).notForAllSites().notForAllStudies();
+
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonSA = outputAsObject();
+        assertEquals("Should not include update privilege",
+            0, ((JSONObject) jsonSA.getJSONObject("activities").get("assignment")).getJSONArray("privileges").length());
     }
 
     public void testScheduledActivityCurrentState() throws Exception {

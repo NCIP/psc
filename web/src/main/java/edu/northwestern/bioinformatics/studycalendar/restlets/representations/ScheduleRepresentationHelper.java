@@ -173,7 +173,7 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    private static void createJSONAssignmentProperties(JsonGenerator generator, StudySubjectAssignment assignment) throws IOException {
+    private void createJSONAssignmentProperties(JsonGenerator generator, StudySubjectAssignment assignment) throws IOException {
         generator.writeStartObject();
         JacksonTools.nullSafeWriteStringField(generator, "id", assignment.getGridId());
         JacksonTools.nullSafeWriteStringField(generator, "name", assignment.getName());
@@ -183,8 +183,30 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
                     JacksonTools.nullSafeWriteStringField(generator, "username", assignment.getStudySubjectCalendarManager().getLoginName());
                 }
             generator.writeEndObject();
+        JacksonTools.nullSafeWriteStringField(generator, "id", assignment.getGridId());
+
+        UserStudySubjectAssignmentRelationship rel = findAssociatedRelationship(assignment);
+        if (rel != null) {
+            generator.writeFieldName("privileges");
+            generator.writeStartArray();
+
+                if (rel.getCanUpdateSchedule()) {
+                    generator.writeString("update");
+                }
+
+            generator.writeEndArray();
+        }
         generator.writeEndObject();
 
+    }
+
+    private UserStudySubjectAssignmentRelationship findAssociatedRelationship(StudySubjectAssignment assignment) {
+        for (UserStudySubjectAssignmentRelationship r : relatedAssignments) {
+            if (r.getAssignment().equals(assignment)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     public void createJSONScheduledActivities(JsonGenerator generator, Boolean hidden_activities, List<ScheduledActivity> scheduledActivities) throws IOException{
