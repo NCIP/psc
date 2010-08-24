@@ -72,27 +72,30 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Collection<StudySubjectAssignment> allAssignments = getAllObjects();
-        List<UserStudySubjectAssignmentRelationship> relatedAssignments =
-            new ArrayList<UserStudySubjectAssignmentRelationship>(allAssignments.size());
-        List<StudySubjectAssignment> visibleAssignments =
-            new ArrayList<StudySubjectAssignment>(relatedAssignments.size());
-        for (StudySubjectAssignment anAssignment : allAssignments) {
-            UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(getCurrentUser(), anAssignment);
-            relatedAssignments.add(rel);
-            if (rel.isVisible()) visibleAssignments.add(anAssignment);
+        Collection<StudySubjectAssignment> all = getAllObjects();
+
+        List<UserStudySubjectAssignmentRelationship> related =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(all.size());
+
+        List<StudySubjectAssignment> visible =
+            new ArrayList<StudySubjectAssignment>(related.size());
+        
+        for (StudySubjectAssignment a : all) {
+            UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(getCurrentUser(), a);
+            related.add(rel);
+            if (rel.isVisible()) visible.add(a);
         }
 
-        if (visibleAssignments.isEmpty()) {
+        if (visible.isEmpty()) {
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,
                 "User " + getCurrentUser() + " doesn't have permission to view this schedule");
         }
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-            return createXmlRepresentation(visibleAssignments);
+            return createXmlRepresentation(visible);
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ScheduleRepresentationHelper(relatedAssignments, nowFactory, templateService);
+            return new ScheduleRepresentationHelper(related, nowFactory, templateService);
         } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
-            return  createICSRepresentation(relatedAssignments);
+            return  createICSRepresentation(related);
         }
         return null;
     }
