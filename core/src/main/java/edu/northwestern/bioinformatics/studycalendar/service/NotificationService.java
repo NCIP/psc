@@ -62,17 +62,15 @@ public class NotificationService {
             toAddress = notification.getAssignment().getStudySubjectCalendarManager().getEmailId();
         }
 
-        if (toAddress != null) {
-            ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
-            if (mailMessage != null) {
-                try {
-                    mailSender.send(mailMessage);
-                    logger.debug("sending notification to:" + toAddress);
-                } catch (MailException e) {
-                    logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
-                } catch (Exception e) {
-                    logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
-                }
+        ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
+        if (mailMessage != null) {
+            try {
+                mailSender.send(mailMessage);
+                logger.debug("sending notification to:" + toAddress);
+            } catch (MailException e) {
+                logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
+            } catch (Exception e) {
+                logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
             }
         }
     }
