@@ -81,7 +81,6 @@
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
-                psc.subject.ScheduleData.setReadOnly(${readOnly});
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
@@ -209,7 +208,7 @@
     <tags:resigTemplate id="list_day_sa_entry">
         <li class="[#= stateClasses() #] [#= mineClass() #] ">
             <label>
-                [# if (hasId() && !isReadOnly()) { #]
+                [# if (hasId() && canUpdateSchedule()) { #]
                   <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
@@ -343,7 +342,7 @@
                 </div>
             </c:forEach>
         </div>
-        <c:if test="${!readOnly}">
+        <c:if test="${canUpdateSchedule}">
               <%--************ Delay Or Advance Portion**********--%>
             <div class="accordionDiv">
                 <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>

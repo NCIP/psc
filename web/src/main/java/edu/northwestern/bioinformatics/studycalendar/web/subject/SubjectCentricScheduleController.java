@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -20,6 +19,7 @@ import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.apache.commons.collections.Predicate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections.CollectionUtils.select;
 
 /**
  * @author Rhett Sutphin
@@ -85,7 +87,7 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         ModelMap model = new ModelMap("schedule", schedule);
         model.addAttribute(subject);
         model.addAttribute("schedulePreview", false);
-        model.addAttribute("readOnly", readOnlyMode());
+        model.addAttribute("canUpdateSchedule", canUpdateSchedule(assignments));
         return new ModelAndView("subject/schedule", model);
     }
 
@@ -98,9 +100,16 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         return (T) editor.getValue();
     }
 
-    private boolean readOnlyMode() {
-        PscUser user = applicationSecurityManager.getUser();
-        return (user.hasRole(STUDY_SUBJECT_CALENDAR_MANAGER)) ? false : user.hasRole(DATA_READER) || user.hasRole(STUDY_TEAM_ADMINISTRATOR);
+    @SuppressWarnings({"unchecked"})
+    private boolean canUpdateSchedule(List<UserStudySubjectAssignmentRelationship> assignments) {
+        Collection<UserStudySubjectAssignmentRelationship> update = select(assignments, new Predicate() {
+            public boolean evaluate(Object o) {
+                UserStudySubjectAssignmentRelationship r = (UserStudySubjectAssignmentRelationship) o;
+                return r.getCanUpdateSchedule();
+            }
+        });
+
+        return isNotEmpty(update);
     }
 
     ////// CONFIGURATION
