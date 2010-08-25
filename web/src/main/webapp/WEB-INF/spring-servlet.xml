@@ -638,10 +638,6 @@
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
 
-    <bean name="/cal/search/fragment/inDevelopmentAndReleasedTemplates" id="searchTemplatesControllers"
-          autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchTemplatesController"/>
-
     <bean name="/ping" id="pingController" class="edu.northwestern.bioinformatics.studycalendar.web.PingController"/>
 
     <bean name="/switchboard" id="switchboardController"

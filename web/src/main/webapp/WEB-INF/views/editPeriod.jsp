@@ -174,42 +174,57 @@
         }
         function updatePeriodsDisplay(input, li) {
             var id = li.id;
-
-            var isDevelopmentTemplateSelected='false'
-
-            if (id.indexOf('dev') == 0) {
-                isDevelopmentTemplateSelected = 'true'
-                $('isDevelopmentTemplateSelected').value = 'true'
-            }
-            if (id.indexOf('rel') == 0) {
-                isDevelopmentTemplateSelected = 'false'
-                $('isDevelopmentTemplateSelected').value = 'false'
-
-            }
-
-            id = id.substring(3, id.length)
-
-            updatePeriods(id,isDevelopmentTemplateSelected)
+            $('template-autocompleter-input').value = li.innerHTML;
+            updatePeriods(id)
             $('template-autocompleter-input-id').value = id
-
         }
-        function updatePeriods(studyId,isDevelopmentTemplateSelected) {
 
-            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId+"&isDevelopmentTemplateSelected="+isDevelopmentTemplateSelected
+        function updatePeriods(studyId) {
+            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId
             var lastRequest = new Ajax.Request(aElement);
-
         }
-        function createAutocompleter() {
-            if ($('copy')) {
 
-                templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
-                {
-                    method: 'get',
-                    paramName: 'searchText',
-                    afterUpdateElement:updatePeriodsDisplay,
+        function createTemplatesAutocompleter() {
+           if ($('copy')) {
+            templateAutocompleter = new SC.FunctionalAutocompleter(
+                'template-autocompleter-input', 'template-autocompleter-div', studyAutocompleterChoices, {
+                    select: "templates-name",
+                    afterUpdateElement: updatePeriodsDisplay,
                     revertOnEsc:true
-                });
+
+                }
+            );
+           }
+        }
+
+        function studyAutocompleterChoices(str, callback) {
+            studyAutocompleterChoiceProcessing(function(data) {
+                var lis = data.map(function(study) {
+                    var id = study.id
+                    var name = study.assigned_identifier
+                    var listItem = "<li id='"  + id + "'>" + name + "</li>";
+                    return listItem
+                }).join("\n");
+                callback("<ul>\n" + lis + "\n</ul>");
+            });
+        }
+
+        function studyAutocompleterChoiceProcessing(callback) {
+            var searchString = $F("template-autocompleter-input")
+            var uri = SC.relativeUri("/api/v1/studies")
+            if (searchString.blank()) {
+                return;
             }
+
+            var params = { };
+            if (!searchString.blank()) params.q = searchString;
+
+            SC.asyncRequest(uri+".json", {
+                method: "GET", parameters: params,
+                onSuccess: function(response) {
+                    callback(response.responseJSON.studies)
+                }
+            })
         }
 
         function currentTemplateSelected() {
@@ -217,8 +232,9 @@
                 updatePeriods($('template-autocompleter-input-id').value, 'true')
             }
         }
+        
         Event.observe(window, "load", currentTemplateSelected)
-        Event.observe(window, "load", createAutocompleter)
+        Event.observe(window, "load", createTemplatesAutocompleter)
 
         // Temporary.  Validation should really be on the server side.
         $(document).observe("dom:loaded", function() {
