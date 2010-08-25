@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.slf4j.Logger;
@@ -33,10 +31,7 @@ public class NotificationService {
     private Integer numberOfDays;
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
-
-    private UserService userService;
-    private ApplicationSecurityManager applicationSecurityManager;
-
+    
     /**
      * This method will add notification when nothing is scheduled for a patient. This method is used by Cron
      * scheduling engine.
@@ -62,12 +57,12 @@ public class NotificationService {
     }
 
     public void notifyUsersForNewScheduleNotifications(final Notification notification) {
-        //first find the email address of subject coordinators
-        String userName = applicationSecurityManager.getUserName();
-        if (userName != null) {
-            User user = userService.getUserByName(userName);
+        String toAddress = null;
+        if (notification != null && notification.getAssignment() != null && notification.getAssignment().getStudySubjectCalendarManager() != null) {
+            toAddress = notification.getAssignment().getStudySubjectCalendarManager().getEmailId();
+        }
 
-            String toAddress = userService.getEmailAddresssForUser(user);
+        if (toAddress != null) {
             ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
             if (mailMessage != null) {
                 try {
@@ -80,11 +75,6 @@ public class NotificationService {
                 }
             }
         }
-    }
-
-    @Required
-    public void setUserService(final UserService userService) {
-        this.userService = userService;
     }
 
     @Required
@@ -105,10 +95,5 @@ public class NotificationService {
     // @Required
     public void setMailMessageFactory(final MailMessageFactory mailMessageFactory) {
         this.mailMessageFactory = mailMessageFactory;
-    }
-
-    @Required
-    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
-        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

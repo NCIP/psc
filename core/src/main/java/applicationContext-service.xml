@@ -118,8 +118,6 @@
         </property>
         <property name="mailSender" ref="mailSender"/>
         <property name="mailMessageFactory" ref="mailMessageFactory"/>
-        <property name="userService" ref="userService"/>
-        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
     <bean id="activityService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
