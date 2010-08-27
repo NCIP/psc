@@ -1,7 +1,7 @@
 <%@tag%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:if test="${not empty authentication}">
+<c:if test="${not empty currentUser}">
     <c:set var="sessionTimeout" value="${pageContext.session.maxInactiveInterval}"/>
     <c:set var="sessionTimeoutWarning" value="${sessionTimeout - 300}"/>
     <tags:includeScriptaculous/>

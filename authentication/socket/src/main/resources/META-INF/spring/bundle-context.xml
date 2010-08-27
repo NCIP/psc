@@ -13,7 +13,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
-                <ref bean="requestAuthenticationSocket"/>
                 <ref bean="exceptionTranslationFilter"/>
                 <ref bean="filterInvocationInterceptor"/>
             </list>
@@ -67,9 +66,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
     </bean>
                                         
-    <bean id="requestAuthenticationSocket"
-          class="edu.northwestern.bioinformatics.studycalendar.security.internal.RequestAuthenticationSocket"/>
-
     <bean id="anonymousProcessingFilter"
           class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
         <property name="key" value="PSC_ANON"/>
