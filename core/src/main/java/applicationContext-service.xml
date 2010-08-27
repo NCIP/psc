@@ -41,8 +41,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
-    <bean id="authorizationService" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService"/>
     <bean id="importActivitiesService" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService">
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
