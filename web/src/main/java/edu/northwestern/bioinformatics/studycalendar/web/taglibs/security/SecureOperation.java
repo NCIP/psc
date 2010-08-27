@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -53,10 +52,6 @@ public class SecureOperation extends TagSupport {
             return SKIP_BODY;
         }
 
-        if (isLegacyMode()) {
-            return legacyStartTag();
-        }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             log.trace(" - No user authenticated");
@@ -79,29 +74,6 @@ public class SecureOperation extends TagSupport {
             if (authorization.permits(user)) return EVAL_BODY_INCLUDE;
         }
         return SKIP_BODY;
-    }
-
-    @Deprecated
-    private int legacyStartTag() {
-        init();
-        if (secureUrls == null) {
-            log.error("No mapping of secure URLs available.  secureOperation body will never be displayed.");
-            return SKIP_BODY;
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            log.trace(" - No user authenticated");
-            return SKIP_BODY;
-        }
-
-        GrantedAuthority[] allowedRoles = findAllowedRoles();
-        if (log.isTraceEnabled()) {
-            log.trace(" - {} is authorized for {}", element, Arrays.asList(allowedRoles));
-            log.trace(" - user is {}", Arrays.asList(authentication.getAuthorities()));
-        }
-
-        return inAuthorizedRole(authentication, allowedRoles) ? EVAL_BODY_INCLUDE : SKIP_BODY;
     }
 
     @Override
@@ -157,40 +129,6 @@ public class SecureOperation extends TagSupport {
 
     private String getServletRelativePath() {
         return element.replaceFirst(SECURE_SERVLET_PREFIX, "");
-    }
-
-    @Deprecated
-    @SuppressWarnings({ "unchecked" })
-    private void init() {
-        if (secureUrls == null) {
-            if (getApplicationContext().containsBean("secureUrls")) {
-                secureUrls = (Map<String, GrantedAuthority[]>) getApplicationContext().getBean("secureUrls");
-            }
-        }
-    }
-
-    @Deprecated
-    private GrantedAuthority[] findAllowedRoles() {
-        AntPathMatcher matcher = new AntPathMatcher();
-        for (String path : secureUrls.keySet()) {
-            if (matcher.matchStart(path, element)) return secureUrls.get(path);
-        }
-        return NO_ROLES;
-    }
-
-    @Deprecated
-    private boolean inAuthorizedRole(Authentication authentication, GrantedAuthority[] allowed) {
-        for (GrantedAuthority role : allowed) {
-            for (GrantedAuthority a : authentication.getAuthorities()) {
-                if (role.getAuthority().equals(a.getAuthority())) return true;
-            }
-        }
-        return false;
-    }
-
-    @Deprecated
-    private boolean isLegacyMode() {
-        return ((LegacyModeSwitch) getApplicationContext().getBean("authorizationLegacyModeSwitch")).isOn();
     }
 
     private WebApplicationContext getApplicationContext() {
