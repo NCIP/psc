@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
@@ -24,7 +23,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Jalpa Patel
  */
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class AdvancedEditActivityController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     Activity activity;

@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class ImportActivitiesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ImportActivitiesService importActivitiesService;
     private SourceDao sourceDao;

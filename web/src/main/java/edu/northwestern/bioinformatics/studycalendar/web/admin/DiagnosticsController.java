@@ -7,7 +7,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class DiagnosticsController extends PscSimpleFormController implements PscAuthorizedHandler {
 
     private Configuration configuration;

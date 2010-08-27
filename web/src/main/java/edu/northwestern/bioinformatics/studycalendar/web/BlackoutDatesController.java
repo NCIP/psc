@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -28,7 +27,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Nataliya Shurupova
  */
 
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class BlackoutDatesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SiteDao siteDao;
     private BlackoutDateDao blackoutDateDao;

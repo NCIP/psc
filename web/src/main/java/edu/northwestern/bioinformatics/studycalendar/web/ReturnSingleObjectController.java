@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -18,7 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * This controller loads a single domain object and passes it to the configured view.
@@ -29,7 +26,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Rhett Sutphin
  */
 // If this actually gets reused, it'll have to be subclassed for different access permissions
-@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ReturnSingleObjectController<T extends DomainObject> implements Controller, PscAuthorizedHandler {
     private StudyCalendarDao<T> dao;
     private String parameterName;

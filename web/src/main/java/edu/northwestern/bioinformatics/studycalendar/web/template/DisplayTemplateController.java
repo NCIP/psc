@@ -20,7 +20,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.Study
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -42,7 +41,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR, Role.SITE_COORDINATOR})
 public class DisplayTemplateController extends PscAbstractController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private DeltaService deltaService;

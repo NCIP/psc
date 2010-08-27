@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSyst
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
@@ -29,7 +28,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class AuthenticationSystemSelectorController
     extends PscAbstractCommandController<AuthenticationSystemSelectorCommand> implements PscAuthorizedHandler
 {
