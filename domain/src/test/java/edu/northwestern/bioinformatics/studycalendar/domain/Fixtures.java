@@ -11,9 +11,6 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +22,6 @@ import java.util.TreeSet;
  * @author Rhett Sutphin
  */
 public class Fixtures {
-    private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     public static final ActivityType DEFAULT_ACTIVITY_TYPE = createActivityType("LAB_TEST");
     public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
 
@@ -132,10 +128,6 @@ public class Fixtures {
             )
         );
         return study;
-    }
-
-    public static Study createInDevelopmentTemplate() {
-        return createInDevelopmentTemplate(null);
     }
 
     public static StudySecondaryIdentifier addSecondaryIdentifier(Study s, String type, String value) {
@@ -514,19 +506,6 @@ public class Fixtures {
         return userRole;
     }
 
-    public static ProtectionGroup createProtectionGroup(String aName) {
-        ProtectionGroup pg = new ProtectionGroup();
-        pg.setProtectionGroupName(aName);
-        return pg;
-    }
-
-
-    public static ProtectionGroup createProtectionGroup(Long aId, String aName) {
-        ProtectionGroup pg = createProtectionGroup(aName);
-        pg.setProtectionGroupId(aId);
-        return pg;
-    }
-
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();
@@ -614,16 +593,6 @@ public class Fixtures {
         add.setChildId(newChildId);
         add.setIndex(index);
         return add;
-    }
-
-    public static BlackoutDate createBlackoutDate(int year, int month, int day, String description, Site site) {
-        SpecificDateBlackout blackoutDate = new SpecificDateBlackout();
-        blackoutDate.setYear(year);
-        blackoutDate.setMonth(month);
-        blackoutDate.setDay(day);
-        blackoutDate.setDescription(description);
-        blackoutDate.setSite(site);
-        return blackoutDate;
     }
 
     // static class
