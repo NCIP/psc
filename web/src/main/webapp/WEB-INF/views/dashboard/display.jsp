@@ -46,7 +46,7 @@
             <ul class="upcoming-day">
                 [# _(subjects).each(function (subject, i) { #]
                     <li class="subject autoclear [#= (i % 2 == 0 ? 'even' : 'odd') #]">
-                        <a href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
+                        <a class="subject-name" href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
                             [#= subject.subject_name #]
                         </a>
                         <ul class="subject-day-activities">
