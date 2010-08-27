@@ -71,12 +71,10 @@
         <filter-name>pre-authentication-setup-filter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.PreAuthenticationSetupFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>pre-authentication-setup-filter</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>pre-authentication-setup-filter</filter-name>
         <url-pattern>/public/*</url-pattern>
@@ -90,7 +88,6 @@
             <param-value>configuration, buildInfo</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>BeansInRequestFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -100,7 +97,6 @@
         <filter-name>ServletWebContextPathAwareFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.tools.spring.ServletWebContextPathAwareFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>ServletWebContextPathAwareFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -110,7 +106,6 @@
         <filter-name>FormatToolsConfigurationFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.FormatToolsConfigurationFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>FormatToolsConfigurationFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -126,17 +121,14 @@
             <param-value>installedAuthenticationSystem</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
         <url-pattern>/auth/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
         <url-pattern>/api/*</url-pattern>
@@ -150,11 +142,11 @@
         <filter-name>post-authentication-setup-filter</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
+
     <filter>
         <filter-name>AuditInfoFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>AuditInfoFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -168,22 +160,18 @@
             <param-value>auditOpenSessionInViewInterceptor</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/public/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/setup/*</url-pattern>
@@ -197,22 +185,18 @@
             <param-value>openSessionInViewInterceptor</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/public/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/setup/*</url-pattern>
@@ -222,7 +206,6 @@
         <filter-name>UserInRequestFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.UserInRequestFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>UserInRequestFilter</filter-name>
         <url-pattern>/pages/*</url-pattern>
@@ -232,7 +215,6 @@
         <filter-name>Sitemesh</filter-name>
         <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>Sitemesh</filter-name>
         <url-pattern>/*</url-pattern>
@@ -242,7 +224,6 @@
         <filter-name>ExceptionTranslator</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.ExceptionTranslationFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>ExceptionTranslator</filter-name>
         <url-pattern>/*</url-pattern>
@@ -256,7 +237,6 @@
             <param-value>d-\d+-e</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>Sitemesh blocking for displaytag export</filter-name>
         <url-pattern>/pages/report/*</url-pattern>
@@ -266,7 +246,6 @@
         <filter-name>Response override for displaytag export</filter-name>
         <filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>Response override for displaytag export</filter-name>
         <url-pattern>/pages/report/*</url-pattern>
