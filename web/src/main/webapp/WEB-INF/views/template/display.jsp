@@ -526,7 +526,7 @@
 
                         var studySegmentId = aElement.id.substring('studySegment'.length+1)
                         selectedStudySegmentId = studySegmentId
-                        var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId;
+                        var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId + '&amendment=' + ${amendmentId};
 
                         <c:if test="${not empty developmentRevision}">
                              href = href + '&development=true';

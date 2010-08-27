@@ -2,10 +2,15 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -13,9 +18,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.classextension.EasyMock.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.amend;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setUserAndReturnMembership;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta.createDeltaFor;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.valuesWithStudyAccess;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +36,8 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
 
     private StudySegment studySegment;
     private Study study;
+    private AmendmentService amendmentService;
+    private AmendmentDao amendmentDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -40,10 +50,17 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         StudySegmentDao studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         controller = new SelectStudySegmentController();
         deltaService = registerMockFor(DeltaService.class);
+        amendmentDao = registerDaoMockFor(AmendmentDao.class);
+        templateService = registerMockFor(TemplateService.class);
+
+        amendmentService = new AmendmentService();
+        amendmentService.setTemplateService(new TestingTemplateService());
 
         controller.setStudySegmentDao(studySegmentDao);
         controller.setControllerTools(controllerTools);
         controller.setDeltaService(deltaService);
+        controller.setAmendmentDao(amendmentDao);
+        controller.setAmendmentService(amendmentService);
         controller.setTemplateService(new TestingTemplateService());
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
@@ -72,7 +89,6 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         Object actualStudySegment = mv.getModel().get("studySegment");
         assertNotNull("study segment missing", actualStudySegment);
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
-        System.out.println("mv.getModel " + mv.getModel());
         assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
     }
 
@@ -103,5 +119,32 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
         assertNull("must not revise study", mv.getModel().get("developmentRevision"));
         assertFalse("Should not be editable", (Boolean) mv.getModel().get("canEdit"));
+    }
+
+    public void testRequestForPreviousVersion() throws Exception {
+        int AMENDMENT_ID = -20;
+
+        request.setParameter("amendment", Integer.toString(AMENDMENT_ID));
+
+        Amendment second = new Amendment("second");
+        PlannedCalendar cal = study.getPlannedCalendar();
+        second.addDelta(createDeltaFor(cal, Remove.create(cal.getEpochs().get(0))));
+        second.addDelta(createDeltaFor(cal, Remove.create(cal.getEpochs().get(1))));
+        Study amended = study.transientClone();
+        amended.setDevelopmentAmendment(second);
+        amend(amended);
+
+        TemplateService templateService = registerMockFor(TemplateService.class);
+        controller.setTemplateService(templateService);
+
+        expect(amendmentDao.getById(AMENDMENT_ID)).andReturn(amended.getAmendment().getPreviousAmendment());
+        expect(templateService.findStudy(studySegment)).andReturn(study);
+        
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+
+        Object actualStudySegment = mv.getModel().get("studySegment");
+        assertNotNull("study segment missing", actualStudySegment);
     }
 }

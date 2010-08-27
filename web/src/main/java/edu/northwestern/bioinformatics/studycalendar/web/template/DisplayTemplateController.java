@@ -96,6 +96,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
             model.put("canAssignIdentifiers", isDevelopmentRequest(model) && utr.getCanAssignIdentifiers());
             model.put("canEdit", isDevelopmentRequest(model) && utr.getCanDevelop());
             model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
+            model.put("amendmentId", selectedAmendmentId);
 
             return new ModelAndView("template/display", model);
         } else {
