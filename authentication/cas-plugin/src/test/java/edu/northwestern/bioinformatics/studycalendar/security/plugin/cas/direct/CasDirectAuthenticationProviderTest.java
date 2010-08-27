@@ -1,23 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import static org.easymock.EasyMock.expect;
 import org.easymock.IExpectationSetters;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -28,13 +30,13 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     private CasDirectAuthenticationProvider provider;
     private DirectLoginHttpFacade loginFacade;
-    private UserDetailsService userDetailsService;
+    private PscUserDetailsService userDetailsService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         loginFacade = registerMockFor(DirectLoginHttpFacade.class);
-        userDetailsService = registerMockFor(UserDetailsService.class);
+        userDetailsService = registerMockFor(PscUserDetailsService.class);
 
         provider = new CasDirectAuthenticationProvider() {
             @Override
@@ -124,7 +126,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='some-ticket'/>");
         expectPostCredentials(USERNAME, PASSWORD, "some-ticket").andReturn(true);
         expect(userDetailsService.loadUserByUsername(USERNAME)).
-            andReturn(Fixtures.createUser(USERNAME, Role.SUBJECT_COORDINATOR));
+            andReturn(AuthorizationObjectFactory.createPscUser(USERNAME, PscRole.STUDY_QA_MANAGER));
 
         Authentication actual = doAuthenticate();
         assertNotNull("No authentication token returned", actual);
@@ -134,7 +136,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
             "[REMOVED PASSWORD]", actual.getCredentials());
         assertEquals("Wrong authorities in actual token", 1, actual.getAuthorities().length);
         assertEquals("Wrong authorities in actual token",
-            Role.SUBJECT_COORDINATOR, actual.getAuthorities()[0]);
+            PscRole.STUDY_QA_MANAGER, actual.getAuthorities()[0]);
     }
     
     public void testNoSuchUserResultsInNoAuthentication() throws Exception {
