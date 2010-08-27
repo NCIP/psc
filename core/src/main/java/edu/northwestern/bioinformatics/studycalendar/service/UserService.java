@@ -1,33 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Deprecated
 @Transactional
 public class UserService implements Serializable {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     private UserDao userDao;
     private AuthorizationManager authorizationManager;
     private SiteConsumer siteConsumer;
@@ -81,46 +70,6 @@ public class UserService implements Serializable {
         return csmUser;
     }
 
-    public List<User> getSubjectCoordinatorsForSites(List<Site> sites) {
-        List<User> users = userDao.getAllSubjectCoordinators();
-        List<User> associatedUsers = new ArrayList<User>();
-        for (User user : users) {
-            for (Site site : sites) {
-                UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
-                if (userRole != null && userRole.getSites().contains(site)) {
-                    associatedUsers.add(user);
-                    break;
-                }
-            }
-        }
-        return associatedUsers;
-    }
-
-    public List<User> getSiteCoordinatorsAssignableUsers(User siteCoordinator) {
-        List<Site> sites = new ArrayList<Site>();
-        List<User> assignableUsers = new ArrayList<User>();
-        if (siteCoordinator != null) {
-            UserRole userRole = siteCoordinator.getUserRole(Role.SITE_COORDINATOR);
-
-            sites.addAll(userRole.getSites());
-
-            assignableUsers = getSubjectCoordinatorsForSites(sites);
-            Collections.sort(assignableUsers, new NamedComparator());
-        }
-
-        return assignableUsers;
-    }
-
-    public String getEmailAddresssForUser(final User user) {
-        gov.nih.nci.security.authorization.domainobjects.User csmUser = null;
-        try {
-            csmUser = authorizationManager.getUserById(user.getCsmUserId().toString());
-        } catch (CSObjectNotFoundException e) {
-            log.error("No csm user found for given csm user id:" + user.getCsmUserId());
-        }
-        return csmUser != null ? csmUser.getEmailId() : null;
-    }
-
     /**
      * Returns the user, fully initialized.
      * @param username
@@ -134,18 +83,6 @@ public class UserService implements Serializable {
                 Hibernate.initialize(role.getStudySites());
             }
             siteConsumer.refresh(user.getAllSites());
-        }
-        return user;
-    }
-    /**
-     * Returns the user, fully initialized with studySubjectAssignment
-     * @param username
-     * @param includeAssignments
-     */
-    public User getUserByName(String username, Boolean includeAssignments) {
-        User user = getUserByName(username);
-        if (includeAssignments) {
-            Hibernate.initialize(user.getStudySubjectAssignments());
         }
         return user;
     }

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -17,23 +16,22 @@ import gov.nih.nci.security.authorization.domainobjects.Privilege;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.jaas.AccessPermission;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSDataAccessException;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
-import org.easymock.IArgumentMatcher;
-import static org.easymock.classextension.EasyMock.*;
-import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
 import java.net.URL;
 import java.security.Principal;
-import static java.util.Arrays.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static java.util.Arrays.asList;
+import static org.easymock.classextension.EasyMock.expect;
 
 public class UserServiceTest extends StudyCalendarTestCase {
     private UserDao userDao;
@@ -89,25 +87,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
             authorizationManagerStub.getCreatedUser().getPassword());
     }
 
-    public void testGetSubjectCoordinatorsForSites() throws Exception {
-        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(adam, steve));
-        replayMocks();
-        List<User> actualSubjectCoordinators = service.getSubjectCoordinatorsForSites(asList(nu));
-        verifyMocks();
-        assertEquals("Wrong number of users", 1, actualSubjectCoordinators.size());
-        assertEquals("Wrong user", adam.getName(), actualSubjectCoordinators.get(0).getName());
-    }
-
-    public void testGetAssignableUsers() throws Exception {
-        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(adam, steve));
-        replayMocks();
-
-        List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(siteCoord);
-        verifyMocks();
-
-        assertEquals("Wrong Number of Users", 1, actualAssignableUsers.size());
-    }
-
     public void testGetUserByNameReturnNullForUnknown() throws Exception {
         expect(userDao.getByName("joe")).andReturn(null);
         replayMocks();
@@ -123,54 +102,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         assertSame(adam, service.getUserByName("adam"));
         verifyMocks();
-    }
-
-    public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
-        reportMatcher(new CsmGroupSearchCriteriaMatcher(group));
-        return null;
-    }
-
-    private static class CsmGroupSearchCriteriaMatcher implements IArgumentMatcher {
-        private GroupSearchCriteria expectedGroup;
-
-        public CsmGroupSearchCriteriaMatcher(GroupSearchCriteria expectedGroup) {
-            this.expectedGroup = expectedGroup;
-        }
-
-        public boolean matches(Object object) {
-            if(!(object instanceof GroupSearchCriteria)) {
-                return false;
-            }
-
-            GroupSearchCriteria actual = (GroupSearchCriteria) object;
-
-            if (expectedGroup.getMessage() != null ? !expectedGroup.getMessage().equals(actual.getMessage()) : actual.getMessage() != null)
-                return false;
-
-            return true;
-        }
-
-        public void appendTo(StringBuffer sb) {
-            sb.append("Group with message =").append(expectedGroup.getMessage());
-        }
-    }
-
-    public static <T> T unsortedAryEq(T t) {
-        reportMatcher(new UnsortedArrayEquals(t));
-        return null;
-    }
-
-    private static class UnsortedArrayEquals extends ArrayEquals {
-        public UnsortedArrayEquals(Object expected) {
-            super(expected);
-            sort((Object[])expected);
-        }
-
-        @Override
-        public boolean matches(Object actual) {
-            sort((Object[])actual);
-            return super.matches(actual);
-        }
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

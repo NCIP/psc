@@ -153,7 +153,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
             service.assignStudyToSites(null, sitesTest);
             fail("Expected IllegalArgumentException. Null object is passed instead of study ");
         } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
+            assertEquals("Study is null", ise.getMessage());
         }
     }
 

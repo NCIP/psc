@@ -39,8 +39,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
     <bean id="subjectCoordinatorDashboardService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
-    <bean id="userRoleService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
     <bean id="authorizationService" autowire="byType"

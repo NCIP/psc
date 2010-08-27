@@ -5,26 +5,18 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 
 /**
@@ -34,29 +26,20 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private SiteService service;
     private SiteConsumer siteConsumer;
-    private User user;
     private Site nu, mayo;
-    private UserRoleDao userRoleDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        UserService userService = registerMockFor(UserService.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         siteConsumer = registerMockFor(SiteConsumer.class);
-        userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
         service = new SiteService();
         service.setSiteDao(siteDao);
-        service.setUserService(userService);
         service.setSiteConsumer(siteConsumer);
-        service.setUserRoleDao(userRoleDao);
 
-        user = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser(7, "jimbo", 73L, true);
         nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
         mayo = setId(4, Fixtures.createNamedInstance("Mayo", Site.class));
-
-        expect(userService.getUserByName("jimbo")).andStubReturn(user);
     }
 
     public void testCreateSite() throws Exception {
@@ -69,24 +52,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertNotNull("site not returned", siteCreated);
     }
 
-    public void testGetSitesForSubjectCoordinators() {
-        Set<Site> expectedSites = Collections.singleton(nu);
-
-        Fixtures.setUserRoles(user, SUBJECT_COORDINATOR);
-        user.getUserRole(SUBJECT_COORDINATOR).setSites(expectedSites);
-
-        replayMocks();
-        Collection<Site> actualSites = service.getSitesForSubjectCoordinator("jimbo");
-        verifyMocks();
-
-        assertEquals(expectedSites.size(), actualSites.size());
-        assertTrue(actualSites.containsAll(expectedSites));
-    }
-
     public void testRemoveRemovableSite() throws Exception {
         Site site = new Site();
         site.setId(1);
-        expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
         siteDao.delete(site);
 
         replayMocks();
@@ -205,26 +173,11 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testDeleteSiteWhenSiteHasUserRole() throws Exception {
-
-        Site site = createNamedInstance("Northwestern", Site.class);
-        site.setId(11);
-        UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site);
-        expect(userRoleDao.getUserRolesForSite(site)).andReturn(Arrays.asList(userRole));
-        siteDao.delete(site);
-
-        replayMocks();
-        service.removeSite(site);
-        verifyMocks();
-        assertFalse("UserRole shouldn't contain site", userRole.getSites().contains(site));
-    }
-
     public void testDeleteSiteWhenSiteHasStudySiteRelation() throws Exception {
         Study study = createNamedInstance("Study A", Study.class);
         Site site = createNamedInstance("Northwestern", Site.class);
         site.setId(12);
         createStudySite(study, site);
-        expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
         siteDao.delete(site);
 
         replayMocks();

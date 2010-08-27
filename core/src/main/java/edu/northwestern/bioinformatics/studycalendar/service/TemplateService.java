@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
@@ -12,10 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
@@ -28,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 
 /**
  * This service provides methods for:
@@ -45,60 +37,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 @Transactional
 public class TemplateService {
     private DeltaDao deltaDao;
-    private UserRoleDao userRoleDao;
     private DaoFinder daoFinder;
-
-    public static final String USER_IS_NULL = "User is null";
-    public static final String SITE_IS_NULL = "Site is null";
-    public static final String STUDY_IS_NULL = "Study is null";
-
-    public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
-            Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
-    ) {
-        if (study == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (user == null) {
-            throw new IllegalArgumentException(USER_IS_NULL);
-        }
-
-        UserRole userRole = user.getUserRole(SUBJECT_COORDINATOR);
-        if (!userRole.getStudySites().contains(findStudySite(study, site))) {
-            userRole.addStudySite(findStudySite(study, site));
-            userRoleDao.save(userRole);
-        }
-
-        return user;
-    }
-
-    public edu.northwestern.bioinformatics.studycalendar.domain.User removeAssignedTemplateFromSubjectCoordinator(
-            Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
-    ) {
-        if (study == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (user == null) {
-            throw new IllegalArgumentException(USER_IS_NULL);
-        }
-        UserRole userRole = user.getUserRole(SUBJECT_COORDINATOR);
-        StudySite studySite = study.getStudySite(site);
-        if (user.hasAssignment(studySite)) {
-            throw new StudyCalendarValidationException("%s is still responsible for one or more subjects on %s at %s.  Please reassign those subjects before removing %s from that study and site.",
-                    user.getName(), study.getAssignedIdentifier(), site.getName(), user.getName());
-        }
-        if (userRole.getStudySites().contains(studySite)) {
-            userRole.removeStudySite(studySite);
-            userRoleDao.save(userRole);
-        }
-
-        return user;
-    }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -270,11 +209,6 @@ public class TemplateService {
     @Required
     public void setDeltaDao(DeltaDao deltaDao) {
         this.deltaDao = deltaDao;
-    }
-
-    @Required
-    public void setUserRoleDao(UserRoleDao userRoleDao) {
-        this.userRoleDao = userRoleDao;
     }
 
     @Required
