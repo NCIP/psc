@@ -56,14 +56,15 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
             amendment = amendmentDao.getById(amendId);
         }
 
-        studySegment = (amendment != null) ? amendmentService.getAmendedNode(studySegment, amendment) : studySegment;
+        boolean isDevelopmentRequest = !StringUtils.isBlank(request.getParameter("development"));
+
+        studySegment = (amendment != null && !isDevelopmentRequest) ? amendmentService.getAmendedNode(studySegment, amendment) : studySegment;
 
         Study study = templateService.findStudy(studySegment);
 
         UserTemplateRelationship utr =
             new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
 
-        boolean isDevelopmentRequest = !StringUtils.isBlank(request.getParameter("development"));
         if ((isDevelopmentRequest && utr.getCanSeeDevelopmentVersion()) ||
             (!isDevelopmentRequest && utr.getCanSeeReleasedVersions())) {
             if (study.getDevelopmentAmendment() != null && isDevelopmentRequest) {
