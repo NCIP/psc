@@ -21,13 +21,10 @@
     </bean>
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerRequiredAuthorityExtractor"
-          id="controllerRequiredAuthorityExtractor">
-        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
-    </bean>
+          id="controllerRequiredAuthorityExtractor"/>
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.tools.PscAuthorizationInterceptor"
         id="authorizationInterceptor">
-        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 

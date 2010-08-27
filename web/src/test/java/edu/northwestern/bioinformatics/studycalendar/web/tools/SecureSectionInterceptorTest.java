@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -54,7 +53,6 @@ public class SecureSectionInterceptorTest extends WebTestCase {
         interceptor = new SecureSectionInterceptor();
         interceptor.setApplicationSecurityManager(applicationSecurityManager);
         ControllerRequiredAuthorityExtractor extractor = new ControllerRequiredAuthorityExtractor();
-        extractor.setLegacyModeSwitch(new LegacyModeSwitch(false));
         interceptor.setControllerRequiredAuthorityExtractor(extractor);
         interceptor.postProcessBeanFactory(beanFactory);
 

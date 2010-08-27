@@ -6,12 +6,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
@@ -31,9 +29,6 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.easymock.classextension.EasyMock;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -51,28 +46,23 @@ import static org.easymock.EasyMock.*;
 public class PscUserServiceTest extends StudyCalendarTestCase {
     private PscUserService service;
 
-    private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
     private User csmUser;
     private Site whatCheer, northLiberty, solon;
     private Study eg1701;
 
-    private UserService userService;
     private SiteDao siteDao;
     private StudyDao studyDao;
     private StudySiteDao studySiteDao;
     private StudySubjectAssignmentDao assignmentDao;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private AuthorizationManager csmAuthorizationManager;
-    private LegacyModeSwitch aSwitch;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        userService = registerMockFor(UserService.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
         suiteRoleMembershipLoader = registerMockFor(SuiteRoleMembershipLoader.class);
-        aSwitch = new LegacyModeSwitch();
 
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
@@ -82,19 +72,9 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         CsmHelper csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
 
-        PlatformTransactionManager transactionManager = registerMockFor(PlatformTransactionManager.class);
-        DefaultTransactionStatus status = new DefaultTransactionStatus(null, true, true, true, true, null);
-        expect(transactionManager.getTransaction((TransactionDefinition) notNull())).
-            andStubReturn(status);
-        transactionManager.rollback(status);
-        expectLastCall().asStub();
-
         service = new PscUserService();
-        service.setUserService(userService);
-        service.setTransactionManager(transactionManager);
         service.setCsmAuthorizationManager(csmAuthorizationManager);
         service.setSuiteRoleMembershipLoader(suiteRoleMembershipLoader);
-        service.setLegacyModeSwitch(aSwitch);
         service.setCsmHelper(csmHelper);
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
@@ -102,7 +82,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setStudySubjectAssignmentDao(assignmentDao);
 
         csmUser = AuthorizationObjectFactory.createCsmUser(5, "John");
-        legacyUser = Fixtures.createUser(1, "John", 1L, true);
 
         for (SuiteRole role : SuiteRole.values()) {
             Group g = new Group();
@@ -120,7 +99,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
     public void testLoadKnownUserForAcegi() throws Exception {
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
-        expect(userService.getUserByName("John")).andReturn(legacyUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
             new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
         expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
@@ -131,7 +109,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
         assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
-        assertSame("Wrong legacy user", legacyUser, actual.getLegacyUser());
     }
 
     public void testNullCsmUserThrowsExceptionForAcegi() throws Exception {
@@ -148,7 +125,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDeactivatedCsmUserThrowsExceptionForAcegi() throws Exception {
-        aSwitch.setOn(false);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
@@ -165,8 +141,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetKnownAuthorizableUser() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
             SuiteRole.SYSTEM_ADMINISTRATOR,
@@ -182,8 +156,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testExpiredAuthorizableUserIsStillReturned() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
@@ -200,8 +172,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testUnknownAuthorizableUserReturnsNull() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(null);
         replayMocks();
 
@@ -210,7 +180,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetKnownUserForProvisioning() throws Exception {
-        aSwitch.setOn(false);
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships =
             Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
@@ -226,7 +195,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetNullCsmUserForProvisioningReturnsNull() throws Exception {
-        aSwitch.setOn(false);
         expect(csmAuthorizationManager.getUser("John")).andReturn(null);
         replayMocks();
 
@@ -235,7 +203,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDeactivatedCsmUserIsReturnedForProvisioning() throws Exception {
-        aSwitch.setOn(false);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId())).

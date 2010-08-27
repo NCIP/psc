@@ -135,8 +135,6 @@
 
     <bean id="pscUserService"
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserService">
-        <property name="userService" ref="userService"/>
-        <property name="transactionManager" ref="transactionManager"/>
         <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>

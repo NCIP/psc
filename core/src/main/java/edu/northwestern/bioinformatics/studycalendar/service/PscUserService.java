@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -27,9 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,11 +41,8 @@ import java.util.Set;
 public class PscUserService implements PscUserDetailsService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private UserService userService;
-    private PlatformTransactionManager transactionManager;
     private AuthorizationManager csmAuthorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
-    private LegacyModeSwitch legacyModeSwitch;
     private CsmHelper csmHelper;
 
     private StudyDao studyDao;
@@ -61,8 +54,7 @@ public class PscUserService implements PscUserDetailsService {
         User user = loadCsmUser(username);
         if (user == null) return null;
         return new PscUser(
-            user, suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId()),
-            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
+            user, suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId())
         );
     }
 
@@ -81,38 +73,11 @@ public class PscUserService implements PscUserDetailsService {
         if (user == null) return null;
         return new PscUser(
             user,
-            suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
-            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
-        );
+            suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()));
     }
 
     private User loadCsmUser(String username) {
         return csmAuthorizationManager.getUser(username);
-    }
-
-    private edu.northwestern.bioinformatics.studycalendar.domain.User loadLegacyUser(String userName) {
-        // This explicit transaction demarcation shouldn't be necessary
-        // However, annotating with @Transactional(readOnly=true) was not stopping hibernate from flushing.
-        TransactionStatus transactionStatus = transactionManager.getTransaction(readOnlyTransactionDef());
-        try {
-            return actuallyLoadUser(userName);
-        } finally {
-            transactionManager.rollback(transactionStatus);
-        }
-    }
-
-    private edu.northwestern.bioinformatics.studycalendar.domain.User actuallyLoadUser(String userName) {
-        edu.northwestern.bioinformatics.studycalendar.domain.User user =
-            userService.getUserByName(userName);
-        if (user == null) throw new UsernameNotFoundException("Unknown user " + userName);
-        if (!user.getActiveFlag()) throw new DisabledException("User is disabled " +userName);
-        return user;
-    }
-
-    private DefaultTransactionDefinition readOnlyTransactionDef() {
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setReadOnly(true);
-        return def;
     }
 
     /**
@@ -347,16 +312,6 @@ public class PscUserService implements PscUserDetailsService {
 
     ////// CONFIGURATION
 
-    @Required @Deprecated
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    @Required @Deprecated
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
     @Required
     public void setCsmAuthorizationManager(AuthorizationManager authorizationManager) {
         this.csmAuthorizationManager = authorizationManager;
@@ -370,11 +325,6 @@ public class PscUserService implements PscUserDetailsService {
     @Required
     public void setSuiteRoleMembershipLoader(SuiteRoleMembershipLoader suiteRoleMembershipLoader) {
         this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
-    }
-
-    @Required @Deprecated
-    public void setLegacyModeSwitch(LegacyModeSwitch lmSwitch) {
-        this.legacyModeSwitch = lmSwitch;
     }
 
     @Required

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -40,7 +39,6 @@ public class SecureOperationTest extends WebTestCase {
         applicationContext = ConcreteStaticApplicationContext.createWebApplicationContext(
             new MapBuilder<String, Object>().
                 put("urlMapping", handlerMapping).
-                put("authorizationLegacyModeSwitch", new LegacyModeSwitch(false)).
                 toMap(),
             servletContext
         );
