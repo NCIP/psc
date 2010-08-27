@@ -8,8 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 
@@ -73,7 +71,6 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
     }
 
     public void testGetXmlForExistingSite() throws Exception {
-        setLegacyCurrentUser(createUser("studyCo", STUDY_ADMIN));
         expectFoundSite(site);
         expectObjectXmlized(site);
 
@@ -82,24 +79,6 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
         assertEquals("Result not success", 200, response.getStatus().getCode());
         assertResponseIsCreatedXml();
     }
-
-    public void testGet403ForUnauthorizedUser() throws Exception {
-        setLegacyCurrentUser(createUser("subjectCo",SUBJECT_COORDINATOR));
-        expectFoundSite(site);
-        expectObjectXmlized(site);
-
-        doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
-    }
-
-    public void testGetXmlForNonExistentSiteIs404() throws Exception {
-        expectFoundSite(null);
-
-        doGet();
-
-        assertEquals("Result not 'not found'", 404, response.getStatus().getCode());
-    }
-
 
     public void testPutExistingSite() throws Exception {
         Site newSite = new Site();
@@ -148,11 +127,8 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
 
     }
 
-
     private void expectFoundSite(Site expectedSite) {
         expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
     }
-
-
 }
 
