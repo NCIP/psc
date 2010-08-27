@@ -21,13 +21,6 @@
 
     <USERS id="-22" name="sarge" csm_user_id="-19" active_flag="1"/>
 
-    <USER_ROLES id="-55"  user_id="-22" csm_group_name="SUBJECT_COORDINATOR"/>
-
-    <USER_ROLE_STUDY_SITES user_role_id="-55" study_site_id="-300"/>
-    <USER_ROLE_STUDY_SITES user_role_id="-55" study_site_id="-301"/>
-
-    <USER_ROLE_SITES user_role_id="-55" site_id="-201"/>
-
     <AMENDMENT_APPROVALS id="-33" study_site_id="-300" amendment_id="-220"/>
   
     <populations id="-77" name="Hepatitis positive" abbreviation="H+" study_id="-1" grid_id="grid 0"/>

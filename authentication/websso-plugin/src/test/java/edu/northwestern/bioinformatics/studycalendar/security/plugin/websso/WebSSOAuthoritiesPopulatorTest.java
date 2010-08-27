@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
@@ -75,8 +74,10 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         PscUser actual = doPopulate();
 
         assertEquals("User has wrong number of authorities", 2, actual.getAuthorities().length);
-        assertEquals("User has wrong authority 0", Role.STUDY_COORDINATOR, actual.getAuthorities()[0]);
-        assertEquals("User has wrong authority 1", Role.SYSTEM_ADMINISTRATOR, actual.getAuthorities()[1]);
+        assertEquals("User has wrong authority 0",
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actual.getAuthorities()[0]);
+        assertEquals("User has wrong authority 1",
+            PscRole.SYSTEM_ADMINISTRATOR, actual.getAuthorities()[1]);
     }
 
     public void testGridPersonalNamePopulated() throws Exception {

@@ -133,7 +133,6 @@
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserService">
         <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
-        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
         <property name="csmHelper" ref="suiteCsmHelper"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="studyDao" ref="studyDao"/>

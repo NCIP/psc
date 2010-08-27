@@ -233,7 +233,8 @@ define "psc" do
       bnd.name = "PSC Pluggable Auth API"
       compile.with project('utility'), project('authorization'),
         SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
-        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
+        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
+        SECURITY.suite_authorization
       test.with UNIT_TESTING, EHCACHE,
         project('mocks').and_dependencies,
         project('domain').and_dependencies,
