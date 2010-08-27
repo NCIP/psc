@@ -1,21 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import static org.easymock.EasyMock.expect;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Saurabh Agrawal
  */
-public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResource> {
-
+public class BlackoutDateResourceTest extends AuthorizedResourceTestCase<BlackoutDateResource> {
     public static final String SITE_IDENTIFIER = "site_id";
-
     public static final String BLACKOUT_DATE_IDENTIFIER = "blackoutDateId";
-
     public static final String SITE_NAME = "site_name";
 
     private SiteService siteService;
@@ -40,11 +40,10 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
         monthDayHoliday.setDescription("month day holiday");
         monthDayHoliday.setId(3);
         site.getBlackoutDates().add(monthDayHoliday);
-
     }
 
     @Override
-    protected BlackoutDateResource createResource() {
+    protected BlackoutDateResource createAuthorizedResource() {
         BlackoutDateResource resource = new BlackoutDateResource();
         resource.setSiteService(siteService);
         return resource;
@@ -54,6 +53,9 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
         assertAllowedMethods("DELETE");
     }
 
+    public void testAvailableToPoimOnly() throws Exception {
+        assertRolesAllowedForMethod(Method.DELETE, PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+    }
 
     public void testDeleteHolidayWhichDoesNotExists() throws Exception {
         expectFoundSite(site);
