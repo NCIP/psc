@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import org.acegisecurity.AuthenticationManager;
@@ -13,13 +12,14 @@ import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
 import java.util.regex.Pattern;
+
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -35,24 +35,22 @@ public class PscGuardTest extends RestletTestCase {
         = new SingleTokenAuthenticationToken(TOKEN);
 
     private PscGuard guard;
-    private User user;
     private UsernamePasswordAuthenticationToken authenticated;
 
     private MockRestlet nextRestlet;
     private AuthenticationManager authenticationManager;
-    private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthenticationSystem authenticationSystem;
     private SecurityContext securityContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = Fixtures.createNamedInstance(USERNAME, User.class);
         authenticated = new UsernamePasswordAuthenticationToken(
-            user, PASSWORD, new GrantedAuthority[0]);
+            AuthorizationObjectFactory.createPscUser(USERNAME), PASSWORD, new GrantedAuthority[0]);
 
         authenticationManager = registerMockFor(AuthenticationManager.class);
-        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
+        InstalledAuthenticationSystem installedAuthenticationSystem =
+            registerMockFor(InstalledAuthenticationSystem.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
         expect(installedAuthenticationSystem.getAuthenticationSystem())
             .andReturn(authenticationSystem).anyTimes();

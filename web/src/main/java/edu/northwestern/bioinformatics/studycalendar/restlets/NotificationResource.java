@@ -33,8 +33,6 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SUBJECT_COORDINATOR);
 
         Study study = null;
         Site site = null;

@@ -23,8 +23,6 @@ public abstract class OsgiAdminResource extends AbstractPscResource {
         super.init(context, request, response);
         setReadable(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
-
         addAuthorizationsFor(Method.GET, SYSTEM_ADMINISTRATOR);
     }
 

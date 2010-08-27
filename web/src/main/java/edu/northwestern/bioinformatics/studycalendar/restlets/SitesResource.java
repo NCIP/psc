@@ -24,8 +24,6 @@ public class SitesResource extends AbstractCollectionResource<Site> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SYSTEM_ADMINISTRATOR, Role.STUDY_ADMIN);
-
         addAuthorizationsFor(Method.GET,
             PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
             STUDY_SITE_PARTICIPATION_ADMINISTRATOR,

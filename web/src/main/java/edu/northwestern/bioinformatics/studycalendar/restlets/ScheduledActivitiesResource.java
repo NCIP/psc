@@ -37,7 +37,6 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
 
         String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);

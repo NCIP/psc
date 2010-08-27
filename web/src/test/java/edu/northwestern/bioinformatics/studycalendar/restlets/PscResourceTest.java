@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -17,7 +16,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import static org.restlet.data.Method.*;
 
@@ -43,25 +41,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     }
 
     public void testAllAuthorizedMethodReturnsNull() throws Exception {
-        assertNull(getResource().legacyAuthorizedRoles(GET));
         assertNull(getResource().authorizations(GET));
-    }
-
-    public void testProperLegacyRolesReturnedForLimitedAuthorizationResources() throws Exception {
-        Collection<Role> putRoles = getResource().legacyAuthorizedRoles(PUT);
-        assertEquals(1, putRoles.size());
-        assertEquals(SYSTEM_ADMINISTRATOR, putRoles.iterator().next());
-
-        Collection<Role> postRoles = getResource().legacyAuthorizedRoles(POST);
-        assertEquals(2, postRoles.size());
-        assertContains(postRoles, STUDY_ADMIN);
-        assertContains(postRoles, STUDY_COORDINATOR);
-    }
-    
-    public void testNoLegacyRolesReturnedForUnmentionedMethods() throws Exception {
-        Collection<Role> lockRoles = getResource().legacyAuthorizedRoles(LOCK);
-        assertNotNull(lockRoles);
-        assertEquals(0, lockRoles.size());
     }
 
     public void testProperAuthorizationReturnedForRoleAuthorizedMethod() throws Exception {
@@ -126,7 +106,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
 
         replayMocks();
-        assertSame(getLegacyCurrentUser(), getResource().getLegacyCurrentUser());
+        assertSame(getCurrentUser(), getResource().getCurrentUser());
         verifyMocks();
     }
 
@@ -134,7 +114,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         PscGuard.setCurrentAuthenticationToken(request, null);
 
         replayMocks();
-        assertNull(getResource().getLegacyCurrentUser());
+        assertNull(getResource().getCurrentUser());
         verifyMocks();
     }
 
@@ -143,7 +123,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
 
         replayMocks();
         try {
-            getResource().getLegacyCurrentUser();
+            getResource().getCurrentUser();
             fail("Exception not thrown");
         } catch (ClassCastException cce) {
             assertEquals("Wrong message",
@@ -184,8 +164,6 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     public class TestResource extends AbstractPscResource {
         public TestResource() {
             setAllAuthorizedFor(GET);
-            setAuthorizedFor(PUT, SYSTEM_ADMINISTRATOR);
-            setAuthorizedFor(POST, STUDY_ADMIN, STUDY_COORDINATOR);
 
             addAuthorizationsFor(PUT, PscRole.SYSTEM_ADMINISTRATOR);
             addAuthorizationsFor(POST,

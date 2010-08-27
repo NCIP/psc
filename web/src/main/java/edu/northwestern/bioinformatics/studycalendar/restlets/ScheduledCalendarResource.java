@@ -1,19 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
+import net.fortuna.ical4j.model.Calendar;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -24,8 +34,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
-
-import net.fortuna.ical4j.model.Calendar;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -45,8 +53,6 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
-        setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
 
         ScheduledCalendar scheduledCalendar = getRequestedObjectDuringInit();
         Study study = null;
@@ -104,6 +110,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         return new ICSRepresentation(icsCalendar, studySubjectAssignment.getName());
     }
 
+    @Override
     public void acceptRepresentation(final Representation entity) throws ResourceException {
         if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
 

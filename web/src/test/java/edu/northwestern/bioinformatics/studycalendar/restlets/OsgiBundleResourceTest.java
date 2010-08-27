@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.test.osgi.PscMockBundle;
-import static org.easymock.classextension.EasyMock.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,12 +14,13 @@ import org.springframework.osgi.mock.MockBundleContext;
 
 import java.io.IOException;
 
+import static org.easymock.classextension.EasyMock.*;
+
 /**
  * @author Rhett Sutphin
  */
 public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundleResource> {
     private MockBundleContext bundleContext;
-    private MetaTypeService metaTypeService;
     private PscMockBundle[] bundles;
     private OsgiLayerTools osgiLayerTools;
 
@@ -49,7 +49,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
             }
         };
 
-        metaTypeService = registerMockFor(MetaTypeService.class);
+        MetaTypeService metaTypeService = registerMockFor(MetaTypeService.class);
         expect(metaTypeService.getMetaTypeInformation((Bundle) notNull())).andStubReturn(null);
         osgiLayerTools = registerMockFor(OsgiLayerTools.class);
         expect(osgiLayerTools.getRequiredService(MetaTypeService.class)).andStubReturn(metaTypeService);
@@ -62,7 +62,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
     }
     
     public void testAvailableToSystemAdminsOnly() throws Exception {
-        assertLegacyRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+        assertRolesAllowedForMethod(Method.GET, PscRole.SYSTEM_ADMINISTRATOR);
     }
 
     public void testGetReturnsArrayWithOneEntryPerBundle() throws Exception {

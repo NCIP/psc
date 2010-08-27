@@ -35,10 +35,6 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
-        setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
-
         addAuthorizationsFor(Method.GET,
                 STUDY_CALENDAR_TEMPLATE_BUILDER,
                 BUSINESS_ADMINISTRATOR,

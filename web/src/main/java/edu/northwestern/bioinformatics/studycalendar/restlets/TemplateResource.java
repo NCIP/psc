@@ -45,8 +45,6 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
         Study study = getRequestedObjectDuringInit();
         addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
         addAuthorizationsFor(Method.PUT,

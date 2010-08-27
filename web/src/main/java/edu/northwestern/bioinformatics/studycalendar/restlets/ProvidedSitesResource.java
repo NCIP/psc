@@ -1,19 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.SiteListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.SiteListJsonRepresentation;
 import org.restlet.Context;
-import org.restlet.resource.Variant;
-import org.restlet.resource.Representation;
-import org.restlet.resource.ResourceException;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Method;
-import org.restlet.data.MediaType;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
+
 import java.util.List;
 /**
  * @author Jalpa Patel
@@ -25,13 +25,11 @@ public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
-
         setAllAuthorizedFor(Method.GET);
-
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
+    @Override
     public List<Site> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
         return siteConsumer.search(q);
@@ -46,6 +44,7 @@ public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
         }
     }
 
+    @Override
     public StudyCalendarXmlCollectionSerializer<Site> getXmlSerializer() {
         return xmlSerializer;
     }

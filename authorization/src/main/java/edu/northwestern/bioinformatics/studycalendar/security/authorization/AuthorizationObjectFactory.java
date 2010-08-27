@@ -46,13 +46,6 @@ public class AuthorizationObjectFactory {
         return new PscUser(createCsmUser(csmUserId, username), indexSuiteRoleMemberships(memberships));
     }
 
-    @Deprecated
-    public static PscUser createLegacyPscUser(String username, PscRole... roles) {
-        edu.northwestern.bioinformatics.studycalendar.domain.User user = new edu.northwestern.bioinformatics.studycalendar.domain.User();
-        user.setName(username);
-        return new PscUser(createCsmUser(username), indexSuiteRoleMemberships(createSuiteRoleMemberships(roles)), user);
-    }
-
     public static PscUser createPscUser(User csmUser) {
         return new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
     }

@@ -23,10 +23,6 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        //TODO -- need to delete setAllAuthorizedFor and setAuthorizedFor when deleting the old user roles
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
-        setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
 
         Site site = getRequestedObjectDuringInit();
 

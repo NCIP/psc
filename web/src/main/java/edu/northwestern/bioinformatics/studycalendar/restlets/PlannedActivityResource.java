@@ -57,9 +57,6 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         super.init(context, request, response);
         getVariants().clear();
         getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
         addAuthorizationsFor(Method.GET,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull()));

@@ -43,7 +43,6 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
         addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 

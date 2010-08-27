@@ -33,8 +33,6 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
-        setAuthorizedFor(Method.POST, Role.SYSTEM_ADMINISTRATOR);
 
         addAuthorizationsFor(Method.GET, site,
                 PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,

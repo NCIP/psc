@@ -39,7 +39,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         helper.setRequest(request);
 
         super.init(context, request, response);
-        setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
         addAuthorizationsFor(Method.POST,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));

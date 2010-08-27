@@ -23,8 +23,6 @@ public class SourceResource  extends AbstractStorableDomainObjectResource<Source
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 

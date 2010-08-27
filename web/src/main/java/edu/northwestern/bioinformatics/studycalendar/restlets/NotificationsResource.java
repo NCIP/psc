@@ -29,7 +29,6 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 
         StudySubjectAssignment assignment = getStudySubjectAssignment();
@@ -48,9 +47,9 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
                 STUDY_SUBJECT_CALENDAR_MANAGER,
                 STUDY_TEAM_ADMINISTRATOR,
                 DATA_READER);
-        
     }
 
+    @Override
     public Collection<Notification> getAllObjects() throws ResourceException {
         String assignmentIdentifier = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(getRequest());
         if (assignmentIdentifier == null) {
