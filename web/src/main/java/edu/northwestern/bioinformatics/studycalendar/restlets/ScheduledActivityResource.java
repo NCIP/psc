@@ -2,10 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,16 +28,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Saurabh Agrawal
  */
 public class ScheduledActivityResource extends AbstractDomainObjectResource<ScheduledActivity> {
     private ScheduledActivityDao scheduledActivityDao;
-    private ScheduleService scheduleService;
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
 
     @Override public boolean allowPost() { return true; }
@@ -148,18 +149,8 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
     ////// CONFIGURATION
 
     @Required
-    public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
-        StudySubjectAssignmentDao studySubjectAssignmentDao1 = studySubjectAssignmentDao;
-    }
-
-    @Required
     public void setScheduledActivityDao(final ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
-    }
-
-    @Required
-    public void setScheduleService(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
     }
 
     @Required

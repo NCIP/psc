@@ -25,23 +25,18 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 public class NotificationServiceTest extends StudyCalendarTestCase {
     private NotificationService notificationService;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private Integer numberOfDays;
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
-
-    private UserService userService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
-        numberOfDays = 14;
 
-        userService = registerMockFor(UserService.class);
         mailMessageFactory = registerMockFor(MailMessageFactory.class);
         mailSender = registerMockFor(MailSender.class);
         notificationService = new NotificationService();
-        notificationService.setNumberOfDays(numberOfDays);
+        notificationService.setNumberOfDays(14);
         notificationService.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         notificationService.setMailMessageFactory(mailMessageFactory);
         notificationService.setMailSender(mailSender);
