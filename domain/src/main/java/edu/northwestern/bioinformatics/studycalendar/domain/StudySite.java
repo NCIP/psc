@@ -12,7 +12,6 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,7 +39,6 @@ public class StudySite extends AbstractProvidableDomainObject implements Seriali
     private Site site;
     private Study study;
     private List<StudySubjectAssignment> studySubjectAssignments;
-    private List<UserRole> userRoles;
     private List<AmendmentApproval> amendmentApprovals;
 
     public StudySite() {
@@ -205,15 +203,6 @@ public class StudySite extends AbstractProvidableDomainObject implements Seriali
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySubjectAssignment> getStudySubjectAssignments() {
         return studySubjectAssignments;
-    }
-
-    @ManyToMany(mappedBy = "studySites")
-    public List<UserRole> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
     }
 
     @OneToMany(mappedBy = "studySite")

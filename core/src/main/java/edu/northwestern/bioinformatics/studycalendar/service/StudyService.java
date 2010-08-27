@@ -29,7 +29,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -52,7 +51,6 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -61,7 +59,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -586,23 +583,13 @@ public class StudyService {
         Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNode.allByType(study);
         Class[] order = {
                 ScheduledActivity.class, ScheduledStudySegment.class, ScheduledCalendar.class, StudySubjectAssignment.class,
-                UserRole.class, StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
+                StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
         };
 
         for (Class klass : order) {
             if (nodes.containsKey(klass)) {
-                if (klass.equals(UserRole.class)) {
-                    for (Object o : nodes.get(klass)) {
-                        UserRole role = (UserRole) o;
-                        Collection<StudySite> intersect = CollectionUtils.intersection(study.getStudySites(), role.getStudySites());
-                        for (StudySite s : intersect) {
-                            role.removeStudySite(s);
-                        }
-                    }
-                } else {
-                    DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
-                    dao.deleteAll(nodes.get(klass));
-                }
+                DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
+                dao.deleteAll(nodes.get(klass));
             }
         }
     }
@@ -615,8 +602,6 @@ public class StudyService {
             putInMappedList(all, study.getClass(), study);
             
             for (StudySite studySite : study.getStudySites()) {
-                all.put(UserRole.class, (List) studySite.getUserRoles());
-
                 for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                     putInMappedList(all, assignment.getClass(), studySite);
 

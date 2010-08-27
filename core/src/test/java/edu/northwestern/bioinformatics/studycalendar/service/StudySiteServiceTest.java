@@ -79,27 +79,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         return s;
     }
 
-    public void testGetAllStudySitesForSubjectCoordinator() {
-        List<StudySite> actualStudySites = service.getAllStudySitesForSubjectCoordinator(user);
-        assertEquals("Wrong number of Study Sites", studySites.size(), actualStudySites.size());
-        assertEquals("Wrong Study Site", nu_nu123, actualStudySites.get(0));
-        assertEquals("Wrong Study Site", nu_all999, actualStudySites.get(1));
-        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(2));
-    }
-
-    public void testGetStudySitesForSubjectCoordinatorFromSite() {
-        List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, mayo);
-        assertEquals("Wrong number of Study Sites", 1, actualStudySites.size());
-        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(0));
-    }
-
-    public void testGetStudySitesForSubjectCoordinatorFromStudy() {
-        List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, all999);
-        assertEquals("Wrong number of Study Sites", 2, actualStudySites.size());
-        assertEquals("Wrong Study Site", nu_all999, actualStudySites.get(0));
-        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(1));
-    }
-
     public void testRefreshAssociatedSites() {
         Site uicSkel = createSite(null, "UIC"); // Sites returned from the consumer only with assignedIdentifier
 
