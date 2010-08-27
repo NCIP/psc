@@ -3,6 +3,11 @@ psc.namespace('admin');
 psc.admin.UserAdmin = (function ($) {
   var user;
 
+  var provisionableSiteList = new Array();
+  PROVISIONABLE_SITES.each(function(site) {
+    provisionableSiteList.push(site.identifier)
+  });
+
   function selectRole(roleKey) {
     $('a.role').removeClass('selected');
     $('#role-' + roleKey).addClass('selected');
@@ -31,8 +36,43 @@ psc.admin.UserAdmin = (function ($) {
   function startEditing(roleKey) {
     var role = _.detect(PROVISIONABLE_ROLES, function (role) { return role.key === roleKey });
     if (role) {
+      var enabledGroupControl = true;
+      var enabledSitesControl = true;
+      var provisionableStudyList = new Array();
+      determineProvisionableStudies(role).each(function(study) {
+          provisionableStudyList.push(study.identifier)
+      });
+      var userMembershipsRole = user.memberships[role.key]
+      if (userMembershipsRole != null) {
+
+        if (userMembershipsRole['sites'] != null) {
+          var membershipSiteList = userMembershipsRole['sites'].toString().split(",");
+          var isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
+        }
+
+        if (userMembershipsRole['studies'] != null) {
+          var membershipStudyList;
+          membershipStudyList = userMembershipsRole['studies'].toString().split(",");
+          var isStudySubset = isSubsetOfProvision(provisionableStudyList, membershipStudyList);
+          if (!isSiteSubset || !isStudySubset) {
+            enabledGroupControl = false;
+          }
+        } else {
+          if (!isSiteSubset) {
+            enabledGroupControl = false;
+          }
+        }
+
+        if (!_.isEmpty(provisionableSiteList) && !_.isEmpty(membershipSiteList)) {
+          if (!_.include(provisionableSiteList,'__ALL__') && _.include(membershipSiteList,'__ALL__')) {
+            enabledSitesControl = false;
+          }
+        }
+      }
+
       $('#role-editor-pane').html(resigTemplate('role_editor_template', {
-          role: role, sites: PROVISIONABLE_SITES, studies: determineProvisionableStudies(role)
+          role: role, sites: PROVISIONABLE_SITES, studies: determineProvisionableStudies(role),
+          enabledGroupControl: enabledGroupControl, enabledSitesControl: enabledSitesControl
         })).
         find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
         click(updateGroupMembership).end().
@@ -41,6 +81,14 @@ psc.admin.UserAdmin = (function ($) {
       registerScopeControls('#role-editor-pane', role, 'study', 'studies');
     } else {
       alert("No such role " + roleKey);
+    }
+  }
+
+  function isSubsetOfProvision(provisionableList, membershipList) {
+    if(!_.isEmpty(provisionableList) && !_.isEmpty(membershipList)) {
+      return _.all(membershipList, function(ele){
+        return _.include(provisionableList,ele)
+      })
     }
   }
 

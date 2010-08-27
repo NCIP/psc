@@ -42,16 +42,26 @@
                 <p>[#= role.scope_description #]</p>
                 [# } #]
                 <div class="row">
-                    <div class="label"><input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/></div>
-                    <div class="value">
-                        <label for="group-[#= role.key #]">
+                    [# if (enabledGroupControl) { #]
+                        <div class="label">
+                            <input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/>
+                        </div>
+                        <div class="value"><label for="group-[#= role.key #]">
                             Grant this user the [#= role.name #] role.
                             [# if (role.scopes) { #]
                             Since this role is scoped, you will also need to specify one or more
                             scopes below.
-                            [# } #]
-                        </label>
-                    </div>
+                            [# } #]</label>
+                        </div>
+                    [# } else { #]
+                        <div class="value"><label for="group-[#= role.key #]">
+                            This user has the [#= role.name #] role.
+                            [# if (role.scopes) { #]
+                            Since this role is scoped, you will also need to specify one or more
+                            scopes below.
+                            [# } #]</label>
+                        </div>
+                    [# } #]
                 </div>
             </div>
         </div>
@@ -59,17 +69,27 @@
         <div>
             <h3>Sites</h3>
             <div id="sites" class="content">
-                [# _(sites).each(function (site) { #]
-                <div class="row">
-                    <div class="label">
-                        <input id="scope-site-[#= site.identifier #]"
-                               site-identifier="[#= site.identifier #]"
-                               class="scope-site [#= site.identifier == '__ALL__' ? 'all' : 'one' #]"
-                               type="checkbox"/>
+                [# if (enabledSitesControl) { #]
+                    [# _(sites).each(function (site) { #]
+                        <div class="row">
+                            <div class="label">
+                                <input id="scope-site-[#= site.identifier #]"
+                                    site-identifier="[#= site.identifier #]"
+                                    class="scope-site [#= site.identifier == '__ALL__' ? 'all' : 'one' #]"
+                                    type="checkbox"/>
+                            </div>
+                            <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
+                        </div>
+                    [# }); #]
+                [# } else {#]
+                    <div class="row">
+                        <div class="value">
+                            <abbr title="This user has access to all sites in this role">
+                                All
+                            </abbr>
+                        </div>
                     </div>
-                    <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
-                </div>
-                [# }); #]
+                [# } #]
             </div>
         </div>
         [# } #]
