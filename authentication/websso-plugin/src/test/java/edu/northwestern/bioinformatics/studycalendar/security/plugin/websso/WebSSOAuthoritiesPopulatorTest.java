@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import org.acegisecurity.AuthenticationException;
@@ -40,7 +41,8 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         populator = new TestPopulator();
         populator.setPscUserDetailsService(userDetailsService);
         
-        userDetailsService.addUser(USERNAME, Role.STUDY_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
+        userDetailsService.addUser(USERNAME, 
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, PscRole.SYSTEM_ADMINISTRATOR);
     }
 
     public void testThrowsAuthenticationExceptionForNoGridIdentity() throws Exception {

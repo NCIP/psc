@@ -5,7 +5,7 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 
 /**
  * @author Rhett Sutphin
@@ -24,12 +24,12 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     }
 
     public void testSetUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(createUser("jim") , "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createPscUser("jim") , "pass");
         assertNotNull("Session attribute not set", applicationSecurityManager.getUserName());
     }
 
     public void testGetUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(createUser("james"), "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createPscUser("james"), "pass");
         assertEquals("james", applicationSecurityManager.getUserName());
     }
 
@@ -44,7 +44,7 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     }
 
     public void testRemoveUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(createUser("leaving"), "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createPscUser("leaving"), "pass");
         applicationSecurityManager.removeUserSession();
         assertNull("Session attribute not cleared", SecurityContextHolder.getContext().getAuthentication());
     }

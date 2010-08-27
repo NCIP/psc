@@ -40,8 +40,6 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         notificationService.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         notificationService.setMailMessageFactory(mailMessageFactory);
         notificationService.setMailSender(mailSender);
-
-        SecurityContextHolderTestHelper.setSecurityContext(createUser("user"), "password");
     }
 
     public void testAddNotificationIfNothingIsScheduledForPatient() {

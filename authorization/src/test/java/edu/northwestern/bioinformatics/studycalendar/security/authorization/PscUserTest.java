@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -22,7 +20,6 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 public class PscUserTest extends TestCase {
     private PscUser a, b;
     private User csmUser;
-    private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
     @Override
     protected void setUp() throws Exception {
@@ -32,9 +29,6 @@ public class PscUserTest extends TestCase {
         csmUser.setLoginName("jo");
         csmUser.setUpdateDate(new Date());
 
-        legacyUser = new edu.northwestern.bioinformatics.studycalendar.domain.User();
-        legacyUser.setName(csmUser.getLoginName());
-
         a = AuthorizationObjectFactory.createPscUser("a");
         a.getCsmUser().setFirstName("Aeneas");
         a.getCsmUser().setLastName("Miller");
@@ -43,26 +37,7 @@ public class PscUserTest extends TestCase {
         a.getCsmUser().setLastName("Vinter");
     }
 
-    public void testAuthoritiesAreInternalRolesInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        GrantedAuthority[] actual = createLegacy().getAuthorities();
-        assertEquals("Wrong number of authorities", 2, actual.length);
-        assertEquals("Wrong 1st entry", Role.STUDY_ADMIN, actual[0]);
-        assertEquals("Wrong 2nd entry", Role.STUDY_COORDINATOR, actual[1]);
-    }
-
-    public void testHasRoleWhenHasInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        assertTrue(createLegacy().hasRole(Role.STUDY_COORDINATOR));
-    }
-
-    public void testHasRoleWhenDoesNotHaveInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        assertFalse(createLegacy().hasRole(Role.SYSTEM_ADMINISTRATOR));
-    }
-
     public void testAuthoritiesArePscRoles() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = create(
             createMembership(SuiteRole.STUDY_QA_MANAGER),
             createMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)
@@ -75,17 +50,14 @@ public class PscUserTest extends TestCase {
     }
 
     public void testHasRoleWhenHas() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         assertTrue(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.DATA_READER));
     }
 
     public void testHasRoleWhenDoesNotHave() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         assertFalse(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.SYSTEM_ADMINISTRATOR));
     }
 
     public void testAuthoritiesDoNotIncludeSuiteRolesWhichAreNotUsedInPsc() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = create(
             createMembership(SuiteRole.DATA_ANALYST)
         ).getAuthorities();
@@ -256,11 +228,7 @@ public class PscUserTest extends TestCase {
     ////// HELPERS
 
     private PscUser create(SuiteRoleMembership... memberships) {
-        return new PscUser(csmUser, createMembershipMap(memberships), null);
-    }
-
-    private PscUser createLegacy(SuiteRoleMembership... memberships) {
-        return new PscUser(csmUser, createMembershipMap(memberships), legacyUser);
+        return new PscUser(csmUser, createMembershipMap(memberships));
     }
 
     private SuiteRoleMembership createMembership(SuiteRole suiteRole) {

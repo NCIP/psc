@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import org.acegisecurity.Authentication;
 
@@ -18,7 +18,7 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
 
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {
-        userDetailsService.addUser("jojo", Role.STUDY_ADMIN);
+        userDetailsService.addUser("jojo", PscRole.STUDY_QA_MANAGER);
         replayMocks();
         Authentication result = doTokenAuthenticate("jojo");
         assertTrue(result.isAuthenticated());
@@ -26,17 +26,17 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
 
     public void testTokenAuthProviderGrantsAuthoritiesBasedOnRoles() throws Exception {
-        userDetailsService.addUser("jojo", Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR);
+        userDetailsService.addUser("jojo", PscRole.STUDY_QA_MANAGER, PscRole.SYSTEM_ADMINISTRATOR);
         replayMocks();
         Authentication result = doTokenAuthenticate("jojo");
         assertEquals("Wrong number of authorities", 2, result.getAuthorities().length);
-        assertEquals("Wrong first authority", Role.STUDY_ADMIN, result.getAuthorities()[0]);
-        assertEquals("Wrong first authority", Role.SYSTEM_ADMINISTRATOR, result.getAuthorities()[1]);
+        assertEquals("Wrong 1st authority", PscRole.STUDY_QA_MANAGER, result.getAuthorities()[0]);
+        assertEquals("Wrong 2nd authority", PscRole.SYSTEM_ADMINISTRATOR, result.getAuthorities()[1]);
         verifyMocks();
     }
     
     public void testUserPassProviderAuthenticatesAnyUsername() {
-        userDetailsService.addUser("jojo", Role.STUDY_ADMIN);
+        userDetailsService.addUser("jojo", PscRole.STUDY_QA_MANAGER);
         replayMocks();
         Authentication result = doUsernamePasswordAuthenticate("jojo");
         assertTrue(result.isAuthenticated());

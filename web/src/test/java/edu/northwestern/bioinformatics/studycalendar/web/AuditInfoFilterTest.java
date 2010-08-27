@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
-import static org.easymock.EasyMock.expect;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.ServletException;
-import java.util.Date;
 import java.io.IOException;
+import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -30,7 +31,7 @@ public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
         initFilter(filter);
         request.setRemoteAddr(REMOTE_ADDR);
         request.setRequestURI(URL);
-        SecurityContextHolderTestHelper.setSecurityContext(createUser(USERNAME), PASSWORD);
+        SecurityContextHolderTestHelper.setSecurityContext(createPscUser(USERNAME), PASSWORD);
         expect(mockApplicationContext.getBean("applicationSecurityManager")).
             andStubReturn(applicationSecurityManager);
     }
