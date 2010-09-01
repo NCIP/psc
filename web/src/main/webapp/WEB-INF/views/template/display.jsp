@@ -516,6 +516,7 @@
 			}
             function registerSelectStudySegmentHandler(a) {
                 var aElement = $(a)
+                var amendmentId = ${amendmentId}
                 Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
                     $("epochs-indicator").reveal();
@@ -526,7 +527,7 @@
 
                         var studySegmentId = aElement.id.substring('studySegment'.length+1)
                         selectedStudySegmentId = studySegmentId
-                        var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId + '&amendment=' + ${amendmentId};
+                        var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId + '&amendment=' + amendmentId;
 
                         <c:if test="${not empty developmentRevision}">
                              href = href + '&development=true';
