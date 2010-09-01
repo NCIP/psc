@@ -826,7 +826,7 @@
             </div>
 
             <div class="row even">
-                <div class="label">Amendment 123</div>
+                <div class="label">Amendment</div>
                 <div class="value">
                     <a href="<c:url value="/pages/cal/template/amendments?study=${study.id}#amendment=${amendment.id}"/>">${amendment.displayName}</a>
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
