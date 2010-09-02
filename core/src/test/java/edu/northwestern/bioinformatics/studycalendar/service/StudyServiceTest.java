@@ -387,6 +387,52 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testApplyDefaultStudyAccessWhenCreatorHasAllSites() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership SC = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forAllSites();
+        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+        createAndExpectSession(principal);
+        expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CREATOR)).andReturn(SC);
+        studyDao.save(expected);
+        pSession.replaceRole(SCTB);
+
+        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertFalse("Membership made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+        assertEquals("Membership not made for specified study", 1, SCTB.getStudyIdentifiers().size());
+        assertTrue("Membership not made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
+    public void testApplyDefaultStudyAccessWhenBuilderHasAllSites() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites();
+        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        createAndExpectSession(principal);
+        expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)).andReturn(SCTB);
+        studyDao.save(expected);
+        pSession.replaceRole(SCTB);
+
+        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertFalse("Membership made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
+        assertEquals("Membership not made for specified study", 1, SCTB.getStudyIdentifiers().size());
+        assertTrue("Membership not made for specified study",
+            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
     //Helper Methods
     private SuiteRoleMembership expectCreateAndGetMembership(SuiteRole expectedRole, Boolean isNull, Site site){
         SuiteRoleMembership srm =

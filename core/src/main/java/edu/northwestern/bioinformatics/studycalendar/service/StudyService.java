@@ -180,13 +180,18 @@ public class StudyService {
         SuiteRoleMembership mem2 =
             session.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
         if (mem1 != null && mem2 != null && !mem2.isAllStudies()) {
-            List<?> mem1Sites = mem1.getSites();
-            for (Object site : mem2.getSites()) {
-                if (mem1Sites.contains(site)) {
-                    mem2.addStudy(study);
-                    session.replaceRole(mem2);
-                    break;
+            if (!mem1.isAllSites() && !mem2.isAllSites()) {
+                List<?> mem1Sites = mem1.getSites();
+                for (Object site : mem2.getSites()) {
+                    if (mem1Sites.contains(site)) {
+                        mem2.addStudy(study);
+                        session.replaceRole(mem2);
+                        break;
+                    }
                 }
+            } else {
+                mem2.addStudy(study);
+                session.replaceRole(mem2);
             }
         }
         user.setStale(true);
