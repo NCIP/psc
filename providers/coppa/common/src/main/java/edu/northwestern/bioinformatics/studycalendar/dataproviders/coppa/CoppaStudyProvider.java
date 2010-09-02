@@ -23,6 +23,8 @@ public class CoppaStudyProvider implements StudyProvider {
     public CoppaStudyProvider(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
+    // #1172 : Added for COPPA 3.2
+    public static String STUDY_PROTOCOL_ROOT = "2.16.840.1.113883.3.26.4.3";
 
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> studies = new ArrayList<Study>(parameters.size());
@@ -67,6 +69,8 @@ public class CoppaStudyProvider implements StudyProvider {
         base = new StudyProtocol();
         II assignedIdTemplate = new II();
         assignedIdTemplate.setExtension(partialName);
+        // #1172 : added for COPPA 3.2
+        assignedIdTemplate.setRoot(STUDY_PROTOCOL_ROOT);
         base.setAssignedIdentifier(assignedIdTemplate);
 
         StudyProtocol[] raw_by_assigned_id = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, smallLimit());
