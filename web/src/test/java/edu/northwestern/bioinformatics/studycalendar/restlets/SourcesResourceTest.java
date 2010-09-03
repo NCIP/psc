@@ -7,14 +7,19 @@ import edu.northwestern.bioinformatics.studycalendar.restlets.representations.So
 import java.util.List;
 import java.util.Arrays;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
+
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.data.MediaType;
 
 /**
  * @author Jalpa Patel
  */
-public class SourcesResourceTest  extends ResourceTestCase<SourcesResource> {
+public class SourcesResourceTest  extends AuthorizedResourceTestCase<SourcesResource> {
     private SourceDao sourceDao;
 
     @Override
@@ -24,7 +29,7 @@ public class SourcesResourceTest  extends ResourceTestCase<SourcesResource> {
     }
 
     @Override
-    protected SourcesResource createResource() {
+    protected SourcesResource createAuthorizedResource() {
         SourcesResource resource = new SourcesResource();
         resource.setSourceDao(sourceDao);
         resource.setXmlSerializer(xmlSerializer);
@@ -35,6 +40,12 @@ public class SourcesResourceTest  extends ResourceTestCase<SourcesResource> {
         assertAllowedMethods("GET");
     }
 
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            BUSINESS_ADMINISTRATOR,
+            DATA_READER);
+    }
 
     public void testGetXmlForAllSources() throws Exception {
         Source source = createSource("TestSource");
