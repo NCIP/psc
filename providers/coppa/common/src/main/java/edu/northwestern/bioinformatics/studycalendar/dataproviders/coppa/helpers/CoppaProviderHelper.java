@@ -17,6 +17,9 @@ import java.util.List;
 
 public class CoppaProviderHelper {
     public static final String ACCESSOR_SERVICE = CoppaAccessor.class.getName();
+    
+    // #1172 : Added for COPPA 3.2
+    public static final String STUDY_PROTOCOL_ROOT = "2.16.840.1.113883.3.26.4.3";
 
     public static CoppaAccessor getCoppaAccessor(BundleContext bundleContext) {
         ServiceReference sr = bundleContext.getServiceReference(ACCESSOR_SERVICE);
