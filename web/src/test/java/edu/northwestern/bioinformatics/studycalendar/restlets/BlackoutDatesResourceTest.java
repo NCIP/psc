@@ -78,6 +78,7 @@ public class BlackoutDatesResourceTest extends AuthorizedResourceTestCase<Blacko
 
     public void testPostBlackoutDateToSite() throws Exception {
         expectReadXmlFromRequestAs(monthDayHoliday);
+        expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(site);
         expect(siteService.resolveSiteForBlackoutDate(monthDayHoliday)).andReturn(monthDayHoliday);
         blackoutDateDao.save(monthDayHoliday);
 
