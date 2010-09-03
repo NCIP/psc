@@ -125,6 +125,7 @@ public class UserRoleResourceTest extends AuthorizedResourceTestCase<UserRoleRes
 
     public void testGetUserRoleForSystemAdminWhenUserIsNotUserAdmin() throws Exception {
         setCurrentUser(createPscUser("systemAdmin",PscRole.SYSTEM_ADMINISTRATOR));
+        mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR);
         user.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
         request.getAttributes().put(UriTemplateParameters.ROLENAME.attributeName(), PscRole.STUDY_CREATOR.getDisplayName());
         expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
