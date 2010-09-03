@@ -267,13 +267,13 @@
           id="userRolesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRolesResource"
             >
-        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+        <property name="xmlSerializer" ref="userRoleMembershipsXmlSerializer"/>
     </bean>
     <bean name="/users/{username}/roles/{rolename}"
           id="userRoleResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRoleResource"
             >
-        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+        <property name="xmlSerializer" ref="userRoleMembershipsXmlSerializer"/>
     </bean>
     <bean name="/users/{username}/roles/subject-coordinator/schedules"
           id="subjectCoordinatorSchedulesResource" scope="prototype"

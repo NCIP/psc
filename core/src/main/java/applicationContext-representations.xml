@@ -51,8 +51,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer"/>
     <bean id="previousScheduledActivityStateXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PreviousScheduledActivityStateXmlSerializer"/>
-    <bean id="userRolesXmlSerializer" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.UserRolesSerializer"/>
+    <bean id="userRoleMembershipsXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.UserRoleMembershipsXmlSerializer"/>
     <bean id="blackoutDateXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.BlackoutDateXmlSerializer"/>
     <!-- PlanTreeNode Serializers -->

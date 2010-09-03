@@ -1,64 +1,63 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import org.restlet.data.*;
 import org.restlet.Context;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.restlet.resource.ResourceException;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
+import org.springframework.beans.factory.annotation.Required;
 
 
 /**
  * @author Jalpa Patel
  */
-public class UserRoleResource extends AbstractDomainObjectResource<UserRole> {
-    private UserService userService;
-    private User user;
-    private String username;
-    private String rolename;
+public class UserRoleResource extends AbstractPscResource {
+    private PscUserService pscUserService;
+    private StudyCalendarXmlSerializer<SuiteRoleMembership> xmlSerializer;
+
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
+        getVariants().add(new Variant(MediaType.TEXT_XML));
     }
 
-    @Override
-    protected UserRole loadRequestedObject(Request request) throws ResourceException {
-        username = UriTemplateParameters.USERNAME.extractFrom(request);
-        rolename = UriTemplateParameters.ROLENAME.extractFrom(request);
-        Authentication authenticate = PscGuard.getCurrentAuthenticationToken(request);
-        if (username == null) {
-             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No username in request");
+    protected SuiteRoleMembership getRequestedObject() throws ResourceException {
+        String userName = UriTemplateParameters.USERNAME.extractFrom(getRequest());
+        String roleName = UriTemplateParameters.ROLENAME.extractFrom(getRequest());
+        if (userName == null) {
+             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No user name in request");
         }
-        user = userService.getUserByName(username);
+
+        if (roleName == null) {
+             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No role name in request");
+        }
+        PscUser user = pscUserService.loadUserByUsername(userName);
         if (user == null) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown user " + username);
-        } else if (authenticate !=null){
-            if (authenticate.getName().equals(username)) {
-                return findUserRole(user);
-            } else {
-                for (GrantedAuthority authority : authenticate.getAuthorities()) {
-                    if (authority.equals(Role.SYSTEM_ADMINISTRATOR)) {
-                        return findUserRole(user);
-                    }
-                }
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown user " + userName);
+        } else {
+            SuiteRoleMembership suiteRoleMembership = findUserRoleMembership(user, roleName);
+            if (getCurrentUser().getName().equals(userName)) {
+                return suiteRoleMembership;
+            } else if (getCurrentUser().getMembership(PscRole.USER_ADMINISTRATOR) != null) {
+                return suiteRoleMembership;
+            } else if (getCurrentUser().getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null && user.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
+                return suiteRoleMembership;
             }
         }
-        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, authenticate.getName() + " is not allowed");
+        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, getCurrentUser().getName() + " has insufficient privilege");
     }
 
-    public UserRole findUserRole(User user) throws ResourceException {
-        for (UserRole userRole: user.getUserRoles() ) {
-            if (userRole.getRole().getDisplayName().equals(rolename)) {
-                return userRole;
+    public SuiteRoleMembership findUserRoleMembership(PscUser user, String roleName) throws ResourceException {
+        for (SuiteRoleMembership suiteRoleMembership : user.getMemberships().values() ) {
+            if (suiteRoleMembership.getRole().getDisplayName().equals(roleName)) {
+                return suiteRoleMembership;
             }
         }
         return null;
@@ -66,14 +65,34 @@ public class UserRoleResource extends AbstractDomainObjectResource<UserRole> {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-      if (getRequestedObject() != null ) {
-        return super.represent(variant);
-      } else {
-          return null;
-      }
+        if (variant.getMediaType().equals(MediaType.TEXT_XML)) {
+            SuiteRoleMembership userRole = getRequestedObject();
+            if (userRole != null) {
+                return createXmlRepresentation(userRole);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    private Representation createXmlRepresentation(SuiteRoleMembership suiteRoleMembership) {
+        return new StringRepresentation(
+                getXmlSerializer().createDocumentString(suiteRoleMembership), MediaType.TEXT_XML);
+    }
+
+    public StudyCalendarXmlSerializer<SuiteRoleMembership> getXmlSerializer() {
+        return xmlSerializer;
+    }
+
+    @Required
+    public void setXmlSerializer(StudyCalendarXmlSerializer<SuiteRoleMembership> xmlSerializer) {
+        this.xmlSerializer = xmlSerializer;
+    }
+
+    @Required
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 }
