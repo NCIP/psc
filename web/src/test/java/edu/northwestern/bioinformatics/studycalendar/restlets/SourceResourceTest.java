@@ -4,7 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
+
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.json.JSONObject;
@@ -12,7 +17,7 @@ import org.json.JSONObject;
 /**
  * @author Jalpa Patel
  */
-public class SourceResourceTest  extends ResourceTestCase<SourceResource> {
+public class SourceResourceTest  extends AuthorizedResourceTestCase<SourceResource> {
     public static final String SOURCE_NAME = "Test_Source";
     private SourceService sourceService;
     private Source source;
@@ -26,15 +31,27 @@ public class SourceResourceTest  extends ResourceTestCase<SourceResource> {
     }
 
     @Override
-    protected SourceResource createResource() {
+    protected SourceResource createAuthorizedResource() {
         SourceResource resource = new SourceResource();
         resource.setSourceService(sourceService);
         resource.setXmlSerializer(xmlSerializer);
         return resource;
     }
 
-    public void testAllowed() throws Exception {
+    public void testGetAndPutAllowed() throws Exception {
         assertAllowedMethods("GET", "PUT");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            BUSINESS_ADMINISTRATOR,
+            DATA_READER);
+    }
+
+    public void testPutWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.PUT,
+            BUSINESS_ADMINISTRATOR);
     }
 
     public void testGetNotificationsXml() throws Exception {
