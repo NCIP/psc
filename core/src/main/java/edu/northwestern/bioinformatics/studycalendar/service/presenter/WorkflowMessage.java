@@ -115,4 +115,32 @@ public class WorkflowMessage {
             append("; mayPerform=").append(getMayPerform()).
             append("]").toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WorkflowMessage)) return false;
+
+        WorkflowMessage that = (WorkflowMessage) o;
+
+        if (step != null ? !step.equals(that.step) : that.step != null) return false;
+        if (applicationMountPoint != null ? !applicationMountPoint.equals(that.applicationMountPoint) : that.applicationMountPoint != null) return false;
+        if (mayPerform != that.mayPerform) return false;
+
+        if (uriTemplateValues != null ? !uriTemplateValues.equals(that.uriTemplateValues) : that.uriTemplateValues != null) return false;
+        if (messageTemplateValues != null ? !messageTemplateValues .equals(that.messageTemplateValues ) : that.messageTemplateValues != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = step != null ? step.hashCode() : 0;
+        result = 31 * result + (applicationMountPoint != null ? applicationMountPoint.hashCode() : 0);
+        result = 31 * result + (mayPerform ? 1 : 0);
+
+        result = 31 * result + (uriTemplateValues  != null ? uriTemplateValues .hashCode() : 0);
+        result = 31 * result + (messageTemplateValues  != null ? messageTemplateValues .hashCode() : 0);
+        return result;
+    }
 }

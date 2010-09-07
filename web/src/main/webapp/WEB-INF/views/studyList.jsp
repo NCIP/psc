@@ -290,8 +290,10 @@
                         </div>
                         <div class="value">
                             <c:choose>
-                                <c:when test="${not empty template.message}">
-                                    ${template.message.html}
+                                <c:when test="${not empty template.messages}">
+                                    <c:forEach items="${template.messages}" var="msg">
+                                        ${msg.html}<br/>
+                                    </c:forEach>
                                 </c:when>
                                 <c:when test="${not empty template.studySiteWorkflowStatuses}">
                                     <c:forEach items="${template.studySiteWorkflowStatuses}" var="ss">

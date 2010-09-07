@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import gov.nih.nci.security.AuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -36,6 +36,8 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     private PeriodDao periodDao;
 
     private String commandBeanName;
+    private WorkflowService workflowService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public EditController() {
         setCommandClass(EditCommand.class);
@@ -68,7 +70,11 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
         if ("POST".equals(request.getMethod())) {
             boolean result = command.apply();
             Map<String, Object> model = command.getModel();
+            Study study = (Study) model.get("study");
             model.putAll(errors.getModel());
+            PscUser user = applicationSecurityManager.getUser() ;
+            StudyWorkflowStatus workflow = workflowService.build(study, user);
+            model.put("studyWorkflowMessages", workflow.getMessages());
             model.put("error", result);
             return new ModelAndView(createViewName(command), model);
         } else {
@@ -117,5 +123,15 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     @Required
     public void setPopulationDao(PopulationDao populationDao) {
         this.populationDao = populationDao;
+    }
+
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

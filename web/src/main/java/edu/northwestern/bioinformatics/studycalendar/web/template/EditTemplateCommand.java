@@ -74,6 +74,7 @@ public abstract class EditTemplateCommand implements EditCommand {
     public Map<String, Object> getModel() {
         Map<String, Object> model = new HashMap<String, Object>();
         Map<String, Object> modeModel = getMode().getModel();
+        model.put("study", getStudy());
         model.put("developmentRevision", getStudy().getDevelopmentAmendment());
         model.put("revisionChanges",
             new RevisionChanges(daoFinder, getStudy().getDevelopmentAmendment(), getStudy()));

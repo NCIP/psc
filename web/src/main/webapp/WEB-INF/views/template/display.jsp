@@ -225,10 +225,6 @@
                 padding-left: 8px;
             }
 
-            h1#enterStudyNameSentence {
-                padding-top: 8px;
-            }
-
             div.row div.label {
                 text-align:right;
                 display:inline;
@@ -272,9 +268,14 @@
                 font-weight:normal;
             }
 
-            .error .epochAndSegmentErrors {
+            .error {
                 margin-right:10px;
                 margin-left:0.5em;
+            }
+
+            .error h5 {
+                margin: 0.8em 0;
+                font-size: 1em;
             }
         </style>
 
@@ -765,19 +766,13 @@
                 generalSetup();
                 <c:choose>
                     <c:when test="${canAssignIdentifiers && canEdit}">
-                        addToBeginSentence();
-                        hideShowAllControls();
                         createStudyControls(anyProvidersAvailable, true);
                     </c:when>
                     <c:when test="${canAssignIdentifiers && !canEdit}">
-                        addToBeginSentence();
-                        hideShowEnterStudyName();
                         createStudyControls(anyProvidersAvailable, false);
-                    </c:when>                
-                    <c:when test="${!canAssignIdentifiers && canEdit}">
-                        hideShowReleaseTemplateButton();
                     </c:when>
                 </c:choose>
+                hideShowReleaseTemplateButton();
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
@@ -884,9 +879,6 @@
         </div>
         <div id="study-manipulations" class="controls-card card">
             <div class="header">Study controls</div>
-            <div id="enterStudyName" style="display:none;">
-                <h1 id="enterStudyNameSentence"></h1>
-            </div>
 
             <div id="errorMessages" class="error" style="display:none;">
                 <tags:replaceErrorMessagesForTemplate/>

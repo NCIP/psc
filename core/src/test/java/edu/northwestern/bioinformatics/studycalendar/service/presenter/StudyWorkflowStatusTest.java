@@ -63,7 +63,7 @@ public class StudyWorkflowStatusTest extends TestCase {
 
     public void testDoesNotIncludeIdentifierMessageWhenDoesNotHaveTemporaryIdentifier() throws Exception {
         study.setAssignedIdentifier("ABC 1450");
-        assertNoMessage();
+        assertNoMessages();
     }
 
     public void testIncludesAssignSitesMessageWhenNoSites() throws Exception {
@@ -84,15 +84,15 @@ public class StudyWorkflowStatusTest extends TestCase {
 
     public void testDoesNotIncludeReleaseMessageWhenReleasedAtLeastOnce() throws Exception {
         study.setDevelopmentAmendment(new Amendment());
-        assertNoMessage();
+        assertNull(actual().getStudyWorkflowStatusMessageOnly());
     }
 
-    private void assertNoMessage() {
-        assertNull(actual().getMessage());
+    private void assertNoMessages() {
+        assertTrue(actual().getMessages().isEmpty());
     }
 
     private void assertMessage(WorkflowStep expectedStep) {
-        WorkflowMessage actual = actual().getMessage();
+        WorkflowMessage actual = actual().getMessages().iterator().next();
         assertNotNull("No message", actual);
         assertEquals("Message is for wrong step", expectedStep, actual.getStep());
         assertNotNull("Message HTML is not generatable", actual.getHtml());
@@ -163,6 +163,13 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertAvailabilityPresent(TemplateAvailability.PENDING);
     }
 
+    public void testTemplateAvailabilityIsAvailableAndInDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        assertAvailabilityPresent(TemplateAvailability.AVAILABLE);
+        assertAvailabilityPresent(TemplateAvailability.IN_DEVELOPMENT);
+        assertAvailabilityNotPresent(TemplateAvailability.PENDING);
+    }
+    
     private void assertAvailabilityPresent(TemplateAvailability availability) {
         Collection<TemplateAvailability> actual = actual().getTemplateAvailabilities();
         assertTrue("Missing expected availability " + availability + "; present: " + actual,

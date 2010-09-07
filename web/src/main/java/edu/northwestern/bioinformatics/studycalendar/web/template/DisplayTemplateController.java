@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -16,8 +15,11 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -50,6 +52,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
     private NowFactory nowFactory;
     private StudyConsumer studyConsumer;
     private OsgiLayerTools osgiLayerTools;
+    private WorkflowService workflowService;
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         return ResourceAuthorization.createCollection(
@@ -86,6 +89,9 @@ public class DisplayTemplateController extends PscAbstractController implements 
 
         UserTemplateRelationship utr = new UserTemplateRelationship(user, study);
         model.put("relationship", utr);
+
+        StudyWorkflowStatus workflow = workflowService.build(loaded, user);
+        model.put("studyWorkflowMessages", workflow.getMessages());
 
         if ((isDevelopmentRequest(model) && utr.getCanSeeDevelopmentVersion()) ||
             (!isDevelopmentRequest(model) && utr.getCanSeeReleasedVersions())) {
@@ -242,6 +248,10 @@ public class DisplayTemplateController extends PscAbstractController implements 
     @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
+    }
+
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
     }
 
     private static class Crumb extends DefaultCrumb {

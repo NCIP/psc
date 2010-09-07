@@ -4,12 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * @author Rhett Sutphin
@@ -39,7 +37,18 @@ public class StudyWorkflowStatus {
         }
     }
 
-    public WorkflowMessage getMessage() {
+    public Collection<WorkflowMessage> getMessages() {
+        WorkflowMessage studyMsg = getStudyWorkflowStatusMessageOnly();
+        if (studyMsg != null && studyMsg.getStep() == WorkflowStep.SET_ASSIGNED_IDENTIFIER) {
+            return asList(studyMsg);
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
+            return revisionWorkflowStatus.getMessages();
+        }
+        return studyMsg == null ? Collections.<WorkflowMessage>emptyList() : asList(studyMsg);
+    }
+
+    @SuppressWarnings("unchecked")
+    public WorkflowMessage getStudyWorkflowStatusMessageOnly() {
         if (study.getHasTemporaryAssignedIdentifier()) {
             return workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr);
         } else if (!study.isReleased()) {
@@ -56,7 +65,7 @@ public class StudyWorkflowStatus {
             availabilities.add(TemplateAvailability.IN_DEVELOPMENT);
         }
         if (study.isReleased()) {
-            if (getMessage() != null) {
+            if (getStudyWorkflowStatusMessageOnly() != null) {
                 availabilities.add(TemplateAvailability.PENDING);
             }
             for (StudySiteWorkflowStatus status : getStudySiteWorkflowStatuses()) {
