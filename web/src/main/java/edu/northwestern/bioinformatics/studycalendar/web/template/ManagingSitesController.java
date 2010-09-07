@@ -45,15 +45,13 @@ public class ManagingSitesController extends PscSimpleFormController implements 
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        String[] studyArray = queryParameters.get("id");
+        Study study;
         try {
-            String studyString = studyArray[0];
-            Integer studyId = Integer.parseInt(studyString);
-            Study study = studyDao.getById(studyId);
-            return ResourceAuthorization.createTemplateManagementAuthorizations(study, STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER);
-        } catch (Exception e) {
-            return ResourceAuthorization.createCollection(STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER);
+            study = studyDao.getById(Integer.parseInt(queryParameters.get("id")[0]));
+        } catch (RuntimeException e) {
+            study = null;
         }
+        return ResourceAuthorization.createTemplateManagementAuthorizations(study, STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @SuppressWarnings({ "unchecked" })
