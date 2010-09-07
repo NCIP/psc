@@ -801,7 +801,7 @@
             <div class="header">Study info</div>
             <div id="errors" class="error"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
-
+            <c:if test="${relationship.canChangeManagingSites}">
             <c:set var="sites" value="${study.managingSites}"/>
             <c:set var="listOfSiteName" value=""/>
             <c:if test="${empty sites}">
@@ -829,7 +829,7 @@
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}"/>">change</a></span>
                 </div>
             </div>
-
+            </c:if>
             <div class="row even">
                 <div class="label">Amendment</div>
                 <div class="value">
