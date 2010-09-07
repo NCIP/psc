@@ -5,8 +5,15 @@
 <%--<%@attribute name="studySegmentList" required="true" type="edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentView"%>--%>
 <%--<%@attribute name="style" required="false"%>--%>
 
-<c:if test="${fn:length(studyWorkflowMessages) > 0}">
+<c:if test="${not empty studyWorkflowMessages}">
     <c:forEach items="${studyWorkflowMessages}" var="msg">
-        <h5>${msg.html}</h5>
+        <c:choose>
+            <c:when test="${fn:containsIgnoreCase(msg.html, 'assigned identifier')}">
+                <h5>Template ${msg.html}</h5>
+            </c:when>
+            <c:otherwise>
+                <h5>${msg.html}</h5>
+            </c:otherwise>
+        </c:choose>
     </c:forEach>
 </c:if>
