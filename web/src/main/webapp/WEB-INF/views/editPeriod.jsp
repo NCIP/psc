@@ -18,6 +18,7 @@
         .submit {
             text-align: right;
         }
+        div.tab {margin-left:5em;}
     </style>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
@@ -174,7 +175,8 @@
         }
         function updatePeriodsDisplay(input, li) {
             var id = li.id;
-            $('template-autocompleter-input').value = li.innerHTML;
+            $('template-autocompleter-input').value = "";
+            $('template-autocompleter-input').hint = "Search for study";
             updatePeriods(id)
             $('template-autocompleter-input-id').value = id
         }
@@ -330,21 +332,23 @@
 <c:if test="${period.id == null}">
     <laf:box title="Copy existing period">
         <laf:division>
+            <div class="row">
+                Search for study:
+                <input id="template-autocompleter-input" type="text" autocomplete="off" value="" hint="Search for study" class="autocomplete"/>
+                <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
+                <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
+                <div id="template-autocompleter-div" class="autocomplete" style="z-index:1000" ></div>
+            </div>
+        </laf:division>
+        <h3 id="studyName" >${study.name}</h3>
+        <laf:division>
             <form:form method="post" id="copy-form" >
-                <div class="row">
-                    <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" hint="Search for study" class="autocomplete"/>
-                    <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
-                    <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
-                    <div id="template-autocompleter-div" class="autocomplete"></div>
-                    <div class="row" id="periods">
-                        <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
-                        <div class="row" id="selected-epochs">
-                        </div>
-                    </div>
+                <div class="row" id="selected-epochs">
                 </div>
+
                 <div class="row">
                     <input id="copy" type="submit" value="Copy"/>
-                </div>
+                </div>                
             </form:form>
         </laf:division>
     </laf:box>

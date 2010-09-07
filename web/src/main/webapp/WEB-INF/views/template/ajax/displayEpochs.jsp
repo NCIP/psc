@@ -3,19 +3,17 @@
         <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
         <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
+        <jsgen:replaceHtml targetElement="studyName">
+            ${study.name}
+        </jsgen:replaceHtml>
         <jsgen:replaceHtml targetElement="selected-epochs">
-        <c:forEach items="${epochs}" var="epoch">
         <ul class="row">
-                <div class="row odd">
-                        <label>${epoch.name}</label>
-                        </div>
-                <div class="row even">
+            <c:forEach items="${epochs}" var="epoch">
+                    <div class="row even">
                         <templ:epochs epoch="${epoch}"/>
-
-                        </div>
-                </ul>
-
-        </c:forEach>
-
+                    </div>
+            </c:forEach>
+        </ul>
         </jsgen:replaceHtml>

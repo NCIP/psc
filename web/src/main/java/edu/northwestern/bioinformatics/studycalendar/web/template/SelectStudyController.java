@@ -59,6 +59,7 @@ public class SelectStudyController implements Controller, PscAuthorizedHandler {
             }
         }
         Map model = new HashMap();
+        model.put("study", theRevisedStudy);
         model.put("epochs", displayEpochs);
         return new ModelAndView("template/ajax/displayEpochs", model);
     }
