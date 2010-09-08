@@ -78,6 +78,15 @@
             padding: 0;    
         }
 
+        .section {
+            background-color:#dcdcdc;
+        }
+
+        div.row div.label.notBold {
+            font-weight:normal;
+        }        
+
+
     </style>
 
    <script type="text/javascript">
@@ -338,33 +347,48 @@
             <td class="newSubjectContent">
                 <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
                     <laf:division cssClass="divisionClass">
-                            <div class="row">
+                            <div class="row section">
                                 <div class="label">
-                                    <form:label path="firstName">First name *</form:label>
+                                    <form:label path="personId">Person ID *</form:label>
                                 </div>
                                 <div class="value">
-                                    <form:input path="firstName"/>
+                                    <form:input path="personId"/>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="label">
-                                    <form:label path="lastName">Last name *</form:label>
-                                </div>
-                                <div class="value">
-                                    <form:input path="lastName"/>
-                                </div>
+                                <div class="label notBold" >&mdash;OR&mdash;</div>
+                                <div class="value">If 'Person ID' is specified, the 'First name', 'Last name', and 'Date of birth' are optional</div>
                             </div>
-                            <div class="row">
-                                <div class="label">
-                                    <c:set var="origPattern" value="${configuration.map.displayDateFormat}"/>
-                                    <form:label path="dateOfBirth">Date of birth* (${fn:toLowerCase(origPattern)})</form:label>
+                            <div class="section">
+                                <div class="row">
+                                    <div class="label">
+                                        <form:label path="firstName">First name *</form:label>
+                                    </div>
+                                    <div class="value">
+                                        <form:input path="firstName"/>
+                                    </div>
                                 </div>
-                                <div class="value">
-                                    <form:input path="dateOfBirth"/>
+                                <div class="row">
+                                    <div class="label">
+                                        <form:label path="lastName">Last name *</form:label>
+                                    </div>
+                                    <div class="value">
+                                        <form:input path="lastName"/>
+                                    </div>
                                 </div>
-                                <!--for IE7 -> need to set the break, to get a new row be aligned along with others,
-                                since the date is split into two rows and cause the wrong format for the next row-->
-                                <br>
+
+                                <div class="row">
+                                    <div class="label">
+                                        <c:set var="origPattern" value="${configuration.map.displayDateFormat}"/>
+                                        <form:label path="dateOfBirth">Date of birth* (${fn:toLowerCase(origPattern)})</form:label>
+                                    </div>
+                                    <div class="value">
+                                        <form:input path="dateOfBirth"/>
+                                    </div>
+                                    <!--for IE7 -> need to set the break, to get a new row be aligned along with others,
+                                    since the date is split into two rows and cause the wrong format for the next row-->
+                                    <br>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="label">
@@ -376,14 +400,7 @@
                                     </form:select>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="label">
-                                    <form:label path="personId">Person ID</form:label>
-                                </div>
-                                <div class="value">
-                                    <form:input path="personId"/>
-                                </div>
-                            </div>
+
                             <br />
 
                     </laf:division>
