@@ -53,6 +53,7 @@ public class WorkflowMessageFactory implements WebContextPathAware {
                     case STUDY_CALENDAR_TEMPLATE_BUILDER: return template.getCanDevelop();
                     case STUDY_QA_MANAGER: return template.getCanRelease();
                     case STUDY_SITE_PARTICIPATION_ADMINISTRATOR: return template.getCanSetParticipation();
+                    case STUDY_CREATOR: return template.getCanAssignIdentifiers();
                     default: throw new StudyCalendarError("Unimplemented role for study scope: %s", step.getNecessaryRole());
                 }
             default: throw new StudyCalendarError("Unimplemented scope: %s", step.getScope());
