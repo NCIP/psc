@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +102,23 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
                     setProjection(Projections.id()));
             }
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private List<Site> getByIds(Collection<Integer> ids) {
+        if (ids == null) {
+            return getAll();
+        } else if (ids.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return getHibernateTemplate().findByCriteria(
+                criteria().add(MoreRestrictions.in("id", ids)).
+                    setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY));
+        }
+    }
+
+    public List<Site> getVisibleSites(VisibleSiteParameters parameters) {
+        return getByIds(getVisibleSiteIds(parameters));
     }
 
     /**

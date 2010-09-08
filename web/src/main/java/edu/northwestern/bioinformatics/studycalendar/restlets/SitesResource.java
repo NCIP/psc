@@ -33,7 +33,7 @@ public class SitesResource extends AbstractCollectionResource<Site> {
 
     @Override
     public Collection<Site> getAllObjects() {
-        return siteDao.getAll();
+        return siteDao.getVisibleSites(getCurrentUser().getVisibleSiteParameters());
     }
 
 

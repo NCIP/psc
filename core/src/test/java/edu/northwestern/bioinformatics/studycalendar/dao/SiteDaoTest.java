@@ -166,4 +166,52 @@ public class SiteDaoTest extends DaoTestCase {
 
         assertNull("Should be null for all", actual);
     }
+
+    public void testGetVisibleSitesForAllManaging() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters().
+            forAllManagingSites());
+        assertEquals("Wrong number returned", ALL_SITES_COUNT, actual.size());
+    }
+
+    public void testGetVisibleSitesForAllParticipating() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters().
+            forAllParticipatingSites());
+        assertEquals("Wrong number returned", ALL_SITES_COUNT, actual.size());
+    }
+
+    public void testGetVisibleSitesForNoneRequested() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters());
+        assertEquals("Should be no matches", 0, actual.size());
+    }
+
+    public void testGetVisibleSitesForNoneMatching() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters().
+            forManagingSiteIdentifiers(Collections.singleton("Bogo 12")));
+        assertEquals("Should be no matches", 0, actual.size());
+    }
+
+    public void testGetVisibleSitesForSomeOfEach() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters().
+            forParticipatingSiteIdentifiers(Collections.singleton("TN008")).
+            forManagingSiteIdentifiers(Collections.singleton("IL036")));
+
+        assertEquals("Wrong number of results", 2, actual.size());
+        assertSitePresent(-10, actual);
+        assertSitePresent(-11, actual);
+    }
+
+    public void testGetVisibleSitesForAllOfOneSomeOfTheOther() throws Exception {
+        Collection<Site> actual = siteDao.getVisibleSites(new VisibleSiteParameters().
+            forAllParticipatingSites().
+            forManagingSiteIdentifiers(Collections.singleton("IL036")));
+
+        assertEquals("Should be no matches", ALL_SITES_COUNT, actual.size());
+    }
+
+    private void assertSitePresent(int expectedId, Collection<Site> actualSites) {
+        for (Site actualSite : actualSites) {
+            if (actualSite.getId().equals(expectedId)) return;
+        }
+        fail("Missing site " + expectedId);
+    }
 }
