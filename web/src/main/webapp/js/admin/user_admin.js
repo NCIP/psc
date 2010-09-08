@@ -17,6 +17,7 @@ psc.admin.UserAdmin = (function ($) {
   function selectRoleTab(evt) {
     var roleKey = evt.target.id.substring("role-".length)
     selectRole(roleKey);
+    syncAllVsOne();
     return false;
   }
 
