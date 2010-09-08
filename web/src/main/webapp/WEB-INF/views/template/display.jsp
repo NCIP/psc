@@ -821,7 +821,7 @@
                         </c:otherwise>
                     </c:choose>
 
-                    <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}"/>">change</a></span>
+                    <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}&amendment=${amendment.id}"/>">change</a></span>
                 </div>
             </div>
             </c:if>

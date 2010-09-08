@@ -86,6 +86,7 @@ public class ManagingSitesController extends PscSimpleFormController implements 
         refdata.put("isAllSites", command.getAllSitesAccess());
         Study study = command.getStudy();
         refdata.put("study", study);
+        refdata.put("amendmentId", ServletRequestUtils.getIntParameter(httpServletRequest, "amendment"));
         refdata.put("isManaged", study.isManaged());
         refdata.put("userSitesToManage", command.getSelectableSites());
         refdata.put("managingSites", command.getManagingSites());
@@ -96,7 +97,8 @@ public class ManagingSitesController extends PscSimpleFormController implements 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         ManagingSitesCommand assignCommand = (ManagingSitesCommand) oCommand;
         assignCommand.apply();
-        return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
+        return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"),
+                                                                null, ServletRequestUtils.getIntParameter(request, "amendment"));
     }
 
     ////// CONFIGURATION
