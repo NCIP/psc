@@ -16,8 +16,8 @@
 <c:if test="${not empty command.study}">
     <jsgen:replaceHtml targetElement="study-name">${command.study.assignedIdentifier}</jsgen:replaceHtml>
     <jsgen:replaceHtml targetElement="breadcrumbs">
-        <a href="/studycalendar/pages/cal/studyList">Studies</a> /
-        <a href="/studycalendar/pages/cal/template?study=${command.study.id}&amendment=${command.study.developmentAmendment.id}">${command.study.name}</a>
+        <a href="<c:url value="/pages/cal/studyList"/>">Studies</a> /
+        <a href="<c:url value="/pages/cal/template?study=${command.study.id}&amendment=${command.study.developmentAmendment.id}"/>">${command.study.name}</a>
     </jsgen:replaceHtml>
 
     <c:choose>
