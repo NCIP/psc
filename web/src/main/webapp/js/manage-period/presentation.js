@@ -46,11 +46,11 @@ psc.template.mpa.Presentation = (function ($) {
       $('#notes-heading li.' + noteType).addClass('selected');
     }
 
-    $('#notes .note').stop().hide();
     $('#notes .' + noteType).fadeIn(250);
   }
 
   function selectNoteTab() {
+    $('#notes .note').stop().hide()
     showSelectedNotes($(this).attr('href').replace(/^#/, ''));
   }
 
