@@ -63,6 +63,13 @@ public class DeltaService {
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void amend(StudySubjectAssignment assignment, Amendment amendment) {
+        if (assignment == null) {
+            throw new StudyCalendarSystemException("Assignment can not be null");
+        }
+        if (amendment == null) {
+            throw new StudyCalendarSystemException("Amendment can not be null");
+        }
+        
         if (!assignment.getStudySite().getStudy().getAmendmentsList().contains(amendment)) {
             throw new StudyCalendarSystemException("The amendment {} does not apply to assignment {}", amendment.getId(), assignment.getId());
         }
