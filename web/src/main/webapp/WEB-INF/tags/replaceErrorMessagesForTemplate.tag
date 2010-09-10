@@ -8,7 +8,7 @@
 <c:if test="${not empty studyWorkflowMessages}">
     <c:forEach items="${studyWorkflowMessages}" var="msg">
         <c:choose>
-            <c:when test="${fn:containsIgnoreCase(msg.html, 'assigned identifier')}">
+            <c:when test="${fn:containsIgnoreCase(msg.text, 'assigned identifier')}">
                 <h5>Template ${msg.html}</h5>
             </c:when>
             <c:otherwise>

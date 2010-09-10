@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateActionStatus;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import gov.nih.nci.security.AuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -72,9 +72,14 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
             Map<String, Object> model = command.getModel();
             Study study = (Study) model.get("study");
             model.putAll(errors.getModel());
+
             PscUser user = applicationSecurityManager.getUser() ;
             StudyWorkflowStatus workflow = workflowService.build(study, user);
             model.put("studyWorkflowMessages", workflow.getMessages());
+
+            TemplateActionStatus status = new TemplateActionStatus(workflow, true);
+            model.put("templateActions", status.getActions());
+
             model.put("error", result);
             return new ModelAndView(createViewName(command), model);
         } else {

@@ -18,8 +18,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateActionStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -92,6 +92,9 @@ public class DisplayTemplateController extends PscAbstractController implements 
 
         StudyWorkflowStatus workflow = workflowService.build(loaded, user);
         model.put("studyWorkflowMessages", workflow.getMessages());
+
+        TemplateActionStatus status = new TemplateActionStatus(workflow, isDevelopmentRequest(model));
+        model.put("templateActions", status.getActions());
 
         if ((isDevelopmentRequest(model) && utr.getCanSeeDevelopmentVersion()) ||
             (!isDevelopmentRequest(model) && utr.getCanSeeReleasedVersions())) {

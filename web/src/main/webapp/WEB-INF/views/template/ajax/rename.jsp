@@ -41,8 +41,11 @@
 </c:if>
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
 
-    <jsgen:replaceHtml targetElement="errorMessages">
-        <tags:replaceErrorMessagesForTemplate/>
-    </jsgen:replaceHtml>
+<jsgen:replaceHtml targetElement="errorMessages">
+    <tags:replaceErrorMessagesForTemplate/>
+</jsgen:replaceHtml>
+
+<tags:hideShowTemplateActionButtons templateActions="${templateActions}"/>
+        
 
 

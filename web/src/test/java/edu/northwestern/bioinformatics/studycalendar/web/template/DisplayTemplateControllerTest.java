@@ -116,6 +116,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(workflowService.build((Study) notNull(), (PscUser) notNull())).andReturn(studyWorkflowStatus);
         expect(studyWorkflowStatus.getMessages()).andReturn(Collections.<WorkflowMessage>emptyList());
         nowFactory.setNowTimestamp(NOW);
+        expect(studyWorkflowStatus.getStudyWorkflowStatusMessageOnly()).andReturn(null).anyTimes();
+        expect(studyWorkflowStatus.isRevisionComplete()).andReturn(true).anyTimes();
     }
 
     public void testAuthorizedRoles() {

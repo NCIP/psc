@@ -159,10 +159,8 @@ function createAddEpochControl() {
 function hideShowReleaseTemplateButton() {
     if ($('errorMessages').empty()) {
         $('errorMessages').hide()
-        $('admin-options').show()
     } else {
         $('errorMessages').show()
-        $('admin-options').hide()
     }
 }
 

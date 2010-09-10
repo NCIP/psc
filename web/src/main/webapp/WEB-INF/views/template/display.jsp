@@ -743,6 +743,7 @@
 
             function generalSetup() {
                 epochsAreaSetup();
+                <tags:hideShowTemplateActionButtons templateActions="${templateActions}"/>
             }
 
             function arrowsHideShowSetup(){
@@ -885,15 +886,15 @@
             </div>
 
             <ul id="admin-options">
-                <li><a class="control" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
+                <!-- In EditControl JS, pass back canRelease and study.isDevelopment and toggle each using flag -->
+                <li style="display:none"><a class="control" id="preview-schedule-button" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
                     Preview schedule
                 </a></li>
-                <tags:conditionalListItemLink
-                    showIf="${relationship.canRelease && not empty developmentRevision}"
-                    url="/pages/cal/template/release?study=${study.id}"
-                    cssClass="control">
-                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                </tags:conditionalListItemLink>
+                <c:if test="${relationship.canRelease}">
+                    <li style="display:none"><a class="control" id="release-revision-button" href="<c:url value="/pages/cal/template/release?study=${study.id}"/>">
+                        Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                    </a></li>
+                </c:if>
                 <tags:conditionalListItemLink
                     showIf="${relationship.canSetParticipation && empty developmentRevision}"
                     url="/pages/cal/assignSite?id=${study.id}"

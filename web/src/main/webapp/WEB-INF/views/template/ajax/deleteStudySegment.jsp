@@ -41,3 +41,5 @@ if (${not empty developmentRevision && canEdit}) {
     epochControls()
 }
 hideShowReleaseTemplateButton()
+
+<tags:hideShowTemplateActionButtons templateActions="${templateActions}"/>

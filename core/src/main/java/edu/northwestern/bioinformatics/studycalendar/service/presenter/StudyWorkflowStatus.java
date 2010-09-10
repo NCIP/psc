@@ -41,7 +41,7 @@ public class StudyWorkflowStatus {
         WorkflowMessage studyMsg = getStudyWorkflowStatusMessageOnly();
         if (studyMsg != null && studyMsg.getStep() == WorkflowStep.SET_ASSIGNED_IDENTIFIER) {
             return asList(studyMsg);
-        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getRevisionCompletionMessages())) {
             return revisionWorkflowStatus.getMessages();
         }
         return studyMsg == null ? Collections.<WorkflowMessage>emptyList() : asList(studyMsg);
@@ -77,6 +77,10 @@ public class StudyWorkflowStatus {
             }
         }
         return availabilities;
+    }
+
+    public boolean isRevisionComplete() {
+        return !getRevisionWorkflowStatus().getRevisionCompletionMessages().isEmpty();
     }
 
     /**

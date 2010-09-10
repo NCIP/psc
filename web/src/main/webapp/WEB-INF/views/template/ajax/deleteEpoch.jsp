@@ -31,3 +31,5 @@ SC.slideAndShow('selected-studySegment-content')
 </jsgen:replaceHtml>
 hideShowReleaseTemplateButton()
 initializeNewStudySegment()
+
+<tags:hideShowTemplateActionButtons templateActions="${templateActions}"/>
