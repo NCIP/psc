@@ -41,7 +41,7 @@ public class StudyWorkflowStatus {
         WorkflowMessage studyMsg = getStudyWorkflowStatusMessageOnly();
         if (studyMsg != null && studyMsg.getStep() == WorkflowStep.SET_ASSIGNED_IDENTIFIER) {
             return asList(studyMsg);
-        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getRevisionCompletionMessages())) {
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
             return revisionWorkflowStatus.getMessages();
         }
         return studyMsg == null ? Collections.<WorkflowMessage>emptyList() : asList(studyMsg);
@@ -51,8 +51,6 @@ public class StudyWorkflowStatus {
     public WorkflowMessage getStudyWorkflowStatusMessageOnly() {
         if (study.getHasTemporaryAssignedIdentifier()) {
             return workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr);
-        } else if (!study.isReleased()) {
-            return workflowMessageFactory.createMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE, utr);
         } else if (study.isReleased() && study.getStudySites().isEmpty()) {
             return workflowMessageFactory.createMessage(WorkflowStep.ASSIGN_SITE, utr);
         }
@@ -80,7 +78,7 @@ public class StudyWorkflowStatus {
     }
 
     public boolean isRevisionComplete() {
-        return !getRevisionWorkflowStatus().getRevisionCompletionMessages().isEmpty();
+        return getRevisionWorkflowStatus().getRevisionCompletionMessages().isEmpty();
     }
 
     /**

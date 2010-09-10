@@ -71,17 +71,6 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertMessage(WorkflowStep.ASSIGN_SITE);
     }
 
-    public void testDoesNotIncludeAssignSitesMessageWhenNoSitesButNotReleased() throws Exception {
-        study.getStudySites().clear();
-        study.setAmendment(null);
-        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
-    }
-
-    public void testIncludesReleaseMessageWhenNotReleased() throws Exception {
-        study.setAmendment(null);
-        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
-    }
-
     public void testDoesNotIncludeReleaseMessageWhenReleasedAtLeastOnce() throws Exception {
         study.setDevelopmentAmendment(new Amendment());
         assertNull(actual().getStudyWorkflowStatusMessageOnly());
