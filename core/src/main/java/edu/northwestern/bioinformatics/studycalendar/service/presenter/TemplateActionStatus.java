@@ -16,7 +16,7 @@ public class TemplateActionStatus {
         List<TemplateAction> actions = new ArrayList<TemplateAction>();
         
         if (developmentRevision) {
-            WorkflowMessage studyMessage = studyWorkflowStatus.getStudyWorkflowStatusMessageOnly();
+            WorkflowMessage studyMessage = studyWorkflowStatus.getMessagesIgnoringRevisionMessages();
             if ((studyMessage == null || !studyMessage.getStep().equals(WorkflowStep.SET_ASSIGNED_IDENTIFIER)) && studyWorkflowStatus.isRevisionComplete()) {
                 actions.add(TemplateAction.PREVIEW_SCHEDULE);
                 actions.add(TemplateAction.RELEASE_REVISION);

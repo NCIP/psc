@@ -38,7 +38,7 @@ public class StudyWorkflowStatus {
     }
 
     public Collection<WorkflowMessage> getMessages() {
-        WorkflowMessage studyMsg = getStudyWorkflowStatusMessageOnly();
+        WorkflowMessage studyMsg = getMessagesIgnoringRevisionMessages();
         if (studyMsg != null && studyMsg.getStep() == WorkflowStep.SET_ASSIGNED_IDENTIFIER) {
             return asList(studyMsg);
         } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
@@ -48,7 +48,7 @@ public class StudyWorkflowStatus {
     }
 
     @SuppressWarnings("unchecked")
-    public WorkflowMessage getStudyWorkflowStatusMessageOnly() {
+    public WorkflowMessage getMessagesIgnoringRevisionMessages() {
         if (study.getHasTemporaryAssignedIdentifier()) {
             return workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr);
         } else if (study.isReleased() && study.getStudySites().isEmpty()) {
@@ -63,7 +63,7 @@ public class StudyWorkflowStatus {
             availabilities.add(TemplateAvailability.IN_DEVELOPMENT);
         }
         if (study.isReleased()) {
-            if (getStudyWorkflowStatusMessageOnly() != null) {
+            if (getMessagesIgnoringRevisionMessages() != null) {
                 availabilities.add(TemplateAvailability.PENDING);
             }
             for (StudySiteWorkflowStatus status : getStudySiteWorkflowStatuses()) {
@@ -78,7 +78,7 @@ public class StudyWorkflowStatus {
     }
 
     public boolean isRevisionComplete() {
-        return getRevisionWorkflowStatus().getRevisionCompletionMessages().isEmpty();
+        return (getRevisionWorkflowStatus() != null && getRevisionWorkflowStatus().getStructureMessages().isEmpty());
     }
 
     /**

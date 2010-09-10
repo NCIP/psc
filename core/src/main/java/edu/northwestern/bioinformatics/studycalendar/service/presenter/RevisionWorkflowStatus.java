@@ -34,7 +34,7 @@ public class RevisionWorkflowStatus {
 
     public List<WorkflowMessage> getMessages() {
         List<WorkflowMessage> messages = new LinkedList<WorkflowMessage>();
-        messages.addAll(getRevisionCompletionMessages());
+        messages.addAll(getStructureMessages());
 
         if (messages.isEmpty()) {
             messages.add(workflowMessageFactory.createMessage(WorkflowStep.RELEASE_REVISION, utr));
@@ -43,7 +43,7 @@ public class RevisionWorkflowStatus {
         return messages;
     }
 
-    public List<WorkflowMessage> getRevisionCompletionMessages() {
+    public List<WorkflowMessage> getStructureMessages() {
         List<WorkflowMessage> messages = new LinkedList<WorkflowMessage>();
 
         if (revisedStudy.getPlannedCalendar().getEpochs().isEmpty()) {

@@ -38,7 +38,7 @@ public class TemplateActionStatusTest extends StudyCalendarTestCase {
 
     // Logic Helpers
     private List<TemplateAction> getActionsWhenStudyWorkflowStatusIs(WorkflowStep step) {
-        expect(studyWorkflowStatus.getStudyWorkflowStatusMessageOnly()).andReturn(createWorkflowMessage(step));
+        expect(studyWorkflowStatus.getMessagesIgnoringRevisionMessages()).andReturn(createWorkflowMessage(step));
         TemplateActionStatus status = new TemplateActionStatus(studyWorkflowStatus, true);
         replayMocks();
         List<TemplateAction> actions = status.getActions();

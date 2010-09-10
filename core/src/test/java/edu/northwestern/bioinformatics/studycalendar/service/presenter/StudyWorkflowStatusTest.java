@@ -73,7 +73,7 @@ public class StudyWorkflowStatusTest extends TestCase {
 
     public void testDoesNotIncludeReleaseMessageWhenReleasedAtLeastOnce() throws Exception {
         study.setDevelopmentAmendment(new Amendment());
-        assertNull(actual().getStudyWorkflowStatusMessageOnly());
+        assertNull(actual().getMessagesIgnoringRevisionMessages());
     }
 
     private void assertNoMessages() {

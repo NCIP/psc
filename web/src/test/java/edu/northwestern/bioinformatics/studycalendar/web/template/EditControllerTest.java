@@ -58,7 +58,7 @@ public class EditControllerTest extends ControllerTestCase {
     public void testHandle() throws Exception {
         StudyWorkflowStatus studyWorkflowStatus = registerMockFor(StudyWorkflowStatus.class);
         expect(workflowService.build((Study) isNull(), (PscUser) isNull())).andReturn(studyWorkflowStatus);
-        expect(studyWorkflowStatus.getStudyWorkflowStatusMessageOnly()).andReturn(null).anyTimes();
+        expect(studyWorkflowStatus.getMessagesIgnoringRevisionMessages()).andReturn(null).anyTimes();
         expect(studyWorkflowStatus.isRevisionComplete()).andReturn(true).anyTimes();
 
         expect(studyWorkflowStatus.getMessages()).andReturn(Collections.<WorkflowMessage>emptyList());
