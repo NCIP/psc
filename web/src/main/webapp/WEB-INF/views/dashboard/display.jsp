@@ -182,7 +182,7 @@
 
 <%-- ////// AVAILABLE STUDIES --%>
 
-<laf:box title="Available studies" id="available-studies">
+<laf:box title="Available studies" id="available-studies" cssClass="collapsible-children">
     <laf:division>
         <p class="instructions">
             <c:choose>
@@ -200,6 +200,7 @@
         </p>
     </laf:division>
     <c:forEach items="${command.assignableStudies}" var="entry">
+        <div class="collapsible-child closed">
         <h3><a href="<c:url value="/pages/cal/template?study=${entry.key.id}"/>">${entry.key.assignedIdentifier}</a></h3>
         <laf:division>
             <ul class="sites">
@@ -227,6 +228,7 @@
                 </c:forEach>
             </ul>
         </laf:division>
+        </div>
     </c:forEach>
 </laf:box>
 
