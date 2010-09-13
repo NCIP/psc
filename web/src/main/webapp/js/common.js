@@ -347,18 +347,14 @@ function registerHeaderCollapse() {
 
 (function ($) {
   $(function (loadEvt) {
-    console.log("Registering collapse handlers");
     $('.collapsible-child h3').click(function (evt) {
       var child = $(this).parent();
-      console.log("clicked", evt.target, evt.currentTarget, child[0].className, child.css('display'));
       if (child.hasClass("closed")) {
-        console.log("showing", child[0]);
         child.find('.division').css('display', 'none').end().
           removeClass('closed').
           find('.division').animate({ opacity: 'show', height: 'show' }, 250).end().
           addClass('open');
       } else {
-        console.log("hiding", child[0]);
         child.removeClass('open').
           find('.division').animate({ opacity: 'hide', height: 'hide' }, 250).end().
           addClass('closed');
