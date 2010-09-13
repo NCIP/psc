@@ -12,6 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.validation.BindException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +80,7 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
         Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), command.getPopulation().getAbbreviation());
         changes.add(changeName);
         changes.add(changeAbbreviation);
-
+        expect(populationService.lookupAndSuggestAbbreviation(originalPopulation, study)).andReturn(originalPopulation);
         expect(amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, study, changes.toArray(new Change[changes.size()]))).andReturn(originalPopulation).anyTimes();
 
         replayMocks();
@@ -98,5 +100,32 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong role", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actual.getRole());
         assertEquals("Wrong study", study.getAssignedIdentifier(), actual.getScope(ScopeType.STUDY));
         assertEquals("Wrong site", "T'", actual.getScope(ScopeType.SITE));
+    }
+
+
+    public void testValidateWhenPopulationNameEmpty() throws Exception {
+        originalPopulation.setName(null);
+        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, study);
+        replayMocks();
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.population.name.is.empty", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWhenAbbreviationContainSpace() throws Exception {
+        originalPopulation.setAbbreviation("A A");
+        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, study);
+        replayMocks();
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.population.contains.spaces", errors.getFieldError().getCode());
     }
 }

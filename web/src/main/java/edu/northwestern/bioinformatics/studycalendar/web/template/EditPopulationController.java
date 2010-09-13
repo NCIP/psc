@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
@@ -86,16 +84,11 @@ public class EditPopulationController extends PscSimpleFormController implements
         HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors
     ) throws Exception {
         EditPopulationCommand command = (EditPopulationCommand) oCommand;
-        try {
-            command.apply();
-        } catch (StudyCalendarValidationException scve) {
-            scve.rejectInto(errors);
-        }
-
-        if (errors != null && errors.hasErrors()) {
+        if (!command.getStudy().isInDevelopment()) {
+            errors.reject("A template is not open for editing");
             return showForm(request, response, errors);
-        }
-        else {
+        } else {
+            command.apply();
             return getControllerTools().redirectToCalendarTemplate(command.getStudy().getId(), null, command.getStudy().getDevelopmentAmendment().getId());
         }
     }
