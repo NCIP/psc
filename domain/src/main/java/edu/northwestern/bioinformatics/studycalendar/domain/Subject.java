@@ -45,29 +45,53 @@ public class Subject extends AbstractMutableDomainObject {
     @Transient
     public String getLastFirst() {
         StringBuilder name = new StringBuilder();
-        boolean hasFirstName = getFirstName() != null;
-        if (getLastName() != null) {
+        boolean hasFirstName = true;
+        if (getFirstName() == null || getFirstName().length() == 0) {
+            hasFirstName = false;
+        }
+        boolean hasLastName = true;
+        if (getLastName() == null || getLastName().length() == 0) {
+            hasLastName = false;
+        }
+        if (hasLastName) {
             name.append(getLastName());
             if (hasFirstName) name.append(", ");
         }
         if (hasFirstName) {
             name.append(getFirstName());
         }
-        return name.toString();
+
+        if (name.length() > 0) {
+            return name.toString();
+        } else {
+            return getPersonId();
+        }
     }
 
     @Transient
     public String getFullName() {
         StringBuilder name = new StringBuilder();
-        boolean hasLastName = getLastName() != null;
-        if (getFirstName() != null) {
+        boolean hasFirstName = true;
+        if (getFirstName() == null || getFirstName().length() == 0) {
+            hasFirstName = false;
+        }
+        boolean hasLastName = true;
+        if (getLastName() == null || getLastName().length() == 0) {
+            hasLastName = false;
+        }
+
+        if (hasFirstName) {
             name.append(getFirstName());
             if (hasLastName) name.append(' ');
         }
         if (hasLastName) {
             name.append(getLastName());
         }
-        return name.toString();
+        if (name.length()>0) {
+            return name.toString();
+        } else {
+            return getPersonId();
+        }
     }
 
     // bean methods
