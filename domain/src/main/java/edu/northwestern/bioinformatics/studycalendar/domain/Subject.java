@@ -36,7 +36,6 @@ public class Subject extends AbstractMutableDomainObject {
     // business methods
 
     // The subject identifier could be the Medical Record No based on the site
-
     public void addAssignment(StudySubjectAssignment studySubjectAssignment) {
         getAssignments().add(studySubjectAssignment);
         studySubjectAssignment.setSubject(this);
