@@ -88,7 +88,7 @@
                         { key: "condition", label: "Condition", sortable: true, width: 200},
                         { key: "labels", label: "Labels", sortable: false,
                             formatter: function (elCell, oRecord, oColumn, oData) {
-                                elCell.innerHTML = oData.join(" ")
+                                elCell.innerHTML = oData ? oData.join(" ") : "";
                             }
                         },
                         { key: "ideal_date", label: "Ideal Date", sortable: true},
