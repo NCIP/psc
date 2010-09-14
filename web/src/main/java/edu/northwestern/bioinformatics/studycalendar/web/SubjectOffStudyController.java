@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -33,6 +34,7 @@ public class SubjectOffStudyController extends PscSimpleFormController implement
         setSuccessView("redirectToSchedule");
         setBindOnNewForm(true);
         setCrumb(new Crumb());
+        setValidator(new ValidatableValidator());
     }
 
     @Override

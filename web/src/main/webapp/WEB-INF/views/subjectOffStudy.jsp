@@ -68,7 +68,7 @@
             </div>
             <div class="row">
                 <div class="label">
-                    Off-study date<br/>(mm/dd/yyyy)
+                    Off-study date*<br/>(mm/dd/yyyy)
                 </div>
                 <div class="value">
                     <laf:dateInput path="expectedEndDate"/>
