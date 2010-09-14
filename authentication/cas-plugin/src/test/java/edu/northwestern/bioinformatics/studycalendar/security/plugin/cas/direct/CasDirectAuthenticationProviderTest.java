@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
@@ -63,7 +62,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     public void testSkipsAuthenticationIfAlreadyAuthenticated() throws Exception {
         Authentication alreadyAuthed = new CasDirectUsernamePasswordAuthenticationToken(
-            USERNAME, PASSWORD, new GrantedAuthority[] { Role.SYSTEM_ADMINISTRATOR });
+            USERNAME, PASSWORD, new GrantedAuthority[] { PscRole.SYSTEM_ADMINISTRATOR });
         replayMocks();
         assertSame(alreadyAuthed, provider.authenticate(alreadyAuthed));
         verifyMocks();
