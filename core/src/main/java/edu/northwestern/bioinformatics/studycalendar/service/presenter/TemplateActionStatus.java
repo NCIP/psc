@@ -18,11 +18,8 @@ public class TemplateActionStatus {
         if (developmentRevision) {
             WorkflowMessage studyMessage = studyWorkflowStatus.getMessagesIgnoringRevisionMessages();
             if ((studyMessage == null || !studyMessage.getStep().equals(WorkflowStep.SET_ASSIGNED_IDENTIFIER)) && studyWorkflowStatus.isRevisionComplete()) {
-                actions.add(TemplateAction.PREVIEW_SCHEDULE);
                 actions.add(TemplateAction.RELEASE_REVISION);
             }
-        } else {
-            actions.add(TemplateAction.PREVIEW_SCHEDULE);
         }
 
         return actions;

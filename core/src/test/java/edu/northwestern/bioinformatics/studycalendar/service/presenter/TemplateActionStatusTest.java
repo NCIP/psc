@@ -17,20 +17,19 @@ public class TemplateActionStatusTest extends StudyCalendarTestCase {
         studyWorkflowStatus = registerMockFor(StudyWorkflowStatus.class);
     }
 
-    public void testPreviewAvailableWhenHasAssignedIdentifierAndRevisionComplete() {
+    public void testReleaseAvailableWhenHasAssignedIdentifierAndRevisionComplete() {
         expect(studyWorkflowStatus.isRevisionComplete()).andReturn(true);
         List<TemplateAction> actions = getActionsWhenStudyWorkflowStatusIs(COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
-        assertEquals("Wrong size", 2, actions.size());
-        assertEquals("Wrong action", TemplateAction.PREVIEW_SCHEDULE, actions.get(0));
-        assertEquals("Wrong action", TemplateAction.RELEASE_REVISION, actions.get(1));
+        assertEquals("Wrong size", 1, actions.size());
+        assertEquals("Wrong action", TemplateAction.RELEASE_REVISION, actions.get(0));
     }
 
-    public void testPreviewNotAvailableWhenMissingAssignedIdentifier() {
+    public void testReleaseNotAvailableWhenMissingAssignedIdentifier() {
         List<TemplateAction> actions = getActionsWhenStudyWorkflowStatusIs(SET_ASSIGNED_IDENTIFIER);
         assertTrue("Should be empty", actions.isEmpty());
     }
 
-    public void testPreviewNotAvailableWhenRevisionIncomplete() {
+    public void testReleaseNotAvailableWhenRevisionIncomplete() {
         expect(studyWorkflowStatus.isRevisionComplete()).andReturn(false);
         List<TemplateAction> actions = getActionsWhenStudyWorkflowStatusIs(null);
         assertTrue("Should be empty", actions.isEmpty());

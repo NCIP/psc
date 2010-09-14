@@ -887,7 +887,7 @@
 
             <ul id="admin-options">
                 <!-- In EditControl JS, pass back canRelease and study.isDevelopment and toggle each using flag -->
-                <li style="display:none"><a class="control" id="preview-schedule-button" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
+                <li><a class="control" id="preview-schedule-button" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
                     Preview schedule
                 </a></li>
                 <c:if test="${relationship.canRelease}">
