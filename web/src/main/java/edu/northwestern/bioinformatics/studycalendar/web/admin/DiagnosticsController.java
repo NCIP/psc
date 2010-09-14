@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;

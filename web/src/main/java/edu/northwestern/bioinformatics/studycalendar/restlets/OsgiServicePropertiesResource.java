@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.OsgiRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StreamingJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;

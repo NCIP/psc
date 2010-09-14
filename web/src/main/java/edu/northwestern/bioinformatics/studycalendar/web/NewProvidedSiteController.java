@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Collection;
 import java.util.Map;

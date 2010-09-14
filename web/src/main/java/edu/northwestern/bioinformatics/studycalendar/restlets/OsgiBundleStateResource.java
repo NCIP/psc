@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Bundle;

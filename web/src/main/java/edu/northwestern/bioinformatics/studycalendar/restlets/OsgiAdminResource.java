@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.osgi.framework.BundleContext;
 import org.restlet.Context;
 import org.restlet.data.MediaType;

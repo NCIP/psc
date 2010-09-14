@@ -57,8 +57,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserRole</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
 
                 <!-- Amendments & customizations -->
@@ -185,8 +183,6 @@
                 <value>
                     edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout
                 </value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserRole</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
 
                 <!-- Amendments & customizations -->

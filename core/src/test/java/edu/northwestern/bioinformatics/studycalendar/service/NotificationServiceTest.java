@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
@@ -16,8 +15,6 @@ import org.springframework.mail.MailSender;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 
 /**
  * @author Saurabh Agrawal

@@ -478,34 +478,6 @@ public class Fixtures {
         return site;
     }
 
-    public static void setUserRoles(User user, Role... roles) {
-        user.clearUserRoles();
-        for (Role role : roles) {
-            UserRole userRole = new UserRole(user, role);
-            user.getUserRoles().add(userRole);
-        }
-    }
-
-    public static User createUser(String name, Role... roles) {
-        return createUser(null, name, null, true, roles);
-    }
-
-    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) {
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setCsmUserId(csmUserId);
-        user.setActiveFlag(activeFlag);
-        setUserRoles(user, roles);
-        return user;
-    }
-
-    public static UserRole createUserRole(User user, Role role, Site... sites) {
-        UserRole userRole = new UserRole(user, role, sites);
-        user.addUserRole(userRole);
-        return userRole;
-    }
-
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();
