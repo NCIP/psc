@@ -4,13 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -19,12 +16,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addSecondaryIdentifier;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static java.util.Arrays.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
@@ -32,15 +25,15 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySiteService service;
     private SiteService siteService;
 
-    private User user;
     private Site nu, mayo;
-    private List<StudySite> studySites;
     private Study nu123, all999;
-    private StudySite nu_nu123, nu_all999, mayo_all999;
+    private StudySite nu_nu123;
+    private StudySite nu_all999;
     private StudySiteConsumer studySiteConsumer;
     private StudySiteDao studySiteDao;
     private StudyDao studyDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -63,14 +56,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         nu_nu123 = createStudySite(nu123, nu, "alpha");
         nu_all999 = createStudySite(all999, nu, "alpha");
-        mayo_all999 = createStudySite(all999, mayo, "alpha");
-
-        studySites = asList(nu_nu123, nu_all999, mayo_all999);
-
-        user  = createNamedInstance("John", User.class);
-        UserRole role = createUserRole(user, Role.SUBJECT_COORDINATOR, nu, mayo);
-        role.setStudySites(studySites);
-        user.addUserRole(role);
+        createStudySite(all999, mayo, "alpha");
     }
 
     private Study createStudy(String assignedIdentifier, String provider) {
@@ -518,15 +504,9 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         public boolean matches(Object object) {
             StudySite actual = (StudySite) object;
 
-            if (!expected.equals(actual)) {
-                return false;
-            }
-
-            if (expected.getProvider() != null ? !expected.getProvider().equals(actual.getProvider()) : actual.getProvider() != null) {
-                return false;
-            }
-
-            return true;
+            return expected.equals(actual) && !(expected.getProvider() != null ?
+                !expected.getProvider().equals(actual.getProvider()) :
+                actual.getProvider() != null);
         }
 
         public void appendTo(StringBuffer sb) {
