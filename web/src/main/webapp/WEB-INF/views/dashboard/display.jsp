@@ -18,8 +18,12 @@
 <head>
     <title>Dashboard for ${command.user.displayName}</title>
     <tags:stylesheetLink name="main"/>
+    <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
     <tags:sassLink name="dashboard"/>
+    <tags:icsInstructions/>
 
+    <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:javascriptLink name="jquery/jquery.cookie"/>
     <tags:javascriptLink name="jquery/jquery.query" />
     <tags:javascriptLink name="psc-tools/misc"/>
     <tags:javascriptLink name="resig-templates"/>
