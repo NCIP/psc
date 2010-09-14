@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -35,6 +37,7 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     private DeltaService deltaService;
     private ControllerTools controllerTools;
     private StudySegmentDao studySegmentDao;
+    private WorkflowService workflowService;
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
 
@@ -64,6 +67,9 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
 
         UserTemplateRelationship utr =
             new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
+            
+        StudyWorkflowStatus workflow = workflowService.build(study, applicationSecurityManager.getUser());
+        model.put("studyWorkflowMessages", workflow.getMessages());
 
         if ((isDevelopmentRequest && utr.getCanSeeDevelopmentVersion()) ||
             (!isDevelopmentRequest && utr.getCanSeeReleasedVersions())) {
@@ -117,4 +123,10 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
     }
+    
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+    
 }

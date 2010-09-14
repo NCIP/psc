@@ -8,21 +8,22 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.*;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.amend;
 import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setUserAndReturnMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta.createDeltaFor;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.valuesWithStudyAccess;
+import static org.easymock.EasyMock.notNull;
 import static org.easymock.classextension.EasyMock.expect;
 
 /**
@@ -38,6 +39,7 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
     private Study study;
     private AmendmentService amendmentService;
     private AmendmentDao amendmentDao;
+    private WorkflowService workflowService;
 
     @Override
     protected void setUp() throws Exception {
@@ -52,6 +54,7 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         deltaService = registerMockFor(DeltaService.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         templateService = registerMockFor(TemplateService.class);
+        workflowService = registerMockFor(WorkflowService.class);
 
         amendmentService = new AmendmentService();
         amendmentService.setTemplateService(new TestingTemplateService());
@@ -61,10 +64,14 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         controller.setDeltaService(deltaService);
         controller.setAmendmentDao(amendmentDao);
         controller.setAmendmentService(amendmentService);
+        controller.setWorkflowService(workflowService);
         controller.setTemplateService(new TestingTemplateService());
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         expect(studySegmentDao.getById(STUDY_SEGMENT_ID)).andStubReturn(studySegment);
+        StudyWorkflowStatus status = registerMockFor(StudyWorkflowStatus.class);
+        expect(workflowService.build((Study) notNull(), (PscUser) notNull())).andReturn(status);
+        expect(status.getMessages()).andReturn(Collections.EMPTY_LIST);
         request.setParameter("studySegment", Integer.toString(STUDY_SEGMENT_ID));
         request.setMethod("GET");
 
@@ -89,7 +96,7 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         Object actualStudySegment = mv.getModel().get("studySegment");
         assertNotNull("study segment missing", actualStudySegment);
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
-        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
     }
 
     public void testRequestForDevelopment() throws Exception {
