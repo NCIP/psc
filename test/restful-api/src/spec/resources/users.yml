@@ -1,39 +1,86 @@
 alice:
   roles:
-    STUDY_COORDINATOR:
+    study_calendar_template_builder:
+      sites: ['__ALL__']
+      studies: ['__ALL__']
+    study_creator:
+      sites: ['__ALL__']
 barbara:
   roles:
-    STUDY_ADMIN:
+    study_qa_manager:
+      sites: ['__ALL__']
+    study_site_participation_administrator:
+      sites: ['__ALL__']
 carla:
   roles:
-    SITE_COORDINATOR: ['IL036']
+    study_qa_manager:
+      sites: ['IL036']
 darlene:
   roles:
-    SUBJECT_COORDINATOR: ['IL036']
+    subject_manager:
+      sites: ['IL036']
+    study_subject_calendar_manager:
+      sites: ['IL036']
 erin:
   roles:
-    SUBJECT_COORDINATOR: ['IL036', 'PA015']
+    subject_manager:
+      sites: ['IL036', 'PA015']
+    study_subject_calendar_manager:
+      sites: ['IL036', 'PA015']
 frieda:
   roles:
-    SITE_COORDINATOR: ['MN026']
+    study_qa_manager:
+      sites: ['MN026']
 gertrude:
   roles:
-    SUBJECT_COORDINATOR: ['MN026']
-    SITE_COORDINATOR: ['IL036']
+    study_subject_calendar_manager:
+      sites: ['MN026']
+    study_qa_manager:
+      sites: ['IL036']
 hannah:
   roles:
-    SUBJECT_COORDINATOR: ['MN026']
-    STUDY_COORDINATOR:
+    study_subject_calendar_manager:
+      sites: ['MN026']
+    study_calendar_template_builder:
+      sites: ['__ALL__']
+      studies: ['__ALL__']
+    study_creator:
+      sites: ['__ALL__']
 
 # Juno is a superuser -- all permissions at all sites
 juno:
   roles:
-    STUDY_COORDINATOR:
-    STUDY_ADMIN:
-    SITE_COORDINATOR: ['IL036', 'PA015', 'MN026']
-    SUBJECT_COORDINATOR:  ['IL036', 'PA015', 'MN026']
-    SYSTEM_ADMINISTRATOR:
+    study_creator:
+      sites: ['__ALL__']
+    study_calendar_template_builder:
+      sites: ['__ALL__']
+      studies: ['__ALL__']
+    study_qa_manager:
+      sites: ['__ALL__']
+    study_site_participation_administrator:
+      sites: ['__ALL__']
+    study_team_administrator:
+      sites: ['__ALL__']
+    subject_manager:
+      sites: ['__ALL__']
+    study_subject_calendar_manager:
+      sites: ['__ALL__']
+      studies: ['__ALL__']
+    data_reader:
+      sites: ['__ALL__']
+      studies: ['__ALL__']
+    system_administrator:
+    user_administrator:
+      sites: ['__ALL__']
+    data_importer:
+    business_administrator:
+    person_and_organization_information_manager:
+      sites: ['__ALL__']
 
+yvette:
+  roles:
+    user_administrator:
+      sites: ['IL036']
 zelda:
   roles:
-    SYSTEM_ADMINISTRATOR:
+    system_administrator:
