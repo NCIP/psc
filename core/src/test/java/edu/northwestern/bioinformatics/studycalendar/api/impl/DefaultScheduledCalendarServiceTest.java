@@ -40,7 +40,6 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao assignmentDao;
-    private UserDao userDao;
 
     private Study parameterStudy;
     private Site parameterSite;
@@ -69,7 +68,6 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
         notificationService=registerMockFor(NotificationService.class);
         mockApplicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
 
@@ -82,7 +80,6 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setScheduledCalendarDao(scheduledCalendarDao);
         service.setScheduledActivityDao(scheduledActivityDao);
         service.setStudySubjectAssignmentDao (assignmentDao);
-        service.setUserDao(userDao);
         service.setNotificationService(notificationService);
         service.setApplicationSecurityManager(mockApplicationSecurityManager);
 

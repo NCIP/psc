@@ -286,7 +286,6 @@
 
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>
 
-    <bean id="userDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserDao"/>
     <bean id="amendmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao"/>
     <bean id="deltaDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao"/>
     <bean id="sourceDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SourceDao"/>

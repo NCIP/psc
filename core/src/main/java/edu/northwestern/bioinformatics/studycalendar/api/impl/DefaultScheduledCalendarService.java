@@ -29,7 +29,6 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private UserDao userDao;
     private NotificationService notificationService;
     private ApplicationSecurityManager applicationSecurityManager;
 
@@ -158,11 +157,6 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     @Required
     public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
         this.studySubjectAssignmentDao = studySubjectAssignmentDao;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Required
