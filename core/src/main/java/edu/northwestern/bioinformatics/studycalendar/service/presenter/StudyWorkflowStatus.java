@@ -57,6 +57,16 @@ public class StudyWorkflowStatus {
         return null;
     }
 
+    public Collection<WorkflowMessage> getStructureRelatedMessages() {
+        Collection<WorkflowMessage> messages = new ArrayList<WorkflowMessage>();
+        if (study.getHasTemporaryAssignedIdentifier()) {
+            messages.add(workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr));
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
+            messages.addAll(revisionWorkflowStatus.getStructureMessages());
+        }
+        return messages;
+    }
+
     public Collection<TemplateAvailability> getTemplateAvailabilities() {
         Set<TemplateAvailability> availabilities = new LinkedHashSet<TemplateAvailability>();
         if (getRevisionWorkflowStatus() != null) {
