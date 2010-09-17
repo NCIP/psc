@@ -171,7 +171,7 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
         if (!(o instanceof StudySegment)) return false;
 
         StudySegment studySegment = (StudySegment) o;
-        if (name != null ? !name.equals(studySegment.name) : studySegment.name != null) return false;
+        if (name != null ? !name.equals(studySegment.getName()) : studySegment.getName() != null) return false;
 
         return true;
     }
