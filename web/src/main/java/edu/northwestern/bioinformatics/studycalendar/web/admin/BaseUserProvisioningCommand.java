@@ -220,20 +220,18 @@ public abstract class BaseUserProvisioningCommand {
             changeableIdents = this.provisionableSiteIdentifiers;
         } else {
             PscRole role = PscRole.valueOf(change.getRole());
-            if (role == null) {
-                // use participation for non-PSC roles
-                allPermission = canProvisionParticipateInAllStudies;
-                changeableIdents = provisionableParticipatingStudyIdentifiers;
-            } else {
-                changeableIdents = new HashSet<String>();
-                if (role.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
-                    changeableIdents.addAll(this.provisionableManagedStudyIdentifiers);
-                    allPermission = this.canProvisionManagingAllStudies;
-                }
-                if (role.getUses().contains(PscRoleUse.SITE_PARTICIPATION)) {
-                    changeableIdents.addAll(this.provisionableParticipatingStudyIdentifiers);
-                    allPermission = allPermission || this.canProvisionParticipateInAllStudies;
-                }
+            boolean isManagement = role != null &&
+                role.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT);
+            boolean isParticipation = role != null &&
+                role.getUses().contains(PscRoleUse.SITE_PARTICIPATION);
+            changeableIdents = new HashSet<String>();
+            if (isManagement) {
+                changeableIdents.addAll(this.provisionableManagedStudyIdentifiers);
+                allPermission = this.canProvisionManagingAllStudies;
+            }
+            if (isParticipation || !isManagement) { // use participation for other roles
+                changeableIdents.addAll(this.provisionableParticipatingStudyIdentifiers);
+                allPermission = allPermission || this.canProvisionParticipateInAllStudies;
             }
         }
 

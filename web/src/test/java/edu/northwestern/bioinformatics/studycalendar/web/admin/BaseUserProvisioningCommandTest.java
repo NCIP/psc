@@ -344,6 +344,54 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         assertContains("Study not added", srm.getStudyIdentifiers(), "A");
     }
 
+    public void testProvisioningNotAllowedForManagingStudyWithAccessoryRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "lab_data_user", "add", "study", "A");
+        replayMocks(); // expect nothing
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testProvisioningAllowedForParticipatingStudyWithAccessoryRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "lab_data_user", "add", "study", "B");
+        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.LAB_DATA_USER);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
+    }
+
+    public void testProvisioningNotAllowedForManagingStudyWithGridServiceRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "registrar", "add", "study", "A");
+        replayMocks(); // expect nothing
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testProvisioningAllowedForParticipatingStudyWithGridServiceRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "registrar", "add", "study", "B");
+        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.REGISTRAR);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
+    }
+
     public void testAllStudiesProvisioningAllowedWithAllManagedPermissionAndTemplateManagerRole() throws Exception {
         command.setCanProvisionManagingAllStudies(true);
         command.setCanProvisionParticipateInAllStudies(false);
