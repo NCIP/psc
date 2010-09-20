@@ -45,28 +45,34 @@ psc.admin.UserAdmin = (function ($) {
       });
       var userMembershipsRole = user.memberships[role.key]
       if (userMembershipsRole != null) {
-
-        if (userMembershipsRole['sites'] != null) {
-          var membershipSiteList = userMembershipsRole['sites'].toString().split(",");
-          var isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
-        }
-
-        if (userMembershipsRole['studies'] != null) {
-          var membershipStudyList;
-          membershipStudyList = userMembershipsRole['studies'].toString().split(",");
-          var isStudySubset = isSubsetOfProvision(provisionableStudyList, membershipStudyList);
-          if (!isSiteSubset || !isStudySubset) {
+        var isSiteSubset;
+        var isStudySubset;
+        if (userMembershipsRole['sites'] != null && userMembershipsRole['studies'] != null) {
+          isSiteSubset = isSubsetOfProvision(provisionableSiteList,
+                   getMembershipList('sites', userMembershipsRole));
+          isStudySubset = isSubsetOfProvision(provisionableStudyList,
+                   getMembershipList('studies', userMembershipsRole));
+          if (isSiteSubset && isStudySubset) {
+            enabledGroupControl = true;
+          } else {
             enabledGroupControl = false;
           }
-        } else {
+        } else if (userMembershipsRole['studies'] != null) {
+          isStudySubset = isSubsetOfProvision(provisionableStudyList,
+                  getMembershipList('studies', userMembershipsRole));
+          if (!isStudySubset) {
+            enabledGroupControl = false;
+          }
+        } else if (userMembershipsRole['sites'] != null) {
+          var membershipSiteList = getMembershipList('sites', userMembershipsRole)
+          isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
           if (!isSiteSubset) {
             enabledGroupControl = false;
           }
-        }
-
-        if (!_.isEmpty(provisionableSiteList) && !_.isEmpty(membershipSiteList)) {
-          if (!_.include(provisionableSiteList,'__ALL__') && _.include(membershipSiteList,'__ALL__')) {
-            enabledSitesControl = false;
+          if (!_.isEmpty(provisionableSiteList) && !_.isEmpty(membershipSiteList)) {
+            if (!_.include(provisionableSiteList,'__ALL__') && _.include(membershipSiteList,'__ALL__')) {
+              enabledSitesControl = false;
+            }
           }
         }
       }
@@ -83,6 +89,10 @@ psc.admin.UserAdmin = (function ($) {
     } else {
       alert("No such role " + roleKey);
     }
+  }
+
+  function getMembershipList(kind, userMembershipsRole) {
+     return userMembershipsRole[kind].toString().split(",");
   }
 
   function isSubsetOfProvision(provisionableList, membershipList) {
