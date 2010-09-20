@@ -158,14 +158,14 @@ public class Subject extends AbstractMutableDomainObject {
 
         final Subject that = (Subject) o;
 
-        if (dateOfBirth != null ? !dateOfBirth.equals(that.dateOfBirth) : that.dateOfBirth != null)
+        if (dateOfBirth != null ? !dateOfBirth.equals(that.getDateOfBirth()) : that.getDateOfBirth() != null)
             return false;
-        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null)
+        if (firstName != null ? !firstName.equals(that.getFirstName()) : that.getFirstName() != null)
             return false;
-        if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
-        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
-        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
-        if (assignments != null ? !assignments.equals(that.assignments) : that.assignments != null)
+        if (gender != null ? !gender.equals(that.getGender()) : that.getGender() != null) return false;
+        if (lastName != null ? !lastName.equals(that.getLastName()) : that.getLastName() != null) return false;
+        if (personId != null ? !personId.equals(that.getPersonId()) : that.getPersonId() != null) return false;
+        if (assignments != null ? !assignments.equals(that.getAssignments()) : that.getAssignments() != null)
             return false;
 
         return true;

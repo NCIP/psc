@@ -40,7 +40,7 @@ public class WeekdayBlackout extends BlackoutDate {
 
         WeekdayBlackout that = (WeekdayBlackout) o;
 
-        if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.dayOfTheWeek) : that.dayOfTheWeek != null)
+        if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.getDayOfTheWeek()) : that.getDayOfTheWeek() != null)
             return false;
 
         return true;

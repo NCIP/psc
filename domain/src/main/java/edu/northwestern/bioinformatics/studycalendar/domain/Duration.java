@@ -112,7 +112,7 @@ public class Duration implements Comparable<Duration>, Cloneable {
 
         final Duration duration = (Duration) o;
 
-        if (quantity != null ? !quantity.equals(duration.quantity) : duration.quantity != null) return false;
+        if (quantity != null ? !quantity.equals(duration.getQuantity()) : duration.getQuantity() != null) return false;
         if (unit != duration.unit) return false;
 
         return true;

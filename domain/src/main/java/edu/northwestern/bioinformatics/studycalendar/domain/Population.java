@@ -123,9 +123,9 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 
         Population that = (Population) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null)
+        if (name != null ? !name.equals(that.getName()) : that.getName() != null)
             return false;
-        if (abbreviation != null ? !abbreviation.equals(that.abbreviation) : that.abbreviation != null)
+        if (abbreviation != null ? !abbreviation.equals(that.getAbbreviation()) : that.getAbbreviation() != null)
             return false;
         return true;
     }

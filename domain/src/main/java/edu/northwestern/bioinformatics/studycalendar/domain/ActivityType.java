@@ -87,7 +87,7 @@ public class ActivityType extends AbstractMutableDomainObject
 
         ActivityType activityType = (ActivityType) o;
 
-        return !(name != null ? !name.equals(activityType.name) : activityType.name != null);
+        return !(name != null ? !name.equals(activityType.getName()) : activityType.getName() != null);
 
     }
 

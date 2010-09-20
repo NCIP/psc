@@ -157,11 +157,11 @@ public class Notification extends AbstractMutableDomainObject {
 
         Notification that = (Notification) o;
 
-        if (actionRequired != that.actionRequired) return false;
-        if (dismissed != that.dismissed) return false;
-        if (assignment != null ? !assignment.equals(that.assignment) : that.assignment != null) return false;
-        if (message != null ? !message.equals(that.message) : that.message != null) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (actionRequired != that.isActionRequired()) return false;
+        if (dismissed != that.isDismissed()) return false;
+        if (assignment != null ? !assignment.equals(that.getAssignment()) : that.getAssignment() != null) return false;
+        if (message != null ? !message.equals(that.getMessage()) : that.getMessage() != null) return false;
+        if (title != null ? !title.equals(that.getTitle()) : that.getTitle() != null) return false;
 
         return true;
     }

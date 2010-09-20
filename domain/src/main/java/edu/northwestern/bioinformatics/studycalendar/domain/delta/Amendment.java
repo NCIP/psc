@@ -286,8 +286,8 @@ public class Amendment
 
         Amendment amendment = (Amendment) o;
 
-        if (date != null ? !date.equals(amendment.date) : amendment.date != null) return false;
-        if (name != null ? !name.equals(amendment.name) : amendment.name != null) return false;
+        if (date != null ? !date.equals(amendment.getDate()) : amendment.getDate() != null) return false;
+        if (name != null ? !name.equals(amendment.getName()) : amendment.getName() != null) return false;
 
         return true;
     }

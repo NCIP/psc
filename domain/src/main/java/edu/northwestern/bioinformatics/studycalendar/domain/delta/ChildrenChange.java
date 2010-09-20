@@ -105,7 +105,7 @@ public abstract class ChildrenChange extends Change {
 
         ChildrenChange that = (ChildrenChange) o;
 
-        if (getChild() != null ? !getChild().equals(that.child) : that.getChild() != null) return false;
+        if (getChild() != null ? !getChild().equals(that.getChild()) : that.getChild() != null) return false;
         if (getChildId() != null ? !getChildId().equals(that.getChildId()) : that.getChildId() != null) return false;
 
         return true;

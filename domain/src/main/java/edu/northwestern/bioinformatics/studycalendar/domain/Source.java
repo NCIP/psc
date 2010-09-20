@@ -111,7 +111,7 @@ public class Source extends AbstractMutableDomainObject
 
         Source source = (Source) o;
 
-        return !(name != null ? !name.equals(source.name) : source.name != null);
+        return !(name != null ? !name.equals(source.getName()) : source.getName() != null);
 
     }
 

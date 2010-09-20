@@ -350,16 +350,16 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
 		PlannedActivity that = (PlannedActivity) o;
 
-		if (activity != null ? !activity.equals(that.activity) : that.activity != null)
+		if (activity != null ? !activity.equals(that.getActivity()) : that.getActivity() != null)
 			return false;
-		if (condition != null ? !condition.equals(that.condition) : that.condition != null)
+		if (condition != null ? !condition.equals(that.getCondition()) : that.getCondition() != null)
 			return false;
-		if (day != null ? !day.equals(that.day) : that.day != null) return false;
-		if (weight != null ? !weight.equals(that.weight) : that.weight != null) return false;
-        if (details != null ? !details.equals(that.details) : that.details != null) return false;
-		if (plannedActivityLabels != null ? !plannedActivityLabels.equals(that.plannedActivityLabels) : that.plannedActivityLabels != null)
+		if (day != null ? !day.equals(that.getDay()) : that.getDay() != null) return false;
+		if (weight != null ? !weight.equals(that.getWeight()) : that.getWeight() != null) return false;
+        if (details != null ? !details.equals(that.getDetails()) : that.getDetails() != null) return false;
+		if (plannedActivityLabels != null ? !plannedActivityLabels.equals(that.getPlannedActivityLabels()) : that.getPlannedActivityLabels() != null)
 			return false;
-		if (population != null ? !population.equals(that.population) : that.population != null)
+		if (population != null ? !population.equals(that.getPopulation()) : that.getPopulation() != null)
 			return false;
 
 		return true;

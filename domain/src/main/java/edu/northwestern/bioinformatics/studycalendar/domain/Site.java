@@ -175,7 +175,7 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
 
         Site site = (Site) o;
 
-        if (getAssignedIdentifier() != null ? !getAssignedIdentifier().equals(site.getAssignedIdentifier()) : site.getAssignedIdentifier()!= null) {
+        if (getAssignedIdentifier() != null ? !getAssignedIdentifier().equals(site.getAssignedIdentifier()) : site.getAssignedIdentifier() != null) {
             return false;
         }
 

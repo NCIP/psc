@@ -538,9 +538,9 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
 
         Study study = (Study) o;
 
-        if (amendment != null ? !amendment.equals(study.amendment) : study.amendment != null)
+        if (amendment != null ? !amendment.equals(study.getAmendment()) : study.getAmendment() != null)
             return false;
-        if (assignedIdentifier != null ? !assignedIdentifier.equals(study.assignedIdentifier) : study.assignedIdentifier != null)
+        if (assignedIdentifier != null ? !assignedIdentifier.equals(study.getAssignedIdentifier()) : study.getAssignedIdentifier() != null)
             return false;
 
         return true;

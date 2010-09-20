@@ -244,7 +244,7 @@ public abstract class Delta<T extends Changeable>
         if (!(o instanceof Delta)) return false;
 
         Delta delta = (Delta) o;
-        if (node != null ? !node.equals(delta.node) : delta.node != null) return false;
+        if (node != null ? !node.equals(delta.getNode()) : delta.getNode() != null) return false;
         return true;
     }
 
