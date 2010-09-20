@@ -851,7 +851,7 @@
                         <c:forEach items="${study.populations}" var="population">
                             <li>
                                 <c:if test="${canEdit}">
-                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
+                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}&name=${population.name}&abbreviation=${population.abbreviation}"/>">
                                             ${population.abbreviation}: ${population.name}
                                     </a>
                                 </c:if>

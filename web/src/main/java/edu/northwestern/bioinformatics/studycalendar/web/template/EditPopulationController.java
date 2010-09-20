@@ -53,10 +53,19 @@ public class EditPopulationController extends PscSimpleFormController implements
         Population pop;
         Integer popId = ServletRequestUtils.getIntParameter(request, "population");
         Integer studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
+        String popName = ServletRequestUtils.getStringParameter(request, "name");
+        String popAbbr = ServletRequestUtils.getStringParameter(request, "abbreviation");
+
         if (popId == null) {
             pop = new Population();
         } else {
             pop = populationDao.getById(popId);
+        }
+        if (popName !=null) {
+            pop.setName(popName);
+        }
+        if (popAbbr != null) {
+            pop.setAbbreviation(popAbbr);
         }
         Study study = studyDao.getById(studyId);
         return new EditPopulationCommand(pop, populationService, amendmentService, study);
