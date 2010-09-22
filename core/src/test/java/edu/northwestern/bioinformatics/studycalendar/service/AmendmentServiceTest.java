@@ -9,7 +9,13 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.core.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.AmendmentMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.security.authorization.domainobjects.User;
+import org.springframework.mail.MailSender;
+
 import static org.easymock.EasyMock.*;
 
 import static java.util.Calendar.*;
@@ -34,8 +40,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private PlannedCalendar calendar;
     private Subject subject;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
-    private NotificationService notificationService;
     private TemplateDevelopmentService templateDevService;
+    private MailSender mailSender;
+    private MailMessageFactory mailMessageFactory;
 
 
     @Override
@@ -45,8 +52,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         populationService = registerMockFor(PopulationService.class);
-        notificationService = registerMockFor(NotificationService.class);
         daoFinder = new DynamicMockDaoFinder();
+        mailMessageFactory = registerMockFor(MailMessageFactory.class);
+        mailSender = registerMockFor(MailSender.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -78,7 +86,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
         service.setPopulationService(populationService);
-        service.setNotificationService(notificationService);
+        service.setMailMessageFactory(mailMessageFactory);
+        service.setMailSender(mailSender);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -142,7 +151,6 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         a1.setMandatory(false);
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
 
-
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
@@ -159,8 +167,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
         portlandSS.addStudySubjectAssignment(assignment);
         StudySubjectAssignmentDao.save(assignment);
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
-              
+
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
@@ -178,8 +185,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
 
         mockDeltaService.amend(assignment, a1);
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
-              
+
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
@@ -441,6 +447,37 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testSendMailForNewAmendmentsInStudy() throws Exception {
+        AmendmentMailMessage amendmentMailMessage = new AmendmentMailMessage();
+        expect(mailMessageFactory.createAmendmentMailMessage(study, a1)).andReturn(amendmentMailMessage);
+        mailSender.send(amendmentMailMessage);
+
+        replayMocks();
+        service.sendMailForNewAmendmentsInStudy(study, a1, Arrays.asList("user@email.com"));
+        verifyMocks();
+    }
+
+    public void testSendMailToUserForPossiblyScheduleChange() throws Exception {
+        assertEquals("Test setup failure", 1, portlandSS.getAmendmentApprovals().size());
+
+        service.setDeltaService(mockDeltaService);
+        a1.setMandatory(false);
+        AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
+        StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
+        User SSCM = AuthorizationObjectFactory.createCsmUser(1, "testUser");
+        SSCM.setEmailId("testUser@email.com");
+        assignment.setStudySubjectCalendarManager(SSCM);
+        portlandSS.addStudySubjectAssignment(assignment);
+        StudySubjectAssignmentDao.save(assignment);
+        expectMailSentForNewAmendment();
+
+        replayMocks();
+        service.approve(portlandSS, expectedApproval);
+        verifyMocks();
+        assertFalse("assignment must have one notification", assignment.getNotifications().isEmpty());
+    }
+
+
     //Helper Method
     private AmendmentApproval createAmendementApproval() {
         AmendmentApproval amendmentApproval = new AmendmentApproval();
@@ -448,5 +485,11 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         Amendment amendment = createAmendment("Amendment1", DateTools.createDate(2010, Calendar.APRIL, 1));
         amendmentApproval.setAmendment(amendment);
         return amendmentApproval;
+    }
+
+    private void expectMailSentForNewAmendment() {
+        AmendmentMailMessage amendmentMailMessage = new AmendmentMailMessage();
+        expect(mailMessageFactory.createAmendmentMailMessage(study, a1)).andReturn(amendmentMailMessage);
+        mailSender.send(amendmentMailMessage);
     }
 }

@@ -3,6 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_EXCEPTIONS_TO;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_REPLY_TO;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,13 +20,14 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class MailMessageFactory implements ServletContextAware {
+public class MailMessageFactory implements ServletContextAware, ApplicationPathAware {
     //    private static Log log = LogFactory.getLog(MailMessageFactory.class);
     private static Logger log = LoggerFactory.getLogger(MailMessageFactory.class);
 
     private freemarker.template.Configuration freemarkerConfiguration;
     private ServletContext servletContext;
     private Configuration configuration;
+    private String applicationPath;
 
     ////// FACTORY
 
@@ -54,6 +59,14 @@ public class MailMessageFactory implements ServletContextAware {
         }
     }
 
+    public AmendmentMailMessage createAmendmentMailMessage(Study study, Amendment amendment) {
+        AmendmentMailMessage message = new AmendmentMailMessage();
+        message.setStudy(study);
+        message.setAmendment(amendment);
+        message.setApplicationPath(applicationPath);
+        return configureMessage(message);
+    }
+
     private <T extends StudyCalendarMailMessage> T configureMessage(T message) {
         message.setFreemarkerConfiguration(freemarkerConfiguration);
         message.setConfiguration(configuration);
@@ -74,5 +87,9 @@ public class MailMessageFactory implements ServletContextAware {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    public void setApplicationPath(String applicationPath) {
+        this.applicationPath = applicationPath;
     }
 }

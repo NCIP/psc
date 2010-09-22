@@ -8,14 +8,19 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.AmendmentMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.mail.MailSender;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -27,12 +32,13 @@ public class AmendmentService {
     private DeltaService deltaService;
     private TemplateService templateService;
     private PopulationService populationService;
-    private NotificationService notificationService;
 
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
     private PlannedActivityDao plannedActivityDao;
+    private MailSender mailSender;
+    private MailMessageFactory mailMessageFactory;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -58,30 +64,36 @@ public class AmendmentService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void approve(StudySite studySite, AmendmentApproval... approvals) {
         for (AmendmentApproval approval : approvals) {
+            List<String> emailAddressList = new ArrayList<String>();
             studySite.addAmendmentApproval(approval);
-            if (approval.getAmendment().isMandatory()) {
-                for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
+            Amendment amendment = approval.getAmendment();
+            for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
+                if (amendment.isMandatory()) {
                     // TODO: some sort of notification about applied vs. not-applied amendments
-                    if (assignment.getCurrentAmendment().equals(approval.getAmendment().getPreviousAmendment())) {
-                        deltaService.amend(assignment, approval.getAmendment());
+                    if (assignment.getCurrentAmendment().equals(amendment.getPreviousAmendment())) {
+                        deltaService.amend(assignment, amendment);
                         Notification notification = new Notification(approval);
                         assignment.addNotification(notification);
-                        notificationService.notifyUsersForNewScheduleNotifications(notification);
-
-
                     } else {
-                        log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
-                                approval.getAmendment().getDisplayName(), assignment.getId());
+                            log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
+                                amendment.getDisplayName(), assignment.getId());
+                    }
+                } else {
+                    Notification notification = Notification.createNotificationForNonMandatoryAmendments(assignment, amendment);
+                    assignment.addNotification(notification);
+                    StudySubjectAssignmentDao.save(assignment);
+                }
+
+                User studySubjectCalendarManager = assignment.getStudySubjectCalendarManager();
+                if (studySubjectCalendarManager != null) {
+                    if (!emailAddressList.contains(studySubjectCalendarManager.getEmailId())) {
+                        emailAddressList.add(studySubjectCalendarManager.getEmailId());
                     }
                 }
-            } else {
-                for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
-                    Notification notification = Notification.createNotificationForNonMandatoryAmendments(assignment, approval.getAmendment());
-                    assignment.addNotification(notification);
-                    notificationService.notifyUsersForNewScheduleNotifications(notification);
-                    StudySubjectAssignmentDao.save(assignment);
+            }
 
-                }
+            if (!emailAddressList.isEmpty()) {
+                sendMailForNewAmendmentsInStudy(studySite.getStudy(), amendment, emailAddressList);
             }
         }
     }
@@ -225,6 +237,21 @@ public class AmendmentService {
         return amendmentApproval;
     }
 
+     public void sendMailForNewAmendmentsInStudy(Study study, Amendment amendment, List<String> emailAddressList) {
+        AmendmentMailMessage mailMessage = mailMessageFactory.createAmendmentMailMessage(study,amendment);
+        for (String toAddress: emailAddressList) {
+            if (mailMessage != null) {
+                try {
+                    mailMessage.setTo(toAddress);
+                    mailSender.send(mailMessage);
+                    log.debug("sending amendment notification to:" + toAddress);
+                } catch (Exception e) {
+                    log.error("Sending amendment notification e-mail message to {} failed: {}", toAddress, e.getMessage());
+                    log.debug("Message-sending error detail:", e);
+                }
+            }
+        }
+    }
     ////// CONFIGURATION
 
     @Required
@@ -263,12 +290,17 @@ public class AmendmentService {
     }
 
     @Required
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
     }
 
     @Required
-    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
-        this.plannedActivityDao = plannedActivityDao;
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    @Required
+    public void setMailMessageFactory(MailMessageFactory mailMessageFactory) {
+        this.mailMessageFactory = mailMessageFactory;
     }
 }
