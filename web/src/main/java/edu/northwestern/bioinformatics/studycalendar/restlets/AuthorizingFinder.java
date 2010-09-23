@@ -56,10 +56,16 @@ public class AuthorizingFinder extends SpringBeanFinder {
                 log.warn("Guarded resource has no authorizations for {}", request.getMethod());
                 return false;
             } else {
+                log.debug("Authorizations for this resource are {}", authorizations);
                 PscUser user = (PscUser) token.getPrincipal();
                 for (ResourceAuthorization authorization : authorizations) {
-                    if (authorization.permits(user)) return true;
+                    if (authorization.permits(user)) {
+                        log.debug("User {} permitted under {}", user, authorization);
+                        return true;
+                    }
                 }
+                log.debug("No resource authorizations fit {} ({})",
+                    user, user.getMemberships().values());
                 return false;
             }
         } else {
