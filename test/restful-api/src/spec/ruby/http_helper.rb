@@ -42,7 +42,7 @@ module HttpHelper
       if params
         params.map { |k, v| "#{CGI.escape k}=#{CGI.escape v}" }.join("&")
       end
-          
+
     "#{psc_url}/api/v1#{relative}" + (qs ? "?#{qs}" : "")
   end
 

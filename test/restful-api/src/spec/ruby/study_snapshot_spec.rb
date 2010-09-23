@@ -3,14 +3,14 @@ describe "/study_snapshot" do
     @studies = [
       # Released, but not approved studies
       @nu152 = PscTest::Fixtures.createSingleEpochStudy("NU152", "Treatment1", ["A", "B"].to_java(:String)),
-      @nu562 = PscTest::Fixtures.createSingleEpochStudy("NU562", "Treatment2", ["C", "D"].to_java(:String))     
+      @nu562 = PscTest::Fixtures.createSingleEpochStudy("NU562", "Treatment2", ["C", "D"].to_java(:String))
     ]
     @studies.each do|s|
       application_context['studyService'].createInDesignStudyFromExamplePlanTree(s)
       application_context['studyService'].save(s)
     end
   end
-  
+
   it "forbids study templates access for unauthenticated users" do
     get "/studies/NU152/template/development", :as => nil
     response.status_code.should == 401
@@ -26,7 +26,7 @@ describe "/study_snapshot" do
     response.xml_attributes("study-segment", "name").should include("A")
     response.xml_attributes("study-segment", "name").should include("B")
   end
-    
+
   it "shows a study template to a study coordinator" do
     get "/studies/NU562/template/development", :as => :alice
 
@@ -36,6 +36,6 @@ describe "/study_snapshot" do
     response.xml_attributes("epoch", "name").should include("Treatment2")
     response.xml_attributes("study-segment", "name").should include("C")
     response.xml_attributes("study-segment", "name").should include("D")
-  end 
-  
+  end
+
 end

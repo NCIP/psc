@@ -2,7 +2,7 @@ describe "/reports/scheduled-activities.json" do
 
   before do
     #create site
-    @site = load_site('IL036') 
+    @site = load_site('IL036')
     #create study with an amendment
     @study = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
     @amendment = PscTest::Fixtures.createAmendment("am", PscTest.createDate(2008, 12, 10))

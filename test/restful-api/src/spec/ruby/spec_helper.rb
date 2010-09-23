@@ -39,7 +39,7 @@ module PscTest
     # DateTools expects month as java.util.Calendar constant. They start with 0.
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
   end
-  
+
   def self.createDeltaFor(node, *changes)
     Psc::Domain::Delta::Delta.createDeltaFor(
       node, changes.to_java(Psc::Domain::Delta::Change)
@@ -56,17 +56,17 @@ module PscTest
       @web_request = Java::OrgSpringframeworkWebContextRequest::ServletWebRequest.new(mock_request)
       @flush = true
     end
-    
+
     def begin_session
       PscTest.log("-------- begin interceptor session --------")
       open_session_interceptors.each { |interceptor| interceptor.preHandle(@web_request) }
     end
-    
+
     def interrupt_session
       end_session
       begin_session
     end
-    
+
     def end_session
       open_session_interceptors.reverse.each { |interceptor|
         if @flush
@@ -76,7 +76,7 @@ module PscTest
       }
       PscTest.log("---------- end interceptor session --------")
     end
-  
+
     def open_session_interceptors
       %w(auditOpenSessionInViewInterceptor openSessionInViewInterceptor).collect do |bean_name|
         application_context[bean_name]

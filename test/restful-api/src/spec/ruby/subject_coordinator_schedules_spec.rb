@@ -17,7 +17,7 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         end
       end
     end
-    
+
     # The released version of ECOG170
     @ecog170 = create_study 'ECOG170' do |s|
       s.planned_calendar do |cal|
@@ -32,35 +32,35 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
       end
     end
     #create a studysites
-    @studySites = [       
+    @studySites = [
        @studySite1 = PscTest::Fixtures.createStudySite(@nu480, @site),
        @studySite2 = PscTest::Fixtures.createStudySite(@ecog170, @site)
-    ] 
+    ]
     @studySites.each do |ss|
        application_context['studySiteDao'].save(ss)
     end
-    
+
     #approve an existing amendment
     @approve_date = PscTest.createDate(2008, 12, 20)
     @studySite1.approveAmendment(@nu480.amendment, @approve_date)
     @studySite2.approveAmendment( @ecog170.amendment, @approve_date)
     application_context['studySiteDao'].save(@studySite1)
-    application_context['studySiteDao'].save(@studySite2)    
-    
-    #create subject                
-    @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23)) 
-    @subject2 = PscTest::Fixtures.createSubject("ID002", "Perry", "Carl", PscTest.createDate(1978, 4, 17)) 
+    application_context['studySiteDao'].save(@studySite2)
+
+    #create subject
+    @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+    @subject2 = PscTest::Fixtures.createSubject("ID002", "Perry", "Carl", PscTest.createDate(1978, 4, 17))
     @subject3 = PscTest::Fixtures.createSubject("ID003", "Art", "Kelly", PscTest.createDate(1975, 6, 12))
-    
+
     #Assign studies to the subject coordinator
     application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, @site, erin)
     application_context['templateService'].assignTemplateToSubjectCoordinator(@ecog170, @site, erin)
     application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, @site, hannah)
-            
+
     #create a study subject assignment
     @studySegment1 = @nu480.plannedCalendar.epochs.first.studySegments.first
     @studySegment2 = @ecog170.plannedCalendar.epochs.first.studySegments.first
-    @studySubjectAssignments= [ 
+    @studySubjectAssignments= [
       @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) , "SS001", erin),
       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject1, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) , "SS002", erin),
       @studySubjectAssignment3 = application_context['subjectService'].assignSubject(@subject2, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) , "SS003", erin),
@@ -84,7 +84,7 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         it "is XML" do
           response.content_type.should == 'text/xml'
         end
-        
+
         it "has the right number of assignments" do
           response.xml_elements('//subject-assignment').should have(3).elements
         end
@@ -109,15 +109,15 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         it "has the right number of activities" do
           response.json["days"].inject(0) { |sum, (_, day)| sum + day["activities"].size }.should == 8
         end
-        
+
         it "[days][date][activities][each activity] contains subject name" do
           response.json["days"]['2008-12-28']['activities'][0]["subject"].should == "Alan Boyarski"
         end
-        
+
         it "[study_segments] contains subject name" do
           response.json["study_segments"][0]["subject"].should == "Alan Boyarski"
         end
-        
+
       end
       describe "ics" do
         before do
@@ -148,7 +148,7 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
           before do
             get "/users/hannah/roles/subject-coordinator/schedules", :as => :erin
           end
-          
+
           it "has the right number of assignments" do
             response.xml_elements('//subject-assignment').should have(1).elements
           end
@@ -186,7 +186,7 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
       get "/users/erin/roles/subject-coordinator/schedules", :as => :frieda
       response.status_code.should == 403
     end
-    
+
     it "404s for non-existent users" do
       get "/users/unknown/roles/subject-coordinator/schedules", :as => :erin
       response.status_code.should == 404

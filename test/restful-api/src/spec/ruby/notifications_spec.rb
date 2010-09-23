@@ -16,13 +16,13 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
         end
       end
     end
-    #create subject                
+    #create subject
     @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
     #create studysite
     @studySite = PscTest::Fixtures.createStudySite(@nu480, @site)
     @studySite.approveAmendment(@nu480.amendment, PscTest.createDate(2008, 12, 25))
     application_context['studySiteDao'].save(@studySite)
-    
+
     @studySegment = @nu480.planned_calendar.epochs.first.study_segments.first
     @studySubjectAssignment = application_context['subjectService'].assignSubject(@subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) , "SS001", erin)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment)
@@ -30,7 +30,7 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 28), "Reconsent Activity2")
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 29), "Reconsent Activity3")
   end
-  
+
   describe "GET" do
     describe "xml" do
       before do
@@ -44,7 +44,7 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
         response.content_type.should == 'text/xml'
       end
       it "has the right number of notifications" do
-        response.xml_elements('//notification').should have(3).elements 
+        response.xml_elements('//notification').should have(3).elements
       end
     end
     describe "json" do
@@ -60,10 +60,10 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
       it "contains the right number of notifications" do
         response.json["notifications"].size.should == 3
       end
-      
+
     end
   end
-  
+
   describe "/{notification-identifier}" do
     before do
        @notification1 = @studySubjectAssignment.notifications[0]
@@ -94,7 +94,7 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
           response.content_type.should == 'application/json'
         end
         it "contains the right number of notifications" do
-          response.json["title"].should == "Reconsent scheduled for 12/29/2008" 
+          response.json["title"].should == "Reconsent scheduled for 12/29/2008"
         end
       end
     end

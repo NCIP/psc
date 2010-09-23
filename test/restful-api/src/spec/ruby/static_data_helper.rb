@@ -11,18 +11,18 @@ module StaticDataHelper
       load_site(attributes['assignedIdentifier'])
     end
   end
-  
+
   def load_user(username)
     application_context['userService'].getUserByName(username)
   end
-  
+
   # creates literate accessors for each of the users defined in users.yml
   YAML.load_file("#{File.dirname(__FILE__)}/../../../target/spec/resources/users.yml").each do |username, _|
     define_method(username) do
       load_user(username)
     end
   end
-  
+
   def sample_activity(name)
     application_context['activityDao'].getByName(name) or raise "No test activity named #{name}"
   end

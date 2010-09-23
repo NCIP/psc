@@ -31,7 +31,7 @@ describe "/studies" do
         application_context['studyService'].save(s)
       end
     end
-  
+
     def study_names
       response.xml_attributes('study', "assigned-identifier")
     end
