@@ -365,6 +365,7 @@ public class Fixtures {
         Activity activity = createActivity(activityName);
         reconcentEvent.setActivity(activity);
         reconcentEvent.setIdealDate(DateTools.createDate(year, month, day - 2));
+        reconcentEvent.changeState(new Scheduled("Created From Reconsent",DateTools.createDate(year, month, day - 2)));
         return reconcentEvent;
     }
 
