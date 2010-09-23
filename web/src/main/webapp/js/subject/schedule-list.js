@@ -143,7 +143,7 @@ psc.namespace("subject");
           } else {
             var nextVisibleBlock;
             $('#scheduled-activities > div.day').each(function (i, dayBlock) {
-              if (date < $(dayBlock).data('date')) {
+              if (date <= $(dayBlock).data('date')) {
                 nextVisibleBlock = $(dayBlock);
                 return false;
               }
