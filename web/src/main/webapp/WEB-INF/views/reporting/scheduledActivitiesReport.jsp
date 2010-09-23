@@ -131,7 +131,13 @@
                     new YAHOO.widget.DataTable("results", reportColumns, reportDS, {scrollable:true});
                 },
                 onFailure: function(response) {
-                    $('errors').innerHTML = "Please correct date format";
+                    var fullText = response.responseText;
+                    var statusCode = response.status
+                    var statusText = response.statusText
+                    var userFriendlyText = fullText.replace(statusCode,  "");
+
+                    userFriendlyText = userFriendlyText.replace(statusText, "");
+                    $('errors').innerHTML = userFriendlyText.trim();
                 }
             })
         }
