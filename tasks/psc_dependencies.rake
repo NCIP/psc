@@ -103,7 +103,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "1.0.5.RELEASE"
+CTMS_COMMONS_VERSION = "1.0.6.RELEASE"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
@@ -216,8 +216,7 @@ EHCACHE = struct(
 SECURITY = struct(
   :acegi_csm  => ctms_commons_lib("ctms-commons-acegi-csm"),
   :acegi_grid => ctms_commons_lib("ctms-commons-acegi-grid"),
-  :suite_authorization => cbiit_lib('gov.nih.nci.cabig.ctms',
-    'ctms-commons-suite-authorization', 'ctms-commons-suite-authorization', '0.5.0.RELEASE'),
+  :suite_authorization => ctms_commons_lib('ctms-commons-suite-authorization'),
   :clm => cbiit_lib(
     "gov.nih.nci.security", "clm", "clm", "4.2.beta",
     "Conditional-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
