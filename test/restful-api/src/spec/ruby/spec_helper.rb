@@ -9,7 +9,7 @@ begin
   lc = Java::OrgSlf4j::LoggerFactory.getILoggerFactory();
   conf = Java::ChQosLogbackClassicJoran::JoranConfigurator.new
   conf.context = lc
-  lc.shutdownAndReset # beware: changed to .reset in later logbacks
+  lc.reset
   conf.doConfigure(Java::JavaLang::System.getProperty('logback.configurationFile'))
   # Uncomment for debugging:
   # Java::ChQosLogbackCoreUtil::StatusPrinter.print(lc);
