@@ -1,7 +1,5 @@
 describe "/subjects/{subject-identifier}/schedules/activities" do
   before do
-    @site = PscTest::Fixtures.createSite("TestSite", "site")
-    application_context['siteDao'].save( @site)
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
       s.planned_calendar do |cal|
@@ -17,12 +15,14 @@ describe "/subjects/{subject-identifier}/schedules/activities" do
     end
 
     @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
-    @studySite = PscTest::Fixtures.createStudySite(@nu480, @site)
+    @studySite = PscTest::Fixtures.createStudySite(@nu480, northwestern)
     @studySite.approveAmendment(@nu480.amendment, PscTest.createDate(2008, 12, 25))
     application_context['studySiteDao'].save(@studySite)
 
     @studySegment = @nu480.planned_calendar.epochs.first.study_segments.first
-    @studySubjectAssignment = application_context['subjectService'].assignSubject(@subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) , "SS001", erin)
+    @studySubjectAssignment = application_context['subjectService'].assignSubject(
+      @subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) ,
+      "SS001", Java::JavaUtil::HashSet.new, erin)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment)
     @scheduled_activities = @studySubjectAssignment.scheduledCalendar.scheduledStudySegments.first.activities
   end

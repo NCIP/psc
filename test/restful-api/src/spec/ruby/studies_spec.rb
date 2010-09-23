@@ -9,25 +9,7 @@ describe "/studies" do
         @nu120 = PscTest::Fixtures.createInDevelopmentBasicTemplate("NU 120")
       ]
       @studies.each do |s|
-        application_context['studyService'].save(s)
-      end
-    end
-    it "forbids access for unauthenticated users" do
-      get "/studies", :as => nil
-      response.status_code.should == 401
-    end
-  end
-
-  describe "xml" do
-    before do
-      @studies = [
-        # Released, but not approved studies
-        @nu480 = PscTest::Fixtures.createSingleEpochStudy("NU 480", "Treatment", ["A", "B"].to_java(:String)),
-        @ecog170 = PscTest::Fixtures.createSingleEpochStudy("ECOG 170", "LTFU", [].to_java(:String)),
-        # In development studies
-        @nu120 = PscTest::Fixtures.createInDevelopmentBasicTemplate("NU 120")
-      ]
-      @studies.each do |s|
+        s.add_managing_site(mayo)
         application_context['studyService'].save(s)
       end
     end
@@ -36,7 +18,12 @@ describe "/studies" do
       response.xml_attributes('study', "assigned-identifier")
     end
 
-    it "shows all studies to a study coordinator" do
+    it "forbids access for unauthenticated users" do
+      get "/studies", :as => nil
+      response.status_code.should == 401
+    end
+
+    it "shows all studies to an all-studies SCTB" do
       get "/studies", :as => :alice
       response.status_code.should == 200
       response.status_message.should == "OK"
@@ -46,7 +33,7 @@ describe "/studies" do
       study_names.should include("NU 120")
     end
 
-    it "shows all studies to a study admin" do
+    it "shows all studies to an all-studies SQM" do
       get "/studies", :as => :barbara
       response.status_code.should == 200
       response.status_message.should == "OK"
@@ -73,7 +60,7 @@ describe "/studies" do
         application_context['studySiteService'].assignStudyToSites(@ecog170, [northwestern, mayo])
       end
 
-      it "shows appropriate released studies released to an NU site coord" do
+      it "shows appropriate released studies released to an NU SQM" do
         get "/studies", :as => :carla
         response.should be_success
         response.xml_elements('//study').should have(2).elements
@@ -81,7 +68,7 @@ describe "/studies" do
         study_names.should include("ECOG 170")
       end
 
-      it "shows appropriate released studies released to a mayo site coord" do
+      it "shows appropriate released studies released to a mayo STA" do
         get "/studies", :as => :frieda
         response.should be_success
         response.xml_elements('//study').should have(1).elements
@@ -100,17 +87,12 @@ describe "/studies" do
         }
       end
 
-      it "does not accept a study snapshot from a study admin" do
+      it "does not accept a study snapshot from an SQM" do
         post '/studies', @nu328_xml, :as => :barbara
         response.status_code.should == 403
       end
 
-      it "does not accept a study snapshot from a site coordinator" do
-        post '/studies', @nu328_xml, :as => :carla
-        response.status_code.should == 403
-      end
-
-      it "does not accept a study snapshot from a subject coordinator" do
+      it "does not accept a study snapshot from an SSCM" do
         post '/studies', @nu328_xml, :as => :erin
         response.status_code.should == 403
       end
@@ -120,7 +102,7 @@ describe "/studies" do
         response.status_code.should == 403
       end
 
-      it "accepts a study snapshot from a study coordinator" do
+      it "accepts a study snapshot from a study creator" do
         post '/studies', @nu328_xml, :as => :alice
         #response.should be_success
         get '/studies', :as => :alice
@@ -138,7 +120,6 @@ describe "/studies" do
 
       it "does not accept a study snapshot with the same name as an existing study" do
         post '/studies', psc_xml("study-snapshot", 'assigned-identifier' => "NU 120"), :as => :alice
-        response.should be_client_error
         response.status_code.should == 400
       end
     end
@@ -154,36 +135,45 @@ describe "/studies" do
       @nu481 = psc_xml("study", 'assigned-identifier' => "NU481", 'provider' => "Provider For Study 481")
       post '/studies', @nu480, :as => :juno
       post '/studies', @nu481, :as => :juno
-      response.status_code.should == 201 #created
+      response.status_code.should == 201
 
       get '/studies.json?q=NU', :as => :alice
     end
+
     it "is successful" do
       response.should be_success
     end
+
     it "contains the right number of studies" do
       response.json["studies"].size.should == 2
     end
+
     it "is JSON" do
       response.content_type.should == 'application/json'
     end
+
     it "contains the right number of studies" do
       response.json["studies"].size.should == 2
     end
+
     describe "study structure" do
       before do
         @studies = response.json["studies"]
         @study = @studies[0]
       end
+
       it "has assigned identifier" do
         @study["assigned_identifier"].should == "NU480"
       end
+
       it "has provider" do
         @study["provider"].should == "Provider For Study 480"
       end
+
       it "has long-title" do
         @study["long_title"].should == "long title for Study 480"
       end
+
       it "has secondary-identifiers" do
         @study["secondary_identifiers"].size.should == 2
       end
@@ -192,9 +182,11 @@ describe "/studies" do
         before do
           @secondary_identifier = @study["secondary_identifiers"][1]
         end
+
         it "has type" do
           @secondary_identifier["type"].should == "secondary1"
         end
+
         it "has value" do
           @secondary_identifier["value"].should == "ECOG-1697"
         end

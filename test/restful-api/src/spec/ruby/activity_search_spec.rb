@@ -1,16 +1,10 @@
 describe "/activities" do
-  before do
-    @manual_source = application_context['sourceDao'].get_by_name('PSC - Manual Activity Creation')
-    @manual_source.should_not be_nil
-  end
-
   describe "GET" do
     it "returns all sources without parameters" do
       get '/activities', :as => :alice
       response.status_code.should == 200
-      response.xml_elements("//source").should have(2).elements
+      response.xml_elements("//source").should have(1).elements
       response.xml_attributes("source", "name").should include("Northwestern University")
-      response.xml_attributes("source", "name").should include("PSC - Manual Activity Creation")
     end
 
     def response_activity_count

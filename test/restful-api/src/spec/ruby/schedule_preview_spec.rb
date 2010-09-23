@@ -33,11 +33,11 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
       before do
         get "/studies/NU480/template/current/schedule-preview",
           :params => { "segment[0]" => @nu480_a.grid_id, "start_date[0]" => "2009-05-04" },
-          :as => :erin
+          :as => :alice
       end
 
       it "is successful" do
-        response.should be_success
+        response.status_code.should == 200
       end
 
       it "is XML" do
@@ -55,11 +55,11 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
           before do
             get "/studies/NU480/template/current/schedule-preview.json",
               :params => { "segment[0]" => @nu480_a.grid_id, "start_date[0]" => "2009-05-01" },
-              :as => :erin
+              :as => :alice
           end
 
           it "is successful" do
-            response.should be_success
+            response.status_code.should == 200
           end
 
           it "is JSON" do
@@ -74,7 +74,7 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
         it "cannot refer to an unreleased segment" do
           get "/studies/NU480/template/current/schedule-preview.json",
             :params => { "segment[0]" => @nu480_c.grid_id, "start_date[0]" => "2009-05-01" },
-            :as => :erin
+            :as => :alice
           response.status_code.should == 400
           response.entity.should =~ /No study segment with identifier/
         end
@@ -85,11 +85,11 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
           before do
             get "/studies/NU480/template/development/schedule-preview.json",
               :params => { "segment[0]" => @nu480_c.grid_id, "start_date[0]" => "2009-05-15" },
-              :as => :erin
+              :as => :alice
           end
 
           it "is successful" do
-            response.should be_success
+            response.status_code.should == 200
           end
 
           it "is JSON" do
@@ -106,7 +106,7 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
         before do
           get "/studies/NU480/template/current/schedule-preview.json",
             :params => { "segment[0]" => @nu480_a.grid_id, "start_date[0]" => "2009-05-02" },
-            :as => :erin
+            :as => :alice
         end
 
         describe "[days]" do
@@ -118,8 +118,6 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
             @days.keys.sort.should == %w(2009-05-02 2009-05-05 2009-05-09
               2009-05-12 2009-05-16 2009-05-19 2009-05-23 2009-05-26)
           end
-
-          it "includes the hidden_activities flag"
 
           describe "[2009-05-05][activities][0]" do
             before do
@@ -217,23 +215,23 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
       end
     end
 
-    it "returns 400 for unparsable date" do
+    it "returns 400 for an unparsable date" do
       get "/studies/NU480/template/current/schedule-preview.json",
         :params => { "segment[0]" => @nu480_a.grid_id, "start_date[0]" => "200905-04" },
-        :as => :erin
+        :as => :alice
       response.status_code.should == 400
     end
 
-    it "returns 400 for no pair for segment & date" do
+    it "returns 400 when there's no date for a segment" do
       get "/studies/NU480/template/current/schedule-preview.json",
-        :params => { "segment[0]" => @nu480_a.grid_id }, :as => :erin
+        :params => { "segment[0]" => @nu480_a.grid_id }, :as => :alice
       response.status_code.should == 400
     end
 
-    it "returns 404 for no study exist" do
+    it "returns 404 for an unknown study" do
       get "/studies/NoStudy/template/current/schedule-preview.json",
         :params => { "segment[0]" => @nu480_a.grid_id, "start_date[0]" => "2009-05-07" },
-        :as => :erin
+        :as => :alice
       response.status_code.should == 404
     end
   end

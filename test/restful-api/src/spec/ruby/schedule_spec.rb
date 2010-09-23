@@ -1,10 +1,6 @@
 describe "/schedule" do
 
   before do
-    #create site
-    @site1 = PscTest::Fixtures.createSite("My Site", "site1")
-    application_context['siteDao'].save( @site1)
-
     #create a study with an amendment
     @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
     @amend_date1 = PscTest.createDate(2008, 12, 10)
@@ -15,7 +11,7 @@ describe "/schedule" do
     application_context['studyService'].save(@study1)
 
     #create a studysite
-    @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)
+    @studySite1 = PscTest::Fixtures.createStudySite(@study1, northwestern)
     application_context['studySiteDao'].save(@studySite1)
 
     #approve an existing amendment
@@ -30,25 +26,22 @@ describe "/schedule" do
     @date = PscTest.createDate(2008, 12, 26)
 
     #create a study subject assignment
-    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", erin)
+    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
+      @subject1, @studySite1, @studySegment1, @date, "ID001", Java::JavaUtil::HashSet.new, erin)
     @studySubjectAssignment1.grid_id = "assignment1" #replace auto-generated assignment-id
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
-
   end
 
   describe "GET" do
-
      before do
-
        #create another subject under the same study
        @birthDate2 = PscTest.createDate(1985, 5, 1)
        @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)
-       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", erin)
+       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
+         @subject2, @studySite1, @studySegment1, @date, "ID002", Java::JavaUtil::HashSet.new, erin)
        @studySubjectAssignment2.grid_id = "assignment2" #replace auto-generated assignment-id
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)
-
      end
-
 
     it "forbids access to a scheduled study segment of a given assignment to an unauthorized user" do
       get "/studies/NU480/schedules/assignment1", :as => nil
@@ -64,14 +57,10 @@ describe "/schedule" do
       response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment1")
       response.xml_elements('//scheduled-study-segment').should have(1).elements
     end
-
   end
 
-
   describe "POST" do
-
     before do
-
       #xml request to add the study-segment next schedule
       @next_assignment1_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27",
       'study-segment-id' => "segment2", 'mode' => "immediate")

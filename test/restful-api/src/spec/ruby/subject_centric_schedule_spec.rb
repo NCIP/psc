@@ -1,9 +1,5 @@
 describe "/subjects/{subject-identifier}/schedules" do
   before do
-    #create site
-    @site = PscTest::Fixtures.createSite("TestSite", "site")
-    application_context['siteDao'].save( @site)
-
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
       s.planned_calendar do |cal|
@@ -31,11 +27,12 @@ describe "/subjects/{subject-identifier}/schedules" do
         end
       end
     end
-    #create a studysites
+
     @studySites = [
-       @studySite1 = PscTest::Fixtures.createStudySite(@nu480, @site),
-       @studySite2 = PscTest::Fixtures.createStudySite(@ecog170, @site)
+       @studySite1 = PscTest::Fixtures.createStudySite(@nu480, northwestern),
+       @studySite2 = PscTest::Fixtures.createStudySite(@ecog170, northwestern)
     ]
+
     @studySites.each do |ss|
        application_context['studySiteDao'].save(ss)
     end
@@ -50,16 +47,16 @@ describe "/subjects/{subject-identifier}/schedules" do
     #create subject
     @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
 
-    #Assign studies to the subject coordinator
-    application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, @site, erin)
-    application_context['templateService'].assignTemplateToSubjectCoordinator(@ecog170, @site, erin)
-
     #create a study subject assignment
     @studySegment1 = @nu480.plannedCalendar.epochs.first.studySegments.first
     @studySegment2 = @ecog170.plannedCalendar.epochs.first.studySegments.first
-    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) , "SS001", erin)
+    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
+      @subject, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
+      "SS001", Java::JavaUtil::HashSet.new, erin)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
-    @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) , "SS002", erin)
+    @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
+      @subject, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
+      "SS002", Java::JavaUtil::HashSet.new, erin)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)
   end
 
@@ -71,7 +68,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "is successful" do
-        response.should be_success
+        response.status_code.should == 200
       end
 
       it "is XML" do
@@ -89,7 +86,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "is sucessful" do
-        response.should be_success
+        response.status_code.should == 200
       end
 
       it "is json" do
@@ -116,15 +113,15 @@ describe "/subjects/{subject-identifier}/schedules" do
             end
 
             it "refers to the study" do
-              @activity["study"].should == "ECOG170"
+              @activity["study"].should == "NU480"
             end
 
             it "refers to the segment" do
-              @activity["study_segment"].should == "Followup"
+              @activity["study_segment"].should == "Treatment"
             end
 
             it "refers to the plan day" do
-              @activity["plan_day"].should == "3"
+              @activity["plan_day"].should == "5"
             end
 
             describe "[current_state]" do
@@ -139,11 +136,11 @@ describe "/subjects/{subject-identifier}/schedules" do
 
             describe "[activity]" do
               it "has the name" do
-                @activity["activity"]["name"].should == "Physical Test"
+                @activity["activity"]["name"].should == "Rituximab"
               end
 
               it "has the type" do
-                @activity["activity"]["type"].should == "Other"
+                @activity["activity"]["type"].should == "Intervention"
               end
             end
 
@@ -215,7 +212,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "is successful" do
-        response.should be_success
+        response.status_code.should == 200
       end
 
       it "is ICS calendar" do
@@ -293,7 +290,5 @@ describe "/subjects/{subject-identifier}/schedules" do
       response.status_code.should == 403
       response.status_message.should == "Forbidden"
     end
-
   end
-
 end

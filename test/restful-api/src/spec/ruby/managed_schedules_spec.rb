@@ -1,9 +1,5 @@
 describe "/users/{username}/roles/subject-coordinator/schedules" do
   before do
-    #create site
-    @site = PscTest::Fixtures.createSite("TestSite", "site")
-    application_context['siteDao'].save( @site)
-
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
       s.planned_calendar do |cal|
@@ -33,8 +29,8 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
     end
     #create a studysites
     @studySites = [
-       @studySite1 = PscTest::Fixtures.createStudySite(@nu480, @site),
-       @studySite2 = PscTest::Fixtures.createStudySite(@ecog170, @site)
+       @studySite1 = PscTest::Fixtures.createStudySite(@nu480, northwestern),
+       @studySite2 = PscTest::Fixtures.createStudySite(@ecog170, northwestern)
     ]
     @studySites.each do |ss|
        application_context['studySiteDao'].save(ss)
@@ -52,33 +48,37 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
     @subject2 = PscTest::Fixtures.createSubject("ID002", "Perry", "Carl", PscTest.createDate(1978, 4, 17))
     @subject3 = PscTest::Fixtures.createSubject("ID003", "Art", "Kelly", PscTest.createDate(1975, 6, 12))
 
-    #Assign studies to the subject coordinator
-    application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, @site, erin)
-    application_context['templateService'].assignTemplateToSubjectCoordinator(@ecog170, @site, erin)
-    application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, @site, hannah)
-
     #create a study subject assignment
     @studySegment1 = @nu480.plannedCalendar.epochs.first.studySegments.first
     @studySegment2 = @ecog170.plannedCalendar.epochs.first.studySegments.first
     @studySubjectAssignments= [
-      @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) , "SS001", erin),
-      @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject1, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) , "SS002", erin),
-      @studySubjectAssignment3 = application_context['subjectService'].assignSubject(@subject2, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) , "SS003", erin),
-      @studySubjectAssignment4 = application_context['subjectService'].assignSubject(@subject3, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) , "SS004", hannah)
+      @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
+        @subject1, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
+        "SS001", Java::JavaUtil::HashSet.new, erin),
+      @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
+        @subject1, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
+        "SS002", Java::JavaUtil::HashSet.new, erin),
+      @studySubjectAssignment3 = application_context['subjectService'].assignSubject(
+        @subject2, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
+        "SS003", Java::JavaUtil::HashSet.new, erin),
+      @studySubjectAssignment4 = application_context['subjectService'].assignSubject(
+        @subject3, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
+        "SS004", Java::JavaUtil::HashSet.new, juno)
     ]
     @studySubjectAssignments.each do |ssa|
       application_context['studySubjectAssignmentDao'].save(ssa)
     end
   end
+
   describe "GET" do
-    describe "subject coordinator own schedules" do
+    describe "SCTB's own schedules" do
       describe "xml" do
         before do
-          get "/users/erin/roles/subject-coordinator/schedules", :as => :erin
+          get "/users/erin/managed-schedules", :as => :erin
         end
 
         it "is successful" do
-          response.should be_success
+          response.status_code.should == 200
         end
 
         it "is XML" do
@@ -93,13 +93,14 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
           response.xml_elements('//scheduled-activity').should have(8).activities
         end
       end
+
       describe "json" do
         before do
-          get "/users/erin/roles/subject-coordinator/schedules.json", :as => :erin
+          get "/users/erin/managed-schedules.json", :as => :erin
         end
 
         it "is successful" do
-          response.should be_success
+          response.status_code.should == 200
         end
 
         it "is XML" do
@@ -119,13 +120,14 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         end
 
       end
+
       describe "ics" do
         before do
-          get "/users/erin/roles/subject-coordinator/schedules.ics", :as => :erin
+          get "/users/erin/managed-schedules.ics", :as => :erin
         end
 
         it "is successful" do
-          response.should be_success
+          response.status_code.should == 200
         end
 
         it "is ICS calendar" do
@@ -143,10 +145,11 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         end
       end
     end
-    describe "subject coordinator colleage schedules" do
+
+    describe "collegue schedules" do
         describe "xml" do
           before do
-            get "/users/hannah/roles/subject-coordinator/schedules", :as => :erin
+            get "/users/juno/managed-schedules", :as => :erin
           end
 
           it "has the right number of assignments" do
@@ -157,18 +160,20 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
             response.xml_elements('//scheduled-activity').should have(4).activities
           end
         end
+
         describe "json" do
           before do
-            get "/users/hannah/roles/subject-coordinator/schedules.json", :as => :erin
+            get "/users/juno/managed-schedules.json", :as => :erin
           end
 
           it "has the right number of activities" do
             response.json["days"].inject(0) { |sum, (_, day)| sum + day["activities"].size }.should == 4
           end
         end
+
         describe "ics" do
           before do
-            get "/users/hannah/roles/subject-coordinator/schedules.ics", :as => :erin
+            get "/users/juno/managed-schedules.ics", :as => :erin
           end
 
           it "has the right number of events" do
@@ -182,13 +187,15 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
           end
         end
     end
-    it "forbids access to schedules other than subject coordinator" do
-      get "/users/erin/roles/subject-coordinator/schedules", :as => :frieda
+
+    it "forbids access to schedules other than by SCTB, STA, DR" do
+      get "/users/erin/managed-schedules", :as => :alice
       response.status_code.should == 403
     end
 
     it "404s for non-existent users" do
-      get "/users/unknown/roles/subject-coordinator/schedules", :as => :erin
+      pending "#1213"
+      get "/users/unknown/managed-schedules", :as => :erin
       response.status_code.should == 404
     end
   end

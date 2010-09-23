@@ -21,7 +21,7 @@ Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJR
 
 # Shortcuts for PSC java packages
 module Psc
-  %w(domain domain.delta core service).each do |pkg|
+  %w(domain domain.delta core service tools).each do |pkg|
     class_eval <<-RUBY
       module #{pkg.split('.').map { |n| n.capitalize }.join('::')}
         include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
@@ -111,12 +111,14 @@ end
 Spec::Runner.configure do |config|
   config.before(:each) do
     application_context['databaseInitializer'].beforeEach
+    Psc::Tools::FormatTools.setLocal(Psc::Tools::FormatTools.new("MM/dd/yyyy"))
     @hibernate = PscTest::HibernateOpenSession.new
     @hibernate.begin_session
   end
 
   config.after(:each) do
     @hibernate.end_session
+    Psc::Tools::FormatTools.clearLocalInstance
     application_context['databaseInitializer'].afterEach
   end
 end

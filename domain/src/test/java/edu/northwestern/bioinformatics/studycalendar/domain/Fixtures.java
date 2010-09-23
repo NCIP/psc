@@ -479,6 +479,16 @@ public class Fixtures {
         return site;
     }
 
+    public static SpecificDateBlackout createBlackoutDate(int year, int month, int day, String desc, Site site) {
+        SpecificDateBlackout bd = new SpecificDateBlackout();
+        bd.setDescription(desc);
+        bd.setSite(site);
+        bd.setDay(day);
+        bd.setMonth(month);
+        bd.setYear(year);
+        return bd;
+    }
+
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();

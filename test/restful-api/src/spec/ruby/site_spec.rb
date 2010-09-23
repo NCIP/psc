@@ -11,14 +11,14 @@ describe "/site" do
     end
 
     it "includes site attributes in XML response" do
-      get "/sites/MA034", :as => :zelda
+      get "/sites/MA034", :as => :juno
       response.xml_attributes("site", "assigned-identifier").should include("MA034")
       response.xml_attributes("site", "site-name").should include("Massachussets General Hospital")
       response.xml_elements('//site').should have(1).elements
     end
 
-    it "shows all sites to sysadmins" do
-      get "/sites/MA034", :as => :zelda
+    it "shows all sites to POIMs" do
+      get "/sites/MA034", :as => :juno
       response.status_code.should == 200
     end
 
@@ -29,6 +29,7 @@ describe "/site" do
     end
 
     it "shows sites to affiliated users" do
+      pending "#1208"
       get "/sites/IL036", :as => :carla # carla is authorized for IL036
       response.status_code.should == 200
     end
@@ -52,7 +53,7 @@ describe "/site" do
       end
 
       it "works for authorized user" do
-        put '/sites/PA121', @tju_xml, :as => :zelda
+        put '/sites/PA121', @tju_xml, :as => :juno
         response.status_code.should == 201
         response.xml_attributes("site", "assigned-identifier").should include("PA121")
         response.xml_attributes("site", "site-name").should include("Thomas Jefferson University")
@@ -73,7 +74,7 @@ describe "/site" do
       end
 
       it "updates an existing site for an authorized sysadmin" do
-        put '/sites/MA034', @update_mass, :as => :zelda
+        put '/sites/MA034', @update_mass, :as => :juno
         response.status_code.should == 200
         response.xml_attributes("site", "assigned-identifier").should include("MA034")
         response.xml_attributes("site", "site-name").should include("Massive Dynamic Cancer Center")

@@ -1,8 +1,5 @@
 describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/notifications" do
   before do
-    #create site
-    @site = PscTest::Fixtures.createSite("TestSite", "site")
-    application_context['siteDao'].save( @site)
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
       s.planned_calendar do |cal|
@@ -19,12 +16,14 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
     #create subject
     @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
     #create studysite
-    @studySite = PscTest::Fixtures.createStudySite(@nu480, @site)
+    @studySite = PscTest::Fixtures.createStudySite(@nu480, northwestern)
     @studySite.approveAmendment(@nu480.amendment, PscTest.createDate(2008, 12, 25))
     application_context['studySiteDao'].save(@studySite)
 
     @studySegment = @nu480.planned_calendar.epochs.first.study_segments.first
-    @studySubjectAssignment = application_context['subjectService'].assignSubject(@subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) , "SS001", erin)
+    @studySubjectAssignment = application_context['subjectService'].assignSubject(
+      @subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26),
+      "SS001", Java::JavaUtil::HashSet.new, erin)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment)
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 27), "Reconsent Activity1")
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 28), "Reconsent Activity2")
@@ -34,33 +33,38 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
   describe "GET" do
     describe "xml" do
       before do
-         #get "/schedules/ID001", :as => :erin
         get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications", :as => :erin
       end
+
       it "is successful" do
-        response.should be_success
+        response.status_code.should == 200
       end
+
       it "is XML" do
         response.content_type.should == 'text/xml'
       end
+
       it "has the right number of notifications" do
         response.xml_elements('//notification').should have(3).elements
       end
     end
+
     describe "json" do
       before do
         get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications.json", :as => :erin
       end
+
       it "is successful" do
-        response.should be_success
+        response.status_code.should == 200
       end
+
       it "is JSON" do
         response.content_type.should == 'application/json'
       end
+
       it "contains the right number of notifications" do
         response.json["notifications"].size.should == 3
       end
-
     end
   end
 
@@ -68,36 +72,45 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
     before do
        @notification1 = @studySubjectAssignment.notifications[0]
     end
+
     describe "GET" do
       describe "xml" do
         before do
-         get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications/#{@notification1.gridId}", :as => :erin
+          get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications/#{@notification1.gridId}", :as => :erin
         end
+
         it "is successful" do
-          response.should be_success
+          response.status_code.should == 200
         end
+
         it "is XML" do
           response.content_type.should == 'text/xml'
         end
+
         it "has the right content" do
           response.xml_attributes("notification", "title").should include("Reconsent scheduled for 12/29/2008")
         end
       end
+
       describe "json" do
         before do
           get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications/#{@notification1.gridId}.json", :as => :erin
         end
+
         it "is successful" do
           response.should be_success
         end
+
         it "is JSON" do
           response.content_type.should == 'application/json'
         end
+
         it "contains the right number of notifications" do
           response.json["title"].should == "Reconsent scheduled for 12/29/2008"
         end
       end
     end
+
     describe "PUT" do
       it "updates the notification dismissed flag to true" do
           get "/subjects/ID001/assignments/#{@studySubjectAssignment.gridId}/notifications/#{@notification1.gridId}.json", :as => :erin

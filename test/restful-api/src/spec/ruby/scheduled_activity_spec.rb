@@ -1,9 +1,5 @@
 describe "/scheduled_activity" do
   before do
-      #create site
-      @site = PscTest::Fixtures.createSite("TestSite", "site")
-      application_context['siteDao'].save( @site)
-
       #create study with an amendment
       @study = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
       @amendment = PscTest::Fixtures.createAmendment("am", PscTest.createDate(2008, 12, 10))
@@ -31,7 +27,7 @@ describe "/scheduled_activity" do
       application_context['studyService'].save(@study)
 
       #create a studysite
-      @studySite = PscTest::Fixtures.createStudySite(@study, @site)
+      @studySite = PscTest::Fixtures.createStudySite(@study, northwestern)
       application_context['studySiteDao'].save(@studySite)
 
       #approve an existing amendment
@@ -42,12 +38,12 @@ describe "/scheduled_activity" do
       #create subject
       @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
 
-      #Assign study to the subject coordinator
-      application_context['templateService'].assignTemplateToSubjectCoordinator(@study, @site, erin)
-
       #create a study subject assignment
       @studySegment = @study.plannedCalendar.epochs.first.studySegments.first
-      @studySubjectAssignment = application_context['subjectService'].assignSubject(@subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) , "SS001", erin)
+      @studySubjectAssignment = application_context['subjectService'].assignSubject(
+        @subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26),
+        "SS001", Java::JavaUtil::HashSet.new, erin
+      )
       application_context['studySubjectAssignmentDao'].save(@studySubjectAssignment)
 
       #get Scheduled activity

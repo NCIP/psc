@@ -16,7 +16,7 @@ describe "/osgi/bundles" do
     end
 
     def slf4j_bundle
-      response.json.find { |b| b['symbolic_name'] == 'com.springsource.slf4j.api' }
+      response.json.find { |b| b['symbolic_name'] == 'slf4j.api' }
     end
 
     it "has a symbolic name in the bundle description" do
@@ -36,7 +36,7 @@ describe "/osgi/bundles" do
     end
 
     it "has a name in the bundle description" do
-      slf4j_bundle['name'].should == "SLF4J API"
+      slf4j_bundle['name'].should == "slf4j-api"
     end
 
     it "has a description in the bundle description" do

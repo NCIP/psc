@@ -22,11 +22,13 @@ describe "/subject_assignments" do
 
       # register alan
       application_context['subjectService'].assignSubject(
-        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26), "ID001", erin)
+        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26),
+        "ID001", Java::JavaUtil::HashSet.new, erin)
 
       # register bob
       application_context['subjectService'].assignSubject(
-        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13), "ID002", erin)
+        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13),
+        "ID002", Java::JavaUtil::HashSet.new, erin)
     end
 
     it "forbids access to a subject assignment to an unauthorized user" do
@@ -60,13 +62,13 @@ describe "/subject_assignments" do
     end
 
     it "does not allow the subject coordinator to assign patients when the template has not been made available" do
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      post "/studies/NU480/sites/IL036/subject-assignments",
+        @subject_registration_xml, :as => :darlene
 
       response.status_code.should == 403
     end
 
     it "allows creation of a new subject-assignment for an authorized user" do
-      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
@@ -74,7 +76,6 @@ describe "/subject_assignments" do
     end
 
     it "gives 400 if studySegment with gridId from xml not found in system" do
-      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
       @wrong_subject_registration_xml = psc_xml(
           "registration", 'first-study-segment-id' => "unknownSegment", 'date' => "2008-12-27",
           'subject-coordinator-name' => "erin"

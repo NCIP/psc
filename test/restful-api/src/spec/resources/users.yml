@@ -27,9 +27,10 @@ erin:
       sites: ['IL036', 'PA015']
     study_subject_calendar_manager:
       sites: ['IL036', 'PA015']
+      studies: ['__ALL__']
 frieda:
   roles:
-    study_qa_manager:
+    study_team_administrator:
       sites: ['MN026']
 gertrude:
   roles:
@@ -41,11 +42,12 @@ hannah:
   roles:
     study_subject_calendar_manager:
       sites: ['MN026']
+      studies: ['__ALL__']
     study_calendar_template_builder:
-      sites: ['__ALL__']
+      sites: ['MN026']
       studies: ['__ALL__']
     study_creator:
-      sites: ['__ALL__']
+      sites: ['MN026']
 
 # Juno is a superuser -- all permissions at all sites
 juno:

@@ -13,7 +13,7 @@ module StaticDataHelper
   end
 
   def load_user(username)
-    application_context['userService'].getUserByName(username)
+    application_context['pscUserService'].getAuthorizableUser(username)
   end
 
   # creates literate accessors for each of the users defined in users.yml
