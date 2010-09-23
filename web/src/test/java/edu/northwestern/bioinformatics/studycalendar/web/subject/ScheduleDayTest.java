@@ -3,10 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.subject;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
 /**
  * @author Rhett Sutphin
@@ -86,7 +87,7 @@ public class ScheduleDayTest extends StudyCalendarTestCase {
     public void testIsTodayWhenItIsWithTimestamp() throws Exception {
         Calendar laterToday = Calendar.getInstance();
         laterToday.setTime(TODAY);
-        laterToday.add(Calendar.MINUTE, 13);
+        laterToday.add(Calendar.SECOND, 3);
         assertTrue(new ScheduleDay(laterToday.getTime(), TODAY).isToday());
     }
 
