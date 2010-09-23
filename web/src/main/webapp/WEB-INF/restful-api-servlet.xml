@@ -21,6 +21,7 @@
         <property name="except" value="docs.*"/>
         <property name="next" ref="router"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
     <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>

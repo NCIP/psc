@@ -3,12 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.authentication.AuthenticationHelper;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.context.SecurityContextImpl;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -41,9 +43,11 @@ public class PscGuard extends Guard {
     public static final ChallengeScheme PSC_TOKEN
         = new ChallengeScheme("HTTP_psc_token", "psc_token", "Token-based pluggable authentication for PSC");
     public static final String AUTH_TOKEN_ATTRIBUTE_KEY = "pscAuthenticationToken";
+    private static final String DIRECT_AUTH_ATTRIBUTE_KEY = "pscDirectlyAuthenticated";
 
     private Pattern except;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public PscGuard() {
         super(null, ChallengeScheme.HTTP_BASIC, "PSC");
@@ -140,11 +144,30 @@ public class PscGuard extends Guard {
                 return false;
             } else {
                 setCurrentAuthenticationToken(request, auth);
+                setAcegiSecurityContext(request, auth);
                 return auth.isAuthenticated();
             }
         } catch (AuthenticationException ae) {
             log.debug("Authentication using injected authentication provider failed", ae);
             return false;
+        }
+    }
+
+    private void setAcegiSecurityContext(Request request, Authentication auth) {
+        SecurityContextHolder.setContext(new SecurityContextImpl());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        request.getAttributes().put(DIRECT_AUTH_ATTRIBUTE_KEY, true);
+    }
+
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        clearAcegiSecurityContext(request);
+    }
+
+    private void clearAcegiSecurityContext(Request request) {
+        Boolean locallySet = (Boolean) request.getAttributes().get(DIRECT_AUTH_ATTRIBUTE_KEY);
+        if (locallySet != null && locallySet) {
+            SecurityContextHolder.clearContext();
         }
     }
 
@@ -177,6 +200,11 @@ public class PscGuard extends Guard {
     @Required
     public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
         this.installedAuthenticationSystem = installedAuthenticationSystem;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     ///// INNER
