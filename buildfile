@@ -1370,7 +1370,7 @@ namespace :ci do
   end
 
   desc "Continuous integration test build"
-  task :integration => ['fake_unit_tests_already_run'] do
+  task :integration => ['fake_unit_tests_already_run', 'psc:restful-api-test:setup'] do
     task('integration').invoke
   end
 end
