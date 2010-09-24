@@ -67,6 +67,14 @@ public class AuthorizationScopeUpdaterListenerTest extends StudyCalendarTestCase
             sitePersister, null));
     }
 
+    // this shouldn't happen, but does
+    public void testDoesNothingWhenOldStateUnknown() throws Exception {
+        fireEvent(new PostUpdateEvent(new Site(), 9,
+            new Object[] { "0309", "G", "F" },
+            null,
+            sitePersister, null));
+    }
+
     private void fireEvent(PostUpdateEvent event) {
         replayMocks();
         listener.onPostUpdate(event);
