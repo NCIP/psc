@@ -29,7 +29,7 @@ describe "GET" do
         get "/users/frieda/roles/Study%20Team%20Administrator", :as => :frieda
         response.status_code.should == 200
         response.status_message.should == "OK"
-        response.xml_attributes('role-site', "all").should == ["false"]
+        response.xml_attributes('role-sites', "all").should == ["false"]
         response.xml_elements('//site').size.should == 1
         response.xml_attributes("site", "assigned-identifier").should include("MN026")
       end
@@ -54,8 +54,8 @@ describe "GET" do
         get "/users/hannah/roles/Study%20Calendar%20Template%20Builder", :as => :hannah
         response.status_code.should == 200
         response.status_message.should == "OK"
-        response.xml_elements('//role-study').size.should == 1
-        response.xml_attributes('role-study', "all").should == ["true"]
+        response.xml_elements('//role-studies').size.should == 1
+        response.xml_attributes('role-studies', "all").should == ["true"]
       end
     end
   end

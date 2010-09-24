@@ -485,24 +485,24 @@
 
     <xsd:complexType name="Role">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            <xsd:element ref="psc:role-site" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="psc:role-study" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:role-sites" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:role-studies" minOccurs="0" maxOccurs="1"/>
         </xsd:choice>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="role-site" type="psc:RoleSite" />
+    <xsd:element name="role-sites" type="psc:RoleSites" />
 
-    <xsd:complexType name="RoleSite">
+    <xsd:complexType name="RoleSites">
         <xsd:sequence>
             <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="all" type="xsd:boolean" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="role-study" type="psc:RoleStudy" />
+    <xsd:element name="role-studies" type="psc:RoleStudies" />
 
-    <xsd:complexType name="RoleStudy">
+    <xsd:complexType name="RoleStudies">
         <xsd:sequence>
             <xsd:element name="study" type="psc:Study" maxOccurs="unbounded"/>
         </xsd:sequence>

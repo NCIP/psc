@@ -39,17 +39,17 @@ public class UserRoleMembershipsXmlSerializerTest extends StudyCalendarXmlTestCa
     public void testCreateElementWithAllSites() throws Exception {
         SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forAllSites();
         Element actualElement = serializer.createElement(mem);
-        Element roleSiteElement = actualElement.element(XsdElement.ROLE_SITE.xmlName());
-        assertEquals("Wrong element name", XsdElement.ROLE_SITE.xmlName(), roleSiteElement.getName());
-        assertEquals("Wrong all site scope", "true", roleSiteElement.attributeValue(XsdAttribute.ALL.xmlName()));
+        Element roleSitesElement = actualElement.element(XsdElement.ROLE_SITES.xmlName());
+        assertEquals("Wrong element name", XsdElement.ROLE_SITES.xmlName(), roleSitesElement.getName());
+        assertEquals("Wrong all site scope", "true", roleSitesElement.attributeValue(XsdAttribute.ALL.xmlName()));
     }
 
     public void testCreateElementWithAnySites() throws Exception {
         SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site);
         Element actualElement = serializer.createElement(mem);
-        Element roleSiteElement = actualElement.element(XsdElement.ROLE_SITE.xmlName());
-        assertEquals("Wrong all site scope", "false", roleSiteElement.attributeValue(XsdAttribute.ALL.xmlName()));
-        Element siteElement = roleSiteElement.element(XsdElement.SITE.xmlName());
+        Element roleSitesElement = actualElement.element(XsdElement.ROLE_SITES.xmlName());
+        assertEquals("Wrong all site scope", "false", roleSitesElement.attributeValue(XsdAttribute.ALL.xmlName()));
+        Element siteElement = roleSitesElement.element(XsdElement.SITE.xmlName());
         assertEquals("Wrong element name", XsdElement.SITE.xmlName(), siteElement.getName());
         assertEquals("Wrong site identifier", site.getAssignedIdentifier(),
                 siteElement.attributeValue(XsdAttribute.SITE_ASSIGNED_IDENTIFIER.xmlName()));
@@ -58,17 +58,17 @@ public class UserRoleMembershipsXmlSerializerTest extends StudyCalendarXmlTestCa
     public void testCreateElementWithAllStudies() throws Exception {
         SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forAllStudies();
         Element actualElement = serializer.createElement(mem);
-        Element roleStudyElement = actualElement.element(XsdElement.ROLE_STUDY.xmlName());
-        assertEquals("Wrong element name", XsdElement.ROLE_STUDY.xmlName(), roleStudyElement.getName());
-        assertEquals("Wrong all study scope", "true", roleStudyElement.attributeValue(XsdAttribute.ALL.xmlName()));
+        Element roleStudiesElement = actualElement.element(XsdElement.ROLE_STUDIES.xmlName());
+        assertEquals("Wrong element name", XsdElement.ROLE_STUDIES.xmlName(), roleStudiesElement.getName());
+        assertEquals("Wrong all study scope", "true", roleStudiesElement.attributeValue(XsdAttribute.ALL.xmlName()));
     }
 
     public void testCreateElementWithAnyStudies() throws Exception {
         SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forStudies(study);
         Element actualElement = serializer.createElement(mem);
-        Element roleStudyElement = actualElement.element(XsdElement.ROLE_STUDY.xmlName());
-        assertEquals("Wrong all study scope", "false", roleStudyElement.attributeValue(XsdAttribute.ALL.xmlName()));
-        Element studyElement = roleStudyElement.element(XsdElement.STUDY.xmlName());
+        Element roleStudiesElement = actualElement.element(XsdElement.ROLE_STUDIES.xmlName());
+        assertEquals("Wrong all study scope", "false", roleStudiesElement.attributeValue(XsdAttribute.ALL.xmlName()));
+        Element studyElement = roleStudiesElement.element(XsdElement.STUDY.xmlName());
         assertEquals("Wrong element name", XsdElement.STUDY.xmlName(), studyElement.getName());
         assertEquals("Wrong study identifier", study.getAssignedIdentifier(),
                 studyElement.attributeValue(XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.xmlName()));

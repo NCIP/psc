@@ -25,33 +25,33 @@ public class UserRoleMembershipsXmlSerializer extends AbstractStudyCalendarXmlCo
         Element userRoleElement = rootElement().create();
         XsdAttribute.USER_ROLE_NAME.addTo(userRoleElement, userRoleMembership.getRole().getDisplayName());
         if (userRoleMembership.hasSiteScope()) {
-            Element roleSite = XsdElement.ROLE_SITE.create();
+            Element roleSites = XsdElement.ROLE_SITES.create();
             if (userRoleMembership.isAllSites()) {
-                XsdAttribute.ALL.addTo(roleSite, true);
+                XsdAttribute.ALL.addTo(roleSites, true);
             } else {
-                XsdAttribute.ALL.addTo(roleSite, false);
+                XsdAttribute.ALL.addTo(roleSites, false);
                 for (String siteIdentifier : userRoleMembership.getSiteIdentifiers()) {
                     Element site = XsdElement.SITE.create();
                     XsdAttribute.SITE_ASSIGNED_IDENTIFIER.addTo(site, siteIdentifier);
-                    roleSite.add(site);
+                    roleSites.add(site);
                 }
             }
-        userRoleElement.add(roleSite);
+        userRoleElement.add(roleSites);
         }
 
         if (userRoleMembership.hasStudyScope()) {
-            Element roleStudy = XsdElement.ROLE_STUDY.create();
+            Element roleStudies = XsdElement.ROLE_STUDIES.create();
             if (userRoleMembership.isAllStudies()) {
-                XsdAttribute.ALL.addTo(roleStudy, true);
+                XsdAttribute.ALL.addTo(roleStudies, true);
             } else {
-                XsdAttribute.ALL.addTo(roleStudy, false);
+                XsdAttribute.ALL.addTo(roleStudies, false);
                 for (String studyIdentifier : userRoleMembership.getStudyIdentifiers()) {
                     Element study = XsdElement.STUDY.create();
                     XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.addTo(study, studyIdentifier);
-                    roleStudy.add(study);
+                    roleStudies.add(study);
                 }
             }
-        userRoleElement.add(roleStudy);
+        userRoleElement.add(roleStudies);
         }
         return userRoleElement;
     }
