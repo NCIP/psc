@@ -43,19 +43,6 @@ public class MailMessageFactory implements ServletContextAware, ApplicationPathA
         }
     }
 
-    public ScheduleNotificationMailMessage createScheduleNotificationMailMessage(String toAddress,
-                                                                                 final Notification notification) {
-        if (toAddress == null || StringUtils.isEmpty(toAddress)) {
-            log.error("to address is null or empty. can not send email for new schedules. ");
-            return null;
-        } else {
-            ScheduleNotificationMailMessage message = configureMessage(new ScheduleNotificationMailMessage());
-            message.setTo(toAddress);
-            message.setNotification(notification);
-            return message;
-        }
-    }
-
     public NotificationMailMessage createNotificationMailMessage(String subjectHeader, String message) {
         NotificationMailMessage mailMessage = new NotificationMailMessage();
         mailMessage.setSubjectHeader(subjectHeader);

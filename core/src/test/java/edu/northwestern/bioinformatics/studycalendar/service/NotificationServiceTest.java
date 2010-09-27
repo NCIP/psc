@@ -2,14 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.NotificationMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import org.easymock.classextension.EasyMock;
 import org.springframework.mail.MailSender;
 
@@ -67,29 +62,5 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         replayMocks();
         notificationService.sendNotificationMailToUsers(subjectHeader, message, Arrays.asList(address));
         verifyMocks();
-    }
-
-    public void testNotifyUsersForNewScheduleNotifications() {
-        String emailAddress = "user@email.com";
-        User manager = AuthorizationObjectFactory.createCsmUser(63L, "newguy");
-        manager.setEmailId(emailAddress);
-        ScheduleNotificationMailMessage notificationMailMessage = new ScheduleNotificationMailMessage();
-        AdverseEvent ae = new AdverseEvent();
-        Notification notification = createNotification(manager, ae);
-        EasyMock.expect(mailMessageFactory.createScheduleNotificationMailMessage(emailAddress, notification)).andReturn(notificationMailMessage);
-        mailSender.send(notificationMailMessage);
-
-        replayMocks();
-        notificationService.notifyUsersForNewScheduleNotifications(notification);
-
-        verifyMocks();
-    }
-
-    private Notification createNotification(User manager, AdverseEvent ae) {
-        StudySubjectAssignment a = new StudySubjectAssignment();
-        a.setStudySubjectCalendarManager(manager);
-        Notification notification = new Notification(ae);
-        notification.setAssignment(a);
-        return notification;
     }
 }

@@ -5,11 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.NotificationMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,25 +52,6 @@ public class NotificationService {
             //do not send the email
             studySubjectAssignment.getNotifications().add(notification);
             studySubjectAssignmentDao.save(studySubjectAssignment);
-        }
-    }
-
-    public void notifyUsersForNewScheduleNotifications(final Notification notification) {
-        String toAddress = null;
-        if (notification != null && notification.getAssignment() != null && notification.getAssignment().getStudySubjectCalendarManager() != null) {
-            toAddress = notification.getAssignment().getStudySubjectCalendarManager().getEmailId();
-        }
-
-        ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
-        if (mailMessage != null) {
-            try {
-                mailSender.send(mailMessage);
-                logger.debug("sending notification to:" + toAddress);
-            } catch (MailException e) {
-                logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
-            } catch (Exception e) {
-                logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
-            }
         }
     }
 
