@@ -10,7 +10,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-@Deprecated
+@Deprecated /* Remove in 2.10 */
 public class SubjectCoordinatorSchedulesResource extends AbstractPscResource {
     @Override
     public void init(Context context, Request request, Response response) {
