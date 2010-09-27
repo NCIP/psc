@@ -7,12 +7,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.NotificationMailMessage;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.easymock.classextension.EasyMock;
 import org.springframework.mail.MailSender;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +53,20 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         notificationService.addNotificationIfNothingIsScheduledForPatient();
         verifyMocks();
         assertEquals("assignment must have one notification", 1, studySubjectAssignment.getNotifications().size());
+    }
+
+    public void testSendNotificationMailToUsers() {
+        String subjectHeader = "testSubject";
+        String message = "This is the test message for email notification";
+        String address = "test@email.com";
+        NotificationMailMessage mailMessage =  new NotificationMailMessage();
+        EasyMock.expect(mailMessageFactory.createNotificationMailMessage(subjectHeader, message)).andReturn(mailMessage);
+        mailMessage.setTo(address);
+        mailSender.send(mailMessage);
+
+        replayMocks();
+        notificationService.sendNotificationMailToUsers(subjectHeader, message, Arrays.asList(address));
+        verifyMocks();
     }
 
     public void testNotifyUsersForNewScheduleNotifications() {
