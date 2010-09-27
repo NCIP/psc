@@ -33,8 +33,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
     <bean id="mutatorFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
-    <bean id="subjectCoordinatorDashboardService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
     <bean id="importActivitiesService" autowire="byType"
