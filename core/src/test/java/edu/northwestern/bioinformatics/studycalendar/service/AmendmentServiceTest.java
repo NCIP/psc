@@ -10,11 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.core.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.AmendmentMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import org.springframework.mail.MailSender;
 
 import static org.easymock.EasyMock.*;
 
@@ -41,8 +38,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private Subject subject;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
     private TemplateDevelopmentService templateDevService;
-    private MailSender mailSender;
-    private MailMessageFactory mailMessageFactory;
+    private NotificationService notificationService;
 
 
     @Override
@@ -52,9 +48,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         populationService = registerMockFor(PopulationService.class);
+        notificationService = registerMockFor(NotificationService.class);
         daoFinder = new DynamicMockDaoFinder();
-        mailMessageFactory = registerMockFor(MailMessageFactory.class);
-        mailSender = registerMockFor(MailSender.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -86,8 +81,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
         service.setPopulationService(populationService);
-        service.setMailMessageFactory(mailMessageFactory);
-        service.setMailSender(mailSender);
+        service.setNotificationService(notificationService);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -447,21 +441,12 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testSendMailForNewAmendmentsInStudy() throws Exception {
-        AmendmentMailMessage amendmentMailMessage = new AmendmentMailMessage();
-        expect(mailMessageFactory.createAmendmentMailMessage(study, a1)).andReturn(amendmentMailMessage);
-        mailSender.send(amendmentMailMessage);
-
-        replayMocks();
-        service.sendMailForNewAmendmentsInStudy(study, a1, Arrays.asList("user@email.com"));
-        verifyMocks();
-    }
-
     public void testSendMailToUserForPossiblyScheduleChange() throws Exception {
         assertEquals("Test setup failure", 1, portlandSS.getAmendmentApprovals().size());
-
+        study.setAssignedIdentifier("testStudy");
         service.setDeltaService(mockDeltaService);
         a1.setMandatory(false);
+        a1.setDate(DateTools.createSqlDate(2004, DECEMBER, 1));
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
         StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
         User SSCM = AuthorizationObjectFactory.createCsmUser(1, "testUser");
@@ -469,12 +454,14 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         assignment.setStudySubjectCalendarManager(SSCM);
         portlandSS.addStudySubjectAssignment(assignment);
         StudySubjectAssignmentDao.save(assignment);
-        expectMailSentForNewAmendment();
+        String subject = "testStudy has been amended";
+        String message = "One or more subject schedules on testStudy may have been amended according to A1 as of 2004-12-01. " +
+                "For more information or to apply this amendment, please login to Patient Study Calendar.";
+        notificationService.sendNotificationMailToUsers(subject, message, Arrays.asList(SSCM.getEmailId()));
 
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
-        assertFalse("assignment must have one notification", assignment.getNotifications().isEmpty());
     }
 
 
@@ -485,11 +472,5 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         Amendment amendment = createAmendment("Amendment1", DateTools.createDate(2010, Calendar.APRIL, 1));
         amendmentApproval.setAmendment(amendment);
         return amendmentApproval;
-    }
-
-    private void expectMailSentForNewAmendment() {
-        AmendmentMailMessage amendmentMailMessage = new AmendmentMailMessage();
-        expect(mailMessageFactory.createAmendmentMailMessage(study, a1)).andReturn(amendmentMailMessage);
-        mailSender.send(amendmentMailMessage);
     }
 }

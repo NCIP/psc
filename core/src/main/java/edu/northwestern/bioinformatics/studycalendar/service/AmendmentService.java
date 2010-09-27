@@ -8,13 +8,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.AmendmentMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.mail.MailSender;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +34,7 @@ public class AmendmentService {
     private AmendmentDao amendmentDao;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
     private PlannedActivityDao plannedActivityDao;
-    private MailSender mailSender;
-    private MailMessageFactory mailMessageFactory;
+    private NotificationService notificationService;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -237,20 +233,19 @@ public class AmendmentService {
         return amendmentApproval;
     }
 
-     public void sendMailForNewAmendmentsInStudy(Study study, Amendment amendment, List<String> emailAddressList) {
-        AmendmentMailMessage mailMessage = mailMessageFactory.createAmendmentMailMessage(study,amendment);
-        for (String toAddress: emailAddressList) {
-            if (mailMessage != null) {
-                try {
-                    mailMessage.setTo(toAddress);
-                    mailSender.send(mailMessage);
-                    log.debug("sending amendment notification to:" + toAddress);
-                } catch (Exception e) {
-                    log.error("Sending amendment notification e-mail message to {} failed: {}", toAddress, e.getMessage());
-                    log.debug("Message-sending error detail:", e);
-                }
-            }
+    public void sendMailForNewAmendmentsInStudy(Study study, Amendment amendment, List<String> emailAddressList) {
+        String subjectHeader = study.getAssignedIdentifier().concat(" has been amended");
+        String message;
+        if (amendment.isMandatory()) {
+            message = "One or more subject schedules on ".concat(study.getAssignedIdentifier()).
+                    concat(" have been amended according to ").concat(amendment.getName()).concat(" as of ").
+                    concat(amendment.getDate().toString()).concat(". For more information, please login to Patient Study Calendar.");
+        } else {
+            message = "One or more subject schedules on ".concat(study.getAssignedIdentifier()).
+                    concat(" may have been amended according to ").concat(amendment.getName()).concat(" as of ").
+                    concat(amendment.getDate().toString()).concat(". For more information or to apply this amendment, please login to Patient Study Calendar.");
         }
+        notificationService.sendNotificationMailToUsers(subjectHeader, message, emailAddressList);
     }
     ////// CONFIGURATION
 
@@ -295,12 +290,7 @@ public class AmendmentService {
     }
 
     @Required
-    public void setMailSender(MailSender mailSender) {
-        this.mailSender = mailSender;
-    }
-
-    @Required
-    public void setMailMessageFactory(MailMessageFactory mailMessageFactory) {
-        this.mailMessageFactory = mailMessageFactory;
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 }

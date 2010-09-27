@@ -10,9 +10,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.NotificationService
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -114,7 +116,10 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         Notification notification = new Notification(adverseEvent);
         assignment.addAeNotification(notification);
         subjectDao.save(assignment.getSubject());
-        notificationService.notifyUsersForNewScheduleNotifications(notification);
+        User user = notification.getAssignment().getStudySubjectCalendarManager();
+        if (user != null) {
+            notificationService.sendNotificationMailToUsers(notification.getTitle(), notification.getMessage(), Arrays.asList(user.getEmailId()));
+        }
     }
 
     ////// CONFIGURATION

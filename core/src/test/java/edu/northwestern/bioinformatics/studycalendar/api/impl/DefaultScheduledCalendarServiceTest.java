@@ -7,10 +7,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.*;
 
@@ -400,13 +402,12 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite))
             .andReturn(expectedAssignment);
         subjectDao.save(loadedSubject);
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
         replayMocks();
         service.registerSevereAdverseEvent(
             parameterStudy, parameterSubject, parameterSite, expectedAe);
         verifyMocks();
 
-        assertEquals("Notification not added", 1, expectedAssignment.getNotifications().size());
+       assertEquals("Notification not added", 1, expectedAssignment.getNotifications().size());
        assertEquals("Notification is for wrong AE", expectedAe.getDescription(), expectedAssignment.getNotifications().get(0).getMessage());
     }
 
@@ -417,8 +418,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         AdverseEvent expectedAe = new AdverseEvent();
 
         subjectDao.save(loadedSubject);
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
-                
+
         replayMocks();
         service.registerSevereAdverseEvent(parameterAssignment, expectedAe);
         verifyMocks();
@@ -426,4 +426,21 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         assertEquals("Notification not added", 1, expectedAssignment.getNotifications().size());
         assertSame("Notification is for wrong AE", expectedAe.getDescription(), expectedAssignment.getNotifications().get(0).getMessage());
     }
+
+    public void testSendEmailForAeNotification() throws Exception {
+        setAssigned();
+        StudySubjectAssignment expectedAssignment
+            = loadedStudy.getStudySites().get(0).getStudySubjectAssignments().get(0);
+        User SSCM = AuthorizationObjectFactory.createCsmUser(1, "testUser");
+        SSCM.setEmailId("testUser@email.com");
+        expectedAssignment.setStudySubjectCalendarManager(SSCM);
+        AdverseEvent expectedAe = new AdverseEvent();
+        expectedAe.setDescription("testAE");
+        subjectDao.save(loadedSubject);
+        notificationService.sendNotificationMailToUsers(null, expectedAe.getDescription(), Arrays.asList(SSCM.getEmailId()));
+
+        replayMocks();
+        service.registerSevereAdverseEvent(parameterAssignment, expectedAe);
+        verifyMocks();
+        }
 }

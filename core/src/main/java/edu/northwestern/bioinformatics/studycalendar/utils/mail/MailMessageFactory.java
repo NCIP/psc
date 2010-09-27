@@ -4,8 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_EXCEPTIONS_TO;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_REPLY_TO;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +19,6 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class MailMessageFactory implements ServletContextAware, ApplicationPathAware {
-    //    private static Log log = LogFactory.getLog(MailMessageFactory.class);
     private static Logger log = LoggerFactory.getLogger(MailMessageFactory.class);
 
     private freemarker.template.Configuration freemarkerConfiguration;
@@ -59,12 +56,12 @@ public class MailMessageFactory implements ServletContextAware, ApplicationPathA
         }
     }
 
-    public AmendmentMailMessage createAmendmentMailMessage(Study study, Amendment amendment) {
-        AmendmentMailMessage message = new AmendmentMailMessage();
-        message.setStudy(study);
-        message.setAmendment(amendment);
-        message.setApplicationPath(applicationPath);
-        return configureMessage(message);
+    public NotificationMailMessage createNotificationMailMessage(String subjectHeader, String message) {
+        NotificationMailMessage mailMessage = new NotificationMailMessage();
+        mailMessage.setSubjectHeader(subjectHeader);
+        mailMessage.setMessage(message);
+        mailMessage.setApplicationPath(applicationPath);
+        return configureMessage(mailMessage);
     }
 
     private <T extends StudyCalendarMailMessage> T configureMessage(T message) {

@@ -51,6 +51,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class StudyService {
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
-
+        List<String> emailAddressList = new ArrayList<String>();
         for (StudySubjectAssignment assignment : subjectAssignments) {
             if (!assignment.isOff()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
@@ -111,16 +112,28 @@ public class StudyService {
                     scheduledActivityDao.save(reconsentEvent);
 
                     Notification notification = new Notification(reconsentEvent);
-                    //FIXME:SAURABH this will send same email message multiple times to same subject coordinator.
-                    // Update the logic here once the email message content is finalized.
                     assignment.addNotification(notification);
-                    notificationService.notifyUsersForNewScheduleNotifications(notification);
-
+                    User studySubjectCalendarManager = assignment.getStudySubjectCalendarManager();
+                    if (studySubjectCalendarManager != null) {
+                        if (!emailAddressList.contains(studySubjectCalendarManager.getEmailId())) {
+                            emailAddressList.add(studySubjectCalendarManager.getEmailId());
+                        }
+                    }
                 }
             }
-
+        }
+        if (!emailAddressList.isEmpty()) {
+            sendMailForScheduleReconsent(study, details, emailAddressList);
         }
         studyDao.save(study);
+    }
+
+    private void sendMailForScheduleReconsent(Study study, String details, List<String> emailAddressList) {
+        String subjectHeader = "Subjects on ".concat(study.getAssignedIdentifier()).concat(" need to be reconsented");
+        String message = "A reconsent activity with details ".concat(details).
+                concat(" has been added to the schedule of each subject on ").concat(study.getAssignedIdentifier()).
+                concat(". Check your dashboard for upcoming subjects that need to be reconsented.");
+        notificationService.sendNotificationMailToUsers(subjectHeader, message, emailAddressList);
     }
 
     private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {

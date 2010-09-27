@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.NotificationMailMessage;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,22 @@ public class NotificationService {
                 logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
             } catch (Exception e) {
                 logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
+            }
+        }
+    }
+
+    public void sendNotificationMailToUsers(String subjectHeader, String message, List<String> addressList) {
+        NotificationMailMessage mailMessage = mailMessageFactory.createNotificationMailMessage(subjectHeader, message);
+        for (String toAddress: addressList) {
+            if (mailMessage != null) {
+                try {
+                    mailMessage.setTo(toAddress);
+                    mailSender.send(mailMessage);
+                    logger.debug("sending notification e-mail to:" + toAddress);
+                } catch (Exception e) {
+                    logger.error("Sending notification e-mail message to {} failed: {}", toAddress, e.getMessage());
+                    logger.debug("Message-sending error detail:", e);
+                }
             }
         }
     }
