@@ -48,8 +48,6 @@
     <SCHEDULED_ACTIVITY_MODES id="2" name="occurred"/>
     <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
 
-    <USERS id="-200" name="subject coordinor" csm_user_id="-200" active_flag="1"/>
-
     <ACTIVITY_TYPES id="2" name="ActivityType2"/>
 
     <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>

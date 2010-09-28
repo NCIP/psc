@@ -6,12 +6,6 @@
         first_name = "fname"
         last_name = "lname"
      />
-    <USERS
-        name ="superuser"
-        active_flag="1"
-        id = "-101"
-        csm_user_id = "-100"
-     />
 
      <CSM_USER
         login_name ="study_admin"
@@ -20,11 +14,4 @@
         first_name = "fname"
         last_name = "lname"
      />
-    <USERS
-        name ="study_admin"
-        active_flag="0"
-        id = "-102"
-        csm_user_id = "-101"
-     />
-
 </dataset>
