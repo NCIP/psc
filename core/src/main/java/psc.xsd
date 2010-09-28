@@ -239,7 +239,6 @@
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="manual-flag" type="xsd:boolean"/>
     </xsd:complexType>
 
     <xsd:element name="activity" type="psc:Activity"/>

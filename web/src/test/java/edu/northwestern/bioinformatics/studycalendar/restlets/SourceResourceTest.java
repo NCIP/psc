@@ -5,8 +5,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
 
 import org.restlet.data.Method;
@@ -34,19 +32,11 @@ public class SourceResourceTest  extends AuthorizedResourceTestCase<SourceResour
     protected SourceResource createAuthorizedResource() {
         SourceResource resource = new SourceResource();
         resource.setSourceService(sourceService);
-        resource.setXmlSerializer(xmlSerializer);
         return resource;
     }
 
-    public void testGetAndPutAllowed() throws Exception {
-        assertAllowedMethods("GET", "PUT");
-    }
-
-    public void testGetWithAuthorizedRoles() {
-        assertRolesAllowedForMethod(Method.GET,
-            STUDY_CALENDAR_TEMPLATE_BUILDER,
-            BUSINESS_ADMINISTRATOR,
-            DATA_READER);
+    public void testPutAllowed() throws Exception {
+        assertAllowedMethods("PUT");
     }
 
     public void testPutWithAuthorizedRoles() {
@@ -54,43 +44,41 @@ public class SourceResourceTest  extends AuthorizedResourceTestCase<SourceResour
             BUSINESS_ADMINISTRATOR);
     }
 
-    public void testGetNotificationsXml() throws Exception {
-        expect(sourceService.getByName(SOURCE_NAME)).andReturn(source);
-        expect(xmlSerializer.createDocumentString(source)).andReturn(MOCK_XML);
+    public void test400WhenNoSourceInRequest() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.SOURCE_NAME.attributeName(), null);
 
-        doGet();
-        assertResponseStatus(Status.SUCCESS_OK);
-        assertResponseIsCreatedXml();
+        doPut();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No source name in the request");
     }
 
-    public void testGet404WhenUnknownNotification() throws Exception {
+    public void test404WhenUnknownSource() throws Exception {
         expect(sourceService.getByName(SOURCE_NAME)).andReturn(null);
 
-        doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        doPut();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND, "No source found with the name Test_Source");
     }
 
     public void testPutSource() throws Exception {
         expect(sourceService.getByName(SOURCE_NAME)).andReturn(source);
         JSONObject entity = new JSONObject();
-        entity.put("manual_flag", true);
+        entity.put("manual_target", true);
         request.setEntity(new JsonRepresentation(entity));
         sourceService.makeManualTarget(source);
 
         doPut();
-        assertEquals("Result not success", 200, response.getStatus().getCode());
-    }
+        assertResponseStatus(Status.SUCCESS_OK);
+      }
 
     public void testPutSourceWhenFlagIsNotTrue() throws Exception {
         expect(sourceService.getByName(SOURCE_NAME)).andReturn(source);
         JSONObject entity = new JSONObject();
-        entity.put("manual_flag", false);
+        entity.put("manual_target", false);
         request.setEntity(new JsonRepresentation(entity));
 
         doPut();
         assertEquals("Result not success", 400, response.getStatus().getCode());
         assertContains(response.getStatus().getDescription(),
-            "Manual Target Flag must be true to set source as manual activity target source");
+            "You may not unset the manual target field.  To set the manual target to a different source, set it to true on that source.");
     }
 }
 

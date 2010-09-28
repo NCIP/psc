@@ -1152,6 +1152,25 @@
                     </method>
                 </resource>
             </resource>
+            <resource path="{source-name}/manual-target">
+                <param style="template" name="source-name"/>
+                <method name="PUT">
+                    <doc>
+                        <html:p>
+                            Update the named source as manual activity target source. Manual target field value must be true.
+                        </html:p>
+                        <html:div class="roles">
+                            Authorized to:
+                            <html:ul>
+                                <html:li>Business Administrator</html:li>
+                            </html:ul>
+                        </html:div>
+                    </doc>
+                    <request>
+                        <representation mediaType="application/json"/>
+                    </request>
+                </method>
+            </resource>
         </resource>
 
         <resource path="sites">

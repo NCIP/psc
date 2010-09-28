@@ -120,11 +120,10 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
-    <bean name="/sources/{source-name}/manual-target"
+    <bean name="/activities/{source-name}/manual-target"
           id="sourceResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SourceResource"
             >
-        <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
     </bean>
 
     <bean name="/labels"
