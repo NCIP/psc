@@ -107,7 +107,6 @@ public enum XsdAttribute {
     NOTIFICATION_DISMISSED("dismissed"),
     NOTIFICATION_ID("id"),
 
-    SOURCE_NAME("name"),
     SOURCE_MANUAL_FLAG("manual-flag"),
     USER_ROLE_NAME("name"),
     ALL("all");

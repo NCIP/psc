@@ -83,9 +83,6 @@
     <bean id="labelXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.LabelXmlSerializer"/>
 
-    <bean id="sourcesXmlSerializer"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SourcesXmlSerializer"/>
-
     <!-- SourceSerializer is for CSV representation.Move to restlets.representation package for #692 -->
     <bean id="sourceSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer">
