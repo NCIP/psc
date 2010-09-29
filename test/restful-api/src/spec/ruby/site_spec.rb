@@ -29,7 +29,6 @@ describe "/site" do
     end
 
     it "shows sites to affiliated users" do
-      pending "#1208"
       get "/sites/IL036", :as => :carla # carla is authorized for IL036
       response.status_code.should == 200
     end

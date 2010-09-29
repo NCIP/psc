@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -49,11 +50,7 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
     public void testGetWithAuthorizedRoles() {
         expectFoundSite(site);
         replayMocks();
-        assertRolesAllowedForMethod(Method.GET,
-            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
-            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-            USER_ADMINISTRATOR,
-            DATA_READER);
+        assertRolesAllowedForMethod(Method.GET, PscRole.valuesWithSiteScoped());
     }
 
     public void testPutWithAuthorizedRoles() {

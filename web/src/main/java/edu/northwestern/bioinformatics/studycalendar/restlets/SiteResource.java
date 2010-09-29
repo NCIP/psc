@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.Context;
@@ -27,11 +28,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
 
         addAuthorizationsFor(Method.PUT, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
         addAuthorizationsFor(Method.DELETE, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
-        addAuthorizationsFor(Method.GET, site,
-                PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
-                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-                USER_ADMINISTRATOR,
-                DATA_READER);
+        addAuthorizationsFor(Method.GET, site, PscRole.valuesWithSiteScoped());
     }
 
     @Override
