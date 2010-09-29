@@ -117,8 +117,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
     }
 
     public void testPostWithAuthorizedRoles() {
-        assertRolesAllowedForMethod(Method.POST,
-                STUDY_SUBJECT_CALENDAR_MANAGER, STUDY_QA_MANAGER);
+        assertRolesAllowedForMethod(Method.POST,STUDY_QA_MANAGER);
     }
 
     ////// Helper Methods

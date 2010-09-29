@@ -31,8 +31,7 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
         super.init(context, request, response);
 
         addAuthorizationsFor(Method.GET, createSiteParticipationAuthorizations(getStudy()));
-        addAuthorizationsFor(Method.POST, createSiteParticipationAuthorizations(getStudy(),
-                STUDY_QA_MANAGER, STUDY_SUBJECT_CALENDAR_MANAGER));
+        addAuthorizationsFor(Method.POST, getSite(), STUDY_QA_MANAGER);
 
         ((AmendmentApprovalXmlSerializer) xmlSerializer).setStudy(getStudy());
     }

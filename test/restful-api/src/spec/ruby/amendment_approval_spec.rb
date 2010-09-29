@@ -18,6 +18,11 @@ describe "/amendment_approval" do
       response.status_code.should == 401
     end
 
+    it "forbids approving amendment for study subject calendar manager" do
+      post "/studies/NU480/sites/IL036/approvals", @approve_xml, :as => erin
+      response.status_code.should == 403
+    end
+
     describe "when authorized" do
       before do
         post "/studies/NU480/sites/IL036/approvals", @approve_xml, :as => :carla
