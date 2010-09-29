@@ -8,6 +8,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import java.util.Arrays;
@@ -38,11 +39,7 @@ public class SitesResourceTest extends AuthorizedResourceTestCase<SitesResource>
     }
 
     public void testGetWithAuthorizedRoles() {
-        assertRolesAllowedForMethod(Method.GET,
-            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
-            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-            USER_ADMINISTRATOR,
-            DATA_READER);
+        assertRolesAllowedForMethod(Method.GET, PscRole.valuesWithSiteScoped());
     }
     
     public void testGetXmlForSites() throws Exception {
