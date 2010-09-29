@@ -49,7 +49,7 @@ public enum PscRole implements GrantedAuthority {
     private Collection<PscRoleUse> uses;
 
     private static Properties roleProperties;
-    private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator;
+    private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator, withSiteScoped;
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
@@ -177,5 +177,21 @@ public enum PscRole implements GrantedAuthority {
                 provisionable.toArray(new PscRole[provisionable.size()]);
         }
         return provisionableByStudyTeamAdministrator;
+    }
+
+    /**
+     * Those roles which have site scoped.
+     */
+    public static synchronized PscRole[] valuesWithSiteScoped() {
+        if (withSiteScoped == null) {
+            List<PscRole> siteScopedRoles =  new ArrayList<PscRole>(PscRole.values().length);;
+            for (PscRole role :PscRole.values()) {
+                if (role.isSiteScoped()) {
+                    siteScopedRoles.add(role);
+                }
+            }
+            withSiteScoped = siteScopedRoles.toArray(new PscRole[siteScopedRoles.size()]);
+        }
+        return withSiteScoped;
     }
 }
