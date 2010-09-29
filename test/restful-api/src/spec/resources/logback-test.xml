@@ -1,16 +1,5 @@
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %logger{16} %5level | %msg%n
-            </Pattern>
-        </layout>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>@resources.target@/../../studycalendar-test.log</file>
         <append>false</append>
@@ -25,10 +14,6 @@
     <root>
         <appender-ref ref="FILE"/>
     </root>
-
-    <logger name="edu.northwestern.bioinformatics.studycalendar">
-        <appender-ref ref="STDOUT"/>
-    </logger>
 
     <logger name="edu.northwestern.bioinformatics.studycalendar"><level value="debug"/></logger>
     <logger name="edu.northwestern.bioinformatics.studycalendar.test"><level value="info"/></logger>
