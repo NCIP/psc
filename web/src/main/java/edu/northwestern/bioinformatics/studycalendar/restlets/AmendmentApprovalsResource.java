@@ -17,6 +17,7 @@ import org.restlet.resource.StringRepresentation;
 import org.springframework.beans.factory.annotation.Required;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization.createSiteParticipationAuthorizations;
 
 /**
  * @author Rhett Sutphin
@@ -29,12 +30,9 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
 
-        addAuthorizationsFor(Method.GET, getSite(), getStudy(),
-                STUDY_TEAM_ADMINISTRATOR,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                DATA_READER
-        );
-        addAuthorizationsFor(Method.POST, getSite(), getStudy(), STUDY_SUBJECT_CALENDAR_MANAGER);
+        addAuthorizationsFor(Method.GET, createSiteParticipationAuthorizations(getStudy()));
+        addAuthorizationsFor(Method.POST, createSiteParticipationAuthorizations(getStudy(),
+                STUDY_QA_MANAGER, STUDY_SUBJECT_CALENDAR_MANAGER));
 
         ((AmendmentApprovalXmlSerializer) xmlSerializer).setStudy(getStudy());
     }

@@ -20,7 +20,6 @@ describe "/amendment_approval" do
 
     describe "when authorized" do
       before do
-        pending "#1207"
         post "/studies/NU480/sites/IL036/approvals", @approve_xml, :as => :carla
       end
 
@@ -47,7 +46,6 @@ describe "/amendment_approval" do
     end
 
     it "gives 400 if amendment not found for study" do
-      pending "#1207"
       @study2 = PscTest::Fixtures.createSingleEpochStudy("NU481", "Treatment", ["segment_A", "segment_B"].to_java(:String))
       @amend_date2 = PscTest.createDate(2008, 12, 10)
       @amendment2 = PscTest::Fixtures.createAmendment("am2", @amend_date2)
@@ -81,7 +79,6 @@ describe "/amendment_approval" do
     end
 
     it "allows access to amendment approvals to an authorized user" do
-      pending "#1207"
       get "/studies/NU480/sites/IL036/approvals", :as => :carla
       response.status_code.should == 200
       response.status_message.should == "OK"

@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -112,14 +113,12 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
 
     public void testGetWithAuthorizedRoles() {
         assertRolesAllowedForMethod(Method.GET,
-                STUDY_TEAM_ADMINISTRATOR,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                DATA_READER);
+                PscRoleUse.SITE_PARTICIPATION.roles());
     }
 
     public void testPostWithAuthorizedRoles() {
         assertRolesAllowedForMethod(Method.POST,
-                STUDY_SUBJECT_CALENDAR_MANAGER);
+                STUDY_SUBJECT_CALENDAR_MANAGER, STUDY_QA_MANAGER);
     }
 
     ////// Helper Methods
