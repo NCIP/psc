@@ -124,6 +124,14 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
+    public void test404ForUnknownUser() throws Exception {
+        UriTemplateParameters.USERNAME.putIn(request, "testUser");
+        expect(pscUserService.getAuthorizableUser("testUser")).andReturn(null);
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unknown user: testUser");
+    }
+
     private void expectManagedAssignments(PscUser manager, PscUser viewer, StudySubjectAssignment... assignments) {
         expect(pscUserService.getManagedAssignments(manager, viewer)).
             andReturn(createExpectedUssars(viewer, assignments));

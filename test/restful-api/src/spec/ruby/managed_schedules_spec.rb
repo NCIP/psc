@@ -194,7 +194,6 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
     end
 
     it "404s for non-existent users" do
-      pending "#1213"
       get "/users/unknown/managed-schedules", :as => :erin
       response.status_code.should == 404
     end
