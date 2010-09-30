@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
+import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +30,12 @@ public class JacksonTools {
     public static void nullSafeWriteStringField(JsonGenerator g, String fieldName, String value) throws IOException {
         if (value != null) {
             g.writeStringField(fieldName, value);
+        }
+    }
+
+    public static void nullSafeWriteDateField(JsonGenerator g, String fieldName, Date date) throws IOException {
+        if (date != null) {
+            g.writeStringField(fieldName, AbstractPscResource.getApiDateFormat().format(date));
         }
     }
 }
