@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.tools.BeanPropertyListComparator;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -24,6 +25,8 @@ import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 
@@ -40,6 +43,13 @@ import java.util.Set;
  */
 public class PscUserService implements PscUserDetailsService {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final static BeanPropertyListComparator<User> CSM_USER_BY_HUMAN_NAME_ORDER =
+        new BeanPropertyListComparator<User>();
+    static {
+        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("lastName", String.CASE_INSENSITIVE_ORDER);
+        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("firstName", String.CASE_INSENSITIVE_ORDER);
+        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("loginName");
+    }
 
     private AuthorizationManager csmAuthorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
@@ -109,6 +119,41 @@ public class PscUserService implements PscUserDetailsService {
         }
         Collections.sort(users);
         return users;
+    }
+
+    /**
+     * Returns a list of CSM users whose names match the given text.  Matching is against username
+     * and first & last names.  It is case-sensitive due to limitations in CSM.
+     * <p>
+     * If you want full {@link PscUser}s, pass the result to {#getPscUsers}.
+     * <p>
+     * If the search text is null, all users are returned.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public List<User> search(String text) {
+        List<User> result;
+        if (text == null) {
+            result = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
+        } else {
+            Set<User> matches = new LinkedHashSet<User>();
+            matches.addAll(searchBy("loginName", text));
+            matches.addAll(searchBy("lastName", text));
+            matches.addAll(searchBy("firstName", text));
+            result = new ArrayList<User>(matches);
+        }
+        Collections.sort(result, CSM_USER_BY_HUMAN_NAME_ORDER);
+        return result;
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private List<User> searchBy(String property, String searchText) {
+        searchText = '%' + searchText + '%';
+        User u = new User();
+        {
+            BeanWrapper bw = new BeanWrapperImpl(u);
+            bw.setPropertyValue(property, searchText);
+        }
+        return csmAuthorizationManager.getObjects(new UserSearchCriteria(u));
     }
 
     /**
