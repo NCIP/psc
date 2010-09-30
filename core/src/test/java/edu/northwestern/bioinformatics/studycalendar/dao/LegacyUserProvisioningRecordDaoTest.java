@@ -15,7 +15,7 @@ public class LegacyUserProvisioningRecordDaoTest extends DaoTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        dao = new LegacyUserProvisioningRecordDao(getDataSource());
+        dao = new LegacyUserProvisioningRecordDao(getJdbcTemplate());
     }
 
     public void testCorrectNumberOfRecordsSelected() {
