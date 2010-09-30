@@ -38,8 +38,8 @@
     </context-param>
 
     <context-param>
-      <param-name>legacyUserProvisioningExporterSwitch</param-name>
-      <param-value>false</param-value>
+        <param-name>legacyUserProvisioningExporterSwitch</param-name>
+        <param-value>true</param-value>
     </context-param>
 
     <listener>
