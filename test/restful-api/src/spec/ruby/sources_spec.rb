@@ -24,4 +24,5 @@ describe "/activities" do
       response.xml_attributes("activity", "name").should include("X-Ray: Skeletal")
       response.xml_elements('//activity').should have(3).elements
     end
+  end
 end
