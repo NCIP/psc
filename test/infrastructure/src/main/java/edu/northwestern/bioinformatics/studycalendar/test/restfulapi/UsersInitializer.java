@@ -74,27 +74,6 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
         for (String roleName : rolesAndScopes.keySet()) {
             replaceRole(roleName, rolesAndScopes.get(roleName), session);
         }
-
-        /*
-        User user = userService.getUserByName(username);
-        if (user == null) {
-            user = new User();
-            user.setName(username);
-        } else {
-            user.getUserRoles().clear();
-        }
-        for (String roleName : rolesAndSites.keySet()) {
-            Role role = Role.valueOf(roleName);
-            UserRole userRole = new UserRole(user, role);
-            user.addUserRole(userRole);
-            if (rolesAndSites.get(roleName) != null) {
-                for (String siteAssignedIdentifier : rolesAndSites.get(roleName)) {
-                    userRole.addSite(siteDao.getByAssignedIdentifier(siteAssignedIdentifier));
-                }
-            }
-        }
-        userService.saveUser(user, username, String.format("%s@psctest.example.net", username));
-        */
     }
 
     private void replaceRole(
