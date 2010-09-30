@@ -56,18 +56,17 @@ describe "/activities/{source-name}" do
       it "allows to make source as manual activity target source for manual_target is true" do
         entity = "{ manual_target: true }"
         put "/activities/Northwestern%20University/manual-target", entity,
-          :as => :zelda, 'Content-Type' => 'application/json'
+          :as => :juno, 'Content-Type' => 'application/json'
         response.status_code.should == 200
         response.status_message.should == "OK"
       end
 
       it "throws 400 request error for manual_target false" do
         entity = "{ manual_target: false }"
-        put "/activities/Cancer/manual-target", entity,
-          :as => :zelda, 'Content-Type' => 'application/json'
+        put "/activities/Northwestern%20University/manual-target", entity,
+          :as => :juno, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.status_message.should == "Bad Request"
-        response.entity.should =~ %r(You may not unset the manual target field. To set the manual target to a different source, set it to true on that source.)
       end
 
       it "prevents creation of manual activity target source for unauthorized user" do
@@ -80,9 +79,9 @@ describe "/activities/{source-name}" do
       it "throws 404 request error for non exist source" do
         entity = "{ manual_target: true }"
         put "/activities/NonExistSource/manual-target", entity,
-          :as => :zelda, 'Content-Type' => 'application/json'
+          :as => :juno, 'Content-Type' => 'application/json'
         response.status_code.should == 404
-        response.status_message.should == "Bad Request"
+        response.status_message.should == "Not Found"
         response.entity.should =~ %r(No source found with the name NonExistSource)
       end
     end
