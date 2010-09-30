@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
@@ -48,7 +49,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
     private User csmUser;
     private Site whatCheer, northLiberty, solon;
-    private Study eg1701;
+    private Study eg1701, fh0001, gi3009;
 
     private SiteDao siteDao;
     private StudyDao studyDao;
@@ -93,8 +94,11 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         whatCheer = setId(987, createSite("What Cheer", "IA987"));
         northLiberty = setId(720, createSite("North Liberty", "IA720"));
         solon = setId(846, createSite("Solon", "IA846"));
+        expect(siteDao.getAll()).andStubReturn(Arrays.asList(whatCheer, northLiberty, solon));
 
         eg1701 = createBasicTemplate("EG 1701");
+        fh0001 = createBasicTemplate("FH 0001");
+        gi3009 = createBasicTemplate("GI 3009");
     }
 
     public void testLoadKnownUserForAcegi() throws Exception {
@@ -674,6 +678,90 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Should have no colleagues", 0, colleagues.size());
     }
+
+    ////// vis auth info
+
+    public void testVisibleAuthInfoForRandomUserIsEmpty() throws Exception {
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.DATA_READER).forAllSites().forAllStudies().toUser());
+        verifyMocks();
+
+        assertTrue("Should have no sites", actual.getSites().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForSiteParticipation().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForTemplateManagement().isEmpty());
+        assertTrue("Should have no roles", actual.getRoles().isEmpty());
+    }
+
+    public void testVisibleAuthInfoForSystemAdmin() throws Exception {
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
+        verifyMocks();
+
+        assertTrue("Should have no sites", actual.getSites().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForSiteParticipation().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForTemplateManagement().isEmpty());
+        assertEquals("Should have 2 roles: " + actual.getRoles(), 2, actual.getRoles().size());
+        assertContains(actual.getRoles(), SuiteRole.SYSTEM_ADMINISTRATOR);
+        assertContains(actual.getRoles(), SuiteRole.USER_ADMINISTRATOR);
+    }
+
+    public void testVisibleAuthInfoForUnlimitedUserAdmin() throws Exception {
+        List<Study> expectedManaged = Arrays.asList(eg1701, fh0001);
+        List<Study> expectedParticipating = Arrays.asList(gi3009, fh0001);
+        expect(studyDao.getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forAllManagingSites().forAllParticipatingSites())).
+            andReturn(expectedManaged);
+        expect(studyDao.getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forAllManagingSites().forAllParticipatingSites())).
+            andReturn(expectedParticipating);
+
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser());
+        verifyMocks();
+
+        assertEquals("Should have all sites", 3, actual.getSites().size());
+        assertSame("Wrong participating studies", expectedParticipating,
+            actual.getStudiesForSiteParticipation());
+        assertSame("Wrong managed studies", expectedManaged,
+            actual.getStudiesForTemplateManagement());
+        assertEquals("Should have all roles: " + actual.getRoles(),
+            SuiteRole.values().length, actual.getRoles().size());
+    }
+
+    public void testVisibleAuthInfoForLimitedUserAdmin() throws Exception {
+        List<Study> expectedManaged = Arrays.asList(fh0001);
+        List<Study> expectedParticipating = Arrays.asList(eg1701);
+        expect(studyDao.getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forManagingSiteIdentifiers(whatCheer.getAssignedIdentifier()).
+                forParticipatingSiteIdentifiers(whatCheer.getAssignedIdentifier()))).
+            andReturn(expectedManaged);
+        expect(studyDao.getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forManagingSiteIdentifiers(whatCheer.getAssignedIdentifier()).
+                forParticipatingSiteIdentifiers(whatCheer.getAssignedIdentifier()))).
+            andReturn(expectedParticipating);
+
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.USER_ADMINISTRATOR).forSites(whatCheer).toUser());
+        verifyMocks();
+
+        assertEquals("Should have one site", Arrays.asList(whatCheer), actual.getSites());
+        assertSame("Wrong participating studies", expectedParticipating,
+            actual.getStudiesForSiteParticipation());
+        assertSame("Wrong managed studies", expectedManaged,
+            actual.getStudiesForTemplateManagement());
+        assertEquals("Should have all non-global roles: " + actual.getRoles(),
+            19, actual.getRoles().size());
+    }
+
+    ////// helpers
 
     private SuiteRoleMembership catholicRoleMembership(SuiteRole role) {
         SuiteRoleMembership srm = new SuiteRoleMembership(role, null, null);

@@ -4,12 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import edu.northwestern.bioinformatics.studycalendar.tools.BeanPropertyListComparator;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -31,6 +34,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -353,6 +357,45 @@ public class PscUserService implements PscUserDetailsService {
 
     private Collection<Integer> getVisibleSiteIds(PscUser user, PscRole... roles) {
         return siteDao.getVisibleSiteIds(user.getVisibleSiteParameters(roles));
+    }
+
+    /**
+     * Returns the authorization roles and scopes which a user is permitted to view for
+     * <em>other users</em>.
+     */
+    // TODO: support STA, too. Also, merge results for users with more than one applicable role.
+    @SuppressWarnings({ "unchecked" })
+    public VisibleAuthorizationInformation getVisibleAuthorizationInformationFor(PscUser user) {
+        VisibleAuthorizationInformation info = new VisibleAuthorizationInformation();
+
+        if (user.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
+            SuiteRoleMembership ua = user.getMembership(PscRole.USER_ADMINISTRATOR);
+            info.setSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
+            VisibleStudyParameters provisionable = new VisibleStudyParameters();
+            if (ua.isAllSites()) {
+                provisionable.forAllManagingSites().forAllParticipatingSites();
+                info.setRoles(Arrays.asList(SuiteRole.values()));
+            } else {
+                provisionable.forManagingSiteIdentifiers(ua.getSiteIdentifiers()).
+                    forParticipatingSiteIdentifiers(ua.getSiteIdentifiers());
+                List<SuiteRole> nonGlobal = new ArrayList<SuiteRole>(Arrays.asList(SuiteRole.values()));
+                for (Iterator<SuiteRole> it = nonGlobal.iterator(); it.hasNext();) {
+                    SuiteRole role = it.next();
+                    if (!role.isScoped()) it.remove();
+                }
+                info.setRoles(nonGlobal);
+            }
+            info.setStudiesForTemplateManagement(
+                studyDao.getVisibleStudiesForTemplateManagement(provisionable));
+            info.setStudiesForSiteParticipation(
+                studyDao.getVisibleStudiesForSiteParticipation(provisionable));
+        } else if (user.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
+            info.setRoles(Arrays.asList(
+                SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR));
+            info.setSites(Collections.<Site>emptyList());
+        }
+
+        return info;
     }
 
     ////// CONFIGURATION

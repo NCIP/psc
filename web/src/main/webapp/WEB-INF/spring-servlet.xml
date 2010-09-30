@@ -456,8 +456,6 @@
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="pscUserService" ref="pscUserService"/>
         <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
-        <property name="siteDao" ref="siteDao"/>
-        <property name="studyDao" ref="studyDao"/>
         <property name="controllerTools" ref="controllerTools"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
