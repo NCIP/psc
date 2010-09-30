@@ -175,7 +175,7 @@ describe "/study" do
       put '/studies/NU483/template', @nu483_xml, :as => :juno
       response.status_code.should == 201 #created
       get '/studies/NU483/template', :as => :juno
-      puts response.entity
+
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU483")
       response.xml_elements('//period').size.should == 5
