@@ -3,26 +3,19 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.LegacyUserProvisioningRecordDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.LegacyUserProvisioningRecord;
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,59 +27,51 @@ import static org.springframework.web.context.support.WebApplicationContextUtils
 public class LegacyUserProvisioningRecordExporter implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private ServletContextEvent servletContextEvent;
+    private ServletContext servletContext;
 
-    private List<String> LEGACY_PROVISIOINING_TABLES = asList("user_role_study_sites", "user_role_sites", "user_roles", "users");
+    private List<String> LEGACY_PROVISIONING_TABLES = asList("user_role_study_sites", "user_role_sites", "user_roles", "users");
 
     public void contextInitialized(ServletContextEvent sce) {
-        servletContextEvent = sce;
+        servletContext = sce.getServletContext();
 
-        if (!isExporterEnabled() || !isStructurePresent()) { return; }
+        if (!isExporterEnabled() || !isDataPresent()) { return; }
 
-        exportRecords();
-
-        dropTables();
-
+        String targetPath = exportRecords();
+        wipeTables();
+        log.info("Welcome to PSC 2.8.1+.  Your old user provisioning data has been exported to {}.",
+            targetPath);
     }
 
-    private void dropTables() {
-        try {
-            Statement sta = getDataSource().getConnection().createStatement();
-            for (String table : LEGACY_PROVISIOINING_TABLES) {
-                sta.executeUpdate("DROP TABLE " + table);
-            }
-        } catch (SQLException e) {
-            String msg = "Problem dropping the legacy provisioning tables: " + StringUtils.join(LEGACY_PROVISIOINING_TABLES, ", ");
-            log.debug(msg);
-            throw new StudyCalendarSystemException(msg, e);
+    private void wipeTables() {
+        for (String table : LEGACY_PROVISIONING_TABLES) {
+            getJdbcTemplate().execute("DELETE FROM " + table);
         }
     }
 
-    private void exportRecords() {
+    private String exportRecords() {
         String catalinaHome = System.getProperty("catalina.home");
 
         if (isNotEmpty(catalinaHome)) {
-
             File logDir = new File(catalinaHome + File.separator + "logs");
 
+            //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
 
             if (logDir.exists()) {
                 LegacyUserProvisioningRecordFile f =
-                        new LegacyUserProvisioningRecordFile(logDir.getPath());
-
+                    new LegacyUserProvisioningRecordFile(logDir.getPath());
+                f.write(LegacyUserProvisioningRecord.CSV_HEADER);
                 for (LegacyUserProvisioningRecord r : getDao().getAll()) {
                     f.write(r.csv());
                 }
-
                 f.close();
 
+                return f.getPath();
             } else {
                 String msg = "Problem creating the log directory: " + logDir.getPath();
                 log.debug(msg);
                 throw new StudyCalendarSystemException(msg);
             }
-
         } else {
             String msg = "Problem exporting the legacy user provisioning data. $CATALINA_HOME is not set.";
             log.debug(msg);
@@ -97,42 +82,30 @@ public class LegacyUserProvisioningRecordExporter implements ServletContextListe
     public void contextDestroyed(ServletContextEvent servletContextEvent) {}
 
     protected WebApplicationContext getWebApplicationContext() {
-        return getRequiredWebApplicationContext(servletContextEvent.getServletContext());
+        return getRequiredWebApplicationContext(servletContext);
     }
 
-    protected DataSource getDataSource() {
-        return (DataSource) getWebApplicationContext().getBean("dataSource");
+    protected JdbcTemplate getJdbcTemplate() {
+        return (JdbcTemplate) getWebApplicationContext().getBean("jdbcTemplate");
     }
 
     protected LegacyUserProvisioningRecordDao getDao() {
-        return new LegacyUserProvisioningRecordDao(getDataSource());
+        return new LegacyUserProvisioningRecordDao(getJdbcTemplate());
     }
 
     protected boolean isExporterEnabled() {
-        return valueOf(servletContextEvent.getServletContext().getInitParameter("legacyUserProvisioningExporterSwitch"));
+        return valueOf(servletContext.getInitParameter("legacyUserProvisioningExporterSwitch"));
     }
 
-    protected boolean isStructurePresent() {
-        List<String> tables = legacyUserProvisioningTables();
-
-        return tables.containsAll(LEGACY_PROVISIOINING_TABLES);
-    }
-
-    private List<String> legacyUserProvisioningTables() {
-        List<String> tables = new ArrayList<String>();
-        try {
-            DatabaseMetaData md = getDataSource().getConnection().getMetaData();
-            ResultSet rs = md.getTables(null, null, "%", null);
-
-            while (rs.next()) {
-              tables.add(rs.getString(3).toLowerCase());
-            }
-        } catch (SQLException e) {
-            String msg = "Problem querying the database table structure to see if the necessary legacy user provisioning tables exist.";
-            log.debug(msg);
-            throw new StudyCalendarSystemException(msg);
+    protected boolean isDataPresent() {
+        for (String table : LEGACY_PROVISIONING_TABLES) {
+            if (hasData(table)) return true;
         }
-        return tables;
+        return false;
+    }
+
+    private boolean hasData(String table) {
+        return getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM " + table) > 0;
     }
 
     class LegacyUserProvisioningRecordFile {
@@ -171,7 +144,13 @@ public class LegacyUserProvisioningRecordExporter implements ServletContextListe
                 file = new File(getPath());
 
                 try {
-                    file.createNewFile();
+                    if (file.createNewFile()) {
+                        log.debug("Legacy provisioning info file {} already exists; will overwrite.",
+                            file.getAbsolutePath());
+                    } else {
+                        log.debug("Successfully created new legacy provisioning info file {}.",
+                            file.getAbsolutePath());
+                    }
                 } catch (IOException e) {
                     String msg = "Problem creating the legacy user provisioning information file: " + file.getPath();
                     log.debug(msg, e);

@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 import static java.lang.String.format;
 
 public class LegacyUserProvisioningRecord {
+    public static final String CSV_HEADER = StringUtils.join(
+        new String[] { "Username", "First", "Last", "Is active?", "Role", "Site", "Study" }, ",");
     private String userName, firstName, lastName, siteName, studyName, role, active;
 
     public LegacyUserProvisioningRecord(String userName, String firstName, String lastName, String active, String role, String siteName, String studyName) {
