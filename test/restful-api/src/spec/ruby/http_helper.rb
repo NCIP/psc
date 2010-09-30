@@ -66,6 +66,7 @@ module HttpHelper
     uri = full_uri(relative_uri, options.delete(:params))
     options[:proxy] = RequestLoggerFormatter.proxy_url
     begin
+      @hibernate.interrupt_session # force flush of setup data
       PscTest.log("#{options[:method]} #{uri} with options #{options.inspect}")
       OpenURI.open_uri uri, options do |f|
         @response = Response.new(f)
