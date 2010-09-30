@@ -96,6 +96,12 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
     public void testUpdatesUserIfExists() throws Exception {
         User originalUser = AuthorizationObjectFactory.createCsmUser(3, "charlie");
         expect(csmAuthorizationManager.getUser("charlie")).andReturn(originalUser);
+
+        User updatedUser = AuthorizationObjectFactory.createCsmUser(3, "charlie");
+        updatedUser.setFirstName("Charlie");
+        updatedUser.setLastName("User");
+        /* expect */ csmAuthorizationManager.modifyUser(updatedUser);
+
         expect(srmLoader.getProvisioningRoleMemberships(3)).andReturn(singletonMap(
             SYSTEM_ADMINISTRATOR, new SuiteRoleMembership(SYSTEM_ADMINISTRATOR, null, null)));
         /* expect */ pSession.deleteRole(SYSTEM_ADMINISTRATOR);
@@ -111,19 +117,16 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
         verifyMocks();
     }
 
-    public void testBuildUserSetsUsername() throws Exception {
-        User built = createInitializer("").buildUser("earl");
-        assertEquals("Username wrong", "earl", built.getLoginName());
+    public void testConfigureUserSetsFirstName() throws Exception {
+        User target = AuthorizationObjectFactory.createCsmUser("earl");
+        createInitializer("").configureUser(target);
+        assertEquals("First name wrong", "Earl", target.getFirstName());
     }
 
-    public void testBuildUserSetsFirstName() throws Exception {
-        User built = createInitializer("").buildUser("earl");
-        assertEquals("First name wrong", "Earl", built.getFirstName());
-    }
-
-    public void testBuildUserSetsLastName() throws Exception {
-        User built = createInitializer("").buildUser("earl");
-        assertEquals("Last name wrong", "User", built.getLastName());
+    public void testConfigureUserSetsLastName() throws Exception {
+        User target = AuthorizationObjectFactory.createCsmUser("earl");
+        createInitializer("").configureUser(target);
+        assertEquals("Last name wrong", "User", target.getLastName());
     }
 
     ////// HELPERS

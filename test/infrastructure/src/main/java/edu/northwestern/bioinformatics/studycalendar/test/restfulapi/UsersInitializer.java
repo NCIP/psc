@@ -55,13 +55,21 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
     private void createOrUpdateUser(String username, Map<String, Map<String, List<String>>> rolesAndScopes) {
         User user = csmAuthorizationManager.getUser(username);
         if (user == null) {
-            User toCreate = buildUser(username);
+            User toCreate = AuthorizationObjectFactory.createCsmUser(username);
+            configureUser(toCreate);
             try {
                 csmAuthorizationManager.createUser(toCreate);
             } catch (CSTransactionException e) {
                 throw new StudyCalendarSystemException("Creating user " + username + " failed");
             }
             user = csmAuthorizationManager.getUser(username);
+        } else {
+            configureUser(user);
+            try {
+                csmAuthorizationManager.modifyUser(user);
+            } catch (CSTransactionException e) {
+                throw new StudyCalendarSystemException("Updating user " + username + " failed");
+            }
         }
 
         ProvisioningSession session = provisioningSessionFactory.createSession(user.getUserId());
@@ -77,8 +85,8 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
     }
 
     // package level for testing
-    User buildUser(String username) {
-        User user = AuthorizationObjectFactory.createCsmUser(username);
+    User configureUser(User user) {
+        String username = user.getLoginName();
         user.setFirstName(
             new StringBuilder(username).replace(0, 1, username.substring(0, 1).toUpperCase()).
                 toString());
