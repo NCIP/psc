@@ -247,6 +247,13 @@
         <property name="xmlSerializer" ref="notificationXmlSerializer"/>
     </bean>
     
+    <bean name="/users"
+          id="usersResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UsersResource"
+          >
+        <property name="pscUserService" ref="pscUserService"/>
+    </bean>
+
     <bean name="/users/{username}/managed-schedules"
           id="managedSchedulesResource" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ManagedSchedulesResource"

@@ -9,24 +9,23 @@ describe "GET" do
     end
 
     def actual_role(username, role_key)
-      u = actual_user(username)
-      r["roles"].detect { |r| r["key"] == role_key }
+      actual_user(username)["roles"].detect { |r| r["key"] == role_key }
     end
 
     describe "authorization" do
       it "is available to site-scoped user admins" do
         get "/users", :as => "yvette"
-        response.status.should == 200
+        response.status_code.should == 200
       end
 
       it "is available to global user admins" do
         get "/users", :as => "juno"
-        response.status.should == 200
+        response.status_code.should == 200
       end
 
       it "is not available to other users" do
         get "/users", :as => "alice"
-        response.status.should == 403
+        response.status_code.should == 403
       end
     end
 
@@ -114,9 +113,10 @@ describe "GET" do
         end
 
         it "includes role-only information for users with no visible scope" do
-          actual_role("gertrude", "study_subject_calendar_manager").should == {
-            "key" => "study_subject_calendar_manager",
-            "display_name" => "Study Subject Calendar Manager"
+          actual_role("hannah", "study_creator").should == {
+            "key" => "study_creator",
+            "display_name" => "Study Creator",
+            "sites" => []
           }
         end
 
@@ -127,7 +127,7 @@ describe "GET" do
 
         it "includes all-site scope information" do
           actual_role("barbara", "study_qa_manager")["all_sites"].should == true
-          actual_role("barbara", "study_qa_manager")["sites"].should == be_nil
+          actual_role("barbara", "study_qa_manager")["sites"].should be_nil
         end
       end
 
@@ -226,7 +226,8 @@ describe "GET" do
         end
 
         it "provides a useful error message" do
-          response.entity.should =~ /Offset is out of range.  Total is 11, so the max offset is 10./
+          response.entity.should =~
+            /Offset 13 is too large.  There are 11 result\(s\), so the max offset is 10./
         end
       end
     end
