@@ -111,6 +111,23 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
         verifyMocks();
     }
 
+    public void testBuildUserSetsUsername() throws Exception {
+        User built = createInitializer("").buildUser("earl");
+        assertEquals("Username wrong", "earl", built.getLoginName());
+    }
+
+    public void testBuildUserSetsFirstName() throws Exception {
+        User built = createInitializer("").buildUser("earl");
+        assertEquals("First name wrong", "Earl", built.getFirstName());
+    }
+
+    public void testBuildUserSetsLastName() throws Exception {
+        User built = createInitializer("").buildUser("earl");
+        assertEquals("Last name wrong", "User", built.getLastName());
+    }
+
+    ////// HELPERS
+
     private void expectNoExistingUsers(String... usernames) {
         for (String username : usernames) {
             expect(csmAuthorizationManager.getUser(username)).andReturn(null);
