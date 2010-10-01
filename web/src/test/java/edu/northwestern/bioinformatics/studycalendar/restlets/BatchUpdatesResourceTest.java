@@ -1,47 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledStudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static org.easymock.EasyMock.*;
-
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Jalpa Patel
@@ -55,8 +39,8 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
     private JSONObject activityState1,activityState2;
     private static final String SA1_GRID = "1111";
     private static final String SA2_GRID = "2222";
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
