@@ -28,9 +28,7 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        addAuthorizationsFor(Method.GET,
-            STUDY_CALENDAR_TEMPLATE_BUILDER,
-            DATA_READER);
+        addAuthorizationsFor(Method.GET, STUDY_CREATOR);
        
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }

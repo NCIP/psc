@@ -4,8 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CREATOR;
 import static org.easymock.EasyMock.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -38,9 +37,7 @@ public class ProvidedStudiesResourceTest extends AuthorizedResourceTestCase<Prov
     }
     
     public void testGetWithAuthorizedRoles() {
-        assertRolesAllowedForMethod(Method.GET,
-            STUDY_CALENDAR_TEMPLATE_BUILDER,
-            DATA_READER);
+        assertRolesAllowedForMethod(Method.GET,STUDY_CREATOR);
     }
 
     @SuppressWarnings({"unchecked"})

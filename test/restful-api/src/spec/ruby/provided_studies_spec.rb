@@ -7,6 +7,14 @@ describe "/provided-studies" do
       :as => :zelda, 'Content-Type' => 'application/json'
   end
   describe "GET" do
+    it "forbids access to provided study list for unauthenticated users" do
+      get '/provided-studies?q=ad',  :as => nil
+      response.status_code.should == 401
+    end
+    it "forbids access to provided study list for unauthorized users" do
+      get '/provided-studies?q=ad',  :as => :carla
+      response.status_code.should == 403
+    end
     describe "xml" do
       before do
         get '/provided-studies?q=ad', :as => :alice
