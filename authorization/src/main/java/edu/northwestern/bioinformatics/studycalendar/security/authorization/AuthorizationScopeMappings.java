@@ -1,8 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.IdentifiableInstanceMapping;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SiteMapping;
@@ -31,39 +30,20 @@ public class AuthorizationScopeMappings {
         return new SuiteRoleMembership(role.getSuiteRole(), SITE_MAPPING, STUDY_MAPPING);
     }
 
-    private static class StaticIdentifiableInstanceMapping<T> implements IdentifiableInstanceMapping<T> {
-        private IdentifiableInstanceMapping<T> delegate;
-
-        private StaticIdentifiableInstanceMapping(IdentifiableInstanceMapping<T> delegate) {
-            this.delegate = delegate;
-        }
-
-        public String getSharedIdentity(T instance) {
-            return delegate.getSharedIdentity(instance);
-        }
-
-        public boolean isInstance(Object o) {
-            return delegate.isInstance(o);
-        }
-
-        public List<T> getApplicationInstances(List<String> ids) {
+    private static class StaticPscSiteMapping extends BasePscSiteMapping {
+        @Override
+        public List<Site> getApplicationInstances(List<String> ids) {
             throw new UnsupportedOperationException(
                 "getApplicationInstances is not supported on static instances.  Use a spring-configured instance instead.");
         }
     }
 
-    private static class StaticPscSiteMapping
-        extends StaticIdentifiableInstanceMapping<Site>
-        implements SiteMapping<Site>
-    {
-        private StaticPscSiteMapping() { super(new PscSiteMapping()); }
-    }
-
-    private static class StaticPscStudyMapping
-        extends StaticIdentifiableInstanceMapping<Study>
-        implements StudyMapping<Study>
-    {
-        private StaticPscStudyMapping() { super(new PscStudyMapping()); }
+    private static class StaticPscStudyMapping extends BasePscStudyMapping {
+        @Override
+        public List<Study> getApplicationInstances(List<String> ids) {
+            throw new UnsupportedOperationException(
+                "getApplicationInstances is not supported on static instances.  Use a spring-configured instance instead.");
+        }
     }
 
     private AuthorizationScopeMappings() { }

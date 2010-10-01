@@ -10,7 +10,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.dom4j.Element;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 
 /**

@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;

@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.getMapping;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.getMapping;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse.*;
 
 /**

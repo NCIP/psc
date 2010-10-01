@@ -9,7 +9,7 @@ import org.springframework.validation.FieldError;
 
 import java.util.*;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.getMapping;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.getMapping;
 import static org.apache.commons.collections.CollectionUtils.subtract;
 
 /**
