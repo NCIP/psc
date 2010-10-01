@@ -1,9 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.STUDY_MAPPING;
 
 /**
  * Collates the details needed to find all the studies accessible
@@ -53,7 +59,24 @@ public class VisibleStudyParameters extends VisibleDomainObjectParameters<Visibl
     @Override
     protected void applyParticipation(SuiteRoleMembership membership) {
         if (membership.getRole().isStudyScoped() && !membership.isAllStudies()) {
-            forSpecificStudyIdentifiers(membership.getStudyIdentifiers());
+            if (membership.isAllSites()) {
+                forSpecificStudyIdentifiers(membership.getStudyIdentifiers());
+            } else {
+                Collection<String> applicableStudies =
+                    new ArrayList<String>(membership.getStudyIdentifiers().size());
+                for (Object oStudy : membership.getStudies()) {
+                    Study study = (Study) oStudy;
+                    List<Site> studySites = study.getSites();
+                    for (Object oSite : membership.getSites()) {
+                        Site site = (Site) oSite;
+                        if (studySites.contains(site)) {
+                            applicableStudies.add(STUDY_MAPPING.getSharedIdentity(study));
+                            break;
+                        }
+                    }
+                }
+                forSpecificStudyIdentifiers(applicableStudies);
+            }
         } else {
             super.applyParticipation(membership);
         }
@@ -62,7 +85,27 @@ public class VisibleStudyParameters extends VisibleDomainObjectParameters<Visibl
     @Override
     protected void applyTemplateManagement(SuiteRoleMembership membership) {
         if (membership.getRole().isStudyScoped() && !membership.isAllStudies()) {
-            forSpecificStudyIdentifiers(membership.getStudyIdentifiers());
+            if (membership.isAllSites()) {
+                forSpecificStudyIdentifiers(membership.getStudyIdentifiers());
+            } else {
+                Collection<String> applicableStudies =
+                    new ArrayList<String>(membership.getStudyIdentifiers().size());
+                for (Object oStudy : membership.getStudies()) {
+                    Study study = (Study) oStudy;
+                    if (!study.isManaged()) {
+                        applicableStudies.add(STUDY_MAPPING.getSharedIdentity(study));
+                    } else {
+                        for (Object oSite : membership.getSites()) {
+                            Site site = (Site) oSite;
+                            if (study.getManagingSites().contains(site)) {
+                                applicableStudies.add(STUDY_MAPPING.getSharedIdentity(study));
+                                break;
+                            }
+                        }
+                    }
+                }
+                forSpecificStudyIdentifiers(applicableStudies);
+            }
         } else {
             super.applyTemplateManagement(membership);
         }
