@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+<!--
+body {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	background: #ccc;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 0;
+	text-align: left; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+	color: #000000;
+}
+.oneColFixCtr #container {
+	width: 481px;  /* using 20px less than a full 800px width allows for browser chrome and avoids a horizontal scroll bar */
+	height:225px;
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	margin-top:100px;
+	text-align: center; /* this overrides the text-align: center on the body element. */
+	background-image:url(images/signin_box.gif);
+	background-repeat:no-repeat;
+}
+.oneColFixCtr #mainContent {
+	padding: 75px 20px; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+    *padding: 60px 20px; /* IE Hack */
+}
+#fldLogin {
+	text-align:left;
+	padding-left:50px;
+	padding-top:8px;
+}
+#btnSearch {
+	text-align:right;
+	padding-right:8px;
+	padding-top:10px;
+}
+input[type="text"],input[type="password"] {
+	margin-left:8px;
+	font-size:18px;
+	width:233px;
+	height:25px;
+}
+-->
+</style>
+</head><body class="oneColFixCtr">
+
+
+<div id="container">
+  <div id="mainContent">
+      
+    <form id="fm1" class="fm-v clearfix" action="/cas/login;jsessionid=C49D47A63641D416E062530387D29B72" method="post">
+			<div id="fldLogin">
+				<img src="login_files/signin_username.gif">
+				<!--<input name="username" type="text" size="25">-->
+				<input id="username" name="username" class="required" tabindex="1" size="25" autocomplete="false" type="text">
+                        </div>
+			<div id="fldLogin">
+				<img src="login_files/signin_password.gif">
+				<!--<input name="password" type="password" size="25">-->
+				<input id="password" name="password" tabindex="2" value="" size="25" type="password">
+                                <input name="lt" value="_c6B21E859-BBD1-23A3-FCA6-89E5122F9014_k394073A9-6E82-B9E1-06EE-1F3CE2543CB6" type="hidden">
+				<input name="_eventId" value="submit" type="hidden">
+			</div>
+			<div id="btnSearch">
+				<input name="submit" tabindex="4" src="login_files/signin_button.gif" type="image" border="0">
+			</div>
+            <input name="lt" value="_c6B21E859-BBD1-23A3-FCA6-89E5122F9014_k394073A9-6E82-B9E1-06EE-1F3CE2543CB6" type="hidden">
+    </form>
+    <!-- end #mainContent --></div>
+<!-- end #container --></div>
+
+</body></html>
