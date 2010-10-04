@@ -667,6 +667,7 @@
             function epochsAreaSetup() {
                 registerSelectStudySegmentHandlers()
                 <c:if test="${canEdit}">
+                populationAddButtonCreate()
                 createAddEpochControl()
                 createAllStudySegmentControls()
                 epochControls()

@@ -7,7 +7,6 @@ function createAllStudySegmentControls() {
     $$('#epochs ul').each(function(ul) {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
-    populationAddButtonCreate()
 }
 
 //have to call this function separately in selectStudySegment.jsp        
