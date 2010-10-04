@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -94,16 +93,7 @@ public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
     }
 
     public int compareTo(PscUser o) {
-        if (getCsmUser() != null && o.getCsmUser() != null) {
-            int comp;
-            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
-                compare(getCsmUser().getLastName(), o.getCsmUser().getLastName());
-            if (comp != 0) return comp;
-            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
-                compare(getCsmUser().getFirstName(), o.getCsmUser().getFirstName());
-            if (comp != 0) return comp;
-        }
-        return getUsername().compareToIgnoreCase(o.getUsername());
+        return getLastFirst().compareToIgnoreCase(o.getLastFirst());
     }
 
     public boolean isStale() {

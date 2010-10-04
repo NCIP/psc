@@ -13,7 +13,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
-import edu.northwestern.bioinformatics.studycalendar.tools.BeanPropertyListComparator;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,13 +49,12 @@ import java.util.TreeMap;
  */
 public class PscUserService implements PscUserDetailsService {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final static BeanPropertyListComparator<User> CSM_USER_BY_HUMAN_NAME_ORDER =
-        new BeanPropertyListComparator<User>();
-    static {
-        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("lastName", String.CASE_INSENSITIVE_ORDER);
-        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("firstName", String.CASE_INSENSITIVE_ORDER);
-        CSM_USER_BY_HUMAN_NAME_ORDER.addProperty("loginName");
-    }
+    private final static Comparator<User> CSM_USER_BY_PSC_USER_ORDER =
+        new Comparator<User>() {
+            public int compare(User o1, User o2) {
+                return createRolelessUser(o1).compareTo(createRolelessUser(o2));
+            }
+        };
 
     private AuthorizationManager csmAuthorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
@@ -117,7 +116,7 @@ public class PscUserService implements PscUserDetailsService {
         List<User> allCsmUsers = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
         List<PscUser> users = new ArrayList<PscUser>(allCsmUsers.size());
         for (User csmUser : allCsmUsers) {
-            users.add(new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap()));
+            users.add(createRolelessUser(csmUser));
         }
         Collections.sort(users);
         return users;
@@ -143,7 +142,7 @@ public class PscUserService implements PscUserDetailsService {
             matches.addAll(searchBy("firstName", text));
             result = new ArrayList<User>(matches);
         }
-        Collections.sort(result, CSM_USER_BY_HUMAN_NAME_ORDER);
+        Collections.sort(result, CSM_USER_BY_PSC_USER_ORDER);
         return result;
     }
 
@@ -189,6 +188,10 @@ public class PscUserService implements PscUserDetailsService {
         return new PscUser(
             user,
             prepareMemberships(suiteRoleMembershipLoader.getRoleMemberships(user.getUserId())));
+    }
+
+    private static PscUser createRolelessUser(User o1) {
+        return new PscUser(o1, Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
     }
 
     private Map<SuiteRole, SuiteRoleMembership> prepareMemberships(

@@ -33,8 +33,8 @@ public class PscUserTest extends TestCase {
         a.getCsmUser().setFirstName("Aeneas");
         a.getCsmUser().setLastName("Miller");
         b = AuthorizationObjectFactory.createPscUser("b");
-        a.getCsmUser().setFirstName("Bacchus");
-        a.getCsmUser().setLastName("Vinter");
+        b.getCsmUser().setFirstName("Bacchus");
+        b.getCsmUser().setLastName("Agricola");
     }
 
     public void testAuthoritiesArePscRoles() throws Exception {
@@ -192,37 +192,34 @@ public class PscUserTest extends TestCase {
 
     ////// NATURAL ORDER
 
-    public void testNaturalOrderIsByLastNameFirst() throws Exception {
-        a.getCsmUser().setFirstName("Z");
-        b.getCsmUser().setLoginName("a");
-
-        assertNegative(b.compareTo(a));
-        assertPositive(a.compareTo(b));
+    public void testNaturalOrderIsByLastFirst() throws Exception {
+        System.out.println("a.getLastFirst() = " + a.getLastFirst());
+        System.out.println("b.getLastFirst() = " + b.getLastFirst());
+        assertNaturalOrder(b, a);
     }
 
     public void testNaturalOrderIsByFirstNameSecond() throws Exception {
         a.getCsmUser().setLastName(null);
         b.getCsmUser().setLastName(null);
 
-        a.getCsmUser().setFirstName("Cassandra");
-
-        assertNegative(b.compareTo(a));
-        assertPositive(a.compareTo(b));
+        assertNaturalOrder(a, b);
     }
 
-    public void testNaturalOrderIsByUsernameThird() throws Exception {
-        a.getCsmUser().setLastName("Z");
-        a.getCsmUser().setFirstName("Z");
-        b.getCsmUser().setLastName("Z");
-        b.getCsmUser().setFirstName("Z");
+    public void testNaturalOrderComparesUsernameForUserWithNoLastFirst() throws Exception {
+        a.getCsmUser().setLastName(null);
+        a.getCsmUser().setFirstName(null);
 
-        assertNegative(a.compareTo(b));
-        assertPositive(b.compareTo(a));
+        assertNaturalOrder(a, b);
     }
 
     public void testNaturalOrderIsEqualWhenEqual() throws Exception {
         assertEquals(0, a.compareTo(a));
         assertEquals(0, b.compareTo(b));
+    }
+
+    public void assertNaturalOrder(PscUser first, PscUser second) {
+        assertNegative(first.compareTo(second));
+        assertPositive(second.compareTo(first));
     }
 
     ////// HELPERS

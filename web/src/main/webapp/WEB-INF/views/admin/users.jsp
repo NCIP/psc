@@ -133,6 +133,11 @@
         <div id="users" class="row">
             <tags:activityIndicator/> Users loading...
         </div>
+
+        <div class="row instructions">
+            This table is sorted by last name (if any), then first name (if any),
+            then username.
+        </div>
     </laf:division>
 </laf:box>
 </body>
