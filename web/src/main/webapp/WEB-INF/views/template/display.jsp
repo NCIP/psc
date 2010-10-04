@@ -774,7 +774,6 @@
                         createStudyControls(anyProvidersAvailable, false);
                     </c:when>
                 </c:choose>
-                hideShowReleaseTemplateButton();
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
