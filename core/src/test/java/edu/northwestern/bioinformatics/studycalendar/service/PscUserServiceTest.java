@@ -112,7 +112,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.loadUserByUsername("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testNullCsmUserThrowsExceptionForAcegi() throws Exception {
@@ -156,7 +156,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getAuthorizableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testExpiredAuthorizableUserIsStillReturned() throws Exception {
@@ -172,7 +172,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getAuthorizableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testUnknownAuthorizableUserReturnsNull() throws Exception {
@@ -195,7 +195,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getProvisionableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testGetNullCsmUserForProvisioningReturnsNull() throws Exception {
@@ -274,7 +274,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of PSC users", 1, actual.size());
         PscUser actualUser = actual.iterator().next();
         assertSame("Wrong CSM user", csmUser, actualUser.getCsmUser());
-        assertSame("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actualUser.getMemberships());
     }
 
     public void testGetPscUsersFromCsmUsersWithPartial() throws Exception {
@@ -291,7 +291,31 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of PSC users", 1, actual.size());
         PscUser actualUser = actual.iterator().next();
         assertSame("Wrong CSM user", csmUser, actualUser.getCsmUser());
-        assertSame("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+    }
+
+    public void testGetPscUsersFromCsmUsersReSortsTheMemberships() throws Exception {
+        Map<SuiteRole, SuiteRoleMembership> expectedMemberships =
+            new MapBuilder<SuiteRole, SuiteRoleMembership>().
+                put(SuiteRole.SYSTEM_ADMINISTRATOR,
+                    new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null)).
+                put(SuiteRole.AE_EXPEDITED_REPORT_REVIEWER,
+                    new SuiteRoleMembership(SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, null, null)).
+                put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER,
+                    new SuiteRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, null, null)).
+                toMap();
+        expect(suiteRoleMembershipLoader.getRoleMemberships(5L)).andReturn(expectedMemberships);
+
+        replayMocks();
+        Collection<PscUser> actual = service.getPscUsers(Collections.singleton(csmUser), false);
+        verifyMocks();
+
+        Map<SuiteRole, SuiteRoleMembership> actualMemberships =
+            actual.iterator().next().getMemberships();
+        Iterator<SuiteRole> it = actualMemberships.keySet().iterator();
+        assertEquals("Wrong 1st role", SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, it.next());
+        assertEquals("Wrong 2nd role", SuiteRole.SYSTEM_ADMINISTRATOR, it.next());
+        assertEquals("Wrong 3rd role", SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, it.next());
     }
 
     public void testVisibleAssignments() throws Exception {

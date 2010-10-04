@@ -40,7 +40,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
@@ -67,9 +69,7 @@ public class PscUserService implements PscUserDetailsService {
     public PscUser getProvisionableUser(String username) {
         User user = loadCsmUser(username);
         if (user == null) return null;
-        return new PscUser(
-            user, suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId())
-        );
+        return createProvisionableUser(user);
     }
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
@@ -85,9 +85,7 @@ public class PscUserService implements PscUserDetailsService {
     public PscUser getAuthorizableUser(String username) {
         User user = loadCsmUser(username);
         if (user == null) return null;
-        return new PscUser(
-            user,
-            suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()));
+        return createAuthorizableUser(user);
     }
 
     private User loadCsmUser(String username) {
@@ -170,13 +168,36 @@ public class PscUserService implements PscUserDetailsService {
     public List<PscUser> getPscUsers(Collection<User> csmUsers, boolean includePartialMemberships) {
         List<PscUser> users = new ArrayList<PscUser>(csmUsers.size());
         for (User csmUser : csmUsers) {
-            users.add(new PscUser(csmUser,
+            users.add(
                 includePartialMemberships ?
-                    suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId()) :
-                    suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())
-            ));
+                    createProvisionableUser(csmUser) :
+                    createAuthorizableUser(csmUser)
+            );
         }
         return users;
+    }
+
+    private PscUser createProvisionableUser(User user) {
+        return new PscUser(
+            user,
+            prepareMemberships(
+                suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId()))
+        );
+    }
+
+    private PscUser createAuthorizableUser(User user) {
+        return new PscUser(
+            user,
+            prepareMemberships(suiteRoleMembershipLoader.getRoleMemberships(user.getUserId())));
+    }
+
+    private Map<SuiteRole, SuiteRoleMembership> prepareMemberships(
+        Map<SuiteRole, SuiteRoleMembership> input
+    ) {
+        TreeMap<SuiteRole, SuiteRoleMembership> result =
+            new TreeMap<SuiteRole, SuiteRoleMembership>(PscRole.ORDER);
+        result.putAll(input);
+        return result;
     }
 
     /**

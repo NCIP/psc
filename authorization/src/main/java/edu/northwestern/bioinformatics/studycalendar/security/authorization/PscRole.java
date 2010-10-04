@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -44,6 +45,22 @@ public enum PscRole implements GrantedAuthority {
     LAB_DATA_USER,
     REGISTRAR
     ;
+
+    public static Comparator<SuiteRole> ORDER = new Comparator<SuiteRole>() {
+        public int compare(SuiteRole o1, SuiteRole o2) {
+            PscRole pr1 = PscRole.valueOf(o1);
+            PscRole pr2 = PscRole.valueOf(o2);
+            if (pr1 != null && pr2 == null) {
+                return -1;
+            } else if (pr1 == null && pr2 != null) {
+                return 1;
+            } else if (pr1 != null) { // both PSC roles
+                return pr1.ordinal() - pr2.ordinal();
+            } else {
+                return o1.getDisplayName().compareTo(o2.getDisplayName());
+            }
+        }
+    };
 
     private SuiteRole corresponding;
     private Collection<PscRoleUse> uses;

@@ -94,15 +94,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
     ////// COMPARABLE
 
     public int compareTo(ProvisioningRole other) {
-        if (isPscRole() && !other.isPscRole()) {
-            return -1;
-        } else if (!isPscRole() && other.isPscRole()) {
-            return 1;
-        } else if (isPscRole()) { // both PSC roles
-            return pscRole.ordinal() - other.pscRole.ordinal();
-        } else {
-            return getDisplayName().compareTo(other.getDisplayName());
-        }
+        return PscRole.ORDER.compare(this.suiteRole, other.suiteRole);
     }
 
     ////// OBJECT METHODS
