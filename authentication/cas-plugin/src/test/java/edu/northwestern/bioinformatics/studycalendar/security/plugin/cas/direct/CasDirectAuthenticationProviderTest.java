@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct
 
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
@@ -124,13 +125,14 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
     public void testSuccessfulPostResultsInGoodAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='some-ticket'/>");
         expectPostCredentials(USERNAME, PASSWORD, "some-ticket").andReturn(true);
+        PscUser expectedUser = AuthorizationObjectFactory.createPscUser(USERNAME, PscRole.STUDY_QA_MANAGER);
         expect(userDetailsService.loadUserByUsername(USERNAME)).
-            andReturn(AuthorizationObjectFactory.createPscUser(USERNAME, PscRole.STUDY_QA_MANAGER));
+            andReturn(expectedUser);
 
         Authentication actual = doAuthenticate();
         assertNotNull("No authentication token returned", actual);
         assertTrue("Actual token not authenticated", actual.isAuthenticated());
-        assertEquals("Actual token not for correct user", USERNAME, actual.getPrincipal());
+        assertEquals("Actual token not for correct user", expectedUser, actual.getPrincipal());
         assertEquals("Password not removed from token",
             "[REMOVED PASSWORD]", actual.getCredentials());
         assertEquals("Wrong authorities in actual token", 1, actual.getAuthorities().length);
