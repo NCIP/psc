@@ -964,10 +964,12 @@
                                                 </select>
                                                 <a id="go-to-schedule-control-${ssRelationship.studySite.id}" class="control go-to-schedule-control"
                                                    href="<c:url value="/pages/subject"/>">View</a>
-                                                <a id="take-subject-off-study-${ssRelationship.studySite.id}" class="control take-subject-off-study"
-                                                   href="<c:url value="/pages/subject/off-study"/>">
-                                                    Take off study
-                                                </a>
+                                                <c:if test="${ssRelationship.canTakeSubjectOffStudy}">
+                                                    <a id="take-subject-off-study-${ssRelationship.studySite.id}" class="control take-subject-off-study"
+                                                        href="<c:url value="/pages/subject/off-study"/>">
+                                                        Take off study
+                                                    </a>
+                                                </c:if>
                                             </label>
                                         </li>
                                     </c:if>

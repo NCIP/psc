@@ -16,8 +16,10 @@
                         <c:forEach items="${assignment.populations}" var="pop">
                             <li>${pop.name}</li>
                         </c:forEach>
-                        <a class="control"
-                           href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
+                        <c:if test="${canUpdateSchedule}">
+                            <a class="control"
+                                href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
+                        </c:if>
                     </c:otherwise>
                 </c:choose>
             </ul>

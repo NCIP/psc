@@ -311,8 +311,10 @@
                                             <label>${notification.title}</label>
                                         </c:otherwise>
                                     </c:choose>
-                                    <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
-                                       notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    <c:if test="${canUpdateSchedule}">
+                                        <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
+                                            notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    </c:if>
                                 </li>
                             </c:forEach>
                             </ul>
@@ -335,8 +337,10 @@
                     <div class="value">
                         ${assignment.currentAmendment.displayName}
                         <c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">
-                            <a class="control"
-                               href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
+                            <c:if test="${canUpdateSchedule}">
+                                <a class="control"
+                                    href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
+                            </c:if>
                         </c:if>
                     </div>
                 </div>
