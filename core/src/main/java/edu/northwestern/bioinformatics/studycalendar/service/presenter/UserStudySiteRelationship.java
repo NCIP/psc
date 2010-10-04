@@ -80,6 +80,16 @@ public class UserStudySiteRelationship {
     }
 
     /**
+     * Returns true if the user is allowed to take subject off from the study for the
+     * study site and there are any subjects associated with it.
+     */
+
+    public boolean getCanTakeSubjectOffStudy() {
+        return !getStudySite().getStudySubjectAssignments().isEmpty()
+            && hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER);
+    }
+
+    /**
      * Returns true if the user can see this study site in any capacity.
      */
     public boolean isVisible() {
