@@ -93,27 +93,19 @@ psc.admin.UserAdmin = (function ($) {
     if (_.isEmpty(roles)) {
       $('#role-editor-pane').empty();
     } else if(_(roles).size() == 1) {
-        startEditing(_(roles).first().key)
+      var roleKey = _(roles).first().key;
+      startEditing(roleKey)
     } else if (_(roles).size() > 1) {
       var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
 
-//      var selectedRoleMembership = _(roles).select(function(r) {return user.hasMembership(r.key)});
-//      var isRoleMembershipPartial = !_(selectedRoleMembership).isEmpty() && (roles > selectedRoleMembership);
-
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
         roles: roles, sites: PROVISIONABLE_SITES, studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
         enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
-//        isRoleMembershipPartial: isRoleMembershipPartial, partialRoleMemberships: selectedRoleMembership
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
-
-//        .find('input.role-group-membership').attr('checked', _(roles).any(function(r) {return user.memberships[r.key]})
-//        ).attr('partial', isRoleMembershipPartial ? 'true' : 'false').
-//        click(updateGroupMembership).
-//        attr('role', _(roles).map(function(r) {return r.key}).join(','));
-
+      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
 
 //        _(roles).each(function(r) {
 //          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
@@ -173,6 +165,23 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
+  /*
+    "data_reader": {
+        "sites": ["__ALL__"],
+        "studies": ["__ALL__"]
+
+   */
+  function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var state = determineTristateCheckboxState(roles, scopeType, $(input).attr(scopeType + '-identifier'));
+      $(input).tristate({initialState: state})
+    }).bind('click', updateMultipleMembershipScope);
+  }
+
+  function updateMultipleMembershipScope(evt) {
+    alert('test')
+  }
+
   function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
@@ -192,29 +201,18 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function registerMultipleGroupControl(pane, roles) {
-    var memberships = {};
-    _(roles).each(function(role) {memberships[role.key] = null });
-
-    var state;
-    if (_(roles).isEmpty()) {
-      state = 'unchecked';
-    } else if (user.hasAllMemberships(memberships)) {
-      state = 'checked';
-    } else if (user.hasAnyMemberships(memberships)) {
-      state = 'intermediate';
-    } else {
-      state = 'unchecked';
-    }
+    var state = determineTristateCheckboxState(roles);
 
     var input = $(pane).find('#group-multiple:first');
 
     $(input).tristate({initialState: state});
+    var memberships = buildMembershipObject(roles);
     updateIntermediateStateText(state, pane, memberships);
 
     $(input).bind('tristate_state_changed', _(updateMultipleGroupMemberships).bind(this, roles));
     $(input).bind('tristate_state_changed', _(function (pane, memberships, evt) {
-      var state = $(evt.target).attr('state')
-      updateIntermediateStateText(state, pane, memberships)
+      var state = $(evt.target).attr('state');
+      updateIntermediateStateText(state, pane, memberships);
     }).bind(this, pane, memberships));
   }
 
@@ -230,6 +228,31 @@ psc.admin.UserAdmin = (function ($) {
       $(label).hide()
       $(label).empty();
     }
+  }
+
+  function determineTristateCheckboxState(roles, scopeType, scopeValue) {
+    var memberships = buildMembershipObject(roles, scopeType, scopeValue);
+    if (_(roles).isEmpty()) {
+      return 'unchecked';
+    } else if (user.hasAllMemberships(memberships)) {
+      return 'checked';
+    } else if (user.hasAnyMemberships(memberships)) {
+      return 'intermediate';
+    } else {
+      return 'unchecked';
+    }
+  }
+
+  function buildMembershipObject(roles, scopeType, scopeValue) {
+    var memberships = {};
+    _(roles).each(function(role) {
+      memberships[role.key] = null
+      if (scopeType && scopeValue) {
+        memberships[role.key] = {};
+        memberships[role.key][scopeType] = scopeValue;
+      }
+    });
+    return memberships;
   }
 
   function updateMultipleGroupMemberships(roles, evt) {
