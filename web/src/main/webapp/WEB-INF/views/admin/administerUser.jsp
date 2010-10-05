@@ -303,8 +303,11 @@
 
         <div id="role-manager">
             <div id="roles">
+                <div class="role-manager-view-option">
+                    <a href="#" id="show-all-toggle">Show All Roles</a>
+                </div>
                 <c:forEach items="${command.provisionableRoles}" var="role">
-                    <div class="role-tab">
+                    <div class="role-tab" role-type="${role.pscRole ? 'psc' : 'suite'}">
                         <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
                         <div class="role-control">
                             <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>

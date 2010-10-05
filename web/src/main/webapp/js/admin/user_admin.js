@@ -389,6 +389,21 @@ psc.admin.UserAdmin = (function ($) {
     user.username = $('input#username').val();
   }
 
+  function toggleRoleView(evt, show) {
+    if(!show) {
+      show = $('#show-all-toggle:contains(All)').length > 0 ? 'all' : 'psc';
+    }
+
+    if (show === 'psc') {
+      $('#show-all-toggle').text('Show All Roles');
+      $("div.role-tab[role-type='suite']").hide();
+    } else {
+      $('#show-all-toggle').text('Show PSC Roles')
+      $("div.role-tab[role-type='suite']").show();
+    }
+    return false;
+  }
+
   return {
     init: function (u) {
       user = u;
@@ -396,7 +411,7 @@ psc.admin.UserAdmin = (function ($) {
         $('#role-' + roleKey).addClass('member');
       }, this);
       var firstRole;
-      if ($('a.role.member').length > 0) {
+      if ($("div.role-tab[role-type='psc'] a.role.member").length > 0) {
         firstRole = $('a.role.member')[0].id.substring("role-".length);
       } else {
         firstRole = 'study_subject_calendar_manager';
@@ -408,6 +423,8 @@ psc.admin.UserAdmin = (function ($) {
         bind('membership-change', syncRoleEditorOnChange);
       $('input#username').keyup(syncUsername);
       syncAllVsOne();
+      toggleRoleView(null, 'psc');
+      $('#show-all-toggle').click(toggleRoleView);
     },
 
     serializeRoleChanges: function () {

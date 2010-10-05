@@ -58,6 +58,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
         safePut(o, "name", suiteRole.getDisplayName());
         safePut(o, "key", suiteRole.getCsmName());
         safePut(o, "description", getDescription());
+        safePut(o, "isPscRole", isPscRole());
         if (suiteRole.isScoped()) {
             JSONArray scopes = buildEnumArray(suiteRole.getScopes());
             safePut(o, "scopes", scopes);
