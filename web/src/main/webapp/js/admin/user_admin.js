@@ -211,7 +211,7 @@ psc.admin.UserAdmin = (function ($) {
     $(input).tristate({initialState: state});
     updateIntermediateStateText(state, pane, memberships);
 
-    $(input).bind('tristate_state_changed', _(updateMultipleGroupMembership).bind(this, roles));
+    $(input).bind('tristate_state_changed', _(updateMultipleGroupMemberships).bind(this, roles));
     $(input).bind('tristate_state_changed', _(function (pane, memberships, evt) {
       var state = $(evt.target).attr('state')
       updateIntermediateStateText(state, pane, memberships)
@@ -230,8 +230,19 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function updateMultipleGroupMembership(roles, evt) {
-    alert('updateMultipleGroupMembership')
+  function updateMultipleGroupMemberships(roles, evt) {
+    var state = $(evt.target).attr('state');
+    console.log("Updating user obj with roles", _(roles).map(function(r){return r.key}), state);
+    switch(state) {
+      case 'checked':
+        _(roles).each(function(r) {user.add(r.key)});
+        break;
+      case 'unchecked':
+        _(roles).each(function(r) {user.remove(r.key)});
+        break;
+      default:
+        console.log("State does not exist", state);
+    }
   }
 
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
