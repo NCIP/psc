@@ -356,6 +356,7 @@ psc.admin.UserAdmin = (function ($) {
     input.attr('checked', data.kind === 'add');
     if (input.attr('state')) {
       input.attr('state', data.kind === 'add' ? 'checked' : 'unchecked');
+      $(input).parents('.row').find('.partial-membership').empty();
     }
   }
 
