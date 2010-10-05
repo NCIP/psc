@@ -100,19 +100,25 @@ psc.admin.UserAdmin = (function ($) {
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
         roles: roles, sites: PROVISIONABLE_SITES,
-        studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
+        studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
         enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
         utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames}
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
       registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
-
-//        _(roles).each(function(r) {
-//          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
-//          registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
-//        });
+      registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
     }
+  }
+
+  function uniqueStudies(studies) {
+    var unique = [];
+    _(studies).each(function(s) {
+      if (!_(unique).pluck('identifier').include(s.identifier)) {
+        unique.push(s)
+      }
+    });
+    return unique;
   }
 
   function isControlEnabled(controlKey, role) {
@@ -250,7 +256,7 @@ psc.admin.UserAdmin = (function ($) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var scopeValue = $(input).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-      var label = '#partial-scope-site-' + scopeValue + '-info';
+      var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
       $(input).tristate({initialState: state})
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind('tristate-state-change',

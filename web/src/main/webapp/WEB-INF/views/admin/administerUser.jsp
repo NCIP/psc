@@ -192,7 +192,10 @@
                                class="scope-study [#= study.identifier == '__ALL__' ? 'all' : 'one' #]"
                                type="checkbox"/>
                     </div>
-                    <div class="value"><label for="scope-study-[#= study.identifier #]">[#= study.name #]</label></div>
+                    <div class="value">
+                        <label for="scope-study-[#= study.identifier #]">[#= study.name #]</label>
+                        <label for="scope-study-[#= study.identifier #]" id="partial-scope-study-[#= study.identifier #]-info" class="partial-membership"></label>
+                    </div>
                 </div>
                 [# }); #]
             </div>
