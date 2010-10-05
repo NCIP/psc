@@ -172,11 +172,9 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
 
   var selectProvisionableRolesKeys = _(function(roleKeys, scope) {
     return _(roleKeys).select(function(k) {
-      var scopeType = null;
-      if (scope) {
-        var scopeType = _(scope).chain().keys().first().value();
-      }
-      return this.isProvisionableRole(k, scopeType);
+      if (!scope) { return this.isProvisionableRole(k) }
+      var scopeType = _(scope).chain().keys().first().value();
+      return this.isProvisionableRole(k) && this.isProvisionableScope(k, scopeType);
     }, this)
   }).bind(this);
 }
