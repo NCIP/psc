@@ -118,7 +118,7 @@
     </tags:resigTemplate>
 
     <tags:resigTemplate id="multiple_role_editor_template">
-        [# var joinedRoleNames = _(roles).map(function(r) {return r.name}).join(', '); #]
+        [# var joinedRoleNames = utils.mapRoleNames(roles).join(', '); #]
         [# var scopes = _(roles).map(function(r) {return r.scopes;}).flatten().uniq(); #]
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
@@ -127,7 +127,7 @@
                 <div class="row">
                     [# if (enableRoleControl) { #]
                         <div class="label">
-                            <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= _(roles).map(function(r) {return r.key}).join(',') #]"/>
+                            <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= utils.mapRoleKeys(roles) #]"/>
                         </div>
                         <div class="value"><label for="multiple-group-membership">
                             Grant this user the [#= joinedRoleNames  #] roles.

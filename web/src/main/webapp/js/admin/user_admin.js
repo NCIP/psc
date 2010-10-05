@@ -98,11 +98,11 @@ psc.admin.UserAdmin = (function ($) {
     } else if (_(roles).size() > 1) {
       var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
-
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
         roles: roles, sites: PROVISIONABLE_SITES,
         studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
-        enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
+        enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
+        utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames}
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
@@ -215,7 +215,7 @@ psc.admin.UserAdmin = (function ($) {
     if (state == 'intermediate') {
       var matchingRoleKeys = user.matchingMemberships(roleKeys);
       var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles) + ')')
+      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles).join(', ') + ')')
       $(label).show();
     } else {
       $(label).hide()
@@ -277,7 +277,7 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function mapRoleNames(roles) {
-    return _(roles).map(function(r){return r.name}).join(', ');
+    return _(roles).map(function(r){return r.name});
   }
   
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
