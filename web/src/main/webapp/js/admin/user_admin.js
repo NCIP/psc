@@ -174,8 +174,9 @@ psc.admin.UserAdmin = (function ($) {
   function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var state = determineTristateCheckboxState(roles, scopeType, $(input).attr(scopeType + '-identifier'));
+      alert(state);
       $(input).tristate({initialState: state})
-    }).bind('click', updateMultipleMembershipScope);
+    }).bind('tristate-state-change', updateMultipleMembershipScope);
   }
 
   function updateMultipleMembershipScope(evt) {
@@ -209,8 +210,8 @@ psc.admin.UserAdmin = (function ($) {
     var memberships = buildMembershipObject(roles);
     updateIntermediateStateText(state, pane, memberships);
 
-    $(input).bind('tristate_state_changed', _(updateMultipleGroupMemberships).bind(this, roles));
-    $(input).bind('tristate_state_changed', _(function (pane, memberships, evt) {
+    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles));
+    $(input).bind('tristate-state-change', _(function (pane, memberships, evt) {
       var state = $(evt.target).attr('state');
       updateIntermediateStateText(state, pane, memberships);
     }).bind(this, pane, memberships));

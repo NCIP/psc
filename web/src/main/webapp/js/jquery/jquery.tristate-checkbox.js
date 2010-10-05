@@ -43,7 +43,7 @@
         var c = $(checkbox);
         c.attr('state', state);
         c.attr('checked', isStateChecked(state));
-        c.trigger('tristate_state_changed');
+        c.trigger('tristate-state-change');
       }
 
       var isValidState = function(testing) {
