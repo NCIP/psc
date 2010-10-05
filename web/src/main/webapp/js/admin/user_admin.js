@@ -105,10 +105,10 @@ psc.admin.UserAdmin = (function ($) {
         find('input.role-group-membership').attr('checked', _(roles).all(function(r) {return user.memberships[r.key]})).
         click(updateGroupMembership).end().
         parent().attr('role', _(roles).map(function(r) {return r.key}).join(','));
-        _(roles).each(function(r) {
-          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
-          registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
-        });
+//        _(roles).each(function(r) {
+//          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
+//          registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
+//        });
     }
   }
 
