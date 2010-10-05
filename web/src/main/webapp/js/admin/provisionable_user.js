@@ -140,4 +140,14 @@ psc.admin.ProvisionableUser = function (username, memberships) {
       return this.hasMembership(roleKey, scope);
     }, this, scope);
   };
+
+  this.membershipsStatus = function(roleKeys, scope) {
+    if (this.hasAllMemberships(roleKeys, scope)) {
+      return 'FULL';
+    } else if (this.hasAnyMemberships(roleKeys, scope)) {
+      return 'PARTIAL';
+    } else {
+      return 'NONE';
+    }
+  }
 }

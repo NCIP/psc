@@ -226,14 +226,14 @@ psc.admin.UserAdmin = (function ($) {
     var roleKeys = mapRoleKeys(roles);
     var scope = buildScopeObject(scopeType, scopeValue);
 
-    if (_(roleKeys).isEmpty()) {
-      return 'unchecked';
-    } else if (user.hasAllMemberships(roleKeys, scope)) {
-      return 'checked';
-    } else if (user.hasAnyMemberships(roleKeys, scope)) {
-      return 'intermediate';
-    } else {
-      return 'unchecked';
+    var status = user.membershipsStatus(roleKeys, scope);
+    switch(status) {
+      case 'FULL':    return 'checked';
+      case 'PARTIAL': return 'intermediate';
+      case 'NONE':    return 'unchecked';
+      default:
+        console.log("Memberships status unknown: ", status);
+        return 'unchecked';
     }
   }
 
@@ -265,7 +265,7 @@ psc.admin.UserAdmin = (function ($) {
   */
   function buildScopeObject(scopeType, scopeValue) {
     var scope = null;
-    if (scopeType && scopeValue) {
+    if (scopeType) {
       scope = {}; scope[scopeType] = scopeValue;
     }
     return scope;
