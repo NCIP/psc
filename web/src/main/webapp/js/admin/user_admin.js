@@ -98,18 +98,22 @@ psc.admin.UserAdmin = (function ($) {
       var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
 
-      var selectedRoleMembership = _(roles).select(function(r) {return user.hasMembership(r.key)});
-      var isRoleMembershipPartial = !_(selectedRoleMembership).isEmpty() && (roles > selectedRoleMembership);
+//      var selectedRoleMembership = _(roles).select(function(r) {return user.hasMembership(r.key)});
+//      var isRoleMembershipPartial = !_(selectedRoleMembership).isEmpty() && (roles > selectedRoleMembership);
 
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-          roles: roles, sites: PROVISIONABLE_SITES, studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
-          enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
-          isRoleMembershipPartial: isRoleMembershipPartial, partialRoleMemberships: selectedRoleMembership
-        })).find('input.role-group-membership').attr('checked',
-            _(roles).any(function(r) {return user.memberships[r.key]})
-        ).attr('mode', isRoleMembershipPartial ? 'partial' : '').
-        click(updateGroupMembership).
-        attr('role', _(roles).map(function(r) {return r.key}).join(','));
+        roles: roles, sites: PROVISIONABLE_SITES, studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
+        enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
+//        isRoleMembershipPartial: isRoleMembershipPartial, partialRoleMemberships: selectedRoleMembership
+      }))
+
+      registerMultipleGroupControl('#role-editor-pane', roles);
+
+//        .find('input.role-group-membership').attr('checked', _(roles).any(function(r) {return user.memberships[r.key]})
+//        ).attr('partial', isRoleMembershipPartial ? 'true' : 'false').
+//        click(updateGroupMembership).
+//        attr('role', _(roles).map(function(r) {return r.key}).join(','));
+
 
 //        _(roles).each(function(r) {
 //          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
@@ -179,14 +183,43 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateGroupMembership(evt) {
-    var roles = evt.target.value.split(',');
-    _(roles).each(function(r){
-      if ($(evt.target).attr('checked')) {
-        user.add(r);
-      } else {
-        user.remove(r);
-      }
-    });
+    var r = evt.target.value;
+    if ($(evt.target).attr('checked')) {
+      user.add(r);
+    } else {
+      user.remove(r);
+    }
+  }
+
+  function registerMultipleGroupControl(pane, roles) {
+    var memberships = {};
+    _(roles).each(function(role) {memberships[role.key] = null });
+
+    var state;
+    if (_(roles).isEmpty()) {
+      state = 'unchecked';
+    } else if (user.hasAllMemberships(memberships)) {
+      state = 'checked';
+    } else if (user.hasAnyMemberships(memberships)) {
+      state = 'intermediate';
+    } else {
+      state = 'unchecked';
+    }
+
+    var input = $(pane).find('#group-multiple:first');
+    var label = $('#group-multiple-partial-membership:first');
+
+    $(input).tristate(state);
+    if (state == 'intermediate') {
+      var matching = user.matchingMemberships(memberships);
+      $(label).html('(Checked for ' + _(matching).keys().join(', ') + ')')
+    }
+
+    $(input).bind('tristate_state_changed', _(updateMultipleGroupMembership).bind(this, roles));
+  }
+
+  function updateMultipleGroupMembership(roles, evt) {
+    alert('updateMultipleGroupMembership')
   }
 
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {

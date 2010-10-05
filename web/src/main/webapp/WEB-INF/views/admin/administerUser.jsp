@@ -32,6 +32,7 @@
 
     <tags:javascriptLink name="admin/provisionable_user"/>
     <tags:javascriptLink name="admin/user_admin"/>
+    <tags:javascriptLink name="jquery/jquery.tristate-checkbox"/>
 
     <tags:resigTemplate id="role_editor_template">
         <div id="role-general">
@@ -134,11 +135,7 @@
                             Since these roles are scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
-                            [# if (isRoleMembershipPartial) {#]
-                            <label for="group-multiple" class="partial-membership">
-                                (Checked for [#= _(partialRoleMemberships).map(function(r) {return r.name}).join(', ') #]) 
-                            </label>
-                            [# } #]
+                            <label for="group-multiple" id="group-multiple-partial-membership" class="partial-membership"></label>
                         </div>
                     [# } else { #]
                         <div class="value"><label for="group-multiple">

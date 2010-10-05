@@ -123,28 +123,27 @@ psc.admin.ProvisionableUser = function (username, memberships) {
     return _(this.memberships[roleKey][collectionName]).include(scope[scopeType]);
   };
 
-  function explodeMembership(combination, role, scope) {
-    var c = combination;
-    if (typeof m === 'object') {
-        role = c;
-      } else if (_(m).isArray()) {
-        role = c[0];
-        scope = c[1];
-      }
-  }
   this.hasAnyMemberships = function (memberships) {
-    _(memberships).any(function(m) {
-      var role, scope;
-      explodeMembership(m, role, scope);
-      this.hasMembership(role, scope);
-    });
+    return _(memberships).any(function(scope, roleKey) {
+      return this.hasMembership(roleKey, scope);
+    }, this);
   };
 
-  this.hasAllMemberships = function() {
-    _(memberships).all(function(m) {
-      var role, scope;
-      explodeMembership(m, role, scope);
-      this.hasMembership(role, scope);
-    });
-  }
+  this.hasAllMemberships = function(memberships) {
+    return _(memberships).all(function(scope, roleKey) {
+      return this.hasMembership(roleKey, scope);
+    }, this);
+  };
+
+  this.matchingMemberships = function(memberships) {
+    var matching = {};
+
+    _(memberships).each(function(scope, roleKey) {
+      if (this.hasMembership(roleKey, scope)) {
+        matching[roleKey] = scope;
+      }
+    }, this);
+
+    return matching;
+  };
 }

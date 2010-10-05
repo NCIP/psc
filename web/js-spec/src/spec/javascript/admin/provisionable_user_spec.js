@@ -299,6 +299,25 @@ Screw.Unit(function () {
           expect(receivedData.length).to(equal, 1);
         });
       });
+
+      describe("matching memberships", function() {
+        var user;
+
+        before(function () {
+          user = new psc.admin.ProvisionableUser('jo', {
+            data_reader: { sites: ['IL036'] },
+            system_administrator: { }
+          });
+        });
+
+        it("returns data_reader memberships", function() {
+          expect(user.matchingMemberships({data_reader: null})).to(equal, {data_reader: null});
+        });
+
+        it("returns no memberships", function() {
+          expect(user.matchingMemberships({system_administrator: null})).to(equal, {});
+        })
+      });
     });
   }(jQuery));
 });
