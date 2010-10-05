@@ -46,6 +46,8 @@ psc.admin.UserAdmin = (function ($) {
 
     selectMultipleRoles(checked);
     deselectMultipleRoles(unchecked);
+
+    startEditingMultiple(checked);
   }
 
   function determineProvisionableStudies(role) {
@@ -120,6 +122,14 @@ psc.admin.UserAdmin = (function ($) {
 
   function getMembershipList(kind, userMembershipsRole) {
      return userMembershipsRole[kind].toString().split(",");
+  }
+  
+  function startEditingMultiple(roleKeys) {
+    if (!_.isEmpty(roleKeys)) {
+      
+    } else {
+      $('#role-editor-pane').empty();
+    }
   }
 
   function isSubsetOfProvision(provisionableList, membershipList) {
