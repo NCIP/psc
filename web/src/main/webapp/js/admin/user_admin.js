@@ -165,33 +165,6 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  /*
-    "data_reader": {
-        "sites": ["__ALL__"],
-        "studies": ["__ALL__"]
-
-   */
-  function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
-    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var state = determineTristateCheckboxState(roles, scopeType, $(input).attr(scopeType + '-identifier'));
-      alert(state);
-      $(input).tristate({initialState: state})
-    }).bind('tristate-state-change', updateMultipleMembershipScope);
-  }
-
-  function updateMultipleMembershipScope(evt) {
-    alert('test')
-  }
-
-  function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
-    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
-      $(input).attr(
-        'checked',
-        user.hasMembership(role.key, qMembership));
-    }).click(_(updateMembershipScope).bind(this, role.key, scopeType, scopeTypePlural));
-  }
-
   function updateGroupMembership(evt) {
     var r = evt.target.value;
     if ($(evt.target).attr('checked')) {
@@ -210,11 +183,28 @@ psc.admin.UserAdmin = (function ($) {
     var memberships = buildMembershipObject(roles);
     updateIntermediateStateText(state, pane, memberships);
 
-    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles));
+    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles.map(function(r){return r.key})));
     $(input).bind('tristate-state-change', _(function (pane, memberships, evt) {
       var state = $(evt.target).attr('state');
       updateIntermediateStateText(state, pane, memberships);
     }).bind(this, pane, memberships));
+  }
+
+  function updateMultipleGroupMemberships(roleKeys, evt) {
+    console.log("Updating user obj", roleKeys, evt)
+
+    var state = $(evt.target).attr('state');
+
+    _(roleKeys).each(function(rk) {
+      switch(state) {
+      case 'checked':
+        user.add(rk); break;
+      case 'unchecked':
+        user.remove(rk); break;
+      default:
+        console.log("State does not exist", state);
+      }
+    });
   }
 
   function updateIntermediateStateText(state, pane, memberships) {
@@ -233,6 +223,7 @@ psc.admin.UserAdmin = (function ($) {
 
   function determineTristateCheckboxState(roles, scopeType, scopeValue) {
     var memberships = buildMembershipObject(roles, scopeType, scopeValue);
+    
     if (_(roles).isEmpty()) {
       return 'unchecked';
     } else if (user.hasAllMemberships(memberships)) {
@@ -242,6 +233,23 @@ psc.admin.UserAdmin = (function ($) {
     } else {
       return 'unchecked';
     }
+  }
+
+  function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
+      $(input).attr(
+          'checked',
+          user.hasMembership(role.key, qMembership));
+    }).click(_(updateMembershipScope).bind(this, role.key, scopeType, scopeTypePlural));
+  }
+
+  function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var state = determineTristateCheckboxState(roles, scopeType, $(input).attr(scopeType + '-identifier'));
+      $(input).tristate({initialState: state})
+    }).bind('tristate-state-change',
+        _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural));
   }
 
   function buildMembershipObject(roles, scopeType, scopeValue) {
@@ -256,20 +264,12 @@ psc.admin.UserAdmin = (function ($) {
     return memberships;
   }
 
-  function updateMultipleGroupMemberships(roles, evt) {
-    var state = $(evt.target).attr('state');
-    console.log("Updating user obj with roles", _(roles).map(function(r){return r.key}), state);
-    switch(state) {
-      case 'checked':
-        _(roles).each(function(r) {user.add(r.key)});
-        break;
-      case 'unchecked':
-        _(roles).each(function(r) {user.remove(r.key)});
-        break;
-      default:
-        console.log("State does not exist", state);
-    }
-  }
+  /*
+    "data_reader": {
+      "sites": ["__ALL__"],
+      "studies": ["__ALL__"]
+
+  */
 
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
     console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
@@ -279,6 +279,24 @@ psc.admin.UserAdmin = (function ($) {
     } else {
       user.remove(roleKey, scope);
     }
+  }
+
+  function updateMultipleMembershipScope(roleKeys, scopeType, scopeListName, evt) {
+    console.log("Updating user obj", roleKeys, scopeType, scopeListName, evt);
+
+    var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
+    var state = $(evt.target).attr('state')
+
+    _(roleKeys).each(function(roleKey) {
+      switch(state) {
+      case 'checked':
+        user.add(roleKey); break;
+      case 'unchecked':
+        user.remove(roleKey); break;
+      default:
+        console.log("State does not exist", state);
+      }
+    });
   }
 
   function syncRoleTabOnChange(evt, data) {
