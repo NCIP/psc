@@ -144,9 +144,9 @@ psc.admin.UserAdmin = (function ($) {
           if (!isSiteSubset || !isStudySubset) {
             enableRoleControl = false;
           }
-        } else if (userMembershipsRole['sites'] != null) {
-          var membershipSiteList = getMembershipList('sites', userMembershipsRole)
-          isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
+        } else if (mem['sites'] != null) {
+          var membershipSiteList = getMembershipList('sites', mem)
+          isSiteSubset = isSubsetOfProvision(provisionableSites, membershipSiteList);
           if (!isSiteSubset) {
             enableRoleControl = false;
           }
@@ -349,11 +349,13 @@ psc.admin.UserAdmin = (function ($) {
       setTimeout(syncAllVsOne, 0);
     } else {
       input = $('#role-editor input#group-' + data.role);
-      if (input.empty()) {
+      console.log(input)
+      if ($(input).length <= 0) {
+        console.log('isempty')
         input = $('#role-editor input#multiple-group-membership');
       }
     }
-
+    console.log('syncRoleEditorOnChange', input, data.kind, data.kind === 'add' )
     input.attr('checked', data.kind === 'add');
     if (input.attr('state')) {
       input.attr('state', data.kind === 'add' ? 'checked' : 'unchecked');
