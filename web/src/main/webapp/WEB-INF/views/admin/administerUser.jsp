@@ -130,7 +130,7 @@
                         </div>
                         <div class="value"><label for="group-multiple">
                             Grant this user the [#= joinedRoleNames  #] roles.
-                            [# if (_(roles).any(function(r){return r.scope})) { #]
+                            [# if (_(roles).any(function(r){return r.scopes})) { #]
                             Since these roles are scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
@@ -138,7 +138,7 @@
                     [# } else { #]
                         <div class="value"><label for="group-multiple">
                             This user has the [#= joinedRoleNames  #] role.
-                            [# if (_(roles).any(function(r){return r.scope})) { #]
+                            [# if (_(roles).any(function(r){return r.scopes})) { #]
                             Since this role is scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
