@@ -126,18 +126,18 @@ psc.admin.ProvisionableUser = function (username, memberships) {
   this.hasAnyMemberships = function (roleKeys, scope) {
     return _(roleKeys).any(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this);
+    }, this, scope);
   };
 
   this.hasAllMemberships = function(roleKeys, scope) {
     return _(roleKeys).all(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this);
+    }, this, scope);
   };
 
   this.matchingMemberships = function(roleKeys, scope) {
     return _(roleKeys).select(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this);
+    }, this, scope);
   };
 }

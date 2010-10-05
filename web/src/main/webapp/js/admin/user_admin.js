@@ -106,7 +106,7 @@ psc.admin.UserAdmin = (function ($) {
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
-//      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
+      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
 
 //        _(roles).each(function(r) {
 //          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
@@ -208,25 +208,24 @@ psc.admin.UserAdmin = (function ($) {
     });
   }
 
-  function updateIntermediateStateLabel(state, pane, label, roles) {
-    var roleKeys = mapRoleKeys(roles);
+  function updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue) {
     var label = $(pane).find(label + ':first');
 
     if (state == 'intermediate') {
-      var matchingRoleKeys = user.matchingMemberships(roleKeys);
+      var roleKeys = mapRoleKeys(roles);
+      var scope = buildScopeObject(scopeType, scopeValue);
+      var matchingRoleKeys = user.matchingMemberships(roleKeys, scope);
       var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles).join(', ') + ')')
-      $(label).show();
+      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles).join(', ') + ')').show();
     } else {
-      $(label).hide()
-      $(label).empty();
+      $(label).hide().empty();
     }
   }
 
   function determineTristateCheckboxState(roles, scopeType, scopeValue) {
     var roleKeys = mapRoleKeys(roles);
-    var scope = buildScopeObject(roles, scopeType, scopeValue);
-    
+    var scope = buildScopeObject(scopeType, scopeValue);
+
     if (_(roleKeys).isEmpty()) {
       return 'unchecked';
     } else if (user.hasAllMemberships(roleKeys, scope)) {
@@ -251,7 +250,7 @@ psc.admin.UserAdmin = (function ($) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var scopeValue = $(input).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-      var label = $('#partial-scope-site-' + scopeValue + '-info');
+      var label = '#partial-scope-site-' + scopeValue + '-info';
       $(input).tristate({initialState: state})
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind('tristate-state-change',
