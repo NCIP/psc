@@ -121,5 +121,30 @@ psc.admin.ProvisionableUser = function (username, memberships) {
     var collectionName = collectionNameFromScopeType(scopeType);
     if (!this.memberships[roleKey][collectionName]) { return false; }
     return _(this.memberships[roleKey][collectionName]).include(scope[scopeType]);
+  };
+
+  function explodeMembership(combination, role, scope) {
+    var c = combination;
+    if (typeof m === 'object') {
+        role = c;
+      } else if (_(m).isArray()) {
+        role = c[0];
+        scope = c[1];
+      }
+  }
+  this.hasAnyMemberships = function (memberships) {
+    _(memberships).any(function(m) {
+      var role, scope;
+      explodeMembership(m, role, scope);
+      this.hasMembership(role, scope);
+    });
+  };
+
+  this.hasAllMemberships = function() {
+    _(memberships).all(function(m) {
+      var role, scope;
+      explodeMembership(m, role, scope);
+      this.hasMembership(role, scope);
+    });
   }
 }
