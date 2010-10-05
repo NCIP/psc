@@ -10,7 +10,9 @@ psc.admin.UserAdmin = (function ($) {
 
   function selectRole(roleKey) {
     $('a.role').removeClass('selected');
+    $('input.roles-to-edit').attr('checked', false);
     $('#role-' + roleKey).addClass('selected');
+    $('input.roles-to-edit[value=' + roleKey + ']').attr('checked', true);
     startEditing(roleKey);
   }
 
