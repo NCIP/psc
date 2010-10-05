@@ -116,6 +116,86 @@
         [# } #]
     </tags:resigTemplate>
 
+    <tags:resigTemplate id="multiple_role_editor_template">
+        [# var joinedRoleNames = _(roles).map(function(r) {return r.name}); #]
+        [# var scopes = _(_(roles).map(function(r) {return r.scope}).uniq()); #]
+        <div id="role-general">
+            <h3>[#= joinedRoleNames #]</h3>
+            <div class="content">
+                <p>You are now modifying multiple roles.</p>
+                <div class="row">
+                    [# if (enableRoleControl) { #]
+                        <div class="label">
+                            <input type="checkbox" id="group-multiple" class="role-group-membership" value="[#= _(roles).map(function(r) {return r.key}).join(',') #]"/>
+                        </div>
+                        <div class="value"><label for="group-multiple">
+                            Grant this user the [#= joinedRoleNames  #] roles.
+                            [# if (_(roles).any(function(r){return r.scope})) { #]
+                            Since these roles are scoped, you will also need to specify one or more
+                            scopes below.
+                            [# } #]</label>
+                        </div>
+                    [# } else { #]
+                        <div class="value"><label for="group-multiple">
+                            This user has the [#= joinedRoleNames  #] role.
+                            [# if (_(roles).any(function(r){return r.scope})) { #]
+                            Since this role is scoped, you will also need to specify one or more
+                            scopes below.
+                            [# } #]</label>
+                        </div>
+                    [# } #]
+                </div>
+            </div>
+        </div>
+        [# if (_(scopes || []).include("site")) { #]
+        <div>
+            <h3>Sites</h3>
+            <div id="sites" class="content">
+                [# if (enableSitesControl) { #]
+                    [# _(sites).each(function (site) { #]
+                        <div class="row">
+                            <div class="label">
+                                <input id="scope-site-[#= site.identifier #]"
+                                    site-identifier="[#= site.identifier #]"
+                                    class="scope-site [#= site.identifier == '__ALL__' ? 'all' : 'one' #]"
+                                    type="checkbox"/>
+                            </div>
+                            <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
+                        </div>
+                    [# }); #]
+                [# } else {#]
+                    <div class="row">
+                        <div class="value">
+                            <abbr title="This user has access to all sites in this role">
+                                All
+                            </abbr>
+                        </div>
+                    </div>
+                [# } #]
+            </div>
+        </div>
+        [# } #]
+        [# if (_(scopes || []).include("study")) { #]
+        <div>
+            <h3>Studies</h3>
+            <div id="studies" class="content">
+                [# _(studies).each(function (study) { #]
+                <div class="row">
+                    <div class="label">
+                        <input id="scope-study-[#= study.identifier #]"
+                               study-identifier="[#= study.identifier #]"
+                               class="scope-study [#= study.identifier == '__ALL__' ? 'all' : 'one' #]"
+                               type="checkbox"/>
+                    </div>
+                    <div class="value"><label for="scope-study-[#= study.identifier #]">[#= study.name #]</label></div>
+                </div>
+                [# }); #]
+            </div>
+        </div>
+        [# } #]
+
+    </tags:resigTemplate>
+
     <tags:sassLink name="one-user"/>
 
     <script type="text/javascript">

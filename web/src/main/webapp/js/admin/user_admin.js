@@ -89,8 +89,25 @@ psc.admin.UserAdmin = (function ($) {
   
   function startEditingMultiple(roleKeys) {
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
-    if (!_.isEmpty(roles)) {
+
+    if (_.isEmpty(roles)) {
       $('#role-editor-pane').empty();
+    } else if(_(roles).size() == 1) {
+        startEditing(_(roles).first().key)
+    } else if (_(roles).size() > 1) {
+      var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
+      var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
+
+      $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
+          roles: roles, sites: PROVISIONABLE_SITES, studies: _(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq()),
+          enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
+        }))
+//          .
+//        find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
+//        click(updateGroupMembership).end().
+//        parent().attr('role', _(roles).map(function(r) {return r.key}).join(','));
+//        registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
+//        registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
     }
   }
 
