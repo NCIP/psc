@@ -222,7 +222,9 @@ psc.admin.UserAdmin = (function ($) {
     var label = $(pane).find('#group-multiple-partial-membership:first');
     if (state == 'intermediate') {
       var matching = user.matchingMemberships(memberships);
-      $(label).html('(Checked for ' + _(matching).keys().join(', ') + ')')
+      var matchingRoleKeys = _(matching).keys();
+      var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) { return _(matchingRoleKeys).include(role.key)});
+      $(label).html('(Checked for ' +  matchingRoles.map(function(r){return r.name}).join(', ') + ')')
       $(label).show();
     } else {
       $(label).hide()
