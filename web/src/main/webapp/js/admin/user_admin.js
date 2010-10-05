@@ -99,14 +99,16 @@ psc.admin.UserAdmin = (function ($) {
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
 
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-          roles: roles, sites: PROVISIONABLE_SITES, studies: _(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq()),
+          roles: roles, sites: PROVISIONABLE_SITES, studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
           enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
         })).
         find('input.role-group-membership').attr('checked', _(roles).all(function(r) {return user.memberships[r.key]})).
-        click(updateGroupMembership).end()//.
-//        parent().attr('role', _(roles).map(function(r) {return r.key}).join(','));
-//        registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
-//        registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
+        click(updateGroupMembership).end().
+        parent().attr('role', _(roles).map(function(r) {return r.key}).join(','));
+        _(roles).each(function(r) {
+          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
+          registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
+        });
     }
   }
 
