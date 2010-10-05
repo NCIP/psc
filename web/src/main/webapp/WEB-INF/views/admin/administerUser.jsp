@@ -135,7 +135,7 @@
                             Since these roles are scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
-                            <label for="group-multiple" id="group-multiple-partial-membership" class="partial-membership"></label>
+                            <label for="group-multiple" id="partial-role-membership-info" class="partial-membership"></label>
                         </div>
                     [# } else { #]
                         <div class="value"><label for="group-multiple">

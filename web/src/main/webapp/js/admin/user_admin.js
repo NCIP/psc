@@ -180,14 +180,14 @@ psc.admin.UserAdmin = (function ($) {
     var input = $(pane).find('#group-multiple:first');
 
     $(input).tristate({initialState: state});
-    var memberships = buildMembershipObject(roles);
-    updateIntermediateStateText(state, pane, memberships);
+
+    updateIntermediateStateLabel(state, pane, '#partial-role-membership-info', roles);
 
     $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles.map(function(r){return r.key})));
     $(input).bind('tristate-state-change', _(function (pane, memberships, evt) {
       var state = $(evt.target).attr('state');
-      updateIntermediateStateText(state, pane, memberships);
-    }).bind(this, pane, memberships));
+      updateIntermediateStateLabel(state, pane, '#partial-role-membership-info', roles);
+    }).bind(this, pane, roles));
   }
 
   function updateMultipleGroupMemberships(roleKeys, evt) {
@@ -207,8 +207,9 @@ psc.admin.UserAdmin = (function ($) {
     });
   }
 
-  function updateIntermediateStateText(state, pane, memberships) {
-    var label = $(pane).find('#group-multiple-partial-membership:first');
+  function updateIntermediateStateLabel(state, pane, label, roles) {
+    var memberships = buildMembershipObject(roles);
+    var label = $(pane).find(label + ':first');
     if (state == 'intermediate') {
       var matching = user.matchingMemberships(memberships);
       var matchingRoleKeys = _(matching).keys();
@@ -252,6 +253,12 @@ psc.admin.UserAdmin = (function ($) {
         _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural));
   }
 
+  /*
+    "data_reader": {
+      "sites": ["__ALL__"],
+      "studies": ["__ALL__"]
+
+  */
   function buildMembershipObject(roles, scopeType, scopeValue) {
     var memberships = {};
     _(roles).each(function(role) {
@@ -263,13 +270,6 @@ psc.admin.UserAdmin = (function ($) {
     });
     return memberships;
   }
-
-  /*
-    "data_reader": {
-      "sites": ["__ALL__"],
-      "studies": ["__ALL__"]
-
-  */
 
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
     console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
