@@ -339,12 +339,21 @@ psc.admin.UserAdmin = (function ($) {
     if (role !== editorRole && editorRole.indexOf(',') !== -1) { return; }
     var input;
     if (data.scopeType) {
+      console.log('syncRoleEditorOnChange', '.1')
       input = $('#role-editor input#scope-' + data.scopeType + '-' + data.scopeIdentifier);
       setTimeout(syncAllVsOne, 0);
     } else {
+      console.log('syncRoleEditorOnChange', '.2')
       input = $('#role-editor input#group-' + data.role);
+      if (input == null) {
+        input = $('#role-editor input#multiple-group-membership');
+      }
     }
+
     input.attr('checked', data.kind === 'add');
+    if (input.attr('state')) {
+      input.attr('state', data.kind === 'add' ? 'checked' : 'unchecked');
+    }
   }
 
   function syncAllVsOne() {
