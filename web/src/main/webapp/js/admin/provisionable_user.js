@@ -48,21 +48,20 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
     jQuery(this).trigger('membership-change', newChange);
   }).bind(this)
 
-  this.validRole = function(roleKey) {
+  this.isProvisionableRole = function(roleKey) {
     if (!provisionableRoles) return true;
     return _(this.provisionableRoles).pluck('key').include(roleKey);
   }
 
-  this.validScope = function(roleKey, scopeCollection) {
+  this.isProvisionableScope = function(roleKey, scopeType) {
     if (!provisionableRoles) return true;
     var role = _(this.provisionableRoles).detect(function(r){return r.key == roleKey});
-    var scopeType = scopeTypeFromCollectionName(scopeCollection);
     if (!role) return false;
     return role['scopes'] && _(role['scopes']).include(scopeType);
   }
 
   this.add = function (roleKey, scope) {
-    if (!this.validRole(roleKey)) {return;}
+    if (!this.isProvisionableRole(roleKey)) {return;}
     var newMembership = false;
     if (this.memberships[roleKey] === undefined) {
       this.memberships[roleKey] = {};
@@ -71,7 +70,8 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
     var m = this.memberships[roleKey];
     if (typeof scope === 'object') {
       _(scope).each(function (value, key) {
-        if (this.validScope(roleKey, key)) {
+        var scopeType = scopeTypeFromCollectionName(key)
+        if (this.isProvisionableScope(roleKey, scopeType)) {
           if (!m[key]) { m[key] = []; }
           _(value).each(function (ident) {
             if (_(m[key]).indexOf(ident) == -1) {
@@ -144,28 +144,39 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
   this.hasAnyMemberships = function (roleKeys, scope) {
     return _(roleKeys).any(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this, scope);
+    }, this);
   };
 
   this.hasAllMemberships = function(roleKeys, scope) {
     return _(roleKeys).all(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this, scope);
+    }, this);
   };
 
   this.matchingMemberships = function(roleKeys, scope) {
     return _(roleKeys).select(function(roleKey) {
       return this.hasMembership(roleKey, scope);
-    }, this, scope);
+    }, this);
   };
 
   this.membershipsStatus = function(roleKeys, scope) {
-    if (this.hasAllMemberships(roleKeys, scope)) {
+    var pKeys = selectProvisionableRolesKeys(roleKeys, scope);
+    if (this.hasAllMemberships(pKeys, scope)) {
       return 'FULL';
-    } else if (this.hasAnyMemberships(roleKeys, scope)) {
+    } else if (this.hasAnyMemberships(pKeys, scope)) {
       return 'PARTIAL';
     } else {
       return 'NONE';
     }
-  }
+  };
+
+  var selectProvisionableRolesKeys = _(function(roleKeys, scope) {
+    return _(roleKeys).select(function(k) {
+      var scopeType = null;
+      if (scope) {
+        var scopeType = _(scope).chain().keys().first().value();
+      }
+      return this.isProvisionableRole(k, scopeType);
+    }, this)
+  }).bind(this);
 }

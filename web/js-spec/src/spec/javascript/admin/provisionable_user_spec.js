@@ -322,6 +322,28 @@ Screw.Unit(function () {
         })
       });
 
+      describe("membershp status", function() {
+        var user;
+
+        before(function () {
+          user = new psc.admin.ProvisionableUser('jo', {
+            data_reader: {}
+          });
+        });
+
+        it("should be FULL", function() {
+          expect(user.membershipsStatus(['data_reader'])).to(equal, 'FULL');
+        });
+
+        it("should be PARTIAL membership", function() {
+          expect(user.membershipsStatus(['data_reader', 'business_administrator'])).to(equal, 'PARTIAL');          
+        });
+
+        it("should be NONE membership", function() {
+          expect(user.membershipsStatus(['business_administrator'])).to(equal, 'NONE');
+        });
+      });
+
       describe("restricting to specific provisionable roles and scopes", function() {
         var user;
 
@@ -333,24 +355,24 @@ Screw.Unit(function () {
         });
 
 
-        it("should not add an unsupported role", function() {
+        it("should not add an un-provisionable role", function() {
           user.add('made_up_role');
           expect(user.changes.length).to(equal, 0);
         });
 
-        it("should not add an unsupported scope", function() {
+        it("should not add an un-provisionable scope", function() {
           user.add('business_administrator', { sites: ['IL036'] });
           expect(user.changes.length).to(equal, 1);
           expect(user.changes[0].kind).to(equal, "add");
           expect(user.changes[0].scopeType).to(be_false);
         });
 
-        it("should add a supported role", function() {
+        it("should add a provisionable role", function() {
           user.add('registrar');
           expect(user.changes.length).to(equal, 1);
         });
 
-        it("should add an unsupported scope", function() {
+        it("should add a provisionable scope", function() {
           user.add('registrar', { sites: ['IL036'] });
           expect(user.changes.length).to(equal, 2);
           expect(user.changes[0].role).to(equal, "registrar");
@@ -361,6 +383,18 @@ Screw.Unit(function () {
           expect(user.changes[1].scopeIdentifier).to(be_false);
         });
 
+        it("should be FULL membership status has membership to role/scope combination ignoring non-provisionable scopes", function() {
+          user = new psc.admin.ProvisionableUser('jo', {
+            registrar: {
+              sites: ['__ALL__']
+            }
+          }, [
+            {key: 'registrar', scopes: ['study', 'site']},
+            {key: 'business_administrator'}
+          ]);
+
+          expect(user.membershipsStatus(['registrar'], {site: '__ALL__'})).to(equal, 'FULL');
+        });
       });
     });
   }(jQuery));
