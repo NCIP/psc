@@ -117,7 +117,7 @@
     </tags:resigTemplate>
 
     <tags:resigTemplate id="multiple_role_editor_template">
-        [# var joinedRoleNames = _(roles).map(function(r) {return r.name}); #]
+        [# var joinedRoleNames = _(roles).map(function(r) {return r.name}).join(', '); #]
         [# var scopes = _(roles).map(function(r) {return r.scopes;}).flatten().uniq(); #]
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
