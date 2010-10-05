@@ -774,6 +774,9 @@
                         createStudyControls(anyProvidersAvailable, false);
                     </c:when>
                 </c:choose>
+                <c:if test="${canAssignIdentifiers || canEdit}">
+                    hideShowReleaseTemplateButton();
+                </c:if>
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
