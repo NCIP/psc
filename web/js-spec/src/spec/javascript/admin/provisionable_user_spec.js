@@ -305,17 +305,20 @@ Screw.Unit(function () {
 
         before(function () {
           user = new psc.admin.ProvisionableUser('jo', {
-            data_reader: { sites: ['IL036'] },
-            system_administrator: { }
+            data_reader: { sites: ['IL036'] }
           });
         });
 
         it("returns data_reader memberships", function() {
-          expect(user.matchingMemberships({data_reader: null})).to(equal, {data_reader: null});
+          expect(user.matchingMemberships(['data_reader'], null)).to(equal, ['data_reader']);
+        });
+
+        it("returns data_reader memberships", function() {
+          expect(user.matchingMemberships(['data_reader'], {site: 'IL036'})).to(equal, ['data_reader']);
         });
 
         it("returns no memberships", function() {
-          expect(user.matchingMemberships({system_administrator: null})).to(equal, {});
+          expect(user.matchingMemberships(['system_administrator'], null)).to(equal, []);
         })
       });
     });
