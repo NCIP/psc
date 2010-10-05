@@ -100,12 +100,13 @@ psc.admin.UserAdmin = (function ($) {
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
 
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-        roles: roles, sites: PROVISIONABLE_SITES, studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
+        roles: roles, sites: PROVISIONABLE_SITES,
+        studies: _(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq(),
         enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
-      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
+//      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
 
 //        _(roles).each(function(r) {
 //          registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
@@ -177,14 +178,14 @@ psc.admin.UserAdmin = (function ($) {
   function registerMultipleGroupControl(pane, roles) {
     var state = determineTristateCheckboxState(roles);
 
-    var input = $(pane).find('#group-multiple:first');
+    var input = $(pane).find('#multiple-group-membership:first');
 
     $(input).tristate({initialState: state});
 
     updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
 
-    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles.map(function(r){return r.key})));
-    $(input).bind('tristate-state-change', _(function (pane, memberships, evt) {
+    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, mapRoleKeys(roles)));
+    $(input).bind('tristate-state-change', _(function (pane, roles, evt) {
       var state = $(evt.target).attr('state');
       updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
     }).bind(this, pane, roles));
@@ -208,13 +209,13 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateIntermediateStateLabel(state, pane, label, roles) {
-    var memberships = buildMembershipObject(roles);
+    var roleKeys = mapRoleKeys(roles);
     var label = $(pane).find(label + ':first');
 
     if (state == 'intermediate') {
-      var matchingRoleKeys = _(user.matchingMemberships(memberships)).keys();
+      var matchingRoleKeys = user.matchingMemberships(roleKeys);
       var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Checked for ' +  matchingRoles.map(function(r){return r.name}).join(', ') + ')')
+      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles) + ')')
       $(label).show();
     } else {
       $(label).hide()
@@ -223,13 +224,14 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function determineTristateCheckboxState(roles, scopeType, scopeValue) {
-    var memberships = buildMembershipObject(roles, scopeType, scopeValue);
+    var roleKeys = mapRoleKeys(roles);
+    var scope = buildScopeObject(roles, scopeType, scopeValue);
     
-    if (_(roles).isEmpty()) {
+    if (_(roleKeys).isEmpty()) {
       return 'unchecked';
-    } else if (user.hasAllMemberships(memberships)) {
+    } else if (user.hasAllMemberships(roleKeys, scope)) {
       return 'checked';
-    } else if (user.hasAnyMemberships(memberships)) {
+    } else if (user.hasAnyMemberships(roleKeys, scope)) {
       return 'intermediate';
     } else {
       return 'unchecked';
@@ -262,18 +264,22 @@ psc.admin.UserAdmin = (function ($) {
       "studies": ["__ALL__"]
 
   */
-  function buildMembershipObject(roles, scopeType, scopeValue) {
-    var memberships = {};
-    _(roles).each(function(role) {
-      memberships[role.key] = null
-      if (scopeType && scopeValue) {
-        memberships[role.key] = {};
-        memberships[role.key][scopeType] = scopeValue;
-      }
-    });
-    return memberships;
+  function buildScopeObject(scopeType, scopeValue) {
+    var scope = null;
+    if (scopeType && scopeValue) {
+      scope = {}; scope[scopeType] = scopeValue;
+    }
+    return scope;
   }
 
+  function mapRoleKeys(roles) {
+    return roles.map(function(r){return r.key});
+  }
+
+  function mapRoleNames(roles) {
+    return _(roles).map(function(r){return r.name}).join(', ');
+  }
+  
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
     console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
     var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
