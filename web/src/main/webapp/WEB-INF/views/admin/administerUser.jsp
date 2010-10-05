@@ -134,6 +134,11 @@
                             Since these roles are scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
+                            [# if (isRoleMembershipPartial) {#]
+                            <label for="group-multiple" class="partial-membership">
+                                (Checked for [#= _(partialRoleMemberships).map(function(r) {return r.name}).join(', ') #]) 
+                            </label>
+                            [# } #]
                         </div>
                     [# } else { #]
                         <div class="value"><label for="group-multiple">
