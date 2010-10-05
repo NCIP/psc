@@ -101,10 +101,9 @@ psc.admin.UserAdmin = (function ($) {
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
           roles: roles, sites: PROVISIONABLE_SITES, studies: _(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten().uniq()),
           enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
-        }))
-//          .
-//        find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
-//        click(updateGroupMembership).end().
+        })).
+        find('input.role-group-membership').attr('checked', _(roles).all(function(r) {return user.memberships[r.key]})).
+        click(updateGroupMembership).end()//.
 //        parent().attr('role', _(roles).map(function(r) {return r.key}).join(','));
 //        registerScopeControls('#role-editor-pane', roles, 'site', 'sites');
 //        registerScopeControls('#role-editor-pane', roles, 'study', 'studies');
@@ -172,12 +171,14 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateGroupMembership(evt) {
-    var role = evt.target.id.substring("group-".length);
-    if ($(evt.target).attr('checked')) {
-      user.add(role);
-    } else {
-      user.remove(role);
-    }
+    var roles = evt.target.value.split(',');
+    _(roles).each(function(r){
+      if ($(evt.target).attr('checked')) {
+        user.add(r);
+      } else {
+        user.remove(r);
+      }
+    });
   }
 
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
