@@ -355,7 +355,6 @@ psc.admin.UserAdmin = (function ($) {
         input = $('#role-editor input#multiple-group-membership');
       }
     }
-    console.log('syncRoleEditorOnChange', input, data.kind, data.kind === 'add' )
     input.attr('checked', data.kind === 'add');
     if (input.attr('state')) {
       input.attr('state', data.kind === 'add' ? 'checked' : 'unchecked');
