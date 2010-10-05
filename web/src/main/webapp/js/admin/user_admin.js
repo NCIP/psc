@@ -19,7 +19,12 @@ psc.admin.UserAdmin = (function ($) {
   function selectMultipleRoles(roleKeys) {
     _(roleKeys).each(function(key) {
       $('#role-' + key).addClass('selected');
-      $('input.roles-to-edit[value=' + key + ']').attr('checked', true);
+    });
+  }
+
+  function deselectMultipleRoles(roleKeys) {
+    _(roleKeys).each(function(key) {
+      $('#role-' + key).removeClass('selected');
     });
   }
 
@@ -31,10 +36,16 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function selectRoleCheckbox(evt) {
-    var roleKeys = _($('input.roles-to-edit:checked')).map(function(elt) {
+    var checked = _($('input.roles-to-edit:checked')).map(function(elt) {
       return $(elt).val();
     });
-    selectMultipleRoles(roleKeys);
+
+    var unchecked = _($('input.roles-to-edit:not(:checked)')).map(function(elt) {
+      return $(elt).val();
+    });
+
+    selectMultipleRoles(checked);
+    deselectMultipleRoles(unchecked);
   }
 
   function determineProvisionableStudies(role) {
