@@ -69,7 +69,7 @@ public class StudyWorkflowStatus {
 
     public Collection<TemplateAvailability> getTemplateAvailabilities() {
         Set<TemplateAvailability> availabilities = new LinkedHashSet<TemplateAvailability>();
-        if (getRevisionWorkflowStatus() != null) {
+        if (getRevisionWorkflowStatus() != null && utr.getCanSeeDevelopmentVersion()) {
             availabilities.add(TemplateAvailability.IN_DEVELOPMENT);
         }
         if (study.isReleased()) {

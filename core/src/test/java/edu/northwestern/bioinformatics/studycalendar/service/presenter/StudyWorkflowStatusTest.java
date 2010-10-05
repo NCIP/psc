@@ -131,6 +131,25 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertAvailabilityNotPresent(TemplateAvailability.IN_DEVELOPMENT);
     }
 
+    public void testIsDevelopmentWhenUserCanSeeDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        assertAvailabilityPresent(TemplateAvailability.IN_DEVELOPMENT);
+    }
+
+    public void testIsNotDevelopmentWhenUserCannotSeeDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        SuiteRoleMembership mem = AuthorizationScopeMappings.
+            createSuiteRoleMembership(PscRole.STUDY_SITE_PARTICIPATION_ADMINISTRATOR).
+                forSites(nu, vanderbilt).forAllStudies();
+        StudyWorkflowStatus actual = new StudyWorkflowStatus(study,
+            AuthorizationObjectFactory.createPscUser("jo", mem),
+            new WorkflowMessageFactory(),
+            Fixtures.getTestingDeltaService());
+        assertEquals("Unexpected availability present", 1, actual.getTemplateAvailabilities().size());
+        assertFalse("Unexpected availability present", 
+                actual.getTemplateAvailabilities().contains(TemplateAvailability.IN_DEVELOPMENT));
+    }
+
     public void testIsPendingWhenReleasedAndHasStudyMessages() throws Exception {
         study.getStudySites().clear();
         assertAvailabilityPresent(TemplateAvailability.PENDING);
