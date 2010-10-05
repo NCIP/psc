@@ -127,18 +127,18 @@
                 <div class="row">
                     [# if (enableRoleControl) { #]
                         <div class="label">
-                            <input type="checkbox" id="group-multiple" class="role-group-membership" value="[#= _(roles).map(function(r) {return r.key}).join(',') #]"/>
+                            <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= _(roles).map(function(r) {return r.key}).join(',') #]"/>
                         </div>
-                        <div class="value"><label for="group-multiple">
+                        <div class="value"><label for="multiple-group-membership">
                             Grant this user the [#= joinedRoleNames  #] roles.
                             [# if (_(roles).any(function(r){return r.scopes})) { #]
                             Since these roles are scoped, you will also need to specify one or more
                             scopes below.
                             [# } #]</label>
-                            <label for="group-multiple" id="partial-role-membership-info" class="partial-membership"></label>
+                            <label for="multiple-group-membership" id="partial-multiple-group-membership-info" class="partial-membership"></label>
                         </div>
                     [# } else { #]
-                        <div class="value"><label for="group-multiple">
+                        <div class="value"><label for="multiple-group-membership">
                             This user has the [#= joinedRoleNames  #] role.
                             [# if (_(roles).any(function(r){return r.scopes})) { #]
                             Since this role is scoped, you will also need to specify one or more
@@ -162,7 +162,10 @@
                                     class="scope-site [#= site.identifier == '__ALL__' ? 'all' : 'one' #]"
                                     type="checkbox"/>
                             </div>
-                            <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
+                            <div class="value">
+                                <label for="scope-site-[#= site.identifier #]">[#= site.name #]</label>
+                                <label for="scope-site-[#= site.identifier #]" id="partial-scope-site-[#= site.identifier #]-info" class="partial-membership"></label>
+                            </div>
                         </div>
                     [# }); #]
                 [# } else {#]

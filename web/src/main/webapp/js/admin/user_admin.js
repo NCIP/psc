@@ -181,12 +181,12 @@ psc.admin.UserAdmin = (function ($) {
 
     $(input).tristate({initialState: state});
 
-    updateIntermediateStateLabel(state, pane, '#partial-role-membership-info', roles);
+    updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
 
     $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, roles.map(function(r){return r.key})));
     $(input).bind('tristate-state-change', _(function (pane, memberships, evt) {
       var state = $(evt.target).attr('state');
-      updateIntermediateStateLabel(state, pane, '#partial-role-membership-info', roles);
+      updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
     }).bind(this, pane, roles));
   }
 
@@ -195,12 +195,12 @@ psc.admin.UserAdmin = (function ($) {
 
     var state = $(evt.target).attr('state');
 
-    _(roleKeys).each(function(rk) {
+    _(roleKeys).each(function(k) {
       switch(state) {
       case 'checked':
-        user.add(rk); break;
+        user.add(k); break;
       case 'unchecked':
-        user.remove(rk); break;
+        user.remove(k); break;
       default:
         console.log("State does not exist", state);
       }
@@ -210,10 +210,10 @@ psc.admin.UserAdmin = (function ($) {
   function updateIntermediateStateLabel(state, pane, label, roles) {
     var memberships = buildMembershipObject(roles);
     var label = $(pane).find(label + ':first');
+
     if (state == 'intermediate') {
-      var matching = user.matchingMemberships(memberships);
-      var matchingRoleKeys = _(matching).keys();
-      var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) { return _(matchingRoleKeys).include(role.key)});
+      var matchingRoleKeys = _(user.matchingMemberships(memberships)).keys();
+      var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
       $(label).html('(Checked for ' +  matchingRoles.map(function(r){return r.name}).join(', ') + ')')
       $(label).show();
     } else {
@@ -247,8 +247,11 @@ psc.admin.UserAdmin = (function ($) {
 
   function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var state = determineTristateCheckboxState(roles, scopeType, $(input).attr(scopeType + '-identifier'));
+      var scopeValue = $(input).attr(scopeType + '-identifier');
+      var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
+      var label = $('#partial-scope-site-' + scopeValue + '-info');
       $(input).tristate({initialState: state})
+      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind('tristate-state-change',
         _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural));
   }
