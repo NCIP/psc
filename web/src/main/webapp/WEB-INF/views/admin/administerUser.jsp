@@ -164,7 +164,7 @@
                             </div>
                             <div class="value">
                                 <label for="scope-site-[#= site.identifier #]">[#= site.name #]</label>
-                                <label for="scope-site-[#= site.identifier #]" id="partial-scope-site-[#= site.identifier #]-info" class="partial-membership"></label>
+                                <label for="scope-site-[#= site.identifier #]" id="partial-scope-site-[#= utils.escapeIdSpaces(site.identifier) #]-info" class="partial-membership"></label>
                             </div>
                         </div>
                     [# }); #]
@@ -194,7 +194,7 @@
                     </div>
                     <div class="value">
                         <label for="scope-study-[#= study.identifier #]">[#= study.name #]</label>
-                        <label for="scope-study-[#= study.identifier #]" id="partial-scope-study-[#= study.identifier #]-info" class="partial-membership"></label>
+                        <label for="scope-study-[#= study.identifier #]" id="partial-scope-study-[#= utils.escapeIdSpaces(study.identifier) #]-info" class="partial-membership"></label>
                     </div>
                 </div>
                 [# }); #]

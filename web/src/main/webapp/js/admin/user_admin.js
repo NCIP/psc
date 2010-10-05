@@ -104,7 +104,7 @@ psc.admin.UserAdmin = (function ($) {
         roles: roles, sites: PROVISIONABLE_SITES,
         studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
         enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
-        utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames}
+        utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
       }))
 
       registerMultipleGroupControl('#role-editor-pane', roles);
@@ -258,14 +258,14 @@ psc.admin.UserAdmin = (function ($) {
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var scopeValue = $(input).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-      var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
+      var label = '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';
       $(input).tristate({initialState: state});
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
       updateMultipleMembershipScope(_(roles).map(function(r){return r.key}), scopeType, scopeTypePlural, evt);
       var scopeValue = $(evt.target).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-      var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
+      var label = '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind(this, roles, scopeType, scopeTypePlural));
   }
@@ -290,6 +290,10 @@ psc.admin.UserAdmin = (function ($) {
 
   function mapRoleNames(roles) {
     return _(roles).map(function(r){return r.name});
+  }
+
+  function escapeIdSpaces(id) {
+    return id.replace(' ', '--space--');
   }
   
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
