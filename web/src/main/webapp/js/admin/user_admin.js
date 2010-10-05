@@ -3,9 +3,9 @@ psc.namespace('admin');
 psc.admin.UserAdmin = (function ($) {
   var user;
 
-  var provisionableSiteList = new Array();
+  var provisionableSites = new Array();
   PROVISIONABLE_SITES.each(function(site) {
-    provisionableSiteList.push(site.identifier)
+    provisionableSites.push(site.identifier)
   });
 
   function selectRole(roleKey) {
@@ -66,49 +66,12 @@ psc.admin.UserAdmin = (function ($) {
   function startEditing(roleKey) {
     var role = _.detect(PROVISIONABLE_ROLES, function (role) { return role.key === roleKey });
     if (role) {
-      var enabledGroupControl = true;
-      var enabledSitesControl = true;
-      var provisionableStudyList = new Array();
-      determineProvisionableStudies(role).each(function(study) {
-          provisionableStudyList.push(study.identifier)
-      });
-      var userMembershipsRole = user.memberships[role.key]
-      if (userMembershipsRole != null) {
-        var isSiteSubset;
-        var isStudySubset;
-        if (userMembershipsRole['sites'] != null && userMembershipsRole['studies'] != null) {
-          isSiteSubset = isSubsetOfProvision(provisionableSiteList,
-                   getMembershipList('sites', userMembershipsRole));
-          isStudySubset = isSubsetOfProvision(provisionableStudyList,
-                   getMembershipList('studies', userMembershipsRole));
-          if (isSiteSubset && isStudySubset) {
-            enabledGroupControl = true;
-          } else {
-            enabledGroupControl = false;
-          }
-        } else if (userMembershipsRole['studies'] != null) {
-          isStudySubset = isSubsetOfProvision(provisionableStudyList,
-                  getMembershipList('studies', userMembershipsRole));
-          if (!isStudySubset) {
-            enabledGroupControl = false;
-          }
-        } else if (userMembershipsRole['sites'] != null) {
-          var membershipSiteList = getMembershipList('sites', userMembershipsRole)
-          isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
-          if (!isSiteSubset) {
-            enabledGroupControl = false;
-          }
-          if (!_.isEmpty(provisionableSiteList) && !_.isEmpty(membershipSiteList)) {
-            if (!_.include(provisionableSiteList,'__ALL__') && _.include(membershipSiteList,'__ALL__')) {
-              enabledSitesControl = false;
-            }
-          }
-        }
-      }
+      var enableRoleControl = isControlEnabled('role-control', role);
+      var enableSitesControl = isControlEnabled('sites-control', role);
 
       $('#role-editor-pane').html(resigTemplate('role_editor_template', {
           role: role, sites: PROVISIONABLE_SITES, studies: determineProvisionableStudies(role),
-          enabledGroupControl: enabledGroupControl, enabledSitesControl: enabledSitesControl
+          enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
         })).
         find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
         click(updateGroupMembership).end().
@@ -125,10 +88,52 @@ psc.admin.UserAdmin = (function ($) {
   }
   
   function startEditingMultiple(roleKeys) {
-    if (!_.isEmpty(roleKeys)) {
-      
-    } else {
+    var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
+    if (!_.isEmpty(roles)) {
       $('#role-editor-pane').empty();
+    }
+  }
+
+  function isControlEnabled(controlKey, role) {
+      var enableRoleControl = true;
+      var enableSitesControl = true;
+      var provisionableStudies = new Array();
+      determineProvisionableStudies(role).each(function(study) {
+          provisionableStudies.push(study.identifier)
+      });
+      var mem = user.memberships[role.key]
+      if (mem != null) {
+
+        if (mem['sites'] != null) {
+          var isSiteSubset = isSubsetOfProvision(provisionableSites, mem['sites']);
+        }
+
+        // Disable role membership control when the user we are provisioning is a
+        // member of sites or studies that are not in the list of provisionable studies.
+        if (mem['studies'] != null) {
+          var isStudySubset = isSubsetOfProvision(provisionableStudies, mem['studies']);
+          if (!isSiteSubset || !isStudySubset) {
+            enableRoleControl = false;
+          }
+        } else {
+          if (!isSiteSubset) {
+            enableRoleControl = false;
+          }
+        }
+
+        // Disable sites membership control when the user we are provisioning is a
+        // member of all-sites and the all-sites membership is not in the list of provisionable sites.
+        if (!_.isEmpty(provisionableSites) && !_.isEmpty(mem['sites'])) {
+          if (!_.include(provisionableSites,'__ALL__') && _.include(mem['sites'],'__ALL__')) {
+            enableSitesControl = false;
+          }
+        }
+      }
+
+    switch(controlKey) {
+      case 'role-control': return enableRoleControl;
+      case 'sites-control': return enableSitesControl;
+      default: return null;
     }
   }
 

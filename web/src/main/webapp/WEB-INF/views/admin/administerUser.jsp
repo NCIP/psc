@@ -42,7 +42,7 @@
                 <p>[#= role.scope_description #]</p>
                 [# } #]
                 <div class="row">
-                    [# if (enabledGroupControl) { #]
+                    [# if (enableRoleControl) { #]
                         <div class="label">
                             <input type="checkbox" id="group-[#= role.key #]" class="role-group-membership" value="[#= role.key #]"/>
                         </div>
@@ -69,7 +69,7 @@
         <div>
             <h3>Sites</h3>
             <div id="sites" class="content">
-                [# if (enabledSitesControl) { #]
+                [# if (enableSitesControl) { #]
                     [# _(sites).each(function (site) { #]
                         <div class="row">
                             <div class="label">
