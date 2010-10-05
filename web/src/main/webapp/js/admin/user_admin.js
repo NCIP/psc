@@ -207,15 +207,27 @@ psc.admin.UserAdmin = (function ($) {
     }
 
     var input = $(pane).find('#group-multiple:first');
-    var label = $('#group-multiple-partial-membership:first');
 
-    $(input).tristate(state);
+    $(input).tristate({initialState: state});
+    updateIntermediateStateText(state, pane, memberships);
+
+    $(input).bind('tristate_state_changed', _(updateMultipleGroupMembership).bind(this, roles));
+    $(input).bind('tristate_state_changed', _(function (pane, memberships, evt) {
+      var state = $(evt.target).attr('state')
+      updateIntermediateStateText(state, pane, memberships)
+    }).bind(this, pane, memberships));
+  }
+
+  function updateIntermediateStateText(state, pane, memberships) {
+    var label = $(pane).find('#group-multiple-partial-membership:first');
     if (state == 'intermediate') {
       var matching = user.matchingMemberships(memberships);
       $(label).html('(Checked for ' + _(matching).keys().join(', ') + ')')
+      $(label).show();
+    } else {
+      $(label).hide()
+      $(label).empty();
     }
-
-    $(input).bind('tristate_state_changed', _(updateMultipleGroupMembership).bind(this, roles));
   }
 
   function updateMultipleGroupMembership(roles, evt) {
