@@ -48,6 +48,8 @@ psc.admin.UserAdmin = (function ($) {
     deselectMultipleRoles(unchecked);
 
     startEditingMultiple(checked);
+    syncAllVsOne();
+    return false;
   }
 
   function determineProvisionableStudies(role) {
@@ -259,16 +261,13 @@ psc.admin.UserAdmin = (function ($) {
       var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
       $(input).tristate({initialState: state});
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
-    }).
-      bind('tristate-state-change',
-        _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural)).
-      bind('tristate-state-change',
-        _(function(evt) {
-          var scopeValue = $(evt).target.attr(scopeType + '-identifier');
-          var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-          var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
-          updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
-        }).bind(roles));
+    }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
+      updateMultipleMembershipScope(_(roles).map(function(r){return r.key}), scopeType, scopeTypePlural, evt);
+      var scopeValue = $(evt.target).attr(scopeType + '-identifier');
+      var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
+      var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
+      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
+    }).bind(this, roles, scopeType, scopeTypePlural));
   }
 
   /*
@@ -304,17 +303,17 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateMultipleMembershipScope(roleKeys, scopeType, scopeListName, evt) {
-    console.log("Updating user obj", roleKeys, scopeType, scopeListName, evt);
-
     var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
     var state = $(evt.target).attr('state')
+
+    console.log("Updating user obj", roleKeys, scopeType, scopeListName, scope, state, evt);
 
     _(roleKeys).each(function(roleKey) {
       switch(state) {
       case 'checked':
-        user.add(roleKey); break;
+        user.add(roleKey, scope); break;
       case 'unchecked':
-        user.remove(roleKey); break;
+        user.remove(roleKey, scope); break;
       default:
         console.log("State does not exist", state);
       }
@@ -332,7 +331,7 @@ psc.admin.UserAdmin = (function ($) {
   function syncRoleEditorOnChange(evt, data) {
     var role = data.role;
     var editorRole = $('#role-editor').attr('role');
-    if (role !== editorRole) { return; }
+    if (role !== editorRole && editorRole.indexOf(',') !== -1) { return; }
     var input;
     if (data.scopeType) {
       input = $('#role-editor input#scope-' + data.scopeType + '-' + data.scopeIdentifier);
@@ -347,10 +346,25 @@ psc.admin.UserAdmin = (function ($) {
     _(['scope-study', 'scope-site']).each(function (scopeClass) {
       var isAll = $('#role-editor input.all.' + scopeClass + ":checked").length > 0;
       if (isAll) {
-        $('#role-editor input.one.' + scopeClass).
-          filter(':checked').click().end().
-          attr("disabled", true).
-          closest('div.row').addClass('disabled');
+        var oneSelector = '#role-editor input.one.' + scopeClass;
+        var allSelector = '#role-editor input.all.' + scopeClass;
+        if ($(allSelector + "[state='checked']").length > 0) {
+          $(oneSelector + "[state='intermediate']").click();
+          $(oneSelector).
+            filter(':checked').click().end().
+            attr("disabled", true).
+            closest('div.row').addClass('disabled');
+        } else if ($(allSelector + "[state='intermediate']").length > 0) {
+          $(oneSelector).
+            filter(':checked').end().
+            attr("disabled", true).
+            closest('div.row').addClass('disabled');
+        } else {
+          $(oneSelector).
+            filter(':checked').click().end().
+            attr("disabled", true).
+            closest('div.row').addClass('disabled');
+        }
       } else {
         $('#role-editor input.one.' + scopeClass).
           attr("disabled", false).

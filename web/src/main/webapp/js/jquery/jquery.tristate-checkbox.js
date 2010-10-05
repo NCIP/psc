@@ -43,7 +43,6 @@
         var c = $(checkbox);
         c.attr('state', state);
         c.attr('checked', isStateChecked(state));
-        c.trigger('tristate-state-change');
       }
 
       var isValidState = function(testing) {
@@ -60,6 +59,7 @@
         $(this).click(function() {
           var current = getState(this);
           update(this, getNextState(current));
+          $(this).trigger('tristate-state-change');
         });
       });
     };
