@@ -257,10 +257,18 @@ psc.admin.UserAdmin = (function ($) {
       var scopeValue = $(input).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
       var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
-      $(input).tristate({initialState: state})
+      $(input).tristate({initialState: state});
       updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
-    }).bind('tristate-state-change',
-        _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural));
+    }).
+      bind('tristate-state-change',
+        _(updateMultipleMembershipScope).bind(this, roles.map(function(r){return r.key}), scopeType, scopeTypePlural)).
+      bind('tristate-state-change',
+        _(function(evt) {
+          var scopeValue = $(evt).target.attr(scopeType + '-identifier');
+          var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
+          var label = '#partial-scope-' + scopeType + '-' + scopeValue + '-info';
+          updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
+        }).bind(roles));
   }
 
   /*
