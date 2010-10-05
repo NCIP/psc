@@ -349,9 +349,7 @@ psc.admin.UserAdmin = (function ($) {
       setTimeout(syncAllVsOne, 0);
     } else {
       input = $('#role-editor input#group-' + data.role);
-      console.log(input)
       if ($(input).length <= 0) {
-        console.log('isempty')
         input = $('#role-editor input#multiple-group-membership');
       }
     }
