@@ -219,7 +219,6 @@
                     <div class="role-tab">
                         <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
                         <div class="role-control">
-                            <!-- TODO: use this -->
                             <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
                         </div>
                     </div>
