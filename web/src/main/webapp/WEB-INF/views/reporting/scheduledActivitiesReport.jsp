@@ -143,7 +143,7 @@
         }
 
         function resetFilters() {
-            jQuery(".filter-value").each(function (e) { e.value = ""; });
+            jQuery(".filter-value").each(function () { $(this).value = ""; });
             jQuery("#results").hide();
         }
 
