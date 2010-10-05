@@ -144,7 +144,9 @@ psc.admin.UserAdmin = (function ($) {
           if (!isSiteSubset || !isStudySubset) {
             enableRoleControl = false;
           }
-        } else {
+        } else if (userMembershipsRole['sites'] != null) {
+          var membershipSiteList = getMembershipList('sites', userMembershipsRole)
+          isSiteSubset = isSubsetOfProvision(provisionableSiteList, membershipSiteList);
           if (!isSiteSubset) {
             enableRoleControl = false;
           }
@@ -164,6 +166,10 @@ psc.admin.UserAdmin = (function ($) {
       case 'sites-control': return enableSitesControl;
       default: return null;
     }
+  }
+
+  function getMembershipList(kind, userMembershipsRole) {
+     return userMembershipsRole[kind].toString().split(",");
   }
 
   function isSubsetOfProvision(provisionableList, membershipList) {
