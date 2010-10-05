@@ -321,6 +321,47 @@ Screw.Unit(function () {
           expect(user.matchingMemberships(['system_administrator'], null)).to(equal, []);
         })
       });
+
+      describe("restricting to specific provisionable roles and scopes", function() {
+        var user;
+
+        before(function () {
+          user = new psc.admin.ProvisionableUser('jo', {}, [
+            {key: 'registrar', scopes: ['study', 'site']},
+            {key: 'business_administrator'}
+          ]);
+        });
+
+
+        it("should not add an unsupported role", function() {
+          user.add('made_up_role');
+          expect(user.changes.length).to(equal, 0);
+        });
+
+        it("should not add an unsupported scope", function() {
+          user.add('business_administrator', { sites: ['IL036'] });
+          expect(user.changes.length).to(equal, 1);
+          expect(user.changes[0].kind).to(equal, "add");
+          expect(user.changes[0].scopeType).to(be_false);
+        });
+
+        it("should add a supported role", function() {
+          user.add('registrar');
+          expect(user.changes.length).to(equal, 1);
+        });
+
+        it("should add an unsupported scope", function() {
+          user.add('registrar', { sites: ['IL036'] });
+          expect(user.changes.length).to(equal, 2);
+          expect(user.changes[0].role).to(equal, "registrar");
+          expect(user.changes[0].kind).to(equal, "add");
+          expect(user.changes[0].scopeIdentifier).to(equal, 'IL036');
+          expect(user.changes[1].role).to(equal, "registrar");
+          expect(user.changes[1].kind).to(equal, "add");
+          expect(user.changes[1].scopeIdentifier).to(be_false);
+        });
+
+      });
     });
   }(jQuery));
 });
