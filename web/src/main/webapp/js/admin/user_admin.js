@@ -395,16 +395,16 @@ psc.admin.UserAdmin = (function ($) {
     user.username = $('input#username').val();
   }
 
-  function toggleRoleView(evt, show) {
-    if(!show) {
-      show = $('#show-all-toggle:contains(All)').length > 0 ? 'all' : 'psc';
+  function toggleRoleView(evt, action) {
+    if(!action) {
+      action = $('#show-all-toggle:contains(Show)').length > 0 ? 'hide' : 'show';
     }
 
-    if (show === 'psc') {
-      $('#show-all-toggle').text('Show All Roles');
+    if (action === 'show') {
+      $('#show-all-toggle').text('Show Suite Roles');
       $("div.role-tab[role-type='suite']").hide();
     } else {
-      $('#show-all-toggle').text('Show PSC Roles')
+      $('#show-all-toggle').text('Hide Suite Roles')
       $("div.role-tab[role-type='suite']").show();
     }
     return false;
@@ -429,7 +429,7 @@ psc.admin.UserAdmin = (function ($) {
         bind('membership-change', syncRoleEditorOnChange);
       $('input#username').keyup(syncUsername);
       syncAllVsOne();
-      toggleRoleView(null, 'psc');
+      toggleRoleView(null, 'show');
       $('#show-all-toggle').click(toggleRoleView);
     },
 

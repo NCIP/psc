@@ -303,9 +303,6 @@
 
         <div id="role-manager">
             <div id="roles">
-                <div class="role-manager-view-option">
-                    <a href="#" id="show-all-toggle">Show All Roles</a>
-                </div>
                 <c:forEach items="${command.provisionableRoles}" var="role">
                     <div class="role-tab" role-type="${role.pscRole ? 'psc' : 'suite'}">
                         <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
@@ -314,6 +311,9 @@
                         </div>
                     </div>
                 </c:forEach>
+                <div class="role-manager-view-option">
+                    <a href="#" id="show-all-toggle">Show Suite Roles</a>
+                </div>
             </div>
             <div id="role-editor">
                 <h2>Role memberships</h2>
