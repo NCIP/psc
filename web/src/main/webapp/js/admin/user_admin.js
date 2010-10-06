@@ -230,7 +230,8 @@ psc.admin.UserAdmin = (function ($) {
       var scope = buildScopeObject(scopeType, scopeValue);
       var matchingRoleKeys = user.matchingMemberships(roleKeys, scope);
       var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Checked for ' +  mapRoleNames(matchingRoles).join(', ') + ')').show();
+      var nonMatchingRoles = _(roles).reject(function (role) {return _(matchingRoleKeys).include(role.key)});
+      $(label).html('(Applies to ' +  mapRoleNames(matchingRoles).join(', ') + ', but not ' + mapRoleNames(nonMatchingRoles).join(',') + ')').show();
     } else {
       $(label).hide().empty();
     }
