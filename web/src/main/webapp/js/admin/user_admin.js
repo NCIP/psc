@@ -10,11 +10,13 @@ psc.admin.UserAdmin = (function ($) {
 
   function selectRole(roleKey) {
     $('a.role').removeClass('selected');
-    $('input.roles-to-edit').attr('checked', false);
+//    $('input.roles-to-edit').attr('checked', false);
     $('#role-' + roleKey).addClass('selected');
-    $('input.roles-to-edit[value=' + roleKey + ']').attr('checked', true);
+//    $('input.roles-to-edit[value=' + roleKey + ']').attr('checked', true);
     if (roleKey === 'multiple-roles') {
       startEditingMultiple();
+      $('input.roles-to-edit').change(selectRoleCheckbox);
+
     } else {
       startEditing(roleKey);
     }
@@ -44,14 +46,14 @@ psc.admin.UserAdmin = (function ($) {
       return $(elt).val();
     });
 
-    var unchecked = _($('input.roles-to-edit:not(:checked)')).map(function(elt) {
-      return $(elt).val();
-    });
+//    var unchecked = _($('input.roles-to-edit:not(:checked)')).map(function(elt) {
+//      return $(elt).val();
+//    });
+//
+//    selectMultipleRoles(checked);
+//    deselectMultipleRoles(unchecked);
 
-    selectMultipleRoles(checked);
-    deselectMultipleRoles(unchecked);
-
-    startEditingMultiple(checked);
+    addRoleAndScopesToMultipleTemplate(checked);
     syncAllVsOne();
     return false;
   }
@@ -97,23 +99,38 @@ psc.admin.UserAdmin = (function ($) {
     var roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
 
-    if(_(roles).size() == 1) {
-      var roleKey = _(roles).first().key;
-      startEditing(roleKey)
-    } else {
-      var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
-      var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
-      $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-        roles: roles, sites: PROVISIONABLE_SITES,
-        studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
-        enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
-        utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
-      }))
+    var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
+    var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
+    $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
+      roles: roles, sites: PROVISIONABLE_SITES,
+      studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
+      enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
+      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
+    }))
 
-      registerMultipleGroupControl('#role-editor-pane', roles);
-      registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
-      registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
-    }
+    registerMultipleGroupControl('#role-editor-pane', roles);
+    registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
+    registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
+
+  }
+
+  function addRoleAndScopesToMultipleTemplate(roleKeys) {
+    var roleKeys = roleKeys || []
+    var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
+
+    var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
+    var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
+    $('#scope-container').html(resigTemplate('role_and_scope_assignment_template', {
+      roles: roles, sites: PROVISIONABLE_SITES,
+      studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
+      enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
+      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
+    }))
+
+    registerMultipleGroupControl('#role-editor-pane', roles);
+    registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
+    registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
+
   }
 
   function uniqueStudies(studies) {
@@ -234,7 +251,7 @@ psc.admin.UserAdmin = (function ($) {
       var matchingRoleKeys = user.matchingMemberships(roleKeys, scope);
       var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
       var nonMatchingRoles = _(roles).reject(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Applies to ' +  mapRoleNames(matchingRoles).join(', ') + ', but not ' + mapRoleNames(nonMatchingRoles).join(',') + ')').show();
+      $(label).html('(Applies to ' +  mapRoleNames(matchingRoles).join(', ') + ', but not ' + mapRoleNames(nonMatchingRoles).join(', ') + ')').show();
     } else {
       $(label).hide().empty();
     }
@@ -428,7 +445,6 @@ psc.admin.UserAdmin = (function ($) {
       }
       selectRole(firstRole);
       $('a.role').click(selectRoleTab);
-      $('input.roles-to-edit').change(selectRoleCheckbox);
       $(user).bind('membership-change', syncRoleTabOnChange).
         bind('membership-change', syncRoleEditorOnChange);
       $('input#username').keyup(syncUsername);

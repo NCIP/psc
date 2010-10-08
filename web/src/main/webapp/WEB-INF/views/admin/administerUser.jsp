@@ -121,11 +121,10 @@
 
     <tags:resigTemplate id="multiple_role_editor_template">
         [# var joinedRoleNames = utils.mapRoleNames(roles).join(', '); #]
-        [# var scopes = _(roles).map(function(r) {return r.scopes;}).flatten().uniq(); #]
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
             <div class="content" id="multiple-role-content">
-                <div style="position: relative; background-color: #f00; ">
+                <div style="position: relative;">
                     <c:forEach items="${roleGroupCells}" var="cell">
                         <c:if test="${cell.group != 'SUITE_ROLES'}">
                             <div class="abstract-role-grouping column column${cell.column} row${cell.row}">
@@ -161,50 +160,41 @@
                         </c:if>
                     </c:forEach>
                 </div>
-
-                <%--<div class="row">--%>
-                    <%--<c:forEach items="${command.provisionableRoleGroups}" var="map">--%>
-                        <%--<div class="abstract-role-grouping">--%>
-                            <%--<h2>${map.key.displayName}</h2>--%>
-                                <%--<c:forEach items="${map.value}" var="role">--%>
-                                    <%--<div class="row">--%>
-                                        <%--<div class="label">--%>
-                                            <%--<input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>--%>
-                                        <%--</div>--%>
-                                        <%--<div class="value">--%>
-                                            <%--${role.displayName}--%>
-                                        <%--</div>--%>
-                                    <%--</div>--%>
-                                <%--</c:forEach>--%>
-                            <%--</ul>--%>
-                        <%--</div>--%>
-                    <%--</c:forEach>--%>
-                <%--</div>--%>
-                <div class="row">
-                    [# if (enableRoleControl) { #]
-                        <div class="label">
-                            <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= utils.mapRoleKeys(roles) #]"/>
-                        </div>
-                        <div class="value"><label for="multiple-group-membership">
-                            Grant this user the [#= joinedRoleNames  #] roles.
-                            [# if (_(roles).any(function(r){return r.scopes})) { #]
-                            Since these roles are scoped, you will also need to specify one or more
-                            scopes below.
-                            [# } #]</label>
-                            <label for="multiple-group-membership" id="partial-multiple-group-membership-info" class="partial-membership"></label>
-                        </div>
-                    [# } else { #]
-                        <div class="value"><label for="multiple-group-membership">
-                            This user has the [#= joinedRoleNames  #] role.
-                            [# if (_(roles).any(function(r){return r.scopes})) { #]
-                            Since this role is scoped, you will also need to specify one or more
-                            scopes below.
-                            [# } #]</label>
-                        </div>
-                    [# } #]
-                </div>
             </div>
         </div>
+        <div id="scope-container"></div>
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="role_and_scope_assignment_template">
+        [# var joinedRoleNames = utils.mapRoleNames(roles).join(', '); #]
+        [# var scopes = _(roles).map(function(r) {return r.scopes;}).flatten().uniq(); #]
+
+        <div>
+            <div class="row">
+                [# if (enableRoleControl) { #]
+                    <div class="label">
+                        <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= utils.mapRoleKeys(roles) #]"/>
+                    </div>
+                    <div class="value"><label for="multiple-group-membership">
+                        Grant this user the [#= joinedRoleNames  #] roles.
+                        [# if (_(roles).any(function(r){return r.scopes})) { #]
+                        Since these roles are scoped, you will also need to specify one or more
+                        scopes below.
+                        [# } #]</label>
+                        <label for="multiple-group-membership" id="partial-multiple-group-membership-info" class="partial-membership"></label>
+                    </div>
+                [# } else { #]
+                    <div class="value"><label for="multiple-group-membership">
+                        This user has the [#= joinedRoleNames  #] role.
+                        [# if (_(roles).any(function(r){return r.scopes})) { #]
+                        Since this role is scoped, you will also need to specify one or more
+                        scopes below.
+                        [# } #]</label>
+                    </div>
+                [# } #]
+            </div>
+        </div>
+
         [# if (_(scopes || []).include("site")) { #]
         <div>
             <h3>Sites</h3>
@@ -361,15 +351,12 @@
             <div id="roles">
                 <div class="role-tab">
                     <a id="role-multiple-roles" class="role" href="#">Edit Multiple Roles</a>
-                    <div class="role-control">
-                        <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="multiple-roles"/>
-                    </div>
                 </div>
                 <c:forEach items="${command.provisionableRoles}" var="role">
                     <div class="role-tab" role-type="${role.pscRole ? 'psc' : 'suite'}">
                         <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
                         <div class="role-control">
-                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
+                            <%--<input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>--%>
                         </div>
                     </div>
                 </c:forEach>
