@@ -2,12 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -20,9 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
-import static org.easymock.EasyMock.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Tests for BaseUserProvisioningCommand.
@@ -464,6 +466,40 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         command.apply();
         verifyMocks();
         assertTrue("Not added", srm.isAllStudies());
+    }
+
+    public void testSetProvisionableRoleGroupsIsSortedByGroup() {
+        command.setProvisionableRoleGroups(
+            SuiteRole.AE_RULE_AND_REPORT_MANAGER,
+            SuiteRole.STUDY_CREATOR,
+            SuiteRole.STUDY_QA_MANAGER,
+            SuiteRole.SYSTEM_ADMINISTRATOR,
+            SuiteRole.STUDY_TEAM_ADMINISTRATOR, 
+            SuiteRole.AE_REPORTER
+        );
+        Iterator<PscRoleGroup> iter = command.getProvisionableRoleGroups().keySet().iterator();
+        assertEquals("Wrong 1st role group", PscRoleGroup.TEMPLATE_CREATION, iter.next());
+        assertEquals("Wrong 2nd role group", PscRoleGroup.TEMPLATE_MANAGEMENT, iter.next());
+        assertEquals("Wrong 3rd role group", PscRoleGroup.SITE_MANAGEMENT, iter.next());
+        assertEquals("Wrong 4th role group", PscRoleGroup.SUBJECT_MANAGEMENT, iter.next());
+        assertEquals("Wrong 5th role group", PscRoleGroup.ADMINISTRATION, iter.next());
+        assertEquals("Wrong 6th role group", PscRoleGroup.SUITE_ROLES, iter.next());
+    }
+
+    public void testSetProvisionableRoleGroupsSortsEachGroupsContents() {
+        command.setProvisionableRoleGroups(
+            SuiteRole.SUBJECT_MANAGER,
+            SuiteRole.AE_REPORTER,
+            SuiteRole.REGISTRAR,
+            SuiteRole.LAB_DATA_USER,
+            SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER
+        );
+        Iterator<ProvisioningRole> iter = command.getProvisionableRoleGroups().get(PscRoleGroup.SUBJECT_MANAGEMENT).iterator();
+        assertEquals("Wrong 1st role", SuiteRole.SUBJECT_MANAGER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 2nd role", SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 3nd role", SuiteRole.AE_REPORTER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 4th role", SuiteRole.LAB_DATA_USER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 5th role", SuiteRole.REGISTRAR.getCsmName(), iter.next().getKey());
     }
 
     ////// javascript state init

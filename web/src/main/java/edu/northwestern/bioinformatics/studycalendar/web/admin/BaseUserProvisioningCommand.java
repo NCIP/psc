@@ -339,7 +339,7 @@ public abstract class BaseUserProvisioningCommand {
     }
 
     public void setProvisionableRoleGroups(SuiteRole... roles) {
-        this.provisionableRoleGroups = new HashMap<PscRoleGroup, Collection<ProvisioningRole>>();
+        this.provisionableRoleGroups = new TreeMap<PscRoleGroup, Collection<ProvisioningRole>>();
         for (SuiteRole role : roles) {
             PscRole pRole = PscRole.valueOf(role);
             if (pRole != null) {
@@ -359,7 +359,7 @@ public abstract class BaseUserProvisioningCommand {
 
     public void addProvisionableRoleGroups(PscRoleGroup group, SuiteRole role) {
         if (!provisionableRoleGroups.containsKey(group)) {
-            provisionableRoleGroups.put(group, new HashSet<ProvisioningRole>());
+            provisionableRoleGroups.put(group, new TreeSet<ProvisioningRole>());
         }
        provisionableRoleGroups.get(group).add(new ProvisioningRole(role));
     }

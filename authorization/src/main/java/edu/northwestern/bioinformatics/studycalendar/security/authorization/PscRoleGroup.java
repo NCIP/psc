@@ -11,7 +11,7 @@ public enum PscRoleGroup {
         "Site Management"
     ),
     SUBJECT_MANAGEMENT(
-        "Subject Managment"
+        "Subject Management"
     ),
     ADMINISTRATION(
         "Administration"

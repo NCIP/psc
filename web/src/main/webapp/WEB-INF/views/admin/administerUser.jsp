@@ -8,6 +8,8 @@
              type="edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand"/>
 <jsp:useBean id="startingNewUser" scope="request"
              type="java.lang.Boolean"/>
+<jsp:useBean id="roleGroupCells" scope="request"
+             type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserController.RoleGroupCell>"/>
 
 <html>
 <head>
@@ -122,25 +124,62 @@
         [# var scopes = _(roles).map(function(r) {return r.scopes;}).flatten().uniq(); #]
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
-            <div class="content">
-                <div class="row">
-                    <c:forEach items="${command.provisionableRoleGroups}" var="map">
-                        <div class="abstract-role-grouping">
-                            <h2>${map.key.displayName}</h2>
-                                <c:forEach items="${map.value}" var="role">
+            <div class="content" id="multiple-role-content">
+                <div style="position: relative; background-color: #f00; ">
+                    <c:forEach items="${roleGroupCells}" var="cell">
+                        <c:if test="${cell.group != 'SUITE_ROLES'}">
+                            <div class="abstract-role-grouping column column${cell.column} row${cell.row}">
+                                <h2>${cell.group.displayName}</h2>
+                                <c:forEach items="${cell.roles}" var="role">
                                     <div class="row">
-                                        <div class="label"style="width:15px">
+                                        <div class="label">
                                             <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
                                         </div>
-                                        <div class="value" style="margin-left:1.8em">
+                                        <div class="value">
                                             ${role.displayName}
                                         </div>
                                     </div>
                                 </c:forEach>
-                            </ul>
-                        </div>
+                            </div>
+                        </c:if>
+                    </c:forEach>
+                    <c:forEach items="${command.provisionableRoleGroups}" var="map">
+                        <c:if test="${map.key == 'SUITE_ROLES'}">
+                            <div class="abstract-role-grouping column" id="suite-roles-cell">
+                                <h2>${map.key.displayName}</h2>
+                                <c:forEach items="${map.value}" var="role">
+                                    <div class="row">
+                                        <div class="label">
+                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
+                                        </div>
+                                        <div class="value">
+                                            ${role.displayName}
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:if>
                     </c:forEach>
                 </div>
+
+                <%--<div class="row">--%>
+                    <%--<c:forEach items="${command.provisionableRoleGroups}" var="map">--%>
+                        <%--<div class="abstract-role-grouping">--%>
+                            <%--<h2>${map.key.displayName}</h2>--%>
+                                <%--<c:forEach items="${map.value}" var="role">--%>
+                                    <%--<div class="row">--%>
+                                        <%--<div class="label">--%>
+                                            <%--<input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>--%>
+                                        <%--</div>--%>
+                                        <%--<div class="value">--%>
+                                            <%--${role.displayName}--%>
+                                        <%--</div>--%>
+                                    <%--</div>--%>
+                                <%--</c:forEach>--%>
+                            <%--</ul>--%>
+                        <%--</div>--%>
+                    <%--</c:forEach>--%>
+                <%--</div>--%>
                 <div class="row">
                     [# if (enableRoleControl) { #]
                         <div class="label">
@@ -338,7 +377,7 @@
                     <a href="#" id="show-all-toggle">Show Suite Roles</a>
                 </div>
             </div>
-            <div id="role-editor">
+            <div id="role-editor" class="role-editor">
                 <h2>Role memberships</h2>
                 <div id="role-editor-pane"></div>
             </div>

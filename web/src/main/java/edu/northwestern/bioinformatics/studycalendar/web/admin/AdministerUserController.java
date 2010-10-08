@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonObjectEditor;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -97,6 +99,7 @@ public class AdministerUserController
             ModelAndView mv = new ModelAndView("admin/administerUser", errors.getModel());
             mv.addObject("startingNewUser", 
                 command.isNewUser() && "GET".equals(request.getMethod()));
+            mv.addObject("roleGroupCells", RoleGroupCell.create(command.getProvisionableRoleGroups()));
             return mv;
         }
     }
@@ -132,5 +135,45 @@ public class AdministerUserController
         InstalledAuthenticationSystem installedAuthenticationSystem
     ) {
         this.installedAuthenticationSystem = installedAuthenticationSystem;
+    }
+
+    public static class RoleGroupCell {
+        private PscRoleGroup group;
+        private Collection<ProvisioningRole> roles;
+        private int row;
+        private int column;
+
+        public static Collection<RoleGroupCell> create(Map<PscRoleGroup, Collection<ProvisioningRole>> map) {
+            Collection<RoleGroupCell> cells = new ArrayList<RoleGroupCell>();
+            int index = 0;
+            for (PscRoleGroup group : map.keySet()) {
+                cells.add(new RoleGroupCell(group, map.get(group), (index / 3) + 1, (index % 3) + 1));
+                index++;
+            }
+            return cells;
+        }
+
+        private RoleGroupCell(PscRoleGroup group, Collection<ProvisioningRole> roles, int row, int column) {
+            this.group = group;
+            this.roles = roles;
+            this.row = row;
+            this.column = column;
+        }
+
+        public PscRoleGroup getGroup() {
+            return group;
+        }
+
+        public Collection<ProvisioningRole> getRoles() {
+            return roles;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getColumn() {
+            return column;
+        }
     }
 }

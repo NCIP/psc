@@ -2,6 +2,7 @@
 !role_manager_width = 72em
 !role_tab_width = 15em
 !role_editor_width = !role_manager_width - !role_tab_width
+!group_role_height = 13em
 
 #role-manager
   position: relative
@@ -77,20 +78,36 @@ div.row
   div.value
     margin-left= !role_tab_width
 
-.abstract-role-grouping
-  width: 180px
-  border: 1px solid #444
-  float: left
-  margin: 0 10px 10px 0
-  h2
-    text-align: center
-  ul
-    margin: 0
-    padding: 0
-  li
-    margin: 0
-    padding: 0
-    list-style-type: none
+#multiple-role-content
+  .abstract-role-grouping
+    border: 1px solid #444
+    margin: 0 10px 10px 0
+    h2
+      text-align: center
+    div.row
+      div.label
+        width: 15px
+      div.value
+        margin-left: 1.8em
+
+  .column
+    position: absolute
+    width= (!role_editor_width / 4) - 1em
+  .column1
+    left: 0
+  .column2
+    left: 25%
+  .column3
+    left: 50%
+  #suite-roles-cell
+    left: 75%
+    height= !group_role_height * 2 + 1
+  .row1
+    top: 0
+    height= !group_role_height
+  .row2
+    top= !group_role_height + 1
+    height= !group_role_height
 
 #role-multiple-roles
   background-color: #aaa
