@@ -185,7 +185,9 @@
                     </div>
                 [# } else { #]
                     <div class="value"><label for="multiple-group-membership">
-                        This user has the [#= joinedRoleNames  #] role.
+                        [# if (!_(roles).isEmpty()) { #]
+                            This user has the [#= joinedRoleNames  #] role.
+                        [# } #]
                         [# if (_(roles).any(function(r){return r.scopes})) { #]
                         Since this role is scoped, you will also need to specify one or more
                         scopes below.
