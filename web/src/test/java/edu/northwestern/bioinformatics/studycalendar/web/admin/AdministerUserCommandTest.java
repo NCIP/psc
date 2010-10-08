@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
@@ -22,10 +23,7 @@ import org.json.JSONObject;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createCsmUser;
 import static org.easymock.EasyMock.expect;
@@ -202,6 +200,30 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             0, actual.getProvisionableRoles().size());
+    }
+
+    public void testProvisionableRoleGroups() throws Exception {
+        VisibleAuthorizationInformation expectedInfo = new VisibleAuthorizationInformation();
+        expectedInfo.setRoles(Arrays.asList(SuiteRole.STUDY_QA_MANAGER));
+        pscUserService.setSpecialInfo(expectedInfo);
+
+        PscUser provisioner = AuthorizationObjectFactory.createPscUser("someone");
+
+        AdministerUserCommand actual = create(pscUser, provisioner);
+
+        Map<PscRoleGroup, Collection<ProvisioningRole>> groups = actual.getProvisionableRoleGroups();
+        
+        assertEquals("Wrong number of groups", 2, groups.size());
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.SITE_MANAGEMENT);
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.TEMPLATE_MANAGEMENT);
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
+        assertContains("Missing corresponding role", 
+            groups.get(PscRoleGroup.SITE_MANAGEMENT), new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER));
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
+        assertContains("Missing corresponding role",
+            groups.get(PscRoleGroup.TEMPLATE_MANAGEMENT), new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER));
     }
 
     private void assertMayProvision(SuiteRole expectedRole, AdministerUserCommand actual) {

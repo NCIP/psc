@@ -15,6 +15,9 @@ public enum PscRoleGroup {
     ),
     ADMINISTRATION(
         "Administration"
+    ),
+    SUITE_ROLES(
+        "Suite Roles"
     );
 
     private String description;

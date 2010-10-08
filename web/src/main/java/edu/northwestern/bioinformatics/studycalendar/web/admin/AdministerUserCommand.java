@@ -4,10 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.*;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
@@ -31,13 +28,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The command for creating or updating a single user.
@@ -82,6 +73,8 @@ public class AdministerUserCommand
             pscUserService.getVisibleAuthorizationInformationFor(provisioner);
         command.setProvisionableSites(visAuthInfo.getSites());
         command.setProvisionableRoles(
+            visAuthInfo.getRoles().toArray(new SuiteRole[visAuthInfo.getRoles().size()]));
+        command.setProvisionableRoleGroups(
             visAuthInfo.getRoles().toArray(new SuiteRole[visAuthInfo.getRoles().size()]));
         command.setProvisionableManagedStudies(visAuthInfo.getStudiesForTemplateManagement());
         command.setProvisionableParticipatingStudies(visAuthInfo.getStudiesForSiteParticipation());
