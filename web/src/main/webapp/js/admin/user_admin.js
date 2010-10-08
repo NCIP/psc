@@ -262,7 +262,7 @@ psc.admin.UserAdmin = (function ($) {
     var scope = buildScopeObject(scopeType, scopeValue);
 
     var status = user.membershipsStatus(roleKeys, scope);
-    console.log("determineTristateCheckboxState", scopeType, scopeValue, status);
+    console.log("Tri-state checkbox status", status, scopeType, scopeValue);
     switch(status) {
       case 'FULL':    return 'checked';
       case 'PARTIAL': return 'intermediate';
