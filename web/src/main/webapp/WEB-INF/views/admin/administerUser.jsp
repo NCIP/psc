@@ -124,8 +124,61 @@
             <h3>[#= joinedRoleNames #]</h3>
             <div class="content">
                 <div>
-                    <div class="abstract-role-grouping">
-                        <h2></h2>
+                    <div class="row">
+                        <div class="abstract-role-grouping">
+                            <h2>Template Creation</h2>
+                            <ul>
+                                <li>
+                                    <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="study-creator"/>
+                                    <%--<input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>--%>
+                                    <label>Study Creator</label>
+                                </li>
+                                <li>Study Calendar Template Builder</li>
+                                <li>Data Importer</li>
+                            </ul>
+                        </div>
+                        <div class="abstract-role-grouping">
+                            <h2>Template management</h2>
+                            <ul>
+                                <li>Study QA Manager</li>
+                                <li>Study Site Participation Administrator</li>
+                                <li>Business Admin</li>
+                            </ul>
+                        </div>
+                        <div class="abstract-role-grouping">
+                            <h2>Site management</h2>
+                            <ul>
+                                <li>Study QA Manager</li>
+                                <li>Study Team Admin</li>
+                                <li>Person And Organization Information Manager</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="abstract-role-grouping">
+                            <h2>Subject management</h2>
+                            <ul>
+                                <li>Subject Manager</li>
+                                <li>Study Subject Calendar Manager</li>
+                                <li>AE Reporter</li>
+                                <li>Lab Data User</li>
+                                <li>Registrar</li>
+                            </ul>
+                        </div>
+                        <div class="abstract-role-grouping">
+                            <h2>Administration</h2>
+                            <ul>
+                                <li>System Admin</li>
+                                <li>User Admin</li>
+                                <li>Person And Organization Information Manager</li>
+                            </ul>
+                        </div>
+                        <div class="abstract-role-grouping">
+                            <h2>Data Reader</h2>
+                            <ul>
+                                <li>Data Reader</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
