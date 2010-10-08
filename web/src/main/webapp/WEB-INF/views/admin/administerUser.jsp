@@ -123,63 +123,23 @@
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
             <div class="content">
-                <div>
-                    <div class="row">
+                <div class="row">
+                    <c:forEach items="${command.provisionableRoleGroups}" var="map">
                         <div class="abstract-role-grouping">
-                            <h2>Template Creation</h2>
-                            <ul>
-                                <li>
-                                    <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="study-creator"/>
-                                    <%--<input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>--%>
-                                    <label>Study Creator</label>
-                                </li>
-                                <li>Study Calendar Template Builder</li>
-                                <li>Data Importer</li>
+                            <h2>${map.key.displayName}</h2>
+                                <c:forEach items="${map.value}" var="role">
+                                    <div class="row">
+                                        <div class="label"style="width:15px">
+                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
+                                        </div>
+                                        <div class="value" style="margin-left:1.8em">
+                                            ${role.displayName}
+                                        </div>
+                                    </div>
+                                </c:forEach>
                             </ul>
                         </div>
-                        <div class="abstract-role-grouping">
-                            <h2>Template management</h2>
-                            <ul>
-                                <li>Study QA Manager</li>
-                                <li>Study Site Participation Administrator</li>
-                                <li>Business Admin</li>
-                            </ul>
-                        </div>
-                        <div class="abstract-role-grouping">
-                            <h2>Site management</h2>
-                            <ul>
-                                <li>Study QA Manager</li>
-                                <li>Study Team Admin</li>
-                                <li>Person And Organization Information Manager</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="abstract-role-grouping">
-                            <h2>Subject management</h2>
-                            <ul>
-                                <li>Subject Manager</li>
-                                <li>Study Subject Calendar Manager</li>
-                                <li>AE Reporter</li>
-                                <li>Lab Data User</li>
-                                <li>Registrar</li>
-                            </ul>
-                        </div>
-                        <div class="abstract-role-grouping">
-                            <h2>Administration</h2>
-                            <ul>
-                                <li>System Admin</li>
-                                <li>User Admin</li>
-                                <li>Person And Organization Information Manager</li>
-                            </ul>
-                        </div>
-                        <div class="abstract-role-grouping">
-                            <h2>Data Reader</h2>
-                            <ul>
-                                <li>Data Reader</li>
-                            </ul>
-                        </div>
-                    </div>
+                    </c:forEach>
                 </div>
                 <div class="row">
                     [# if (enableRoleControl) { #]
@@ -361,7 +321,7 @@
         <div id="role-manager">
             <div id="roles">
                 <div class="role-tab">
-                    <a id="role-multiple-roles" class="role" href="#">Multiple Roles</a>
+                    <a id="role-multiple-roles" class="role" href="#">Edit Multiple Roles</a>
                     <div class="role-control">
                         <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="multiple-roles"/>
                     </div>

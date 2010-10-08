@@ -16,13 +16,20 @@ public enum PscRoleGroup {
     ADMINISTRATION(
         "Administration"
     ),
+    DATA_READER(
+        "Data Reader"
+    ),
     SUITE_ROLES(
         "Suite Roles"
     );
 
-    private String description;
+    private String displayName;
 
-    private PscRoleGroup(String description) {
-        this.description = description;
+    private PscRoleGroup(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }
