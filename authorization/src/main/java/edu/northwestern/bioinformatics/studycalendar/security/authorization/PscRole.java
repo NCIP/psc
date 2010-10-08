@@ -64,6 +64,7 @@ public enum PscRole implements GrantedAuthority {
 
     private SuiteRole corresponding;
     private Collection<PscRoleUse> uses;
+    private Collection<PscRoleGroup> groups;
 
     private static Properties roleProperties;
     private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator, withSiteScoped;
@@ -71,6 +72,7 @@ public enum PscRole implements GrantedAuthority {
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
         this.uses = createUses();
+        this.groups = createGroups();
     }
 
     public static PscRole valueOf(SuiteRole suiteRole) {
@@ -137,6 +139,10 @@ public enum PscRole implements GrantedAuthority {
         return uses;
     }
 
+    public Collection<PscRoleGroup> getGroups() {
+        return groups;
+    }
+
     private Set<PscRoleUse> createUses() {
         String prop = getRoleProperties().getProperty(getCsmName() + ".uses");
         if (prop == null) {
@@ -145,6 +151,19 @@ public enum PscRole implements GrantedAuthority {
             Set<PscRoleUse> creating = new LinkedHashSet<PscRoleUse>();
             for (String scope : prop.split("\\s+")) {
                 creating.add(PscRoleUse.valueOf(scope.toUpperCase()));
+            }
+            return Collections.unmodifiableSet(creating);
+        }
+    }
+
+    private Set<PscRoleGroup> createGroups() {
+        String prop = getRoleProperties().getProperty(getCsmName() + ".groups");
+        if (prop == null) {
+            return Collections.emptySet();
+        } else {
+            Set<PscRoleGroup> creating = new LinkedHashSet<PscRoleGroup>();
+            for (String scope : prop.split("\\s+")) {
+                creating.add(PscRoleGroup.valueOf(scope.toUpperCase()));
             }
             return Collections.unmodifiableSet(creating);
         }
