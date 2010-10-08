@@ -91,10 +91,6 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function getMembershipList(kind, userMembershipsRole) {
-     return userMembershipsRole[kind].toString().split(",");
-  }
-  
   function startEditingMultiple(roleKeys) {
     var roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
@@ -152,22 +148,19 @@ psc.admin.UserAdmin = (function ($) {
       });
       var mem = user.memberships[role.key]
       if (mem != null) {
-
-        if (mem['sites'] != null) {
-          var isSiteSubset = isSubsetOfProvision(provisionableSites, mem['sites']);
-        }
-
         // Disable role membership control when the user we are provisioning is a
-        // member of sites or studies that are not in the list of provisionable studies.
-        if (mem['studies'] != null) {
-          var isStudySubset = isSubsetOfProvision(provisionableStudies, mem['studies']);
-          if (!isSiteSubset || !isStudySubset) {
+        // member of sites and/or studies that are not in the list of provisionable studies.
+        if (mem['sites'] != null && mem['studies'] != null) {
+          if (!(isSubsetOfProvision(provisionableSites, mem['sites'])
+              && isSubsetOfProvision(provisionableStudies, mem['studies']))) {
+            enableRoleControl = false;
+          }
+        } else if (mem['studies'] != null) {
+          if (!isSubsetOfProvision(provisionableStudies, mem['studies'])) {
             enableRoleControl = false;
           }
         } else if (mem['sites'] != null) {
-          var membershipSiteList = getMembershipList('sites', mem)
-          isSiteSubset = isSubsetOfProvision(provisionableSites, membershipSiteList);
-          if (!isSiteSubset) {
+          if (!isSubsetOfProvision(provisionableSites, mem['sites'])) {
             enableRoleControl = false;
           }
         }
@@ -186,10 +179,6 @@ psc.admin.UserAdmin = (function ($) {
       case 'sites-control': return enableSitesControl;
       default: return null;
     }
-  }
-
-  function getMembershipList(kind, userMembershipsRole) {
-     return userMembershipsRole[kind].toString().split(",");
   }
 
   function isSubsetOfProvision(provisionableList, membershipList) {
