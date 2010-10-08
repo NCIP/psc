@@ -204,7 +204,7 @@ public class AdministerUserCommandTest extends WebTestCase {
 
     public void testProvisionableRoleGroups() throws Exception {
         VisibleAuthorizationInformation expectedInfo = new VisibleAuthorizationInformation();
-        expectedInfo.setRoles(Arrays.asList(SuiteRole.STUDY_QA_MANAGER));
+        expectedInfo.setRoles(Arrays.asList(SuiteRole.STUDY_QA_MANAGER, SuiteRole.AE_RULE_AND_REPORT_MANAGER));
         pscUserService.setSpecialInfo(expectedInfo);
 
         PscUser provisioner = AuthorizationObjectFactory.createPscUser("someone");
@@ -213,9 +213,10 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         Map<PscRoleGroup, Collection<ProvisioningRole>> groups = actual.getProvisionableRoleGroups();
         
-        assertEquals("Wrong number of groups", 2, groups.size());
+        assertEquals("Wrong number of groups", 3, groups.size());
         assertContains("Missing role group", groups.keySet(), PscRoleGroup.SITE_MANAGEMENT);
         assertContains("Missing role group", groups.keySet(), PscRoleGroup.TEMPLATE_MANAGEMENT);
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.SUITE_ROLES);
 
         assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
         assertContains("Missing corresponding role", 
@@ -224,6 +225,10 @@ public class AdministerUserCommandTest extends WebTestCase {
         assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
         assertContains("Missing corresponding role",
             groups.get(PscRoleGroup.TEMPLATE_MANAGEMENT), new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER));
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SUITE_ROLES).size());
+        assertContains("Missing corresponding role",
+            groups.get(PscRoleGroup.SUITE_ROLES), new ProvisioningRole(SuiteRole.AE_RULE_AND_REPORT_MANAGER));
     }
 
     private void assertMayProvision(SuiteRole expectedRole, AdministerUserCommand actual) {
