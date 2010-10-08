@@ -13,7 +13,11 @@ psc.admin.UserAdmin = (function ($) {
     $('input.roles-to-edit').attr('checked', false);
     $('#role-' + roleKey).addClass('selected');
     $('input.roles-to-edit[value=' + roleKey + ']').attr('checked', true);
-    startEditing(roleKey);
+    if (roleKey === 'multiple-roles') {
+      startEditingMultiple();
+    } else {
+      startEditing(roleKey);
+    }
   }
 
   function selectMultipleRoles(roleKeys) {
@@ -90,14 +94,13 @@ psc.admin.UserAdmin = (function ($) {
   }
   
   function startEditingMultiple(roleKeys) {
+    var roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
 
-    if (_.isEmpty(roles)) {
-      $('#role-editor-pane').empty();
-    } else if(_(roles).size() == 1) {
+    if(_(roles).size() == 1) {
       var roleKey = _(roles).first().key;
       startEditing(roleKey)
-    } else if (_(roles).size() > 1) {
+    } else {
       var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
       var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
       $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {

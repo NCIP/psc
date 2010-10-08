@@ -123,7 +123,11 @@
         <div id="role-general">
             <h3>[#= joinedRoleNames #]</h3>
             <div class="content">
-                <p>You are now modifying multiple roles.</p>
+                <div>
+                    <div class="abstract-role-grouping">
+                        <h2></h2>
+                    </div>
+                </div>
                 <div class="row">
                     [# if (enableRoleControl) { #]
                         <div class="label">
@@ -303,6 +307,12 @@
 
         <div id="role-manager">
             <div id="roles">
+                <div class="role-tab">
+                    <a id="role-multiple-roles" class="role" href="#">Multiple Roles</a>
+                    <div class="role-control">
+                        <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="multiple-roles"/>
+                    </div>
+                </div>
                 <c:forEach items="${command.provisionableRoles}" var="role">
                     <div class="role-tab" role-type="${role.pscRole ? 'psc' : 'suite'}">
                         <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
