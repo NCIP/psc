@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -32,12 +31,9 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     private StudySiteDao studySiteDao;
     private StudySiteService studySiteService;
 
-
+    @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR);
-        setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
-        setAuthorizedFor(Method.DELETE, Role.SITE_COORDINATOR);
 
         StudySite ss = getRequestedObjectDuringInit();
         Site site = null;
@@ -59,6 +55,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         addAuthorizationsFor(Method.DELETE, site, study, STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
     }
 
+    @Override
     protected StudySite loadRequestedObject(Request request) {
         String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
@@ -77,6 +74,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
+    @Override
     protected void validateEntity(Representation entity) throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
@@ -87,6 +85,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
+    @Override
     public void store(StudySite studySite) throws ResourceException {
         try {
             if (getRequestedObject() == null) {
@@ -98,6 +97,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
+    @Override
     public void verifyRemovable(StudySite studySite) throws ResourceException {
         if (!studySite.getStudySubjectAssignments().isEmpty()) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -106,6 +106,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
+    @Override
     public void remove(StudySite studySite) {
         studySite.getStudy().getStudySites().remove(studySite);
         studySite.getSite().getStudySites().remove(studySite);

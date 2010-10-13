@@ -3,6 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import junit.framework.TestCase;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNegative;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
+
 /**
  * @author Rhett Sutphin
  */
@@ -100,9 +103,36 @@ public class PscRoleTest extends TestCase {
         assertTrue(PscRole.STUDY_QA_MANAGER.getUses().contains(PscRoleUse.SITE_PARTICIPATION));
     }
 
+    public void testGroupsLoaded() throws Exception {
+        assertTrue(PscRole.STUDY_QA_MANAGER.getGroups().contains(PscRoleGroup.TEMPLATE_MANAGEMENT));
+        assertTrue(PscRole.STUDY_QA_MANAGER.getGroups().contains(PscRoleGroup.SITE_MANAGEMENT));
+    }
+
     public void testAllRolesHaveAtLeastOneUse() throws Exception {
         for (PscRole role : PscRole.values()) {
             assertFalse("No uses for " + role, role.getUses().isEmpty());
         }
+    }
+
+    public void testNaturalOrderAlphabetizesSuiteOnlyRoles() throws Exception {
+        assertOrder(
+            SuiteRole.REGISTRATION_QA_MANAGER, SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER);
+        assertOrder(
+            SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, SuiteRole.AE_RULE_AND_REPORT_MANAGER);
+    }
+
+    public void testNaturalOrderPutsPscRolesInPscOrdinalOrder() throws Exception {
+        assertOrder(SuiteRole.STUDY_CREATOR, SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertOrder(SuiteRole.STUDY_QA_MANAGER, SuiteRole.STUDY_TEAM_ADMINISTRATOR);
+        assertOrder(SuiteRole.SYSTEM_ADMINISTRATOR, SuiteRole.BUSINESS_ADMINISTRATOR);
+    }
+
+    public void testNaturalOrderPutsPscRolesBeforeSuiteOnlyRoles() throws Exception {
+        assertOrder(SuiteRole.STUDY_QA_MANAGER, SuiteRole.AE_REPORTER);
+    }
+
+    private void assertOrder(SuiteRole first, SuiteRole second) {
+        assertNegative(PscRole.ORDER.compare(first, second));
+        assertPositive(PscRole.ORDER.compare(second, first));
     }
 }

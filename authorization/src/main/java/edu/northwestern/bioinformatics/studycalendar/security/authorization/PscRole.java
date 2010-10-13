@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -45,15 +46,33 @@ public enum PscRole implements GrantedAuthority {
     REGISTRAR
     ;
 
+    public static Comparator<SuiteRole> ORDER = new Comparator<SuiteRole>() {
+        public int compare(SuiteRole o1, SuiteRole o2) {
+            PscRole pr1 = PscRole.valueOf(o1);
+            PscRole pr2 = PscRole.valueOf(o2);
+            if (pr1 != null && pr2 == null) {
+                return -1;
+            } else if (pr1 == null && pr2 != null) {
+                return 1;
+            } else if (pr1 != null) { // both PSC roles
+                return pr1.ordinal() - pr2.ordinal();
+            } else {
+                return o1.getDisplayName().compareTo(o2.getDisplayName());
+            }
+        }
+    };
+
     private SuiteRole corresponding;
     private Collection<PscRoleUse> uses;
+    private Collection<PscRoleGroup> groups;
 
     private static Properties roleProperties;
-    private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator;
+    private static PscRole[] withStudyAccess, provisionableByStudyTeamAdministrator, withSiteScoped;
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
         this.uses = createUses();
+        this.groups = createGroups();
     }
 
     public static PscRole valueOf(SuiteRole suiteRole) {
@@ -120,6 +139,10 @@ public enum PscRole implements GrantedAuthority {
         return uses;
     }
 
+    public Collection<PscRoleGroup> getGroups() {
+        return groups;
+    }
+
     private Set<PscRoleUse> createUses() {
         String prop = getRoleProperties().getProperty(getCsmName() + ".uses");
         if (prop == null) {
@@ -128,6 +151,19 @@ public enum PscRole implements GrantedAuthority {
             Set<PscRoleUse> creating = new LinkedHashSet<PscRoleUse>();
             for (String scope : prop.split("\\s+")) {
                 creating.add(PscRoleUse.valueOf(scope.toUpperCase()));
+            }
+            return Collections.unmodifiableSet(creating);
+        }
+    }
+
+    private Set<PscRoleGroup> createGroups() {
+        String prop = getRoleProperties().getProperty(getCsmName() + ".groups");
+        if (prop == null) {
+            return Collections.emptySet();
+        } else {
+            Set<PscRoleGroup> creating = new LinkedHashSet<PscRoleGroup>();
+            for (String scope : prop.split("\\s+")) {
+                creating.add(PscRoleGroup.valueOf(scope.toUpperCase()));
             }
             return Collections.unmodifiableSet(creating);
         }
@@ -177,5 +213,21 @@ public enum PscRole implements GrantedAuthority {
                 provisionable.toArray(new PscRole[provisionable.size()]);
         }
         return provisionableByStudyTeamAdministrator;
+    }
+
+    /**
+     * Those roles which have site scoped.
+     */
+    public static synchronized PscRole[] valuesWithSiteScoped() {
+        if (withSiteScoped == null) {
+            List<PscRole> siteScopedRoles =  new ArrayList<PscRole>(PscRole.values().length);;
+            for (PscRole role :PscRole.values()) {
+                if (role.isSiteScoped()) {
+                    siteScopedRoles.add(role);
+                }
+            }
+            withSiteScoped = siteScopedRoles.toArray(new PscRole[siteScopedRoles.size()]);
+        }
+        return withSiteScoped;
     }
 }

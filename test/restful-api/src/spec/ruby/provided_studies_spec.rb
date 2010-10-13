@@ -3,10 +3,18 @@ describe "/provided-studies" do
     get "/osgi/bundles", :as => :zelda
     @bundles = response.json
     installed = @bundles.find { |b| b['symbolic_name'] =~ /edu.northwestern.bioinformatics.psc-providers-mock/ }
-    put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }", 
+    put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }",
       :as => :zelda, 'Content-Type' => 'application/json'
   end
   describe "GET" do
+    it "forbids access to provided study list for unauthenticated users" do
+      get '/provided-studies?q=ad',  :as => nil
+      response.status_code.should == 401
+    end
+    it "forbids access to provided study list for unauthorized users" do
+      get '/provided-studies?q=ad',  :as => :carla
+      response.status_code.should == 403
+    end
     describe "xml" do
       before do
         get '/provided-studies?q=ad', :as => :alice

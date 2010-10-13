@@ -1,16 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.NotificationMailMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +30,7 @@ public class NotificationService {
     private Integer numberOfDays;
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
-
-    private UserService userService;
-    private ApplicationSecurityManager applicationSecurityManager;
-
+    
     /**
      * This method will add notification when nothing is scheduled for a patient. This method is used by Cron
      * scheduling engine.
@@ -61,30 +55,20 @@ public class NotificationService {
         }
     }
 
-    public void notifyUsersForNewScheduleNotifications(final Notification notification) {
-        //first find the email address of subject coordinators
-        String userName = applicationSecurityManager.getUserName();
-        if (userName != null) {
-            User user = userService.getUserByName(userName);
-
-            String toAddress = userService.getEmailAddresssForUser(user);
-            ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
+    public void sendNotificationMailToUsers(String subjectHeader, String message, List<String> addressList) {
+        NotificationMailMessage mailMessage = mailMessageFactory.createNotificationMailMessage(subjectHeader, message);
+        for (String toAddress: addressList) {
             if (mailMessage != null) {
                 try {
+                    mailMessage.setTo(toAddress);
                     mailSender.send(mailMessage);
-                    logger.debug("sending notification to:" + toAddress);
-                } catch (MailException e) {
-                    logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
+                    logger.debug("sending notification e-mail to:" + toAddress);
                 } catch (Exception e) {
-                    logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
+                    logger.error("Sending notification e-mail message to {} failed: {}", toAddress, e.getMessage());
+                    logger.debug("Message-sending error detail:", e);
                 }
             }
         }
-    }
-
-    @Required
-    public void setUserService(final UserService userService) {
-        this.userService = userService;
     }
 
     @Required
@@ -105,10 +89,5 @@ public class NotificationService {
     // @Required
     public void setMailMessageFactory(final MailMessageFactory mailMessageFactory) {
         this.mailMessageFactory = mailMessageFactory;
-    }
-
-    @Required
-    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
-        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

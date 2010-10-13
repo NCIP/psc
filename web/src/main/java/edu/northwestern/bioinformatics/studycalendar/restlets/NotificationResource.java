@@ -1,36 +1,37 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
-
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
-import org.restlet.data.*;
-import org.restlet.Context;
-import org.restlet.ext.json.JsonRepresentation;
-import org.json.JSONObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 
 import java.io.IOException;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Jalpa Patel
  */
 public class NotificationResource extends AbstractStorableDomainObjectResource<Notification> {
     public NotificationDao notificationDao;
-    private StudySubjectAssignment assignment;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SUBJECT_COORDINATOR);
 
         Study study = null;
         Site site = null;
@@ -59,12 +60,13 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
     }
 
     //todo need to check that notification_identifier corresponds to assignment_identifier
+    @Override
     protected Notification loadRequestedObject(Request request) throws ResourceException {
         String notificationIdentifier = UriTemplateParameters.NOTIFICATION_IDENTIFIER.extractFrom(request);
         if (notificationIdentifier == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No Notification Identifier in request");
         }
-        Notification notification = notificationDao.getByGridId(notificationIdentifier);;
+        Notification notification = notificationDao.getByGridId(notificationIdentifier);
         if (notification == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No Notification found for given Id");
         }

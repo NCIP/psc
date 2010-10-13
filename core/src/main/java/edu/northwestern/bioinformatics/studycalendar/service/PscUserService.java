@@ -4,13 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -25,31 +27,37 @@ import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
  */
 public class PscUserService implements PscUserDetailsService {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final static Comparator<User> CSM_USER_BY_PSC_USER_ORDER =
+        new Comparator<User>() {
+            public int compare(User o1, User o2) {
+                return createRolelessUser(o1).compareTo(createRolelessUser(o2));
+            }
+        };
 
-    private UserService userService;
-    private PlatformTransactionManager transactionManager;
     private AuthorizationManager csmAuthorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
-    private LegacyModeSwitch legacyModeSwitch;
     private CsmHelper csmHelper;
 
     private StudyDao studyDao;
@@ -60,10 +68,7 @@ public class PscUserService implements PscUserDetailsService {
     public PscUser getProvisionableUser(String username) {
         User user = loadCsmUser(username);
         if (user == null) return null;
-        return new PscUser(
-            user, suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId()),
-            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
-        );
+        return createProvisionableUser(user);
     }
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
@@ -79,40 +84,11 @@ public class PscUserService implements PscUserDetailsService {
     public PscUser getAuthorizableUser(String username) {
         User user = loadCsmUser(username);
         if (user == null) return null;
-        return new PscUser(
-            user,
-            suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
-            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
-        );
+        return createAuthorizableUser(user);
     }
 
     private User loadCsmUser(String username) {
         return csmAuthorizationManager.getUser(username);
-    }
-
-    private edu.northwestern.bioinformatics.studycalendar.domain.User loadLegacyUser(String userName) {
-        // This explicit transaction demarcation shouldn't be necessary
-        // However, annotating with @Transactional(readOnly=true) was not stopping hibernate from flushing.
-        TransactionStatus transactionStatus = transactionManager.getTransaction(readOnlyTransactionDef());
-        try {
-            return actuallyLoadUser(userName);
-        } finally {
-            transactionManager.rollback(transactionStatus);
-        }
-    }
-
-    private edu.northwestern.bioinformatics.studycalendar.domain.User actuallyLoadUser(String userName) {
-        edu.northwestern.bioinformatics.studycalendar.domain.User user =
-            userService.getUserByName(userName);
-        if (user == null) throw new UsernameNotFoundException("Unknown user " + userName);
-        if (!user.getActiveFlag()) throw new DisabledException("User is disabled " +userName);
-        return user;
-    }
-
-    private DefaultTransactionDefinition readOnlyTransactionDef() {
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setReadOnly(true);
-        return def;
     }
 
     /**
@@ -140,10 +116,45 @@ public class PscUserService implements PscUserDetailsService {
         List<User> allCsmUsers = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
         List<PscUser> users = new ArrayList<PscUser>(allCsmUsers.size());
         for (User csmUser : allCsmUsers) {
-            users.add(new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap()));
+            users.add(createRolelessUser(csmUser));
         }
         Collections.sort(users);
         return users;
+    }
+
+    /**
+     * Returns a list of CSM users whose names match the given text.  Matching is against username
+     * and first & last names.  It is case-sensitive due to limitations in CSM.
+     * <p>
+     * If you want full {@link PscUser}s, pass the result to {#getPscUsers}.
+     * <p>
+     * If the search text is null, all users are returned.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public List<User> search(String text) {
+        List<User> result;
+        if (text == null) {
+            result = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
+        } else {
+            Set<User> matches = new LinkedHashSet<User>();
+            matches.addAll(searchBy("loginName", text));
+            matches.addAll(searchBy("lastName", text));
+            matches.addAll(searchBy("firstName", text));
+            result = new ArrayList<User>(matches);
+        }
+        Collections.sort(result, CSM_USER_BY_PSC_USER_ORDER);
+        return result;
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private List<User> searchBy(String property, String searchText) {
+        searchText = '%' + searchText + '%';
+        User u = new User();
+        {
+            BeanWrapper bw = new BeanWrapperImpl(u);
+            bw.setPropertyValue(property, searchText);
+        }
+        return csmAuthorizationManager.getObjects(new UserSearchCriteria(u));
     }
 
     /**
@@ -156,13 +167,40 @@ public class PscUserService implements PscUserDetailsService {
     public List<PscUser> getPscUsers(Collection<User> csmUsers, boolean includePartialMemberships) {
         List<PscUser> users = new ArrayList<PscUser>(csmUsers.size());
         for (User csmUser : csmUsers) {
-            users.add(new PscUser(csmUser,
+            users.add(
                 includePartialMemberships ?
-                    suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId()) :
-                    suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())
-            ));
+                    createProvisionableUser(csmUser) :
+                    createAuthorizableUser(csmUser)
+            );
         }
         return users;
+    }
+
+    private PscUser createProvisionableUser(User user) {
+        return new PscUser(
+            user,
+            prepareMemberships(
+                suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId()))
+        );
+    }
+
+    private PscUser createAuthorizableUser(User user) {
+        return new PscUser(
+            user,
+            prepareMemberships(suiteRoleMembershipLoader.getRoleMemberships(user.getUserId())));
+    }
+
+    private static PscUser createRolelessUser(User o1) {
+        return new PscUser(o1, Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
+    }
+
+    private Map<SuiteRole, SuiteRoleMembership> prepareMemberships(
+        Map<SuiteRole, SuiteRoleMembership> input
+    ) {
+        TreeMap<SuiteRole, SuiteRoleMembership> result =
+            new TreeMap<SuiteRole, SuiteRoleMembership>(PscRole.ORDER);
+        result.putAll(input);
+        return result;
     }
 
     /**
@@ -345,17 +383,46 @@ public class PscUserService implements PscUserDetailsService {
         return siteDao.getVisibleSiteIds(user.getVisibleSiteParameters(roles));
     }
 
+    /**
+     * Returns the authorization roles and scopes which a user is permitted to view for
+     * <em>other users</em>.
+     */
+    // TODO: support STA, too. Also, merge results for users with more than one applicable role.
+    @SuppressWarnings({ "unchecked" })
+    public VisibleAuthorizationInformation getVisibleAuthorizationInformationFor(PscUser user) {
+        VisibleAuthorizationInformation info = new VisibleAuthorizationInformation();
+
+        if (user.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
+            SuiteRoleMembership ua = user.getMembership(PscRole.USER_ADMINISTRATOR);
+            info.setSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
+            VisibleStudyParameters provisionable = new VisibleStudyParameters();
+            if (ua.isAllSites()) {
+                provisionable.forAllManagingSites().forAllParticipatingSites();
+                info.setRoles(Arrays.asList(SuiteRole.values()));
+            } else {
+                provisionable.forManagingSiteIdentifiers(ua.getSiteIdentifiers()).
+                    forParticipatingSiteIdentifiers(ua.getSiteIdentifiers());
+                List<SuiteRole> nonGlobal = new ArrayList<SuiteRole>(Arrays.asList(SuiteRole.values()));
+                for (Iterator<SuiteRole> it = nonGlobal.iterator(); it.hasNext();) {
+                    SuiteRole role = it.next();
+                    if (!role.isScoped()) it.remove();
+                }
+                info.setRoles(nonGlobal);
+            }
+            info.setStudiesForTemplateManagement(
+                studyDao.getVisibleStudiesForTemplateManagement(provisionable));
+            info.setStudiesForSiteParticipation(
+                studyDao.getVisibleStudiesForSiteParticipation(provisionable));
+        } else if (user.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
+            info.setRoles(Arrays.asList(
+                SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR));
+            info.setSites(Collections.<Site>emptyList());
+        }
+
+        return info;
+    }
+
     ////// CONFIGURATION
-
-    @Required @Deprecated
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    @Required @Deprecated
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
 
     @Required
     public void setCsmAuthorizationManager(AuthorizationManager authorizationManager) {
@@ -370,11 +437,6 @@ public class PscUserService implements PscUserDetailsService {
     @Required
     public void setSuiteRoleMembershipLoader(SuiteRoleMembershipLoader suiteRoleMembershipLoader) {
         this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
-    }
-
-    @Required @Deprecated
-    public void setLegacyModeSwitch(LegacyModeSwitch lmSwitch) {
-        this.legacyModeSwitch = lmSwitch;
     }
 
     @Required

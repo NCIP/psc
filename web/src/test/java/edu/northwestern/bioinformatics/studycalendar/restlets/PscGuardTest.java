@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import org.acegisecurity.AuthenticationManager;
@@ -13,13 +12,16 @@ import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
 import java.util.regex.Pattern;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setSecurityContext;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -35,24 +37,22 @@ public class PscGuardTest extends RestletTestCase {
         = new SingleTokenAuthenticationToken(TOKEN);
 
     private PscGuard guard;
-    private User user;
     private UsernamePasswordAuthenticationToken authenticated;
 
     private MockRestlet nextRestlet;
     private AuthenticationManager authenticationManager;
-    private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthenticationSystem authenticationSystem;
     private SecurityContext securityContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = Fixtures.createNamedInstance(USERNAME, User.class);
         authenticated = new UsernamePasswordAuthenticationToken(
-            user, PASSWORD, new GrantedAuthority[0]);
+            createPscUser(USERNAME), PASSWORD, new GrantedAuthority[0]);
 
         authenticationManager = registerMockFor(AuthenticationManager.class);
-        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
+        InstalledAuthenticationSystem installedAuthenticationSystem =
+            registerMockFor(InstalledAuthenticationSystem.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
         expect(installedAuthenticationSystem.getAuthenticationSystem())
             .andReturn(authenticationSystem).anyTimes();
@@ -158,6 +158,42 @@ public class PscGuardTest extends RestletTestCase {
         Object actualToken = request.getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
         assertNotNull("Token missing", actualToken);
         assertSame("Wrong token", authenticated, actualToken);
+    }
+
+    public void testSuccessfulBasicAuthenticationSetsSecurityContextIfNotSet() throws Exception {
+        expectBasicAuthChallengeResponse();
+        expectCreateUsernamePasswordRequest();
+
+        expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTHENTICATION))
+            .andReturn(authenticated);
+
+        doHandle();
+
+        assertNextInvoked();
+        assertResponseStatus(Status.SUCCESS_OK);
+        String actualAcegiName = nextRestlet.getSecurityContextUser();
+        assertNotNull("No security context user", actualAcegiName);
+        assertEquals("Wrong user", USERNAME, actualAcegiName);
+        assertNull("Security context not cleared afterward", 
+            applicationSecurityManager.getUserName());
+    }
+
+    public void testExistingSecurityContextNotClearedAfterExecution() throws Exception {
+        // setup
+        setSecurityContext(createPscUser("UIser", PscRole.SYSTEM_ADMINISTRATOR));
+
+        doHandle();
+
+        assertNextInvoked();
+        String actualAcegiName = nextRestlet.getSecurityContextUser();
+        assertNotNull("No security context user", actualAcegiName);
+        assertEquals("Wrong user", "UIser", actualAcegiName);
+        assertEquals("Security context cleared by restlet",
+            "UIser", applicationSecurityManager.getUserName());
+        assertResponseStatus(Status.SUCCESS_OK);
+
+        // teardown
+        applicationSecurityManager.removeUserSession();
     }
 
     public void testCustomAuthenticationWorksIfAuthenticationManagerPasses() throws Exception {

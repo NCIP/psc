@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.OsgiRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StreamingJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
@@ -43,7 +42,6 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
         addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 

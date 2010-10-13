@@ -363,8 +363,29 @@ ul.tabs li {
     margin: 1em;
 }
 
-.division {
-    clear: both;
+/* collapsible box divisions */
+
+.box .collapsible-child h3 {
+  cursor: pointer;
+}
+.box .collapsible-child h3:before {
+  font-size: 70%;
+  vertical-align: middle;
+}
+.box .collapsible-child h3:before {
+  content: '\25cf\00a0'
+}
+.box .collapsible-child.open h3:before {
+  content: '\25bc\00a0'
+}
+.box .collapsible-child.closed h3:before {
+  content: '\25ba\00a0'
+}
+.box .collapsible-child.closed h3 {
+  font-style: italic;
+}
+.box .collapsible-child.closed .division {
+  display: none;
 }
 
 /**** REUSABLE PAGE ELEMENTS/CLASSES */

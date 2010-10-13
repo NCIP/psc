@@ -1,23 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import static org.easymock.EasyMock.expect;
 import org.easymock.IExpectationSetters;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -28,13 +30,13 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     private CasDirectAuthenticationProvider provider;
     private DirectLoginHttpFacade loginFacade;
-    private UserDetailsService userDetailsService;
+    private PscUserDetailsService userDetailsService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         loginFacade = registerMockFor(DirectLoginHttpFacade.class);
-        userDetailsService = registerMockFor(UserDetailsService.class);
+        userDetailsService = registerMockFor(PscUserDetailsService.class);
 
         provider = new CasDirectAuthenticationProvider() {
             @Override
@@ -61,7 +63,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     public void testSkipsAuthenticationIfAlreadyAuthenticated() throws Exception {
         Authentication alreadyAuthed = new CasDirectUsernamePasswordAuthenticationToken(
-            USERNAME, PASSWORD, new GrantedAuthority[] { Role.SYSTEM_ADMINISTRATOR });
+            USERNAME, PASSWORD, new GrantedAuthority[] { PscRole.SYSTEM_ADMINISTRATOR });
         replayMocks();
         assertSame(alreadyAuthed, provider.authenticate(alreadyAuthed));
         verifyMocks();
@@ -123,18 +125,19 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
     public void testSuccessfulPostResultsInGoodAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='some-ticket'/>");
         expectPostCredentials(USERNAME, PASSWORD, "some-ticket").andReturn(true);
+        PscUser expectedUser = AuthorizationObjectFactory.createPscUser(USERNAME, PscRole.STUDY_QA_MANAGER);
         expect(userDetailsService.loadUserByUsername(USERNAME)).
-            andReturn(Fixtures.createUser(USERNAME, Role.SUBJECT_COORDINATOR));
+            andReturn(expectedUser);
 
         Authentication actual = doAuthenticate();
         assertNotNull("No authentication token returned", actual);
         assertTrue("Actual token not authenticated", actual.isAuthenticated());
-        assertEquals("Actual token not for correct user", USERNAME, actual.getPrincipal());
+        assertEquals("Actual token not for correct user", expectedUser, actual.getPrincipal());
         assertEquals("Password not removed from token",
             "[REMOVED PASSWORD]", actual.getCredentials());
         assertEquals("Wrong authorities in actual token", 1, actual.getAuthorities().length);
         assertEquals("Wrong authorities in actual token",
-            Role.SUBJECT_COORDINATOR, actual.getAuthorities()[0]);
+            PscRole.STUDY_QA_MANAGER, actual.getAuthorities()[0]);
     }
     
     public void testNoSuchUserResultsInNoAuthentication() throws Exception {

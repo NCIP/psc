@@ -4,12 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * @author Rhett Sutphin
@@ -39,24 +37,43 @@ public class StudyWorkflowStatus {
         }
     }
 
-    public WorkflowMessage getMessage() {
+    public Collection<WorkflowMessage> getMessages() {
+        WorkflowMessage studyMsg = getMessagesIgnoringRevisionMessages();
+        if (studyMsg != null && studyMsg.getStep() == WorkflowStep.SET_ASSIGNED_IDENTIFIER) {
+            return asList(studyMsg);
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
+            return revisionWorkflowStatus.getMessages();
+        }
+        return studyMsg == null ? Collections.<WorkflowMessage>emptyList() : asList(studyMsg);
+    }
+
+    @SuppressWarnings("unchecked")
+    public WorkflowMessage getMessagesIgnoringRevisionMessages() {
         if (study.getHasTemporaryAssignedIdentifier()) {
             return workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr);
-        } else if (!study.isReleased()) {
-            return workflowMessageFactory.createMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE, utr);
         } else if (study.isReleased() && study.getStudySites().isEmpty()) {
             return workflowMessageFactory.createMessage(WorkflowStep.ASSIGN_SITE, utr);
         }
         return null;
     }
 
+    public Collection<WorkflowMessage> getStructureRelatedMessages() {
+        Collection<WorkflowMessage> messages = new ArrayList<WorkflowMessage>();
+        if (study.getHasTemporaryAssignedIdentifier()) {
+            messages.add(workflowMessageFactory.createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, utr));
+        } else if (getRevisionWorkflowStatus() != null && isNotEmpty(revisionWorkflowStatus.getMessages())) {
+            messages.addAll(revisionWorkflowStatus.getStructureMessages());
+        }
+        return messages;
+    }
+
     public Collection<TemplateAvailability> getTemplateAvailabilities() {
         Set<TemplateAvailability> availabilities = new LinkedHashSet<TemplateAvailability>();
-        if (getRevisionWorkflowStatus() != null) {
+        if (getRevisionWorkflowStatus() != null && utr.getCanSeeDevelopmentVersion()) {
             availabilities.add(TemplateAvailability.IN_DEVELOPMENT);
         }
         if (study.isReleased()) {
-            if (getMessage() != null) {
+            if (getMessagesIgnoringRevisionMessages() != null) {
                 availabilities.add(TemplateAvailability.PENDING);
             }
             for (StudySiteWorkflowStatus status : getStudySiteWorkflowStatuses()) {
@@ -68,6 +85,10 @@ public class StudyWorkflowStatus {
             }
         }
         return availabilities;
+    }
+
+    public boolean isRevisionComplete() {
+        return (getRevisionWorkflowStatus() != null && getRevisionWorkflowStatus().getStructureMessages().isEmpty());
     }
 
     /**

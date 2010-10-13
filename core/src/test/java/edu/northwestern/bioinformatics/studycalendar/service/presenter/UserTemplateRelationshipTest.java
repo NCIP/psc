@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -507,6 +507,29 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
                 getCanAssignIdentifiers());
+    }
+
+    ////// canPurge
+
+    public void testCanPurgeIfQAManagerAndManaging() throws Exception {
+        study.addManagingSite(nu);
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
+                getCanPurge());
+    }
+
+    public void testCanPurgeIfNotManaging() throws Exception {
+        study.addManagingSite(mayo);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
+                getCanPurge());
+    }
+
+    public void testCanPurgeIfNotQAManager() throws Exception {
+        study.addManagingSite(nu);
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_CREATOR).forSites(nu)).
+                getCanPurge());
     }
 
     ////// HELPERS

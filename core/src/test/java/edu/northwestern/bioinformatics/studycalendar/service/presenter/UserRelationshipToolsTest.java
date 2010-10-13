@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;

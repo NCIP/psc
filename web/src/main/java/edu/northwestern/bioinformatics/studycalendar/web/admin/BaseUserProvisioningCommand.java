@@ -6,14 +6,11 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
-import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
-import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import gov.nih.nci.cabig.ctms.suite.authorization.*;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,20 +18,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.SITE_MAPPING;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.STUDY_MAPPING;
 
 /**
  * @author Rhett Sutphin
@@ -65,6 +52,7 @@ public abstract class BaseUserProvisioningCommand {
     private List<Study> provisionableParticipatingStudies;
     private Set<String> provisionableParticipatingStudyIdentifiers;
     protected static final int JSON_INDENT_DEPTH = 4;
+    private Map<PscRoleGroup, Collection<ProvisioningRole>> provisionableRoleGroups;
 
     protected BaseUserProvisioningCommand(
         PscUser user,
@@ -86,6 +74,7 @@ public abstract class BaseUserProvisioningCommand {
         // locked down by default
         this.provisionableRoles = Collections.emptyList();
         this.provisionableSites = Collections.emptyList();
+        this.provisionableRoleGroups = Collections.emptyMap();
         this.provisionableSiteIdentifiers = Collections.emptySet();
         this.provisionableManagedStudies = Collections.emptyList();
         this.provisionableManagedStudyIdentifiers = Collections.emptySet();
@@ -220,20 +209,18 @@ public abstract class BaseUserProvisioningCommand {
             changeableIdents = this.provisionableSiteIdentifiers;
         } else {
             PscRole role = PscRole.valueOf(change.getRole());
-            if (role == null) {
-                // use participation for non-PSC roles
-                allPermission = canProvisionParticipateInAllStudies;
-                changeableIdents = provisionableParticipatingStudyIdentifiers;
-            } else {
-                changeableIdents = new HashSet<String>();
-                if (role.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
-                    changeableIdents.addAll(this.provisionableManagedStudyIdentifiers);
-                    allPermission = this.canProvisionManagingAllStudies;
-                }
-                if (role.getUses().contains(PscRoleUse.SITE_PARTICIPATION)) {
-                    changeableIdents.addAll(this.provisionableParticipatingStudyIdentifiers);
-                    allPermission = allPermission || this.canProvisionParticipateInAllStudies;
-                }
+            boolean isManagement = role != null &&
+                role.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT);
+            boolean isParticipation = role != null &&
+                role.getUses().contains(PscRoleUse.SITE_PARTICIPATION);
+            changeableIdents = new HashSet<String>();
+            if (isManagement) {
+                changeableIdents.addAll(this.provisionableManagedStudyIdentifiers);
+                allPermission = this.canProvisionManagingAllStudies;
+            }
+            if (isParticipation || !isManagement) { // use participation for other roles
+                changeableIdents.addAll(this.provisionableParticipatingStudyIdentifiers);
+                allPermission = allPermission || this.canProvisionParticipateInAllStudies;
             }
         }
 
@@ -268,9 +255,10 @@ public abstract class BaseUserProvisioningCommand {
     private String buildJavaScriptProvisionableUser(PscUser user) {
         try {
             return String.format(
-                "new psc.admin.ProvisionableUser(%s, %s)",
+                "new psc.admin.ProvisionableUser(%s, %s, %s)",
                 buildJavaScriptString(user.getCsmUser().getLoginName()),
-                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH));
+                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH),
+                "PROVISIONABLE_ROLES");
         } catch (JSONException e) {
             throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
         }
@@ -330,6 +318,10 @@ public abstract class BaseUserProvisioningCommand {
         return provisionableRoles;
     }
 
+    public Map<PscRoleGroup, Collection<ProvisioningRole>> getProvisionableRoleGroups() {
+        return provisionableRoleGroups;
+    }
+
     public void setProvisionableRoles(SuiteRole... roles) {
         this.provisionableRoles = new ArrayList<ProvisioningRole>(roles.length);
         for (SuiteRole role : roles) {
@@ -344,6 +336,32 @@ public abstract class BaseUserProvisioningCommand {
             sRoles[i] = roles[i].getSuiteRole();
         }
         setProvisionableRoles(sRoles);
+    }
+
+    public void setProvisionableRoleGroups(SuiteRole... roles) {
+        this.provisionableRoleGroups = new TreeMap<PscRoleGroup, Collection<ProvisioningRole>>();
+        for (SuiteRole role : roles) {
+            PscRole pRole = PscRole.valueOf(role);
+            if (pRole != null) {
+                Collection<PscRoleGroup> groups = pRole.getGroups();
+                addProvisionableRoleGroups(groups, role);
+            } else {
+                addProvisionableRoleGroups(PscRoleGroup.SUITE_ROLES, role);
+            }
+        }
+    }
+
+    public void addProvisionableRoleGroups(Collection<PscRoleGroup> groups, SuiteRole role) {
+        for (PscRoleGroup group : groups) {
+            addProvisionableRoleGroups(group, role);
+        }
+    }
+
+    public void addProvisionableRoleGroups(PscRoleGroup group, SuiteRole role) {
+        if (!provisionableRoleGroups.containsKey(group)) {
+            provisionableRoleGroups.put(group, new TreeSet<ProvisioningRole>());
+        }
+       provisionableRoleGroups.get(group).add(new ProvisioningRole(role));
     }
 
     public List<Site> getProvisionableSites() {

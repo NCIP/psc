@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -57,9 +56,6 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         super.init(context, request, response);
         getVariants().clear();
         getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
         addAuthorizationsFor(Method.GET,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull()));

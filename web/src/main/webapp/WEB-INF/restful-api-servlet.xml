@@ -21,11 +21,10 @@
         <property name="except" value="docs.*"/>
         <property name="next" ref="router"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
-    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter">
-        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
-    </bean>
+    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>
 
     <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
 
@@ -121,18 +120,10 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
-    <bean name="/sources"
-          id="sourcesResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.SourcesResource"
-            >
-        <property name="xmlSerializer" ref="sourcesXmlSerializer"/>
-    </bean>
-
-    <bean name="/sources/{source-name}/manual-target"
+    <bean name="/activities/{source-name}/manual-target"
           id="sourceResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SourceResource"
             >
-        <property name="xmlSerializer" ref="sourcesXmlSerializer"/>
     </bean>
 
     <bean name="/labels"
@@ -256,6 +247,13 @@
         <property name="xmlSerializer" ref="notificationXmlSerializer"/>
     </bean>
     
+    <bean name="/users"
+          id="usersResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UsersResource"
+          >
+        <property name="pscUserService" ref="pscUserService"/>
+    </bean>
+
     <bean name="/users/{username}/managed-schedules"
           id="managedSchedulesResource" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ManagedSchedulesResource"
@@ -269,13 +267,13 @@
           id="userRolesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRolesResource"
             >
-        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+        <property name="xmlSerializer" ref="userRoleMembershipsXmlSerializer"/>
     </bean>
     <bean name="/users/{username}/roles/{rolename}"
           id="userRoleResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRoleResource"
             >
-        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+        <property name="xmlSerializer" ref="userRoleMembershipsXmlSerializer"/>
     </bean>
     <bean name="/users/{username}/roles/subject-coordinator/schedules"
           id="subjectCoordinatorSchedulesResource" scope="prototype"

@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -26,7 +24,10 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
@@ -43,7 +44,6 @@ public class BatchUpdatesResource extends AbstractPscResource{
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
 
         addAuthorizationsFor(Method.POST,
                 STUDY_SUBJECT_CALENDAR_MANAGER);

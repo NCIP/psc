@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -9,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.restlet.Context;
-import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,9 +26,9 @@ public class ProvidedStudySitesResource extends AbstractCollectionResource<Study
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR);
     }
 
+    @Override
     public List<Study> getAllObjects() {
         String siteId = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
         if (siteId != null) {
@@ -54,6 +52,7 @@ public class ProvidedStudySitesResource extends AbstractCollectionResource<Study
 
 
     /////// Bean Setters
+    @Override
     @Required
     public StudyCalendarXmlCollectionSerializer<Study> getXmlSerializer() {
         return xmlSerializer;

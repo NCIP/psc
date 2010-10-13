@@ -225,10 +225,6 @@
                 padding-left: 8px;
             }
 
-            h1#enterStudyNameSentence {
-                padding-top: 8px;
-            }
-
             div.row div.label {
                 text-align:right;
                 display:inline;
@@ -272,9 +268,14 @@
                 font-weight:normal;
             }
 
-            .error .epochAndSegmentErrors {
+            .error {
                 margin-right:10px;
                 margin-left:0.5em;
+            }
+
+            .error h5 {
+                margin: 0.8em 0;
+                font-size: 1em;
             }
         </style>
 
@@ -516,6 +517,7 @@
 			}
             function registerSelectStudySegmentHandler(a) {
                 var aElement = $(a)
+                var amendmentId = ${amendmentId}
                 Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
                     $("epochs-indicator").reveal();
@@ -527,6 +529,10 @@
                         var studySegmentId = aElement.id.substring('studySegment'.length+1)
                         selectedStudySegmentId = studySegmentId
                         var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId;
+                        
+                        <c:if test="${not empty amendmentId}">
+                            href = href + '&amendment=${amendmentId}';
+                        </c:if>
 
                         <c:if test="${not empty developmentRevision}">
                              href = href + '&development=true';
@@ -661,6 +667,7 @@
             function epochsAreaSetup() {
                 registerSelectStudySegmentHandlers()
                 <c:if test="${canEdit}">
+                populationAddButtonCreate()
                 createAddEpochControl()
                 createAllStudySegmentControls()
                 epochControls()
@@ -737,6 +744,7 @@
 
             function generalSetup() {
                 epochsAreaSetup();
+                <tags:hideShowTemplateActionButtons templateActions="${templateActions}"/>
             }
 
             function arrowsHideShowSetup(){
@@ -760,19 +768,15 @@
                 generalSetup();
                 <c:choose>
                     <c:when test="${canAssignIdentifiers && canEdit}">
-                        addToBeginSentence();
-                        hideShowAllControls();
                         createStudyControls(anyProvidersAvailable, true);
                     </c:when>
                     <c:when test="${canAssignIdentifiers && !canEdit}">
-                        addToBeginSentence();
-                        hideShowEnterStudyName();
                         createStudyControls(anyProvidersAvailable, false);
-                    </c:when>                
-                    <c:when test="${!canAssignIdentifiers && canEdit}">
-                        hideShowReleaseTemplateButton();
                     </c:when>
                 </c:choose>
+                <c:if test="${canAssignIdentifiers || canEdit}">
+                    hideShowReleaseTemplateButton();
+                </c:if>
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
@@ -796,7 +800,7 @@
             <div class="header">Study info</div>
             <div id="errors" class="error"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
-
+            <c:if test="${relationship.canChangeManagingSites}">
             <c:set var="sites" value="${study.managingSites}"/>
             <c:set var="listOfSiteName" value=""/>
             <c:if test="${empty sites}">
@@ -821,12 +825,12 @@
                         </c:otherwise>
                     </c:choose>
 
-                    <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}"/>">change</a></span>
+                    <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/managingSites?id=${study.id}&amendment=${amendment.id}"/>">change</a></span>
                 </div>
             </div>
-
+            </c:if>
             <div class="row even">
-                <div class="label">Amendment 123</div>
+                <div class="label">Amendment</div>
                 <div class="value">
                     <a href="<c:url value="/pages/cal/template/amendments?study=${study.id}#amendment=${amendment.id}"/>">${amendment.displayName}</a>
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
@@ -850,7 +854,7 @@
                         <c:forEach items="${study.populations}" var="population">
                             <li>
                                 <c:if test="${canEdit}">
-                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
+                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}&name=${population.name}&abbreviation=${population.abbreviation}"/>">
                                             ${population.abbreviation}: ${population.name}
                                     </a>
                                 </c:if>
@@ -879,24 +883,21 @@
         </div>
         <div id="study-manipulations" class="controls-card card">
             <div class="header">Study controls</div>
-            <div id="enterStudyName" style="display:none;">
-                <h1 id="enterStudyNameSentence"></h1>
-            </div>
 
             <div id="errorMessages" class="error" style="display:none;">
                 <tags:replaceErrorMessagesForTemplate/>
             </div>
 
             <ul id="admin-options">
-                <li><a class="control" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
+                <!-- In EditControl JS, pass back canRelease and study.isDevelopment and toggle each using flag -->
+                <li><a class="control" id="preview-schedule-button" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
                     Preview schedule
                 </a></li>
-                <tags:conditionalListItemLink
-                    showIf="${relationship.canRelease && not empty developmentRevision}"
-                    url="/pages/cal/template/release?study=${study.id}"
-                    cssClass="control">
-                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                </tags:conditionalListItemLink>
+                <c:if test="${relationship.canRelease}">
+                    <li style="display:none"><a class="control" id="release-revision-button" href="<c:url value="/pages/cal/template/release?study=${study.id}"/>">
+                        Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                    </a></li>
+                </c:if>
                 <tags:conditionalListItemLink
                     showIf="${relationship.canSetParticipation && empty developmentRevision}"
                     url="/pages/cal/assignSite?id=${study.id}"
@@ -966,10 +967,12 @@
                                                 </select>
                                                 <a id="go-to-schedule-control-${ssRelationship.studySite.id}" class="control go-to-schedule-control"
                                                    href="<c:url value="/pages/subject"/>">View</a>
-                                                <a id="take-subject-off-study-${ssRelationship.studySite.id}" class="control take-subject-off-study"
-                                                   href="<c:url value="/pages/subject/off-study"/>">
-                                                    Take off study
-                                                </a>
+                                                <c:if test="${ssRelationship.canTakeSubjectOffStudy}">
+                                                    <a id="take-subject-off-study-${ssRelationship.studySite.id}" class="control take-subject-off-study"
+                                                        href="<c:url value="/pages/subject/off-study"/>">
+                                                        Take off study
+                                                    </a>
+                                                </c:if>
                                             </label>
                                         </li>
                                     </c:if>

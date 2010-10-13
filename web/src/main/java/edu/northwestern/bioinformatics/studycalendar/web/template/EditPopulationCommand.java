@@ -54,23 +54,21 @@ public class EditPopulationCommand implements Validatable, PscAuthorizedCommand 
     }
 
     public void apply() {
-        if (getStudy().isInDevelopment()){
-            Change change = null;
-            List<Change> changes = new ArrayList<Change>();
-            if (originalPopulation.getId() == null) {
-                change = Add.create(population);
-                amendmentService.updateDevelopmentAmendmentForStudyAndSave(getStudy(), change);
-            } else {
-                if(population.getName() !=null && population.getAbbreviation()!=null) {
-                    Change changeName = PropertyChange.create("name", originalPopulation.getName(), population.getName());
-                    Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), population.getAbbreviation());
-                    changes.add(changeName);
-                    changes.add(changeAbbreviation);
-                }
-                amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, getStudy(), changes.toArray(new Change[changes.size()]));
-            }
+        Change change;
+        List<Change> changes = new ArrayList<Change>();
+        population = populationService.lookupAndSuggestAbbreviation(population, study);
+        
+        if (originalPopulation.getId() == null) {
+            change = Add.create(population);
+            amendmentService.updateDevelopmentAmendmentForStudyAndSave(getStudy(), change);
         } else {
-            populationService.savePopulation(population);
+            if (population.getName() !=null && population.getAbbreviation()!=null) {
+                Change changeName = PropertyChange.create("name", originalPopulation.getName(), population.getName());
+                Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), population.getAbbreviation());
+                changes.add(changeName);
+                changes.add(changeAbbreviation);
+            }
+            amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, getStudy(), changes.toArray(new Change[changes.size()]));
         }
     }
 
@@ -89,8 +87,12 @@ public class EditPopulationCommand implements Validatable, PscAuthorizedCommand 
     }
 
     public void validate(Errors errors) {
-        if (population != null && population.getAbbreviation().contains(" ")) {
-            errors.reject("error.population.contains.spaces");
+        if (population.getName() == null || (population.getName() != null && population.getName().length() <= 0)) {
+            errors.rejectValue("population.name", "error.population.name.is.empty");
+        }
+
+        if (population.getAbbreviation() != null && population.getAbbreviation().contains(" ")) {
+            errors.rejectValue("population.abbreviation", "error.population.contains.spaces");
         }
     }
 }

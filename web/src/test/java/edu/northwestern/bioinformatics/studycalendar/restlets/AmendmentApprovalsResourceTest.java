@@ -1,21 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Saurabh Agrawal
@@ -98,10 +99,6 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGetAuthorizations() {
-        assertAllLegacyRolesAllowedForMethod(Method.GET);
-    }
-
     ////// POST
 
     public void testPost404sOnMissingStudySite() throws Exception {
@@ -114,20 +111,13 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testLegacyPutWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.POST, Role.SITE_COORDINATOR);
-    }
-
     public void testGetWithAuthorizedRoles() {
         assertRolesAllowedForMethod(Method.GET,
-                STUDY_TEAM_ADMINISTRATOR,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                DATA_READER);
+                PscRoleUse.SITE_PARTICIPATION.roles());
     }
 
     public void testPostWithAuthorizedRoles() {
-        assertRolesAllowedForMethod(Method.POST,
-                STUDY_SUBJECT_CALENDAR_MANAGER);
+        assertRolesAllowedForMethod(Method.POST,STUDY_QA_MANAGER);
     }
 
     ////// Helper Methods

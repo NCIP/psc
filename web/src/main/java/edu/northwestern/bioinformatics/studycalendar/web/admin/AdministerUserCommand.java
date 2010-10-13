@@ -2,16 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.*;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -32,15 +28,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The command for creating or updating a single user.
@@ -75,39 +63,28 @@ public class AdministerUserCommand
         PscUser existingUser, ProvisioningSessionFactory psFactory,
         AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem,
         ApplicationSecurityManager applicationSecurityManager,
-        SiteDao siteDao, StudyDao studyDao, PscUser provisioner
+        PscUserService pscUserService, PscUser provisioner
     ) {
         AdministerUserCommand command = new AdministerUserCommand(existingUser,
             psFactory, authorizationManager, authenticationSystem, applicationSecurityManager);
         if (provisioner == null) return command;
 
+        VisibleAuthorizationInformation visAuthInfo =
+            pscUserService.getVisibleAuthorizationInformationFor(provisioner);
+        command.setProvisionableSites(visAuthInfo.getSites());
+        command.setProvisionableRoles(
+            visAuthInfo.getRoles().toArray(new SuiteRole[visAuthInfo.getRoles().size()]));
+        command.setProvisionableRoleGroups(
+            visAuthInfo.getRoles().toArray(new SuiteRole[visAuthInfo.getRoles().size()]));
+        command.setProvisionableManagedStudies(visAuthInfo.getStudiesForTemplateManagement());
+        command.setProvisionableParticipatingStudies(visAuthInfo.getStudiesForSiteParticipation());
+
         if (provisioner.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
             SuiteRoleMembership ua = provisioner.getMembership(PscRole.USER_ADMINISTRATOR);
-            command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
             command.setCanProvisionAllSites(ua.isAllSites());
-            VisibleStudyParameters provisionable = new VisibleStudyParameters();
-            if (ua.isAllSites()) {
-                provisionable.forAllManagingSites().forAllParticipatingSites();
-                command.setProvisionableRoles(SuiteRole.values());
-            } else {
-                provisionable.forManagingSiteIdentifiers(ua.getSiteIdentifiers()).
-                    forParticipatingSiteIdentifiers(ua.getSiteIdentifiers());
-                List<SuiteRole> nonGlobal = new ArrayList<SuiteRole>(Arrays.asList(SuiteRole.values()));
-                for (Iterator<SuiteRole> it = nonGlobal.iterator(); it.hasNext();) {
-                    SuiteRole role = it.next();
-                    if (!role.isScoped()) it.remove();
-                }
-                command.setProvisionableRoles(nonGlobal.toArray(new SuiteRole[nonGlobal.size()]));
-            }
-            command.setProvisionableManagedStudies(
-                studyDao.getVisibleStudiesForTemplateManagement(provisionable));
-            command.setProvisionableParticipatingStudies(
-                studyDao.getVisibleStudiesForSiteParticipation(provisionable));
             command.setCanProvisionManagingAllStudies(true);
             command.setCanProvisionParticipateInAllStudies(true);
         } else if (provisioner.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
-            command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR);
-            command.setProvisionableSites(Collections.<Site>emptyList());
             command.setCanProvisionAllSites(true);
         }
 

@@ -97,7 +97,7 @@ public class Add extends ChildrenChange {
 
         Add add = (Add) o;
 
-        if (index != null ? !index.equals(add.index) : add.index != null) return false;
+        if (index != null ? !index.equals(add.getIndex()) : add.getIndex() != null) return false;
 
         return true;
     }

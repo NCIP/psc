@@ -34,8 +34,8 @@
 <body>
 <laf:box title="${title}" autopad="true">
     <p>
-        You are ${command.edit ? 'editing' : 'creating'} a new subject population for
-        ${command.population.study.assignedIdentifier}.  A <strong>population</strong> is
+        You are ${command.edit ? 'editing' : 'creating'} a new subject population for study
+        ${command.study.assignedIdentifier}.  A <strong>population</strong> is
         a group of subjects who need one or more additional activities automatically added
         to their schedules.  A subject can become a member of a population (or stop being
         a member of a population) at any point in their participation in the study &mdash;

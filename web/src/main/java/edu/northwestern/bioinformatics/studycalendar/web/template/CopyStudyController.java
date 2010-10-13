@@ -2,10 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -24,7 +22,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Saurabh Agrawal
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class CopyStudyController extends PscAbstractCommandController<CopyStudyCommand> implements PscAuthorizedHandler {
 	private StudyService studyService;
 	private StudyDao studyDao;

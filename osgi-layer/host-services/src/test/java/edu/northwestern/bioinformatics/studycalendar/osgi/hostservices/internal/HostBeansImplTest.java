@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
-import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -24,7 +23,6 @@ import static org.easymock.EasyMock.expect;
 @SuppressWarnings({ "RawUseOfParameterizedType" })
 public class HostBeansImplTest extends TestCase {
     private MockRegistry mockRegistry;
-    private BundleContext bundleContext;
     private Map<String, Object> registeredServices;
     private HostBeansImpl impl;
     private DataSource dataSource;
@@ -37,7 +35,7 @@ public class HostBeansImplTest extends TestCase {
         mockRegistry = new MockRegistry();
         registeredServices = new HashMap<String, Object>();
 
-        bundleContext = new MockBundleContext() {
+        BundleContext bundleContext = new MockBundleContext() {
             @Override
             public ServiceRegistration registerService(String s, Object o, Dictionary dictionary) {
                 registeredServices.put(s, o);
@@ -64,9 +62,10 @@ public class HostBeansImplTest extends TestCase {
         assertTrue("Missing service", registeredServices.containsKey(serviceName));
         Object service = registeredServices.get(serviceName);
         assertNotNull(service);
-        assertTrue(service instanceof UserDetailsService);
+        assertTrue(service instanceof PscUserDetailsService);
     }
 
+    @SuppressWarnings({ "EqualsBetweenInconvertibleTypes" })
     public void testDeferredProxyServicesUseDefaultsIfCalledEarly() throws Exception {
         DataSource proxied = (DataSource) registeredServices.get("javax.sql.DataSource");
         assertNull(proxied.getConnection());

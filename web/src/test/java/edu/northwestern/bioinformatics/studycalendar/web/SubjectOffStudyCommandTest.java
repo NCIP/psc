@@ -4,6 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.apache.commons.lang.StringUtils;
+import org.easymock.classextension.EasyMock;
+import org.springframework.validation.BindException;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -26,18 +29,41 @@ public class SubjectOffStudyCommandTest extends StudyCalendarTestCase{
 
     public void testTakeSubjectOffStudy() throws Exception {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
-        Date expectedEndDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 1);
-
+        String expectedEndDate = "09/01/2007";
         StudySubjectAssignment expectedAssignment = new StudySubjectAssignment();
-        expectedAssignment.setEndDate(expectedEndDate);
+        expectedAssignment.setEndDate(command.convertStringToDate(expectedEndDate));
 
         command.setAssignment(assignment);
+        
         command.setExpectedEndDate(expectedEndDate);
 
-        expect(subjectService.takeSubjectOffStudy(assignment, expectedEndDate)).andReturn(expectedAssignment);
+        expect(subjectService.takeSubjectOffStudy(assignment, command.convertStringToDate(expectedEndDate))).andReturn(expectedAssignment);
         replayMocks();
 
         assertSame("Wrong end date", expectedAssignment.getEndDate(), command.takeSubjectOffStudy().getEndDate());
         verifyMocks();
     }
+
+    public void testValidateWithIncorrectEndDate() throws Exception {
+        command.setExpectedEndDate("02/03");
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.expected.end.date.is.not.correct", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWithNullEndDate() throws Exception {
+        command.setExpectedEndDate(null);
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.expected.end.date.is.not.selected", errors.getFieldError().getCode());
+    }
+
+    ////// Helper Methods
+    private BindException validateAndReturnErrors() {
+        replayMocks();
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        return errors;
+    }    
 }

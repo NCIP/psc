@@ -38,10 +38,9 @@ public class PopulationServiceTest extends StudyCalendarTestCase {
     public void testPopulationWithAbbreviationKeepsIt() throws Exception {
         population.setAbbreviation("FMs");
         expect(populationDao.getByAbbreviation(study, "FMs")).andReturn(null);
-        populationDao.save(same(population));
 
         replayMocks();
-        service.savePopulation(population);
+        service.lookupAndSuggestAbbreviation(population, study);
         verifyMocks();
 
         assertEquals("Abbreviation not preserved", "FMs", population.getAbbreviation());
@@ -55,7 +54,7 @@ public class PopulationServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.savePopulation(population);
+            service.lookupAndSuggestAbbreviation(population, study);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException exception) {
             assertEquals("Wrong message", "Friendly marionettes is already using the abbreviation 'FMs'", exception.getMessage());
@@ -63,22 +62,10 @@ public class PopulationServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testResaveExistingPopulationWithSameAbbreviationIsFine() throws Exception {
-        population.setAbbreviation("FMs");
-        expect(populationDao.getByAbbreviation(study, "FMs")).andReturn(population);
-        populationDao.save(same(population));
-
-        replayMocks();
-        service.savePopulation(population);
-        verifyMocks();
-    }
-
     public void testPopulationWithoutAbbreviationUsesSuggested() throws Exception {
         expect(populationDao.getAbbreviations(study)).andReturn(Collections.<String>emptySet());
-        populationDao.save(same(population));
-
         replayMocks();
-        service.savePopulation(population);
+        service.lookupAndSuggestAbbreviation(population, study);
         verifyMocks();
 
         assertEquals("Abbreviation not set", "C", population.getAbbreviation());

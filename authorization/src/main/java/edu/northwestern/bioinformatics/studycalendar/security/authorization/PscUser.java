@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -23,7 +22,6 @@ import java.util.Map;
 public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
     private User user;
     private Map<SuiteRole, SuiteRoleMembership> memberships;
-    private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
     private boolean stale;
     private Map<String, Object> attributes;
@@ -43,20 +41,6 @@ public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
         this.attributes = new LinkedHashMap<String, Object>();
     }
 
-    @Deprecated
-    public PscUser(
-        User user, Map<SuiteRole, SuiteRoleMembership> memberships,
-        edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser
-    ) {
-        this(user, memberships);
-        this.legacyUser = legacyUser;
-    }
-
-    @Deprecated
-    public edu.northwestern.bioinformatics.studycalendar.domain.User getLegacyUser() {
-        return legacyUser;
-    }
-
     public User getCsmUser() {
         return user;
     }
@@ -71,10 +55,6 @@ public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
 
     public boolean hasRole(GrantedAuthority ga) {
         return Arrays.asList(getAuthorities()).contains(ga);
-    }
-
-    private boolean legacyMode() {
-        return this.legacyUser != null;
     }
 
     public String getDisplayName() {
@@ -113,16 +93,7 @@ public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
     }
 
     public int compareTo(PscUser o) {
-        if (getCsmUser() != null && o.getCsmUser() != null) {
-            int comp;
-            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
-                compare(getCsmUser().getLastName(), o.getCsmUser().getLastName());
-            if (comp != 0) return comp;
-            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
-                compare(getCsmUser().getFirstName(), o.getCsmUser().getFirstName());
-            if (comp != 0) return comp;
-        }
-        return getUsername().compareToIgnoreCase(o.getUsername());
+        return getLastFirst().compareToIgnoreCase(o.getLastFirst());
     }
 
     public boolean isStale() {
@@ -158,18 +129,14 @@ public class PscUser implements UserDetails, Comparable<PscUser>, Principal {
     ////// IMPLEMENTATION OF UserDetails
 
     public GrantedAuthority[] getAuthorities() {
-        if (legacyMode()) {
-            return legacyUser.getAuthorities();
-        } else {
-            List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(memberships.size());
-            for (SuiteRole suiteRole : memberships.keySet()) {
-                PscRole match = PscRole.valueOf(suiteRole);
-                if (match != null) {
-                    authorities.add(match);
-                }
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(memberships.size());
+        for (SuiteRole suiteRole : memberships.keySet()) {
+            PscRole match = PscRole.valueOf(suiteRole);
+            if (match != null) {
+                authorities.add(match);
             }
-            return authorities.toArray(new GrantedAuthority[authorities.size()]);
         }
+        return authorities.toArray(new GrantedAuthority[authorities.size()]);
     }
 
     public String getPassword() {

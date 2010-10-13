@@ -209,7 +209,21 @@ public class RevisionChanges {
 
         @Override
         public String getSentence() {
-            return new StringBuilder(StringUtils.capitalize(getNodeName(getNode()))).append(' ')
+            //all the extra work is done to display the name of the node at the time of the amendment, not the current name.
+            String fullName = getNodeName(getNode());
+            String nodeName = null;
+            if (getNode() instanceof Named) {
+                nodeName = ((Named) getNode()).getName();
+            }
+
+            String nameToUse;
+            if (nodeName != null && !nodeName.equals(getChange().getOldValue())) {
+                String keywordNode = fullName.substring(0, fullName.indexOf(nodeName));
+                nameToUse = new StringBuilder(keywordNode).append(' ').append(getChange().getOldValue()).toString();
+            } else {
+                nameToUse = fullName;
+            }
+            return new StringBuilder(StringUtils.capitalize(nameToUse)).append(' ')
                 .append(getChange().getPropertyName()).append(" changed from \"")
                 .append(getChange().getOldValue()).append("\" to \"")
                 .append(getChange().getNewValue()).append('"').toString();

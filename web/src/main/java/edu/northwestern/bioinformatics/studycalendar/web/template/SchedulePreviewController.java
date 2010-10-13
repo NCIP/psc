@@ -20,8 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Jalpa Patel
@@ -38,7 +37,15 @@ public class SchedulePreviewController  extends PscAbstractController implements
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_QA_MANAGER);
+        return ResourceAuthorization.createCollection(
+                DATA_IMPORTER,
+                STUDY_QA_MANAGER, STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                STUDY_CREATOR,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER
+        );
     }
 
     @Override

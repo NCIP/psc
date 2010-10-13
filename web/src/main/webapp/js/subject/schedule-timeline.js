@@ -349,8 +349,10 @@ psc.namespace("subject");
         function focusChangedByScroll() {
           if (internalPositionUpdating() && !programaticallyScrolling) {
             var band = timeline.getBand(BAND_ACTIVITIES);
+            var dateFromBand = band.getCenterVisibleDate();
+            var dateFromBandInUTC = new Date(Date.UTC(dateFromBand.getFullYear(), dateFromBand.getMonth(), dateFromBand.getDate(), 0,0,0))
             psc.subject.ScheduleData.focusDate(
-              band.getCenterVisibleDate(),
+              dateFromBandInUTC,
               SOURCE_NAME,
               new psc.tools.Range(band.getMinVisibleDate(), band.getMaxVisibleDate())
             );

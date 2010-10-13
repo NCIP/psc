@@ -11,6 +11,16 @@
         id="3"
         name="PROCEDURE"/>
 
+    <SOURCES
+        id="-201"
+        version="0"
+        name="ICD11"/>
+
+    <SOURCES
+        id="-200"
+        version="0"
+        name="ICD9"/>
+
     <ACTIVITIES
         id="-100"
         version="0"
@@ -56,13 +66,4 @@
         code="ADL"
         source_id="-200"/>
 
-    <SOURCES
-        id="-201"
-        version="0"
-        name="ICD11"/>
-
-    <SOURCES
-        id="-200"
-        version="0"
-        name="ICD9"/>
 </dataset>

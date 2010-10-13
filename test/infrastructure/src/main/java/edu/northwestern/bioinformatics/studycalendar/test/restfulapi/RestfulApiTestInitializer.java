@@ -1,22 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final Collection<String> NO_INITIALIZER_TABLES = Arrays.asList(
         "authentication_system_conf", "bering_version", "change_actions", "delta_node_types");
     private static final Map<String, List<String>> ALTERNATE_PK_TABLES
@@ -24,6 +33,7 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
             put("csm_user_pe", Arrays.asList("user_protection_element_id")).
             put("scheduled_activity_labels", Arrays.asList("scheduled_activity_id", "label")).
             put("subject_populations", Arrays.asList("assignment_id", "population_id")).
+            put("user_role_sites", Arrays.asList("user_role_id", "site_id")).
             put("user_role_study_sites", Arrays.asList("user_role_id", "study_site_id")).
             put("osgi_cm_property_values", Arrays.asList("property_id", "list_index")).
             put("managing_sites", Arrays.asList("study_id", "site_id")).
@@ -38,6 +48,16 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
     public void oneTimeSetup() {
         initAuditInfo();
         super.oneTimeSetup();
+
+        getJdbcTemplate().execute(new ConnectionCallback() {
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                if (con.getMetaData().getDatabaseProductName().toLowerCase().contains("oracle")) {
+                    log.debug("Purging Oracle recycle bin");
+                    con.createStatement().execute("PURGE RECYCLEBIN");
+                }
+                return null;
+            }
+        });
     }
 
     @Override
@@ -71,6 +91,10 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
         } else {
             return new RowPreservingInitializer(tableName);
         }
+    }
+
+    private JdbcTemplate getJdbcTemplate() {
+        return new JdbcTemplate(getDataSource());
     }
 
     ////// CONFIGURATION

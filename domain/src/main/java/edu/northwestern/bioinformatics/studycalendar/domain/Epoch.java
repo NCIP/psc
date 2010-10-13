@@ -171,7 +171,7 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
         if (!(o instanceof Epoch)) return false;
 
         Epoch epoch = (Epoch) o;
-        if (name != null ? !name.equals(epoch.name) : epoch.name != null) return false;
+        if (name != null ? !name.equals(epoch.getName()) : epoch.getName()!= null) return false;
 
         return true;
     }

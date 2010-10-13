@@ -2,12 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -20,9 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
-import static org.easymock.EasyMock.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Tests for BaseUserProvisioningCommand.
@@ -344,6 +346,54 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         assertContains("Study not added", srm.getStudyIdentifiers(), "A");
     }
 
+    public void testProvisioningNotAllowedForManagingStudyWithAccessoryRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "lab_data_user", "add", "study", "A");
+        replayMocks(); // expect nothing
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testProvisioningAllowedForParticipatingStudyWithAccessoryRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "lab_data_user", "add", "study", "B");
+        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.LAB_DATA_USER);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
+    }
+
+    public void testProvisioningNotAllowedForManagingStudyWithGridServiceRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "registrar", "add", "study", "A");
+        replayMocks(); // expect nothing
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testProvisioningAllowedForParticipatingStudyWithGridServiceRole() throws Exception {
+        command.setProvisionableManagedStudies(Arrays.asList(studyA));
+        command.setProvisionableParticipatingStudies(Arrays.asList(studyB));
+
+        expectRoleChange(command, "registrar", "add", "study", "B");
+        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.REGISTRAR);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertContains("Study not added", srm.getStudyIdentifiers(), "B");
+    }
+
     public void testAllStudiesProvisioningAllowedWithAllManagedPermissionAndTemplateManagerRole() throws Exception {
         command.setCanProvisionManagingAllStudies(true);
         command.setCanProvisionParticipateInAllStudies(false);
@@ -418,35 +468,69 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
         assertTrue("Not added", srm.isAllStudies());
     }
 
+    public void testSetProvisionableRoleGroupsIsSortedByGroup() {
+        command.setProvisionableRoleGroups(
+            SuiteRole.AE_RULE_AND_REPORT_MANAGER,
+            SuiteRole.STUDY_CREATOR,
+            SuiteRole.STUDY_QA_MANAGER,
+            SuiteRole.SYSTEM_ADMINISTRATOR,
+            SuiteRole.STUDY_TEAM_ADMINISTRATOR, 
+            SuiteRole.AE_REPORTER
+        );
+        Iterator<PscRoleGroup> iter = command.getProvisionableRoleGroups().keySet().iterator();
+        assertEquals("Wrong 1st role group", PscRoleGroup.TEMPLATE_CREATION, iter.next());
+        assertEquals("Wrong 2nd role group", PscRoleGroup.TEMPLATE_MANAGEMENT, iter.next());
+        assertEquals("Wrong 3rd role group", PscRoleGroup.SITE_MANAGEMENT, iter.next());
+        assertEquals("Wrong 4th role group", PscRoleGroup.SUBJECT_MANAGEMENT, iter.next());
+        assertEquals("Wrong 5th role group", PscRoleGroup.ADMINISTRATION, iter.next());
+        assertEquals("Wrong 6th role group", PscRoleGroup.SUITE_ROLES, iter.next());
+    }
+
+    public void testSetProvisionableRoleGroupsSortsEachGroupsContents() {
+        command.setProvisionableRoleGroups(
+            SuiteRole.SUBJECT_MANAGER,
+            SuiteRole.AE_REPORTER,
+            SuiteRole.REGISTRAR,
+            SuiteRole.LAB_DATA_USER,
+            SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER
+        );
+        Iterator<ProvisioningRole> iter = command.getProvisionableRoleGroups().get(PscRoleGroup.SUBJECT_MANAGEMENT).iterator();
+        assertEquals("Wrong 1st role", SuiteRole.SUBJECT_MANAGER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 2nd role", SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 3nd role", SuiteRole.AE_REPORTER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 4th role", SuiteRole.LAB_DATA_USER.getCsmName(), iter.next().getKey());
+        assertEquals("Wrong 5th role", SuiteRole.REGISTRAR.getCsmName(), iter.next().getKey());
+    }
+
     ////// javascript state init
 
     public void testJavaScriptUserForEmptyUserIsCorrect() throws Exception {
-        assertEquals("new psc.admin.ProvisionableUser('jo', {})", command.getJavaScriptProvisionableUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {}, PROVISIONABLE_ROLES)", command.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserForUnnamedUserHasNoUsername() throws Exception {
         command.getUser().getCsmUser().setLoginName(null);
-        assertEquals("new psc.admin.ProvisionableUser(null, {})",
+        assertEquals("new psc.admin.ProvisionableUser(null, {}, PROVISIONABLE_ROLES)",
             command.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneGroupOnlyRole() throws Exception {
         TestCommand actual = create(new PscUserBuilder("jo").add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}}, PROVISIONABLE_ROLES)",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneSiteScopedRole() throws Exception {
         TestCommand actual = create(
             new PscUserBuilder("jo").add(PscRole.USER_ADMINISTRATOR).forSites(austin).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"user_administrator\": {\"sites\": [\"i-a\"]}})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"user_administrator\": {\"sites\": [\"i-a\"]}}, PROVISIONABLE_ROLES)",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneSitePlusStudyScopedRole() throws Exception {
         TestCommand actual = create(
             new PscUserBuilder("jo").add(PscRole.DATA_READER).forSites(sanAntonio).forAllStudies().toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"data_reader\": {\n    \"sites\": [\"i-sa\"],\n    \"studies\": [\"__ALL__\"]\n}})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"data_reader\": {\n    \"sites\": [\"i-sa\"],\n    \"studies\": [\"__ALL__\"]\n}}, PROVISIONABLE_ROLES)",
             actual.getJavaScriptProvisionableUser());
     }
 
@@ -457,7 +541,7 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
                 add(PscRole.DATA_READER).forAllSites().
                     forStudies(Fixtures.createBasicTemplate("T"), Fixtures.createBasicTemplate("Q")).
                 toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n    \"data_reader\": {\n        \"sites\": [\"__ALL__\"],\n        \"studies\": [\n            \"T\",\n            \"Q\"\n        ]\n    },\n    \"user_administrator\": {\"sites\": [\"i-a\"]}\n})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n    \"data_reader\": {\n        \"sites\": [\"__ALL__\"],\n        \"studies\": [\n            \"T\",\n            \"Q\"\n        ]\n    },\n    \"user_administrator\": {\"sites\": [\"i-a\"]}\n}, PROVISIONABLE_ROLES)",
             actual.getJavaScriptProvisionableUser());
     }
 

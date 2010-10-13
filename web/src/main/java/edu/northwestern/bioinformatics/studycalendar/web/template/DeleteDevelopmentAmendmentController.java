@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -27,7 +25,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class DeleteDevelopmentAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler {
 
     private StudyDao studyDao;

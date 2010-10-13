@@ -1,10 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -14,10 +11,6 @@ import org.dom4j.Element;
  * @author Saurabh Agrawal
  */
 public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Site> {
-
-    private StudiesXmlSerializer studiesXmlSerializer;
-
-    private UserRole userRole;
 
     @Override
     protected XsdElement collectionRootElement() {
@@ -37,14 +30,6 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
 
         if (site.getProvider() != null && site.getProvider().length() >0) {
             SITE_PROVIDER.addTo(siteElement, site.getProvider());
-        }
-        
-        if (userRole != null) {
-            if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)) {
-                for (StudySite studySite : userRole.getStudySites()) {
-                    siteElement.add(studiesXmlSerializer.createElement(studySite.getStudy()));
-                }
-            }
         }
         return siteElement;
     }
@@ -66,13 +51,5 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
             site.setProvider(provider);
         }
         return site;
-    }
-
-    public void setStudiesXmlSerializer(StudiesXmlSerializer studiesXmlSerializer) {
-        this.studiesXmlSerializer = studiesXmlSerializer;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
     }
 }

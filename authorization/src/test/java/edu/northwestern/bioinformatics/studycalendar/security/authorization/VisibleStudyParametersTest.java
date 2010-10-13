@@ -1,5 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteAuthorizationValidationException;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import junit.framework.TestCase;
@@ -12,6 +15,16 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Rhett Sutphin
  */
 public class VisibleStudyParametersTest extends TestCase {
+    private Site x, y, z;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        x = Fixtures.createSite("Ecks", "X");
+        y = Fixtures.createSite("Why", "Y");
+        z = Fixtures.createSite("Zed", "Z");
+    }
+
     /////// MANAGING
 
     public void testIsAllManagingSitesForAllInSiteScopedManagingRole() throws Exception {
@@ -32,18 +45,28 @@ public class VisibleStudyParametersTest extends TestCase {
         assertNoSpecificStudies(actual);
     }
 
-    public void testNoManagingSitesForAllInSiteAndSpecificStudyManagingRole() throws Exception {
+    public void testNoManagingSitesForAllInSiteAndSpecificUnmanagedStudyManagingRole() throws Exception {
         VisibleStudyParameters actual =
-            actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forStudies("ABC"));
+            actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).
+                forAllSites().forStudies(createManagedStudy("ABC")));
         assertNoManagingSites(actual);
         assertSpecificStudies(actual, "ABC");
     }
 
-    public void testNoManagingSitesForParticularSiteAndSpecificStudyManagingRole() throws Exception {
+    public void testNoManagingSitesForParticularSiteAndSpecificApplicableStudyManagingRole() throws Exception {
         VisibleStudyParameters actual =
-            actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("Z").forStudies("ABC"));
+            actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).
+                forSites(z).forStudies(createManagedStudy("ABC", z, y)));
         assertNoManagingSites(actual);
         assertSpecificStudies(actual, "ABC");
+    }
+
+    public void testNoManagingSitesForParticularSiteAndSpecificInapplicableStudyManagingRole() throws Exception {
+        VisibleStudyParameters actual =
+            actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).
+                forSites(z).forStudies(createManagedStudy("ABC", y, x)));
+        assertNoManagingSites(actual);
+        assertNoSpecificStudies(actual);
     }
 
     public void testAllManagingSitesTrumpsSomeManagingSites() throws Exception {
@@ -58,6 +81,14 @@ public class VisibleStudyParametersTest extends TestCase {
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("Z").forAllStudies(),
             createMembership(STUDY_QA_MANAGER).forSites("Y"));
         assertManagingSites(actual, "Z", "Y");
+    }
+
+    private Study createManagedStudy(String ident, Site... managingSites) {
+        Study s = Fixtures.createNamedInstance(ident, Study.class);
+        for (Site site : managingSites) {
+            s.addManagingSite(site);
+        }
+        return s;
     }
 
     ////// PARTICIPATING
@@ -82,16 +113,34 @@ public class VisibleStudyParametersTest extends TestCase {
 
     public void testNoParticipatingSitesForAllInSiteAndSpecificStudyParticipatingRole() throws Exception {
         VisibleStudyParameters actual =
-            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies("ABC"));
+            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).
+                forAllSites().forStudies(createParticipatedInStudy("ABC", z, y)));
         assertNoParticipatingSites(actual);
         assertSpecificStudies(actual, "ABC");
     }
 
-    public void testNoParticipatingSitesForParticularSiteAndSpecificStudyParticipatingRole() throws Exception {
+    public void testNoParticipatingSitesForParticularSiteAndSpecificApplicableStudyParticipatingRole() throws Exception {
         VisibleStudyParameters actual =
-            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites("Z").forStudies("ABC"));
+            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(z).forStudies(createParticipatedInStudy("ABC", z, y)));
         assertNoParticipatingSites(actual);
         assertSpecificStudies(actual, "ABC");
+    }
+
+    public void testNoParticipatingSitesForParticularSiteAndSpecificInapplicableStudyParticipatingRole() throws Exception {
+        VisibleStudyParameters actual =
+            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(z).forStudies(createParticipatedInStudy("ABC", y)));
+        assertNoParticipatingSites(actual);
+        assertNoSpecificStudies(actual);
+    }
+
+    public void testNoParticipatingSitesForParticularSiteAndSpecificNoParticipationStudyParticipatingRole() throws Exception {
+        VisibleStudyParameters actual =
+            actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).
+                forSites(z).forStudies(createParticipatedInStudy("ABC")));
+        assertNoParticipatingSites(actual);
+        assertNoSpecificStudies(actual);
     }
 
     public void testAllParticipatingSitesTrumpsSomeManagingSites() throws Exception {
@@ -106,6 +155,14 @@ public class VisibleStudyParametersTest extends TestCase {
             createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites("Z").forAllStudies(),
             createMembership(STUDY_TEAM_ADMINISTRATOR).forSites("Y"));
         assertParticipatingSites(actual, "Z", "Y");
+    }
+
+    private Study createParticipatedInStudy(String ident, Site... studySites) {
+        Study s = Fixtures.createNamedInstance(ident, Study.class);
+        for (Site site : studySites) {
+            s.addSite(site);
+        }
+        return s;
     }
 
     ////// GLOBAL
@@ -232,7 +289,7 @@ public class VisibleStudyParametersTest extends TestCase {
     }
 
     private SuiteRoleMembership createMembership(PscRole role) {
-        return new SuiteRoleMembership(role.getSuiteRole(), null, null);
+        return AuthorizationScopeMappings.createSuiteRoleMembership(role);
     }
 
     private VisibleStudyParameters actual(SuiteRoleMembership... memberships) {

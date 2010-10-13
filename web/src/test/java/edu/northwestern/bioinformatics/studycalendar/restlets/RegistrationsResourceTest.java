@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -133,22 +132,18 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGetWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
-    }
-
-    public void testGetAndPutAllowed() throws Exception {
+    public void testGetAndPostAllowed() throws Exception {
         assertAllowedMethods("POST", "GET");
     }
 
-    public void testGetWithAuthorizedRoles() {
+    public void testSubjectRolesMayView() {
         assertRolesAllowedForMethod(Method.GET,
             STUDY_TEAM_ADMINISTRATOR,
             STUDY_SUBJECT_CALENDAR_MANAGER,
             DATA_READER);
     }
 
-    public void testPostWithAuthorizedRoles() {
+    public void testOnlySscmMayPost() {
         assertRolesAllowedForMethod(Method.POST,
             STUDY_SUBJECT_CALENDAR_MANAGER);
     }
@@ -229,10 +224,6 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
-    }
-
-    public void testPutWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
     ////// Helper Methods

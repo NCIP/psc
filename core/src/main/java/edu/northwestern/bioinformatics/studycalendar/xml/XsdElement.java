@@ -54,13 +54,13 @@ public enum XsdElement {
     SCHEDULED_ACTIVITIES,
     NEXT_SCHEDULED_STUDY_SEGMENT,
     NOTIFICATION, NOTIFICATIONS,
-    SOURCES,SOURCE,
-
     PLANNED_ACTIVITY_LABELS("labels"),
     PLANNED_ACTIVITY_LABEL("label"),
 
     USER_ROLES("roles"),
-    USER_ROLE("role");
+    USER_ROLE("role"),
+    ROLE_SITES,
+    ROLE_STUDIES;
 
     private String elementName;
 

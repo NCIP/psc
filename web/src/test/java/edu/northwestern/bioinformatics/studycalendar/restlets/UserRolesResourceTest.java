@@ -1,41 +1,41 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static org.easymock.EasyMock.expect;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.restlet.data.Status;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jalpa Patel
  */
-public class UserRolesResourceTest extends ResourceTestCase<UserRolesResource> {
-    private UserService userService;
-    private static final String USERNAME = "subjectCo";
-    private Set<UserRole> userRoles;
-    private User user;
+public class UserRolesResourceTest extends AuthorizedResourceTestCase<UserRolesResource> {
+    private PscUserService pscUserService;
+    private static final String USERNAME = "TestUser";
+    private PscUser user;
 
     public void setUp() throws Exception {
         super.setUp();
-        userService = registerMockFor(UserService.class);
+        pscUserService = registerMockFor(PscUserService.class);
+        user = createPscUser(USERNAME);
+        user.getMemberships().put(SuiteRole.STUDY_CREATOR, 
+                createSuiteRoleMembership(PscRole.STUDY_CREATOR));
+        user.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER,
+                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), USERNAME);
-        Role role = SUBJECT_COORDINATOR;
-        user = Fixtures.createUser(USERNAME, role);
-        Fixtures.setUserRoles(user,role);
-        userRoles = user.getUserRoles();
     }
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected UserRolesResource createResource() {
+    protected UserRolesResource createAuthorizedResource() {
         UserRolesResource resource = new UserRolesResource();
-        resource.setUserService(userService);
+        resource.setPscUserService(pscUserService);
         resource.setXmlSerializer(xmlSerializer);
         return resource;
     }
@@ -44,43 +44,80 @@ public class UserRolesResourceTest extends ResourceTestCase<UserRolesResource> {
         assertAllowedMethods("GET");
     }
 
-    public void testGetRolesForUser() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(USERNAME, USERNAME, new Role[] { Role.SUBJECT_COORDINATOR}));
-        expectFoundUser(user);
-        expect(xmlSerializer.createDocumentString(userRoles)).andReturn(MOCK_XML);
-
-        doGet();
-        assertResponseStatus(Status.SUCCESS_OK);
-        assertResponseIsCreatedXml();
-    }
-
-    public void test400ForNoUsername() throws Exception {
+    public void test400ForNoUserName() throws Exception {
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), null);
 
         doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No user name in request");
     }
 
-    public void test403ForNotAllowedUser() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("siteCo", "siteCo", new Role[] { Role.SITE_COORDINATOR }));
-        expectFoundUser(user);
-        expect(xmlSerializer.createDocumentString(userRoles)).andReturn(MOCK_XML);
+    public void test400ForUnknownUser() throws Exception {
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(null);
 
         doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown user TestUser");
     }
 
-    public void testGetUserRolesForSystemAdmin() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("systemAdmin", "systemAdmin", new Role[] { Role.SUBJECT_COORDINATOR, Role.SYSTEM_ADMINISTRATOR }));
-        expectFoundUser(user);
-        expect(xmlSerializer.createDocumentString(userRoles)).andReturn(MOCK_XML);
+    public void testGetUserRolesForUser() throws Exception {
+        setCurrentUser(createPscUser(USERNAME));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
+        expect(xmlSerializer.createDocumentString(user.getMemberships().values())).andReturn(MOCK_XML);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
     }
 
-    public void expectFoundUser(User user) {
-        expect(userService.getUserByName(USERNAME)).andReturn(user);
+    public void testGetUserRolesForUserAdmin() throws Exception {
+        setCurrentUser(createPscUser("userAdmin", PscRole.USER_ADMINISTRATOR));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
+        expect(xmlSerializer.createDocumentString(user.getMemberships().values())).andReturn(MOCK_XML);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertResponseIsCreatedXml();
     }
+
+    public void testGetUserRolesForSystemAdminWhenUserIsUserAdmin() throws Exception {
+        setCurrentUser(createPscUser("systemAdmin",PscRole.SYSTEM_ADMINISTRATOR));
+        user.getMemberships().put(SuiteRole.USER_ADMINISTRATOR, createSuiteRoleMembership(PscRole.USER_ADMINISTRATOR));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
+        expect(xmlSerializer.createDocumentString(Arrays.asList(user.getMembership(PscRole.USER_ADMINISTRATOR)))).andReturn(MOCK_XML);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertResponseIsCreatedXml();
+    }
+
+    public void testGetUserRolesForSystemAdminWhenUserIsUserAdminAndSysAdmin() throws Exception {
+        setCurrentUser(createPscUser("systemAdmin",PscRole.SYSTEM_ADMINISTRATOR));
+        user.getMemberships().put(SuiteRole.USER_ADMINISTRATOR, createSuiteRoleMembership(PscRole.USER_ADMINISTRATOR));
+        user.getMemberships().put(SuiteRole.SYSTEM_ADMINISTRATOR, createSuiteRoleMembership(PscRole.SYSTEM_ADMINISTRATOR));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
+        Collection<SuiteRoleMembership> expectedMemberships = new ArrayList<SuiteRoleMembership>();
+        expectedMemberships.add(user.getMembership(PscRole.USER_ADMINISTRATOR));
+        expectedMemberships.add(user.getMembership(PscRole.SYSTEM_ADMINISTRATOR));
+        expect(xmlSerializer.createDocumentString(expectedMemberships)).andReturn(MOCK_XML);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertResponseIsCreatedXml();
+    }
+
+    public void testGetUserRolesForSystemAdminWhenUserIsNotUserAdmin() throws Exception {
+        setCurrentUser(createPscUser("systemAdmin",PscRole.SYSTEM_ADMINISTRATOR));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);        
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN, "systemAdmin has insufficient privilege");
+    }
+
+    public void test403ForUnauthorisedUser() throws Exception {
+        setCurrentUser(createPscUser("otherUser",PscRole.STUDY_CREATOR));
+        expect(pscUserService.loadUserByUsername(USERNAME)).andReturn(user);
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN, "otherUser has insufficient privilege");
+    }
+
 }

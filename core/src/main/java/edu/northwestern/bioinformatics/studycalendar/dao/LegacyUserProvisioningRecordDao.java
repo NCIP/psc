@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,16 +12,14 @@ import java.util.List;
 import static org.apache.commons.lang.StringUtils.join;
 
 public class LegacyUserProvisioningRecordDao {
-    private DataSource dataSource;
+    private JdbcTemplate template;
 
-    public LegacyUserProvisioningRecordDao(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public LegacyUserProvisioningRecordDao(JdbcTemplate template) {
+        this.template = template;
     }
 
     @SuppressWarnings("unchecked")
     public List<LegacyUserProvisioningRecord> getAll() {
-        JdbcTemplate template = new JdbcTemplate(dataSource);
-
         String[] query = new String[] {
             "select u.name, first_name, last_name, csm_group_name, s.name as site_name, st.assigned_identifier as study_name, active_flag",
             "from Users u",
@@ -41,9 +38,7 @@ public class LegacyUserProvisioningRecordDao {
         public Object mapRow(ResultSet rs, int i) throws SQLException {
             LegacyUserProvisioningRecordResultSetExtractor extractor = new LegacyUserProvisioningRecordResultSetExtractor();
             return extractor.extractData(rs);
-
         }
-
     }
 
     public class LegacyUserProvisioningRecordResultSetExtractor implements ResultSetExtractor {
@@ -58,8 +53,5 @@ public class LegacyUserProvisioningRecordDao {
                 rs.getString("study_name")
             );
         }
-
     }
-
-
 }

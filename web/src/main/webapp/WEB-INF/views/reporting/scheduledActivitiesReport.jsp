@@ -88,7 +88,7 @@
                         { key: "condition", label: "Condition", sortable: true, width: 200},
                         { key: "labels", label: "Labels", sortable: false,
                             formatter: function (elCell, oRecord, oColumn, oData) {
-                                elCell.innerHTML = oData.join(" ")
+                                elCell.innerHTML = oData ? oData.join(" ") : "";
                             }
                         },
                         { key: "ideal_date", label: "Ideal Date", sortable: true},
@@ -131,13 +131,19 @@
                     new YAHOO.widget.DataTable("results", reportColumns, reportDS, {scrollable:true});
                 },
                 onFailure: function(response) {
-                    $('errors').innerHTML = "Please correct date format";
+                    var fullText = response.responseText;
+                    var statusCode = response.status
+                    var statusText = response.statusText
+                    var userFriendlyText = fullText.replace(statusCode,  "");
+
+                    userFriendlyText = userFriendlyText.replace(statusText, "");
+                    $('errors').innerHTML = userFriendlyText.trim();
                 }
             })
         }
 
         function resetFilters() {
-            jQuery(".filter-value").each(function (e) { e.value = ""; });
+            jQuery(".filter-value").each(function () { $(this).value = ""; });
             jQuery("#results").hide();
         }
 

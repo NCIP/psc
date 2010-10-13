@@ -1,4 +1,4 @@
-describe "/amendment" do 
+describe "/amendment" do
 
   describe "PUT" do
     before do
@@ -7,9 +7,9 @@ describe "/amendment" do
       @amendment = PscTest::Fixtures.createAmendment("[Original]", @amend_date1, true)
       @study1.amendment = @amendment
       application_context['studyService'].save( @study1)
-      @amend1_xml = psc_xml('amendment', 'name' => 'am1', 'date' => "2008-11-13", 'mandatory' => "true") 
+      @amend1_xml = psc_xml('amendment', 'name' => 'am1', 'date' => "2008-11-13", 'mandatory' => "true")
     end
-    
+
     it "creates a new amendment for an authorized user" do
       put '/studies/NU480/template/amendments/2008-11-10~%5BOriginal%5D', @amend1_xml, :as => :juno
       response.status_code.should == 200
@@ -21,14 +21,14 @@ describe "/amendment" do
       response.xml_elements('//amendment').should have(1).elements
     end
   end
-  
+
   describe "GET" do
       before do
         @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
-        @amend_date1 = PscTest.createDate(2008, 12, 10)      
+        @amend_date1 = PscTest.createDate(2008, 12, 10)
         @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
         @study1.amendment = @amendment
-        application_context['studyService'].save(@study1) 
+        application_context['studyService'].save(@study1)
       end
 
       it "allows access to a specific amendment for an authorized user by specifying date" do
@@ -41,11 +41,11 @@ describe "/amendment" do
         response.xml_attributes("amendment", "mandatory").should include("true")
         response.xml_elements('//amendment').should have(1).elements
       end
-    
+
   end
-  
+
   describe "DELETE" do
-    
+
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
       application_context['studyService'].save(@study1)
@@ -60,7 +60,7 @@ describe "/amendment" do
       response.status_code.should == 200
       response.status_message.should == "OK"
     end
-    
+
   end
-  
+
 end

@@ -90,8 +90,8 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return sa.assignment !== undefined;
       },
 
-      isReadOnly: function() {
-        return psc.subject.ScheduleData.isReadOnly();
+      canUpdateSchedule: function() {
+        return this.hasAssignment() && jQuery.inArray("update", sa.assignment.privileges) >= 0
       },
 
       planNotes: function () {

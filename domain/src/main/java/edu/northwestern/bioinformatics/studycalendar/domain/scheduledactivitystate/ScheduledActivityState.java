@@ -2,19 +2,18 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivityst
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.text.SimpleDateFormat;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.StringUtils;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -118,7 +117,7 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
 
         ScheduledActivityState that = (ScheduledActivityState) o;
 
-        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
+        if (reason != null ? !reason.equals(that.getReason()) : that.getReason() != null) return false;
 
         return true;
     }

@@ -130,11 +130,11 @@ public class PropertyChange extends Change {
 
         PropertyChange that = (PropertyChange) o;
 
-        if (newValue != null ? !newValue.equals(that.newValue) : that.newValue != null)
+        if (newValue != null ? !newValue.equals(that.getNewValue()) : that.getNewValue() != null)
             return false;
-        if (oldValue != null ? !oldValue.equals(that.oldValue) : that.oldValue != null)
+        if (oldValue != null ? !oldValue.equals(that.getOldValue()) : that.getOldValue() != null)
             return false;
-        if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
+        if (propertyName != null ? !propertyName.equals(that.getPropertyName()) : that.getPropertyName() != null)
             return false;
 
         return true;

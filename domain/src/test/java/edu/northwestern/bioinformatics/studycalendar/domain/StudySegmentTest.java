@@ -1,6 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+
+import java.lang.reflect.Method;
+
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.assertDayRange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
@@ -126,6 +131,22 @@ public class StudySegmentTest extends DomainTestCase {
         StudySegment s1 = createNamedInstance("Segment", StudySegment.class);
         StudySegment s2 = createNamedInstance("Segment", StudySegment.class);
         assertEquals("StudySegments are not equals", s1, s2);
+    }
+
+    public void testEqualsWhenSameNameAndProxied() throws Exception {
+        StudySegment s1 = createNamedInstance("Segment", StudySegment.class);
+
+        ProxyFactory factory = new ProxyFactory();
+        factory.setSuperclass(StudySegment.class);
+        factory.setHandler(new MethodHandler() {
+            public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+                StudySegment target = createNamedInstance("Segment", StudySegment.class);
+                return thisMethod.invoke( target, args );
+            }
+        });
+        StudySegment proxy = (StudySegment) factory.createClass().newInstance();
+
+        assertEquals("StudySegments are not equals", s1, proxy);
     }
     
     public void testEqualsWhenNotSameName() throws Exception {

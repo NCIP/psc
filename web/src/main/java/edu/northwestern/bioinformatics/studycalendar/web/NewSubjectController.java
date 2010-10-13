@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,7 +25,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Padmaja Vedula
  */
 // TODO: this class needs to be cleaned up
-@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class NewSubjectController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SubjectDao subjectDao;
 

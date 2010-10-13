@@ -2,14 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -37,6 +36,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.easymock.classextension.EasyMock;
 
 import java.sql.Timestamp;
@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static org.easymock.EasyMock.*;
 
@@ -141,7 +141,6 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         studyDao.save(study);
         scheduledActivityDao.save(isA(ScheduledActivity.class));
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
 
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
@@ -178,8 +177,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         expect(activityDao.getByName("Reconsent")).andReturn(reconsent);
         scheduledActivityDao.save(isA(ScheduledActivity.class));
         studyDao.save(study);
-        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
-        
+
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
@@ -189,6 +187,31 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of events on August 8th", 2, list.size());
         assertEquals("Reconsent Details should be details", "Reconsent Details", list.get(0).getDetails());
         assertEquals("Reconsent should be activity name", "Reconsent", list.get(0).getActivity().getName());
+    }
+
+    public void testSendMailForScheduleReconsent() throws Exception {
+        staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 2));
+        study.setAssignedIdentifier("testStudy");
+        ScheduledStudySegment studySegment = new ScheduledStudySegment();
+        studySegment.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 4));
+        expect(activityDao.getByName("Reconsent")).andReturn(setId(1, createNamedInstance("Reconsent", Activity.class)));
+        scheduledActivityDao.save(isA(ScheduledActivity.class));
+        studyDao.save(study);
+        calendar.addStudySegment(studySegment);
+
+        User SSCM = AuthorizationObjectFactory.createCsmUser(1, "testUser");
+        SSCM.setEmailId("testUser@email.com");
+        subjectAssignment.setStudySubjectCalendarManager(SSCM);
+
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Arrays.asList(subjectAssignment));
+        String subject = "Subjects on testStudy need to be reconsented";
+        String message = "A reconsent activity with details Reconsent Details has been added to the schedule of each subject on testStudy." +
+                " Check your dashboard for upcoming subjects that need to be reconsented.";
+        notificationService.sendNotificationMailToUsers(subject, message, Arrays.asList(SSCM.getEmailId()));
+
+        replayMocks();
+        service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
+        verifyMocks();
     }
 
     public void testSave() {

@@ -99,10 +99,10 @@ public class RelativeRecurringBlackout extends BlackoutDate {
 
         RelativeRecurringBlackout that = (RelativeRecurringBlackout) o;
 
-        if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.dayOfTheWeek) : that.dayOfTheWeek != null)
+        if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.getDayOfTheWeek()) : that.getDayOfTheWeek() != null)
             return false;
-        if (month != null ? !month.equals(that.month) : that.month != null) return false;
-        if (weekNumber != null ? !weekNumber.equals(that.weekNumber) : that.weekNumber != null)
+        if (month != null ? !month.equals(that.getMonth()) : that.getMonth()!= null) return false;
+        if (weekNumber != null ? !weekNumber.equals(that.getWeekNumber()) : that.getWeekNumber() != null)
             return false;
 
         return true;

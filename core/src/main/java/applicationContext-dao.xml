@@ -57,8 +57,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserRole</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
 
                 <!-- Amendments & customizations -->
@@ -185,8 +183,6 @@
                 <value>
                     edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout
                 </value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserRole</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
 
                 <!-- Amendments & customizations -->
@@ -286,10 +282,8 @@
 
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>
 
-    <bean id="userDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserDao"/>
     <bean id="amendmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao"/>
     <bean id="deltaDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao"/>
-    <bean id="userRoleDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao"/>
     <bean id="sourceDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SourceDao"/>
     <bean id="changeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao"/>
     <bean id="scheduledActivitiesReportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao"/>

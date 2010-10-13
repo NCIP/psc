@@ -18,6 +18,7 @@
         .submit {
             text-align: right;
         }
+        div.tab {margin-left:5em;}
     </style>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
@@ -174,42 +175,58 @@
         }
         function updatePeriodsDisplay(input, li) {
             var id = li.id;
-
-            var isDevelopmentTemplateSelected='false'
-
-            if (id.indexOf('dev') == 0) {
-                isDevelopmentTemplateSelected = 'true'
-                $('isDevelopmentTemplateSelected').value = 'true'
-            }
-            if (id.indexOf('rel') == 0) {
-                isDevelopmentTemplateSelected = 'false'
-                $('isDevelopmentTemplateSelected').value = 'false'
-
-            }
-
-            id = id.substring(3, id.length)
-
-            updatePeriods(id,isDevelopmentTemplateSelected)
+            $('template-autocompleter-input').value = "";
+            $('template-autocompleter-input').hint = "Search for study";
+            updatePeriods(id)
             $('template-autocompleter-input-id').value = id
-
         }
-        function updatePeriods(studyId,isDevelopmentTemplateSelected) {
 
-            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId+"&isDevelopmentTemplateSelected="+isDevelopmentTemplateSelected
+        function updatePeriods(studyId) {
+            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId
             var lastRequest = new Ajax.Request(aElement);
-
         }
-        function createAutocompleter() {
-            if ($('copy')) {
 
-                templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
-                {
-                    method: 'get',
-                    paramName: 'searchText',
-                    afterUpdateElement:updatePeriodsDisplay,
+        function createTemplatesAutocompleter() {
+           if ($('copy')) {
+            templateAutocompleter = new SC.FunctionalAutocompleter(
+                'template-autocompleter-input', 'template-autocompleter-div', studyAutocompleterChoices, {
+                    select: "templates-name",
+                    afterUpdateElement: updatePeriodsDisplay,
                     revertOnEsc:true
-                });
+
+                }
+            );
+           }
+        }
+
+        function studyAutocompleterChoices(str, callback) {
+            studyAutocompleterChoiceProcessing(function(data) {
+                var lis = data.map(function(study) {
+                    var id = study.id
+                    var name = study.assigned_identifier
+                    var listItem = "<li id='"  + id + "'>" + name + "</li>";
+                    return listItem
+                }).join("\n");
+                callback("<ul>\n" + lis + "\n</ul>");
+            });
+        }
+
+        function studyAutocompleterChoiceProcessing(callback) {
+            var searchString = $F("template-autocompleter-input")
+            var uri = SC.relativeUri("/api/v1/studies")
+            if (searchString.blank()) {
+                return;
             }
+
+            var params = { };
+            if (!searchString.blank()) params.q = searchString;
+
+            SC.asyncRequest(uri+".json", {
+                method: "GET", parameters: params,
+                onSuccess: function(response) {
+                    callback(response.responseJSON.studies)
+                }
+            })
         }
 
         function currentTemplateSelected() {
@@ -217,8 +234,9 @@
                 updatePeriods($('template-autocompleter-input-id').value, 'true')
             }
         }
+        
         Event.observe(window, "load", currentTemplateSelected)
-        Event.observe(window, "load", createAutocompleter)
+        Event.observe(window, "load", createTemplatesAutocompleter)
 
         // Temporary.  Validation should really be on the server side.
         $(document).observe("dom:loaded", function() {
@@ -314,21 +332,23 @@
 <c:if test="${period.id == null}">
     <laf:box title="Copy existing period">
         <laf:division>
+            <div class="row">
+                Search for study:
+                <input id="template-autocompleter-input" type="text" autocomplete="off" value="" hint="Search for study" class="autocomplete"/>
+                <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
+                <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
+                <div id="template-autocompleter-div" class="autocomplete" style="z-index:1000" ></div>
+            </div>
+        </laf:division>
+        <h3 id="studyName" >${study.name}</h3>
+        <laf:division>
             <form:form method="post" id="copy-form" >
-                <div class="row">
-                    <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" hint="Search for study" class="autocomplete"/>
-                    <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
-                    <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
-                    <div id="template-autocompleter-div" class="autocomplete"></div>
-                    <div class="row" id="periods">
-                        <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
-                        <div class="row" id="selected-epochs">
-                        </div>
-                    </div>
+                <div class="row" id="selected-epochs">
                 </div>
+
                 <div class="row">
                     <input id="copy" type="submit" value="Copy"/>
-                </div>
+                </div>                
             </form:form>
         </laf:division>
     </laf:box>

@@ -153,6 +153,13 @@ public class UserTemplateRelationship {
         return getStudy().isInDevelopment() && tools.isManagingAsOneOf(STUDY_CREATOR);
     }
 
+    /**
+     * The user can purge the study.  False if no managing role of Study QA Manager exist.
+     */
+    public boolean getCanPurge() {
+        return tools.isManagingAsOneOf(STUDY_QA_MANAGER);
+    }
+
     ////// ACCESSORS
 
     public PscUser getUser() {

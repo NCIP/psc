@@ -153,9 +153,9 @@ public class Reorder extends ChildrenChange {
 
         Reorder reorder = (Reorder) o;
 
-        if (newIndex != null ? !newIndex.equals(reorder.newIndex) : reorder.newIndex != null)
+        if (newIndex != null ? !newIndex.equals(reorder.getNewIndex()) : reorder.getNewIndex() != null)
             return false;
-        if (oldIndex != null ? !oldIndex.equals(reorder.oldIndex) : reorder.oldIndex != null)
+        if (oldIndex != null ? !oldIndex.equals(reorder.getOldIndex()) : reorder.getOldIndex() != null)
             return false;
 
         return true;

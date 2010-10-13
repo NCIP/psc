@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.mocks.osgi.PscTestingBundleContext;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
@@ -120,10 +119,8 @@ public abstract class AuthenticationTestCase extends TestCase {
             return u;
         }
 
-        public void addUser(String username, Role... roles) {
-            User csmUser = new User();
-            csmUser.setLoginName(username);
-            users.put(username, new PscUser(csmUser, null, Fixtures.createUser(username, roles)));
+        public void addUser(String username, PscRole... roles) {
+            users.put(username, AuthorizationObjectFactory.createPscUser(username, roles));
         }
     }
 }

@@ -55,7 +55,6 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return ResourceAuthorization.createCollection(site, study, PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
-    // TODO: the date validations here are wrong -- checking the length is wrong.
     public void validate(Errors errors){
         Subject subject;
         if (getRadioButton() == null) {
@@ -71,13 +70,14 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
                     subject = subjectDao.findSubjectByGridOrPersonId(getIdentifier());
                 }
             } else if (creatingNewSubject()){
-                if (isEmpty(getPersonId()) && (isEmpty(getFirstName()) || isEmpty(getLastName()) || getDateOfBirth() == null)) {
+                if (isEmpty(getPersonId()) && (isEmpty(getFirstName()) || isEmpty(getLastName()) || isEmpty(getDateOfBirth()))) {
                     errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
-                } else if (getDateOfBirth() == null || getDateOfBirth().length() != 10 || convertStringToDate(getDateOfBirth()) == null) {
-                    errors.rejectValue("dateOfBirth", "error.subject.assignment.please.enter.date.of.birth");
-                } else if (getStartDate() == null || getStartDate().length() != 10 || convertStringToDate(getStartDate()) == null) {
-                    errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
-                } else {
+                } else if (isEmpty(getDateOfBirth()) || getDateOfBirth() == null || convertStringToDate(getDateOfBirth()) == null) {
+                        errors.rejectValue("dateOfBirth", "error.subject.assignment.please.enter.date.of.birth");
+                } else if (isEmpty(getStartDate()) || getStartDate() == null || convertStringToDate(getStartDate()) == null) {
+                        errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
+                }
+                if (!errors.hasErrors()) {
                     subject = createSubject();
                     List<Subject> results = subjectService.findSubjects(subject);
                     if (results.size() > 1) {

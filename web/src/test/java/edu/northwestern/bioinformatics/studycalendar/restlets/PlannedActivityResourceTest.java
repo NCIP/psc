@@ -10,12 +10,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import org.restlet.data.MediaType;
@@ -90,14 +90,14 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
     public void testPutAllowedForStudyCoordinator() throws Exception {
         expectSuccessfulDrillDown();
         replayMocks();
-        assertLegacyRolesAllowedForMethod(Method.PUT, Role.STUDY_COORDINATOR);
+        assertRolesAllowedForMethod(Method.PUT, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
         verifyMocks();
     }
 
     public void testDeleteAllowedForStudyCoordinator() throws Exception {
         expectSuccessfulDrillDown();
         replayMocks();
-        assertLegacyRolesAllowedForMethod(Method.DELETE, Role.STUDY_COORDINATOR);
+        assertRolesAllowedForMethod(Method.DELETE, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
         verifyMocks();
     }
 

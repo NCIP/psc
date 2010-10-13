@@ -39,6 +39,9 @@ public class SubjectOffStudyControllerTest extends ControllerTestCase{
         controller.setStudySubjectAssignmentDao (assignmentDao);
         controller.setControllerTools(controllerTools);
 
+        // Stop controller from calling validation
+        controller.setValidateOnBinding(false);
+
         assignment = setId(10, new StudySubjectAssignment());
         assignment.setScheduledCalendar(setId(20, new ScheduledCalendar()));
     }
@@ -83,7 +86,7 @@ public class SubjectOffStudyControllerTest extends ControllerTestCase{
         assertEquals("Calendar Parameter wrong", "20", mv.getModelMap().get("calendar"));
     }
 
-   public void testBindDate() throws Exception {
+    public void testBindDate() throws Exception {
         request.addParameter("expectedEndDate", "08/05/2003");
         expect(command.takeSubjectOffStudy()).andReturn(assignment);
         replayMocks();
@@ -91,7 +94,7 @@ public class SubjectOffStudyControllerTest extends ControllerTestCase{
         controller.handleRequest(request, response);
         verifyMocks();
 
-        assertDayOfDate(2003, Calendar.AUGUST, 5, command.getExpectedEndDate());
+        assertDayOfDate(2003, Calendar.AUGUST, 5, command.convertStringToDate(command.getExpectedEndDate()));
     }
 
 
@@ -105,6 +108,5 @@ public class SubjectOffStudyControllerTest extends ControllerTestCase{
         verifyMocks();
 
         assertEquals("Subject assignments are different", assignment.getId(), command.getAssignment().getId());
-
     }
 }

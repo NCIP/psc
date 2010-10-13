@@ -1,24 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * Resource representing a single {@link Source}.
@@ -34,8 +31,6 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
 
         addAuthorizationsFor(Method.GET,
                 STUDY_CALENDAR_TEMPLATE_BUILDER,

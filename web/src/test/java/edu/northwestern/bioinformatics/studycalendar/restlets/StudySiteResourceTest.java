@@ -3,13 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -131,10 +135,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         assertResponseIsCreatedXml();
     }
 
-    public void testGetWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.GET, Role.SITE_COORDINATOR);
-    }
-
     ////// PUT
 
     @SuppressWarnings({ "unchecked" })
@@ -182,10 +182,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testDeleteWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.DELETE, Role.SITE_COORDINATOR);
-    }
-
     ////// DELETE
 
     public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
@@ -205,10 +201,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         doDelete();
 
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-    }
-
-    public void testPutWithAuthorizedRole() {
-        assertLegacyRolesAllowedForMethod(Method.PUT, Role.SITE_COORDINATOR);
     }
 
     ////// HELPERS

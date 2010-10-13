@@ -303,11 +303,11 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
         final StudySubjectAssignment that = (StudySubjectAssignment) o;
 
-        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null)
+        if (startDate != null ? !startDate.equals(that.getStartDate()) : that.getStartDate() != null)
             return false;
-        if (studySite != null ? !studySite.equals(that.studySite) : that.studySite != null)
+        if (studySite != null ? !studySite.equals(that.getStudySite()) : that.getStudySite() != null)
             return false;
-        if (currentAmendment != null ? !currentAmendment.equals(that.currentAmendment) : that.currentAmendment != null)
+        if (currentAmendment != null ? !currentAmendment.equals(that.getCurrentAmendment()) : that.getCurrentAmendment() != null)
             return false;
         // Subject#equals calls this method, so we can't use it here
         if (!DomainObjectTools.equalById(subject, that.subject)) return false;

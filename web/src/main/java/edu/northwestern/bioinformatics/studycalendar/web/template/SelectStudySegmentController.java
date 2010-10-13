@@ -1,10 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
@@ -32,6 +37,9 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     private DeltaService deltaService;
     private ControllerTools controllerTools;
     private StudySegmentDao studySegmentDao;
+    private WorkflowService workflowService;
+    private AmendmentDao amendmentDao;
+    private AmendmentService amendmentService;
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         // further authorization done in handleRequest
@@ -40,14 +48,29 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
 
     @SuppressWarnings({"unchecked"})
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
         int id = ServletRequestUtils.getRequiredIntParameter(request, "studySegment");
         StudySegment studySegment = studySegmentDao.getById(id);
-        Map<String, Object> model = new HashMap<String, Object>();
-        Study study = templateService.findStudy(studySegment);
-        UserTemplateRelationship utr =
-            new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
+
+        Integer amendId = ServletRequestUtils.getIntParameter(request, "amendment");
+        Amendment amendment = null;
+        if (amendId != null) {
+            amendment = amendmentDao.getById(amendId);
+        }
 
         boolean isDevelopmentRequest = !StringUtils.isBlank(request.getParameter("development"));
+
+        studySegment = (amendment != null && !isDevelopmentRequest) ? amendmentService.getAmendedNode(studySegment, amendment) : studySegment;
+
+        Study study = templateService.findStudy(studySegment);
+
+        UserTemplateRelationship utr =
+            new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
+            
+        StudyWorkflowStatus workflow = workflowService.build(study, applicationSecurityManager.getUser());
+        model.put("studyWorkflowMessages", workflow.getMessages());
+
         if ((isDevelopmentRequest && utr.getCanSeeDevelopmentVersion()) ||
             (!isDevelopmentRequest && utr.getCanSeeReleasedVersions())) {
             if (study.getDevelopmentAmendment() != null && isDevelopmentRequest) {
@@ -91,4 +114,19 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
     }
+
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
+    }
+
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
+    
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+    
 }

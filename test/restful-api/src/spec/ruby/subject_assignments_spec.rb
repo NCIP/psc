@@ -1,5 +1,5 @@
 describe "/subject_assignments" do
-  
+
   before do
     #create a study with an amendment
     @nu480 = PscTest::Fixtures.createBasicTemplate("NU480")
@@ -13,27 +13,29 @@ describe "/subject_assignments" do
     @nu480_at_pitt.approveAmendment(@nu480.amendment, PscTest.createDate(2008, 12, 31))
     application_context['studySiteDao'].save(@nu480_at_pitt)
   end
-  
+
   describe "GET" do
     before do
-      # create subject              
+      # create subject
       @alan = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
-      @bob = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", PscTest.createDate(1985, 5, 1))         
+      @bob = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", PscTest.createDate(1985, 5, 1))
 
       # register alan
       application_context['subjectService'].assignSubject(
-        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26), "ID001", erin)
-       
+        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26),
+        "ID001", Java::JavaUtil::HashSet.new, erin)
+
       # register bob
       application_context['subjectService'].assignSubject(
-        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13), "ID002", erin)
+        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13),
+        "ID002", Java::JavaUtil::HashSet.new, erin)
     end
 
     it "forbids access to a subject assignment to an unauthorized user" do
       get "/studies/NU480/sites/PA015/subject-assignments", :as => :carla
       response.status_code.should == 403
     end
-    
+
     it "allows access to an existing subject assignment to an authorized user" do
       get "/studies/NU480/sites/PA015/subject-assignments", :as => :erin
       response.status_code.should == 200
@@ -43,10 +45,10 @@ describe "/subject_assignments" do
       response.xml_attributes("subject", "first-name").should include("Alan")
       response.xml_attributes("subject", "person-id").should include("ID001")
       response.xml_attributes("subject", "person-id").should include("ID002")
-      response.xml_elements('//subject').should have(2).elements          
+      response.xml_elements('//subject').should have(2).elements
     end
   end
-  
+
   describe "POST" do
     before do
       @subject_registration_xml = psc_xml(
@@ -58,15 +60,15 @@ describe "/subject_assignments" do
             'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")
       }
     end
-    
+
     it "does not allow the subject coordinator to assign patients when the template has not been made available" do
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      post "/studies/NU480/sites/IL036/subject-assignments",
+        @subject_registration_xml, :as => :darlene
 
       response.status_code.should == 403
     end
-    
+
     it "allows creation of a new subject-assignment for an authorized user" do
-      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
@@ -74,7 +76,6 @@ describe "/subject_assignments" do
     end
 
     it "gives 400 if studySegment with gridId from xml not found in system" do
-      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
       @wrong_subject_registration_xml = psc_xml(
           "registration", 'first-study-segment-id' => "unknownSegment", 'date' => "2008-12-27",
           'subject-coordinator-name' => "erin"
@@ -89,5 +90,5 @@ describe "/subject_assignments" do
       response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
     end
   end
-          
+
 end

@@ -9,7 +9,7 @@ begin
   lc = Java::OrgSlf4j::LoggerFactory.getILoggerFactory();
   conf = Java::ChQosLogbackClassicJoran::JoranConfigurator.new
   conf.context = lc
-  lc.shutdownAndReset # beware: changed to .reset in later logbacks
+  lc.reset
   conf.doConfigure(Java::JavaLang::System.getProperty('logback.configurationFile'))
   # Uncomment for debugging:
   # Java::ChQosLogbackCoreUtil::StatusPrinter.print(lc);
@@ -21,7 +21,7 @@ Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJR
 
 # Shortcuts for PSC java packages
 module Psc
-  %w(domain domain.delta core service).each do |pkg|
+  %w(domain domain.delta core service tools).each do |pkg|
     class_eval <<-RUBY
       module #{pkg.split('.').map { |n| n.capitalize }.join('::')}
         include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
@@ -39,7 +39,7 @@ module PscTest
     # DateTools expects month as java.util.Calendar constant. They start with 0.
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
   end
-  
+
   def self.createDeltaFor(node, *changes)
     Psc::Domain::Delta::Delta.createDeltaFor(
       node, changes.to_java(Psc::Domain::Delta::Change)
@@ -56,17 +56,17 @@ module PscTest
       @web_request = Java::OrgSpringframeworkWebContextRequest::ServletWebRequest.new(mock_request)
       @flush = true
     end
-    
+
     def begin_session
       PscTest.log("-------- begin interceptor session --------")
       open_session_interceptors.each { |interceptor| interceptor.preHandle(@web_request) }
     end
-    
+
     def interrupt_session
       end_session
       begin_session
     end
-    
+
     def end_session
       open_session_interceptors.reverse.each { |interceptor|
         if @flush
@@ -76,7 +76,7 @@ module PscTest
       }
       PscTest.log("---------- end interceptor session --------")
     end
-  
+
     def open_session_interceptors
       %w(auditOpenSessionInViewInterceptor openSessionInViewInterceptor).collect do |bean_name|
         application_context[bean_name]
@@ -84,8 +84,6 @@ module PscTest
     end
   end
 end
-
-Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
 
 def application_context
   $application_context ||= Class.new do
@@ -113,12 +111,14 @@ end
 Spec::Runner.configure do |config|
   config.before(:each) do
     application_context['databaseInitializer'].beforeEach
+    Psc::Tools::FormatTools.setLocal(Psc::Tools::FormatTools.new("MM/dd/yyyy"))
     @hibernate = PscTest::HibernateOpenSession.new
     @hibernate.begin_session
   end
 
   config.after(:each) do
     @hibernate.end_session
+    Psc::Tools::FormatTools.clearLocalInstance
     application_context['databaseInitializer'].afterEach
   end
 end

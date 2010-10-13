@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -21,16 +20,13 @@ import static org.easymock.EasyMock.*;
 public class PscAuthorizationInterceptorTest extends WebTestCase {
     private PscAuthorizationInterceptor interceptor;
     private PscAuthorizedHandler controller;
-    private LegacyModeSwitch legacyModeSwitch;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         controller = registerMockFor(PscAuthorizedHandler.class);
-        legacyModeSwitch = new LegacyModeSwitch(false);
 
         interceptor = new PscAuthorizationInterceptor();
-        interceptor.setLegacyModeSwitch(legacyModeSwitch);
         interceptor.setApplicationSecurityManager(applicationSecurityManager);
 
         SecurityContextHolderTestHelper.setSecurityContext(
@@ -72,14 +68,6 @@ public class PscAuthorizationInterceptorTest extends WebTestCase {
         assertEquals("Wrong response status", 403, response.getStatus());
     }
 
-    public void testPreHandleReturnsTrueInLegacyMode() throws Exception {
-        legacyModeSwitch.setOn(true);
-        replayMocks();
-
-        assertTrue("Should continue", interceptor.preHandle(request, response, controller));
-        verifyMocks();
-    }
-
     public void testNonPscAuthorizedHandlersAreBlocked() throws Exception {
         replayMocks();
 
@@ -87,14 +75,6 @@ public class PscAuthorizationInterceptorTest extends WebTestCase {
         verifyMocks();
 
         assertEquals("Wrong response status", 403, response.getStatus());
-    }
-
-    public void testPreHandleDoesNotCareAboutNonAuthorizedHandlersInLegacyMode() throws Exception {
-        legacyModeSwitch.setOn(true);
-        replayMocks();
-
-        assertTrue("Should continue", interceptor.preHandle(request, response, new Object()));
-        verifyMocks();
     }
 
     public void testAuthorizationsReceivesCorrectParameters() throws Exception {

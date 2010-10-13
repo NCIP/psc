@@ -4,10 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityTypeService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -27,7 +25,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Nataliya Shurupova
  */
-@AccessControl(roles = Role.STUDY_ADMIN)
 public class AddEditActivityTypeController extends PscAbstractController implements PscAuthorizedHandler {
     private ActivityTypeDao activityTypeDao;
     private ActivityDao activityDao;

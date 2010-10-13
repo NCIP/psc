@@ -42,9 +42,9 @@ public class SpecificDateBlackout extends BlackoutDate {
 
         SpecificDateBlackout other = (SpecificDateBlackout) o;
 
-        if (day != null ? !day.equals(other.day) : other.day != null) return false;
-        if (month != null ? !month.equals(other.month) : other.month != null) return false;
-        if (year != null ? !year.equals(other.year) : other.year != null) return false;
+        if (day != null ? !day.equals(other.getDay()) : other.getDay() != null) return false;
+        if (month != null ? !month.equals(other.getMonth()) : other.getMonth() != null) return false;
+        if (year != null ? !year.equals(other.getYear()) : other.getYear() != null) return false;
 
         return true;
     }

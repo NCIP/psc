@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.restlets.StudyPrivilege;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 
@@ -13,9 +16,15 @@ import java.util.List;
  */
 public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
     private List<Study> studies;
+    private PscUser user;
 
     public StudyListJsonRepresentation(List<Study> studies) {
         this.studies = studies;
+    }
+
+    public StudyListJsonRepresentation(List<Study> studies, PscUser user) {
+        this.studies = studies;
+        this.user = user;
     }
 
     @Override
@@ -48,7 +57,21 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
             }
             generator.writeEndArray();
         }
+        if (getUser() != null) {
+            writeStudyPrivileges(generator, study);
+        }
         generator.writeEndObject();
+    }
+
+    private void writeStudyPrivileges(JsonGenerator generator, Study study) throws IOException {
+        generator.writeFieldName("privileges");
+        UserTemplateRelationship utr = new UserTemplateRelationship(getUser(), study);
+        generator.writeStartArray();
+        List<StudyPrivilege> privileges = StudyPrivilege.valuesFor(utr);
+        for (StudyPrivilege privilege : privileges) {
+            generator.writeString(privilege.attributeName());
+        }
+        generator.writeEndArray();
     }
 
     private void writeSecondaryIdentifier(JsonGenerator g, StudySecondaryIdentifier identifier) throws IOException {
@@ -60,5 +83,9 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
 
     public List<Study> getStudies() {
         return studies;
+    }
+
+    public PscUser getUser() {
+        return user;
     }
 }

@@ -35,7 +35,6 @@
     <tags:javascriptLink name="ccts-hotlinks"/>
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="error-console"/>
-    <tags:javascriptLink name="common"/>
 
     <script type="text/javascript" src="<c:url value="/public/configuration.js"/>"></script>
     

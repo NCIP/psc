@@ -35,7 +35,6 @@ public class DomainContext {
     private Site site;
     private StudySite studySite;
     private Activity activity;
-    private User user;
     private Amendment amendment;
     private Population population;
 
@@ -164,10 +163,6 @@ public class DomainContext {
         this.activity = activity;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public void setAmendment(Amendment amendment) {
         this.amendment = amendment;
     }
@@ -234,10 +229,6 @@ public class DomainContext {
 
     public Activity getActivity() {
         return activity;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public Amendment getAmendment() {

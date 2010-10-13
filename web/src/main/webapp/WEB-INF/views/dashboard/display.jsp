@@ -18,8 +18,12 @@
 <head>
     <title>Dashboard for ${command.user.displayName}</title>
     <tags:stylesheetLink name="main"/>
+    <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
     <tags:sassLink name="dashboard"/>
+    <tags:icsInstructions/>
 
+    <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:javascriptLink name="jquery/jquery.cookie"/>
     <tags:javascriptLink name="jquery/jquery.query" />
     <tags:javascriptLink name="psc-tools/misc"/>
     <tags:javascriptLink name="resig-templates"/>
@@ -46,7 +50,7 @@
             <ul class="upcoming-day">
                 [# _(subjects).each(function (subject, i) { #]
                     <li class="subject autoclear [#= (i % 2 == 0 ? 'even' : 'odd') #]">
-                        <a href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
+                        <a class="subject-name" href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
                             [#= subject.subject_name #]
                         </a>
                         <ul class="subject-day-activities">
@@ -182,7 +186,7 @@
 
 <%-- ////// AVAILABLE STUDIES --%>
 
-<laf:box title="Available studies" id="available-studies">
+<laf:box title="Available studies" id="available-studies" cssClass="collapsible-children">
     <laf:division>
         <p class="instructions">
             <c:choose>
@@ -200,6 +204,7 @@
         </p>
     </laf:division>
     <c:forEach items="${command.assignableStudies}" var="entry">
+        <div class="collapsible-child closed">
         <h3><a href="<c:url value="/pages/cal/template?study=${entry.key.id}"/>">${entry.key.assignedIdentifier}</a></h3>
         <laf:division>
             <ul class="sites">
@@ -227,6 +232,7 @@
                 </c:forEach>
             </ul>
         </laf:division>
+        </div>
     </c:forEach>
 </laf:box>
 

@@ -5,9 +5,9 @@ psc.source.ManageSources = (function () {
         var checkedElt = getManualTargetSourceElement()
         var sourceName = checkedElt.attr('sourceName')
         var params = {
-            manual_flag: true
+            manual_target: true
         };
-        var url = psc.tools.Uris.relative('/api/v1/sources/'
+        var url = psc.tools.Uris.relative('/api/v1/activities/'
                 +psc.tools.Uris.escapePathElement(sourceName)+'/manual-target')
         var msg = "This will make " +sourceName +
                       " as a manual activty target source"
@@ -36,14 +36,14 @@ psc.source.ManageSources = (function () {
     function displaySourcesList() {
         var columnDefs = [
 	            { key: "name", label: "Source Name ", sortable: true },
-                { key: "manual_flag", label: "Manual Activity Target" }
+                { key: "manual_target", label: "Manual Activity Target" }
             ];
         var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("source-list-table"));
         dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
         dataSource.responseSchema = {
             fields: [
                 { key: "name" },
-                { key: "manual_flag" }
+                { key: "manual_target" }
             ]
 	    };
         new YAHOO.widget.DataTable("source-list", columnDefs, dataSource, {

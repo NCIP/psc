@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.direct;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectException;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectUsernamePasswordAuthenticationToken;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
-import static org.easymock.EasyMock.expect;
 
 import java.io.IOException;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Note that this class only includes tests for differences between
@@ -45,7 +46,7 @@ public class WebSSODirectAuthenticationProviderTest extends AuthenticationTestCa
         };
         provider.setUserDetailsService(userDetailsService);
 
-        userDetailsService.addUser(USERNAME, Role.SUBJECT_COORDINATOR);
+        userDetailsService.addUser(USERNAME, PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     public void testUsernameOnlyPrincipalResultsInNoAuthentication() throws Exception {

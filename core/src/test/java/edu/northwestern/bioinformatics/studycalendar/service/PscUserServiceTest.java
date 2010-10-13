@@ -6,17 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
@@ -31,9 +30,6 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.easymock.classextension.EasyMock;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,34 +41,29 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static org.easymock.EasyMock.*;
 
 public class PscUserServiceTest extends StudyCalendarTestCase {
     private PscUserService service;
 
-    private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
     private User csmUser;
     private Site whatCheer, northLiberty, solon;
-    private Study eg1701;
+    private Study eg1701, fh0001, gi3009;
 
-    private UserService userService;
     private SiteDao siteDao;
     private StudyDao studyDao;
     private StudySiteDao studySiteDao;
     private StudySubjectAssignmentDao assignmentDao;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private AuthorizationManager csmAuthorizationManager;
-    private LegacyModeSwitch aSwitch;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        userService = registerMockFor(UserService.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
         suiteRoleMembershipLoader = registerMockFor(SuiteRoleMembershipLoader.class);
-        aSwitch = new LegacyModeSwitch();
 
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
@@ -82,19 +73,9 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         CsmHelper csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
 
-        PlatformTransactionManager transactionManager = registerMockFor(PlatformTransactionManager.class);
-        DefaultTransactionStatus status = new DefaultTransactionStatus(null, true, true, true, true, null);
-        expect(transactionManager.getTransaction((TransactionDefinition) notNull())).
-            andStubReturn(status);
-        transactionManager.rollback(status);
-        expectLastCall().asStub();
-
         service = new PscUserService();
-        service.setUserService(userService);
-        service.setTransactionManager(transactionManager);
         service.setCsmAuthorizationManager(csmAuthorizationManager);
         service.setSuiteRoleMembershipLoader(suiteRoleMembershipLoader);
-        service.setLegacyModeSwitch(aSwitch);
         service.setCsmHelper(csmHelper);
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
@@ -102,7 +83,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setStudySubjectAssignmentDao(assignmentDao);
 
         csmUser = AuthorizationObjectFactory.createCsmUser(5, "John");
-        legacyUser = Fixtures.createUser(1, "John", 1L, true);
 
         for (SuiteRole role : SuiteRole.values()) {
             Group g = new Group();
@@ -114,13 +94,15 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         whatCheer = setId(987, createSite("What Cheer", "IA987"));
         northLiberty = setId(720, createSite("North Liberty", "IA720"));
         solon = setId(846, createSite("Solon", "IA846"));
+        expect(siteDao.getAll()).andStubReturn(Arrays.asList(whatCheer, northLiberty, solon));
 
         eg1701 = createBasicTemplate("EG 1701");
+        fh0001 = createBasicTemplate("FH 0001");
+        gi3009 = createBasicTemplate("GI 3009");
     }
 
     public void testLoadKnownUserForAcegi() throws Exception {
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
-        expect(userService.getUserByName("John")).andReturn(legacyUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
             new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
         expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
@@ -130,8 +112,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.loadUserByUsername("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
-        assertSame("Wrong legacy user", legacyUser, actual.getLegacyUser());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testNullCsmUserThrowsExceptionForAcegi() throws Exception {
@@ -148,7 +129,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDeactivatedCsmUserThrowsExceptionForAcegi() throws Exception {
-        aSwitch.setOn(false);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
@@ -165,8 +145,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetKnownAuthorizableUser() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
             SuiteRole.SYSTEM_ADMINISTRATOR,
@@ -178,12 +156,10 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getAuthorizableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testExpiredAuthorizableUserIsStillReturned() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(
@@ -196,12 +172,10 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getAuthorizableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testUnknownAuthorizableUserReturnsNull() throws Exception {
-        aSwitch.setOn(false);
-
         expect(csmAuthorizationManager.getUser("John")).andReturn(null);
         replayMocks();
 
@@ -210,7 +184,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetKnownUserForProvisioning() throws Exception {
-        aSwitch.setOn(false);
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         Map<SuiteRole,SuiteRoleMembership> expectedMemberships =
             Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
@@ -222,11 +195,10 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         PscUser actual = service.getProvisionableUser("John");
         assertNotNull(actual);
         assertSame("Wrong user", "John", actual.getUsername());
-        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actual.getMemberships());
     }
 
     public void testGetNullCsmUserForProvisioningReturnsNull() throws Exception {
-        aSwitch.setOn(false);
         expect(csmAuthorizationManager.getUser("John")).andReturn(null);
         replayMocks();
 
@@ -235,7 +207,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDeactivatedCsmUserIsReturnedForProvisioning() throws Exception {
-        aSwitch.setOn(false);
         csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
         expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
         expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId())).
@@ -303,7 +274,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of PSC users", 1, actual.size());
         PscUser actualUser = actual.iterator().next();
         assertSame("Wrong CSM user", csmUser, actualUser.getCsmUser());
-        assertSame("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actualUser.getMemberships());
     }
 
     public void testGetPscUsersFromCsmUsersWithPartial() throws Exception {
@@ -320,7 +291,31 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of PSC users", 1, actual.size());
         PscUser actualUser = actual.iterator().next();
         assertSame("Wrong CSM user", csmUser, actualUser.getCsmUser());
-        assertSame("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+        assertEquals("Wrong memberships", expectedMemberships, actualUser.getMemberships());
+    }
+
+    public void testGetPscUsersFromCsmUsersReSortsTheMemberships() throws Exception {
+        Map<SuiteRole, SuiteRoleMembership> expectedMemberships =
+            new MapBuilder<SuiteRole, SuiteRoleMembership>().
+                put(SuiteRole.SYSTEM_ADMINISTRATOR,
+                    new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null)).
+                put(SuiteRole.AE_EXPEDITED_REPORT_REVIEWER,
+                    new SuiteRoleMembership(SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, null, null)).
+                put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER,
+                    new SuiteRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, null, null)).
+                toMap();
+        expect(suiteRoleMembershipLoader.getRoleMemberships(5L)).andReturn(expectedMemberships);
+
+        replayMocks();
+        Collection<PscUser> actual = service.getPscUsers(Collections.singleton(csmUser), false);
+        verifyMocks();
+
+        Map<SuiteRole, SuiteRoleMembership> actualMemberships =
+            actual.iterator().next().getMemberships();
+        Iterator<SuiteRole> it = actualMemberships.keySet().iterator();
+        assertEquals("Wrong 1st role", SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, it.next());
+        assertEquals("Wrong 2nd role", SuiteRole.SYSTEM_ADMINISTRATOR, it.next());
+        assertEquals("Wrong 3rd role", SuiteRole.AE_EXPEDITED_REPORT_REVIEWER, it.next());
     }
 
     public void testVisibleAssignments() throws Exception {
@@ -707,6 +702,90 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Should have no colleagues", 0, colleagues.size());
     }
+
+    ////// vis auth info
+
+    public void testVisibleAuthInfoForRandomUserIsEmpty() throws Exception {
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.DATA_READER).forAllSites().forAllStudies().toUser());
+        verifyMocks();
+
+        assertTrue("Should have no sites", actual.getSites().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForSiteParticipation().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForTemplateManagement().isEmpty());
+        assertTrue("Should have no roles", actual.getRoles().isEmpty());
+    }
+
+    public void testVisibleAuthInfoForSystemAdmin() throws Exception {
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
+        verifyMocks();
+
+        assertTrue("Should have no sites", actual.getSites().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForSiteParticipation().isEmpty());
+        assertTrue("Should have no studies", actual.getStudiesForTemplateManagement().isEmpty());
+        assertEquals("Should have 2 roles: " + actual.getRoles(), 2, actual.getRoles().size());
+        assertContains(actual.getRoles(), SuiteRole.SYSTEM_ADMINISTRATOR);
+        assertContains(actual.getRoles(), SuiteRole.USER_ADMINISTRATOR);
+    }
+
+    public void testVisibleAuthInfoForUnlimitedUserAdmin() throws Exception {
+        List<Study> expectedManaged = Arrays.asList(eg1701, fh0001);
+        List<Study> expectedParticipating = Arrays.asList(gi3009, fh0001);
+        expect(studyDao.getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forAllManagingSites().forAllParticipatingSites())).
+            andReturn(expectedManaged);
+        expect(studyDao.getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forAllManagingSites().forAllParticipatingSites())).
+            andReturn(expectedParticipating);
+
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser());
+        verifyMocks();
+
+        assertEquals("Should have all sites", 3, actual.getSites().size());
+        assertSame("Wrong participating studies", expectedParticipating,
+            actual.getStudiesForSiteParticipation());
+        assertSame("Wrong managed studies", expectedManaged,
+            actual.getStudiesForTemplateManagement());
+        assertEquals("Should have all roles: " + actual.getRoles(),
+            SuiteRole.values().length, actual.getRoles().size());
+    }
+
+    public void testVisibleAuthInfoForLimitedUserAdmin() throws Exception {
+        List<Study> expectedManaged = Arrays.asList(fh0001);
+        List<Study> expectedParticipating = Arrays.asList(eg1701);
+        expect(studyDao.getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forManagingSiteIdentifiers(whatCheer.getAssignedIdentifier()).
+                forParticipatingSiteIdentifiers(whatCheer.getAssignedIdentifier()))).
+            andReturn(expectedManaged);
+        expect(studyDao.getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forManagingSiteIdentifiers(whatCheer.getAssignedIdentifier()).
+                forParticipatingSiteIdentifiers(whatCheer.getAssignedIdentifier()))).
+            andReturn(expectedParticipating);
+
+        replayMocks();
+        VisibleAuthorizationInformation actual = service.
+            getVisibleAuthorizationInformationFor(new PscUserBuilder().
+                add(PscRole.USER_ADMINISTRATOR).forSites(whatCheer).toUser());
+        verifyMocks();
+
+        assertEquals("Should have one site", Arrays.asList(whatCheer), actual.getSites());
+        assertSame("Wrong participating studies", expectedParticipating,
+            actual.getStudiesForSiteParticipation());
+        assertSame("Wrong managed studies", expectedManaged,
+            actual.getStudiesForTemplateManagement());
+        assertEquals("Should have all non-global roles: " + actual.getRoles(),
+            19, actual.getRoles().size());
+    }
+
+    ////// helpers
 
     private SuiteRoleMembership catholicRoleMembership(SuiteRole role) {
         SuiteRoleMembership srm = new SuiteRoleMembership(role, null, null);

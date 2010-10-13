@@ -3,14 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAuthorizationInformation;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -22,11 +23,7 @@ import org.json.JSONObject;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createCsmUser;
 import static org.easymock.EasyMock.expect;
@@ -46,8 +43,7 @@ public class AdministerUserCommandTest extends WebTestCase {
     private AuthorizationManager authorizationManager;
     private ProvisioningSessionFactory psFactory;
     private AuthenticationSystem authenticationSystem;
-    private SiteDao siteDao;
-    private StudyDao studyDao;
+    private StubPscUserService pscUserService;
 
     private Errors errors;
 
@@ -73,17 +69,12 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         austin = Fixtures.createSite("A", "i-a");
         sanAntonio = Fixtures.createSite("SA", "i-sa");
-        siteDao = new SiteDao() {
-            @Override
-            public List<Site> getAll() {
-                return Arrays.asList(austin, sanAntonio);
-            }
-        };
 
         studyA = Fixtures.createBasicTemplate("A");
         studyB = Fixtures.createBasicTemplate("B");
         studyC = Fixtures.createBasicTemplate("C");
-        studyDao = new StubStudyDao();
+
+        pscUserService = new StubPscUserService();
 
         PscUser principal = new PscUserBuilder("zelda").add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser();
         principal.getCsmUser().setUserId(99L);
@@ -100,8 +91,8 @@ public class AdministerUserCommandTest extends WebTestCase {
 
     private AdministerUserCommand create(PscUser existingUser, PscUser provisioner) {
         return AdministerUserCommand.create(existingUser,
-            psFactory, authorizationManager, authenticationSystem, applicationSecurityManager, siteDao, studyDao,
-            provisioner
+            psFactory, authorizationManager, authenticationSystem, applicationSecurityManager,
+            pscUserService, provisioner
         );
     }
 
@@ -115,29 +106,53 @@ public class AdministerUserCommandTest extends WebTestCase {
         assertTrue("Current should be set empty", actual.getUser().getMemberships().isEmpty());
     }
 
+    public void testCreateCopiesVisibleAuthorizationInfoFromPscUserService() throws Exception {
+        VisibleAuthorizationInformation expectedInfo = new VisibleAuthorizationInformation();
+        expectedInfo.setRoles(Arrays.asList(SuiteRole.DATA_ANALYST));
+        expectedInfo.setSites(Arrays.asList(sanAntonio));
+        expectedInfo.setStudiesForTemplateManagement(Arrays.asList(studyC));
+        expectedInfo.setStudiesForSiteParticipation(Arrays.asList(studyA, studyC));
+        pscUserService.setSpecialInfo(expectedInfo);
+
+        PscUser provisioner = AuthorizationObjectFactory.createPscUser("someone");
+
+        AdministerUserCommand actual = create(pscUser, provisioner);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            1, actual.getProvisionableRoles().size());
+        assertMayProvision(SuiteRole.DATA_ANALYST, actual);
+
+        assertEquals("Should be able to provision for one specific site",
+            1, actual.getProvisionableSites().size());
+        assertTrue("Should be able to provision for san antonio",
+            actual.getProvisionableSites().contains(sanAntonio));
+        assertFalse("Should not be able to provision for \"all sites\"",
+            actual.getCanProvisionAllSites());
+
+        assertEquals("Should be able to provision for one specific managed study",
+            1, actual.getProvisionableManagedStudies().size());
+        assertContains(actual.getProvisionableManagedStudies(), studyC);
+        assertFalse("Should not be able to provision for \"all studies\" for template managers",
+            actual.getCanProvisionManagementOfAllStudies());
+
+        assertEquals("Should be able to provision for two specific participating studies",
+            2, actual.getProvisionableParticipatingStudies().size());
+        assertContains(actual.getProvisionableParticipatingStudies(), studyA);
+        assertContains(actual.getProvisionableParticipatingStudies(), studyC);
+        assertFalse("Should not be able to provision for \"all studies\" for site participation",
+            actual.getCanProvisionParticipationInAllStudies());
+    }
+
     public void testCreateForSysAdminProvisioner() throws Exception {
         PscUser provisioner = new PscUserBuilder("jo").
             add(PscRole.SYSTEM_ADMINISTRATOR).
             toUser();
         AdministerUserCommand actual = create(pscUser, provisioner);
 
-        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
-            2, actual.getProvisionableRoles().size());
-        assertMayProvision(SuiteRole.USER_ADMINISTRATOR, actual);
-        assertMayProvision(SuiteRole.SYSTEM_ADMINISTRATOR, actual);
-
-        assertEquals("Should not be able to provision for any specific sites",
-            0, actual.getProvisionableSites().size());
         assertTrue("Should be able to provision for \"all sites\"",
             actual.getCanProvisionAllSites());
-
-        assertEquals("Should not be able to provision for any specific managed studies",
-            0, actual.getProvisionableManagedStudies().size());
         assertFalse("Should be not able to provision for \"all studies\" for template managers",
             actual.getCanProvisionManagementOfAllStudies());
-
-        assertEquals("Should not be able to provision for any specific participating studies",
-            0, actual.getProvisionableParticipatingStudies().size());
         assertFalse("Should be not able to provision for \"all studies\" for site participation",
             actual.getCanProvisionParticipationInAllStudies());
     }
@@ -148,32 +163,10 @@ public class AdministerUserCommandTest extends WebTestCase {
             toUser();
         AdministerUserCommand actual = create(pscUser, provisioner);
 
-        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
-            SuiteRole.values().length, actual.getProvisionableRoles().size());
-        for (SuiteRole role : SuiteRole.values()) {
-            assertMayProvision(role, actual);
-        }
-
-        assertEquals("Should be able to provision for any specific site",
-            2, actual.getProvisionableSites().size());
-        assertTrue("Should be able to provision for austin",
-            actual.getProvisionableSites().contains(austin));
-        assertTrue("Should be able to provision for san antonio",
-            actual.getProvisionableSites().contains(sanAntonio));
         assertTrue("Should be able to provision for \"all sites\"",
             actual.getCanProvisionAllSites());
-
-        assertEquals("Should be able to provision for all specific managed studies",
-            2, actual.getProvisionableManagedStudies().size());
-        assertContains(actual.getProvisionableManagedStudies(), studyA);
-        assertContains(actual.getProvisionableManagedStudies(), studyB);
         assertTrue("Should be able to provision for \"all studies\" for template managers",
             actual.getCanProvisionManagementOfAllStudies());
-
-        assertEquals("Should be able to provision for all specific participating studies",
-            2, actual.getProvisionableParticipatingStudies().size());
-        assertContains(actual.getProvisionableParticipatingStudies(), studyC);
-        assertContains(actual.getProvisionableParticipatingStudies(), studyB);
         assertTrue("Should be able to provision for \"all studies\" for site participation",
             actual.getCanProvisionParticipationInAllStudies());
     }
@@ -184,28 +177,10 @@ public class AdministerUserCommandTest extends WebTestCase {
             toUser();
         AdministerUserCommand actual = create(pscUser, provisioner);
 
-        // expect to be able to provision all non-scoped roles
-        int expectedRoleCount = 0;
-        for (SuiteRole role : SuiteRole.values()) if (role.isScoped()) expectedRoleCount++;
-        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
-            expectedRoleCount, actual.getProvisionableRoles().size());
-
-        assertEquals("Should be able to provision for the specific site",
-            1, actual.getProvisionableSites().size());
-        assertTrue("Should be able to provision for san antonio",
-            actual.getProvisionableSites().contains(sanAntonio));
         assertFalse("Should not be able to provision for \"all sites\"",
             actual.getCanProvisionAllSites());
-
-        assertEquals("Should be able to provision for some specific managed studies",
-            1, actual.getProvisionableManagedStudies().size());
-        assertContains(actual.getProvisionableManagedStudies(), studyA);
         assertTrue("Should be able to provision for \"all studies\" for template managers",
             actual.getCanProvisionManagementOfAllStudies());
-
-        assertEquals("Should be able to provision for some specific participating studies",
-            1, actual.getProvisionableParticipatingStudies().size());
-        assertContains(actual.getProvisionableParticipatingStudies(), studyC);
         assertTrue("Should be able to provision for \"all studies\" for site participation",
             actual.getCanProvisionParticipationInAllStudies());
     }
@@ -225,6 +200,35 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             0, actual.getProvisionableRoles().size());
+    }
+
+    public void testProvisionableRoleGroups() throws Exception {
+        VisibleAuthorizationInformation expectedInfo = new VisibleAuthorizationInformation();
+        expectedInfo.setRoles(Arrays.asList(SuiteRole.STUDY_QA_MANAGER, SuiteRole.AE_RULE_AND_REPORT_MANAGER));
+        pscUserService.setSpecialInfo(expectedInfo);
+
+        PscUser provisioner = AuthorizationObjectFactory.createPscUser("someone");
+
+        AdministerUserCommand actual = create(pscUser, provisioner);
+
+        Map<PscRoleGroup, Collection<ProvisioningRole>> groups = actual.getProvisionableRoleGroups();
+        
+        assertEquals("Wrong number of groups", 3, groups.size());
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.SITE_MANAGEMENT);
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.TEMPLATE_MANAGEMENT);
+        assertContains("Missing role group", groups.keySet(), PscRoleGroup.SUITE_ROLES);
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
+        assertContains("Missing corresponding role", 
+            groups.get(PscRoleGroup.SITE_MANAGEMENT), new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER));
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SITE_MANAGEMENT).size());
+        assertContains("Missing corresponding role",
+            groups.get(PscRoleGroup.TEMPLATE_MANAGEMENT), new ProvisioningRole(SuiteRole.STUDY_QA_MANAGER));
+
+        assertEquals("Wrong number of roles", 1, groups.get(PscRoleGroup.SUITE_ROLES).size());
+        assertContains("Missing corresponding role",
+            groups.get(PscRoleGroup.SUITE_ROLES), new ProvisioningRole(SuiteRole.AE_RULE_AND_REPORT_MANAGER));
     }
 
     private void assertMayProvision(SuiteRole expectedRole, AdministerUserCommand actual) {
@@ -592,28 +596,24 @@ public class AdministerUserCommandTest extends WebTestCase {
 
     ////// INNER CLASSES
 
-    private class StubStudyDao extends StudyDao {
-        @Override
-        public List<Study> getAll() {
-            return Arrays.asList(studyA, studyB, studyC);
-        }
+    private class StubPscUserService extends PscUserService {
+        private VisibleAuthorizationInformation specialInfo;
 
         @Override
-        public List<Study> getVisibleStudiesForTemplateManagement(VisibleStudyParameters params) {
-            if (params.isAllManagingSites()) {
-                return Arrays.asList(studyA, studyB);
+        public VisibleAuthorizationInformation getVisibleAuthorizationInformationFor(
+            PscUser user
+        ) {
+            if (specialInfo == null) {
+                VisibleAuthorizationInformation info = new VisibleAuthorizationInformation();
+                info.setSites(Arrays.asList(austin, sanAntonio));
+                return info;
             } else {
-                return Arrays.asList(studyA);
+                return specialInfo;
             }
         }
 
-        @Override
-        public List<Study> getVisibleStudiesForSiteParticipation(VisibleStudyParameters params) {
-            if (params.isAllParticipatingSites()) {
-                return Arrays.asList(studyB, studyC);
-            } else {
-                return Arrays.asList(studyC);
-            }
+        public void setSpecialInfo(VisibleAuthorizationInformation specialInfo) {
+            this.specialInfo = specialInfo;
         }
     }
 }

@@ -19,6 +19,11 @@ public class LoginFormReaderTest extends TestCase {
             "_c8B00714F-26E8-B6FA-4E45-731B3FDB1440_k825D6395-3658-E499-B959-FC04976460BF");
     }
 
+    public void testCanExtractLoginTicketFromUamsCASServerLoginPage() throws Exception {
+        assertLoginTicketIn("uams-login.html",
+            "_c6B21E859-BBD1-23A3-FCA6-89E5122F9014_k394073A9-6E82-B9E1-06EE-1F3CE2543CB6");
+    }
+
     public void testCannotGetLTFromNonLoginPage() throws Exception {
         try {
             readerFor("random.html").getLoginTicket();

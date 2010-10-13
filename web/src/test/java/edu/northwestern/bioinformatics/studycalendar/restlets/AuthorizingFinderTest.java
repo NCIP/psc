@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -12,7 +11,6 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.easymock.classextension.EasyMock;
 import org.restlet.Context;
-import org.restlet.Finder;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -34,14 +32,13 @@ import static org.restlet.data.Method.*;
 public class AuthorizingFinderTest extends RestletTestCase {
     private static final String BEAN_NAME = "timber";
     private BeanFactory beanFactory;
-    private AuthorizingFinder legacyFinder, finder;
+    private AuthorizingFinder finder;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         beanFactory = registerMockFor(BeanFactory.class);
-        legacyFinder = new AuthorizingFinder(beanFactory, BEAN_NAME, true);
-        finder = new AuthorizingFinder(beanFactory, BEAN_NAME, false);
+        finder = new AuthorizingFinder(beanFactory, BEAN_NAME);
     }
 
     public void testNonAuthorizingResourceAlwaysLetIn() throws Exception {
@@ -90,34 +87,6 @@ public class AuthorizingFinderTest extends RestletTestCase {
         expectStatusForMethod(DELETE, Status.CLIENT_ERROR_FORBIDDEN);
     }
 
-    public void testLegacyNonAuthorizingResourceAlwaysLetIn() throws Exception {
-        request.setMethod(GET);
-
-        Resource mockResource = registerMockFor(Resource.class);
-        expect(beanFactory.getBean(BEAN_NAME)).andReturn(mockResource);
-        expect(mockResource.allowGet()).andReturn(true);
-        mockResource.init((Context) EasyMock.anyObject(), eq(request), eq(response));
-        mockResource.handleGet();
-
-        replayMocks();
-        legacyFinder.handle(request, response);
-        verifyMocks();
-
-        assertResponseStatus(Status.SUCCESS_OK);
-    }
-
-    public void testLegacyAuthorizingResourceLetInWhenAuthorized() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request,
-            new TestingAuthenticationToken(null, null, new Role[] { Role.SITE_COORDINATOR, Role.STUDY_ADMIN }));
-        expectStatusForMethod(legacyFinder, DELETE, Status.SUCCESS_OK);
-    }
-
-    public void testAuthorizingResource403sWhenNotAuthorized() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request,
-            new TestingAuthenticationToken(null, null, new Role[] { Role.SITE_COORDINATOR, Role.STUDY_ADMIN }));
-        expectStatusForMethod(legacyFinder, POST, Status.CLIENT_ERROR_FORBIDDEN);
-    }
-
     private PscUser getCurrentUser() {
         return (PscUser) PscGuard.getCurrentAuthenticationToken(request).getPrincipal();
     }
@@ -139,11 +108,6 @@ public class AuthorizingFinderTest extends RestletTestCase {
     }
 
     private void expectStatusForMethod(Method method, Status status) {
-        expectStatusForMethod(finder, method, status);
-    }
-
-    @Deprecated
-    private void expectStatusForMethod(Finder finder, Method method, Status status) {
         request.setMethod(method);
         expect(beanFactory.getBean(BEAN_NAME)).andReturn(new TestAuthorizingResource());
 
@@ -161,8 +125,6 @@ public class AuthorizingFinderTest extends RestletTestCase {
             addAuthorizationsFor(POST, PscRole.SYSTEM_ADMINISTRATOR);
             addAuthorizationsFor(DELETE,
                 ResourceAuthorization.create(PscRole.STUDY_QA_MANAGER, Fixtures.createSite("A", "a")));
-            setAuthorizedFor(POST, Role.SYSTEM_ADMINISTRATOR);
-            setAuthorizedFor(DELETE, Role.STUDY_ADMIN);
             setReadable(true);
             setModifiable(true);
         }

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
@@ -34,9 +33,6 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
-        setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
-
         addAuthorizationsFor(Method.GET, getSite(), getStudy(),
                 STUDY_TEAM_ADMINISTRATOR,
                 STUDY_SUBJECT_CALENDAR_MANAGER,

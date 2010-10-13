@@ -86,12 +86,16 @@ public class ManagedSchedulesResource extends AbstractPscResource {
         return assignments;
     }
 
-    private PscUser getRequestedUser() {
-        return pscUserService.getAuthorizableUser(
-            UriTemplateParameters.USERNAME.extractFrom(getRequest()));
+    private PscUser getRequestedUser() throws ResourceException {
+        String userName = UriTemplateParameters.USERNAME.extractFrom(getRequest());
+        PscUser user = pscUserService.getAuthorizableUser(userName);
+        if (user == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Unknown user: " +userName);
+        }
+        return user;
     }
 
-    private Representation createICSRepresentation(List<UserStudySubjectAssignmentRelationship> assignments) {
+    private Representation createICSRepresentation(List<UserStudySubjectAssignmentRelationship> assignments) throws ResourceException {
         MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {

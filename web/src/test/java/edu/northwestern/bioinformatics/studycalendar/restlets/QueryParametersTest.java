@@ -48,4 +48,20 @@ public class QueryParametersTest extends RestletTestCase {
         QueryParameters.Q.putIn(request, "quux");
         assertEquals("http://something/foo?q=bar&q=quux", request.getResourceRef().toString());
     }
+
+    public void testReplaceIn() throws Exception {
+        request.setResourceRef("http://something/foo");
+        QueryParameters.LABEL.putIn(request, "zip");
+        QueryParameters.Q.replaceIn(request, "bar");
+        QueryParameters.Q.replaceIn(request, "quux");
+        assertEquals("http://something/foo?label=zip&q=quux", request.getResourceRef().toString());
+    }
+
+    public void testRemoveFrom() throws Exception {
+        request.setResourceRef("http://something/foo");
+        QueryParameters.LABEL.putIn(request, "zip");
+        QueryParameters.Q.putIn(request, "bar");
+        QueryParameters.Q.removeFrom(request);
+        assertEquals("http://something/foo?label=zip", request.getResourceRef().toString());
+    }
 }

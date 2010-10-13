@@ -4,14 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.MockDbMetadata;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
-import static org.easymock.classextension.EasyMock.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -71,20 +72,13 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
         assertSame("Initializer is not the injected one", sampleSourceInitializer, initializer.getInitializerSeries().get(0));
     }
 
-    public void testUsersAndRolesHandledByUserInitializer() throws Exception {
-        metadata.link("users", "user_roles");
-        metadata.link("user_roles", "user_role_sites", "user_role_study_sites");
+    public void testUsersHandledByUserInitializer() throws Exception {
+        metadata.solo("csm_user");
 
-        assertEquals("Wrong number of initializers", 4, initializer.getInitializerSeries().size());
-        assertRowPreservingInitializer("users", "id", getInitializerSeriesMap().get("users"));
-        assertRowPreservingInitializer("user_roles", "id", getInitializerSeriesMap().get("user_roles"));
-        assertRowPreservingInitializer("user_role_sites", Arrays.asList("user_role_id", "site_id"), 
-            getInitializerSeriesMap().get("user_role_sites"));
-        assertSame("user_role_sites should be handled by injected UsersInitializer", usersInitializer,
-            getInitializerSeriesMap().get("user_role_sites"));
-        assertRowPreservingInitializer("user_role_study_sites",
-            Arrays.asList("user_role_id", "study_site_id"),
-            getInitializerSeriesMap().get("user_role_study_sites"));
+        assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
+        assertRowPreservingInitializer("csm_user", "user_id", getInitializerSeriesMap().get("csm_user"));
+        assertSame("csm_user should be handled by injected UsersInitializer", usersInitializer,
+            getInitializerSeriesMap().get("csm_user"));
     }
 
     public void testCsmTablesAreHandledByRowPreservingInitializer() throws Exception {

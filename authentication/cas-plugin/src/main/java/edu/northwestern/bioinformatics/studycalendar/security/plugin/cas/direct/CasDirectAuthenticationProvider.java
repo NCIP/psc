@@ -6,6 +6,7 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 
 import java.io.IOException;
@@ -38,9 +39,10 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
             boolean loginSucceeded = executeDirectAuthentication(http, authentication);
             if (loginSucceeded) {
                 String username = getUsername(authentication);
+                UserDetails user = getUserDetailsService().loadUserByUsername(username);
                 return new CasDirectUsernamePasswordAuthenticationToken(
-                    username, "[REMOVED PASSWORD]",
-                    userDetailsService.loadUserByUsername(username).getAuthorities()
+                    user, "[REMOVED PASSWORD]",
+                    user.getAuthorities()
                 );
             } else {
                 throw new BadCredentialsException(
@@ -54,7 +56,7 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
     }
 
     protected DirectLoginHttpFacade createLoginFacade() {
-        return new DirectLoginHttpFacade(serviceUrl, loginUrl);
+        return new DirectLoginHttpFacade(getLoginUrl(), getServiceUrl());
     }
 
     protected String getUsername(Authentication authentication) {

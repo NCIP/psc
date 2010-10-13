@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -22,7 +21,6 @@ import java.util.Collection;
 public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private LegacyModeSwitch legacyModeSwitch;
     private ApplicationSecurityManager applicationSecurityManager;
 
     @Override
@@ -30,42 +28,37 @@ public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(
         HttpServletRequest request, HttpServletResponse response, Object handler
     ) throws Exception {
-        if (legacyModeSwitch.isOn()) {
-            log.debug("Skipping interceptor authorization in legacy mode");
-            return true;
-        } else {
-            if (!(handler instanceof PscAuthorizedHandler)) {
-                log.warn("Encountered secured handler with no authorization information ({}).  It will never execute.", handler);
-                return forbidden(response);
-            }
-
-            log.debug("Performing interceptor authorization for {}", handler);
-
-            PscUser user = applicationSecurityManager.getUser();
-            if (user == null) {
-                log.debug("Blocking execution of {} because no one is logged in", handler);
-                return forbidden(response);
-            }
-
-            Collection<ResourceAuthorization> authorizations;
-            try {
-                authorizations = ((PscAuthorizedHandler) handler).authorizations(request.getMethod(), request.getParameterMap());
-            } catch (Exception e) {
-                log.error("Extracting authorizations from " + handler + " failed.  Locking down.", e);
-                return forbidden(response);
-            }
-
-            if (authorizations == null) return true;
-            for (ResourceAuthorization authorization : authorizations) {
-                if (authorization.permits(user)) return true;
-            }
-
-            log.info("Forbidding execution of {} for {} because the user does not have sufficient privileges.",
-                handler.getClass().getName(), request.getRequestURI());
-            log.info("- One of these is required: {}", authorizations);
-            log.info("- User has these roles {}", Arrays.asList(user.getAuthorities()));
+        if (!(handler instanceof PscAuthorizedHandler)) {
+            log.warn("Encountered secured handler with no authorization information ({}).  It will never execute.", handler);
             return forbidden(response);
         }
+
+        log.debug("Performing interceptor authorization for {}", handler);
+
+        PscUser user = applicationSecurityManager.getUser();
+        if (user == null) {
+            log.debug("Blocking execution of {} because no one is logged in", handler);
+            return forbidden(response);
+        }
+
+        Collection<ResourceAuthorization> authorizations;
+        try {
+            authorizations = ((PscAuthorizedHandler) handler).authorizations(request.getMethod(), request.getParameterMap());
+        } catch (Exception e) {
+            log.error("Extracting authorizations from " + handler + " failed.  Locking down.", e);
+            return forbidden(response);
+        }
+
+        if (authorizations == null) return true;
+        for (ResourceAuthorization authorization : authorizations) {
+            if (authorization.permits(user)) return true;
+        }
+
+        log.info("Forbidding execution of {} for {} because the user does not have sufficient privileges.",
+            handler.getClass().getName(), request.getRequestURI());
+        log.info("- One of these is required: {}", authorizations);
+        log.info("- User has these roles {}", Arrays.asList(user.getAuthorities()));
+        return forbidden(response);
     }
 
     private boolean forbidden(HttpServletResponse response) throws IOException {
@@ -74,11 +67,6 @@ public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
     }
 
     ////// CONFIGURATION
-
-    @Required
-    public void setLegacyModeSwitch(LegacyModeSwitch legacyModeSwitch) {
-        this.legacyModeSwitch = legacyModeSwitch;
-    }
 
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {

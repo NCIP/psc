@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
@@ -16,8 +16,11 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessage;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -32,9 +35,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setSecurityContext;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setUserAndReturnMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.notNull;
 
 /**
  * @author Rhett Sutphin
@@ -56,6 +61,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private Amendment a1;
 
     private PscUser user;
+    private WorkflowService workflowService;
 
     @Override
     protected void setUp() throws Exception {
@@ -64,6 +70,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         deltaService = registerMockFor(DeltaService.class);
         amendmentService = registerMockFor(AmendmentService.class);
         studyConsumer = registerMockFor(StudyConsumer.class);
+        workflowService = registerMockFor(WorkflowService.class);
         StaticNowFactory nowFactory = new StaticNowFactory();
         OsgiLayerTools osgiTools = registerMockFor(OsgiLayerTools.class);
 
@@ -93,6 +100,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setNowFactory(nowFactory);
         controller.setStudyConsumer(studyConsumer);
         controller.setOsgiLayerTools(osgiTools);
+        controller.setWorkflowService(workflowService);
 
         request.setMethod("GET");
         request.setParameter("study", study.getId().toString());
@@ -104,7 +112,12 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         setSecurityContext(user);
 
         expect(osgiTools.getServices(StudyProvider.class)).andStubReturn(Collections.<StudyProvider>emptyList());
+        StudyWorkflowStatus studyWorkflowStatus = registerMockFor(StudyWorkflowStatus.class);
+        expect(workflowService.build((Study) notNull(), (PscUser) notNull())).andReturn(studyWorkflowStatus);
+        expect(studyWorkflowStatus.getMessages()).andReturn(Collections.<WorkflowMessage>emptyList());
         nowFactory.setNowTimestamp(NOW);
+        expect(studyWorkflowStatus.getMessagesIgnoringRevisionMessages()).andReturn(null).anyTimes();
+        expect(studyWorkflowStatus.isRevisionComplete()).andReturn(true).anyTimes();
     }
 
     public void testAuthorizedRoles() {

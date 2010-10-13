@@ -129,6 +129,59 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         assertFalse(errors.hasErrors());
     }
 
+    public void testValidateNewWithoutFirstName() throws Exception {
+        command.setRadioButton(NEW);
+        command.setPersonId(null);
+        command.setFirstName(null);
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate", errors.getFieldError().getCode());
+    }
+
+    public void testValidateNewWithoutLastName() throws Exception {
+        command.setRadioButton(NEW);
+        command.setPersonId(null);
+        command.setLastName(null);
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate", errors.getFieldError().getCode());
+    }
+
+    public void testValidateNewWithoutDoB() throws Exception {
+        command.setRadioButton(NEW);
+        command.setDateOfBirth(null);
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.date.of.birth", errors.getFieldError().getCode());
+    }
+
+    public void testValidateNewWithInvaidDoB() throws Exception {
+        command.setRadioButton(NEW);
+        command.setPersonId(null);
+        command.setDateOfBirth("02/03");
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.date.of.birth", errors.getFieldError().getCode());
+    }
+
+    public void testValidateNewWithoutStartDate() throws Exception {
+        command.setRadioButton(NEW);
+        command.setStartDate(null);
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.a.start.date", errors.getFieldError().getCode());
+    }
+
+    ////// Helper Methods
+    private BindException validateAndReturnErrors() {
+        replayMocks();
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        return errors;
+    }
+
+
     public void testValidateExisting() throws Exception {
         command.setRadioButton(EXISTING);
         command.setIdentifier(subject.getPersonId());

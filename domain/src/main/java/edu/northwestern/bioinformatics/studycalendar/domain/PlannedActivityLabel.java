@@ -158,10 +158,10 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
 
         PlannedActivityLabel that = (PlannedActivityLabel) o;
 
-        if (label != null ? !label.equals(that.label) : that.label != null) return false;
-        if (plannedActivity != null ? !plannedActivity.equals(that.plannedActivity) : that.plannedActivity != null)
+        if (label != null ? !label.equals(that.getLabel()) : that.getLabel() != null) return false;
+        if (plannedActivity != null ? !plannedActivity.equals(that.getPlannedActivity()) : that.getPlannedActivity() != null)
             return false;
-        if (repetitionNumber != null ? !repetitionNumber.equals(that.repetitionNumber) : that.repetitionNumber != null)
+        if (repetitionNumber != null ? !repetitionNumber.equals(that.getRepetitionNumber()) : that.getRepetitionNumber() != null)
             return false;
 
         return true;

@@ -35,17 +35,13 @@ public class SelectStudyController implements Controller, PscAuthorizedHandler {
     @SuppressWarnings({"unchecked"})
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int id = ServletRequestUtils.getRequiredIntParameter(request, "study");
-
-        String isDevelopmentTemplateSelected = ServletRequestUtils.getRequiredStringParameter(request, "isDevelopmentTemplateSelected");
-
         Study study = studyDao.getById(id);
-
         Study theRevisedStudy = null;
 
-        if (isDevelopmentTemplateSelected.equalsIgnoreCase("false")) {
+        if (study.isReleased()) {
             //user has selected the releaesd template so dont revise the study
             theRevisedStudy = study;
-        } else if (isDevelopmentTemplateSelected.equalsIgnoreCase("true") && study.getDevelopmentAmendment() != null) {
+        } else if (study.isInDevelopment() && study.getDevelopmentAmendment() != null) {
             theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
         } else {
             theRevisedStudy = study;
@@ -63,6 +59,7 @@ public class SelectStudyController implements Controller, PscAuthorizedHandler {
             }
         }
         Map model = new HashMap();
+        model.put("study", theRevisedStudy);
         model.put("epochs", displayEpochs);
         return new ModelAndView("template/ajax/displayEpochs", model);
     }

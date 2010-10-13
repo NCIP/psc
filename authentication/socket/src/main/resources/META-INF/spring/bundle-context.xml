@@ -13,7 +13,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
-                <ref bean="requestAuthenticationSocket"/>
                 <ref bean="exceptionTranslationFilter"/>
                 <ref bean="filterInvocationInterceptor"/>
             </list>
@@ -27,11 +26,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <bean id="authenticationSystemSocket"
           class="edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemSocket">
         <property name="configuration" ref="authenticationSystemConfiguration"/>
-    </bean>
-
-    <bean id="filterSecurityInterceptorConfigurer"
-          class="edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer">
-        <property name="filterSecurityInterceptor" ref="filterInvocationInterceptor"/>
     </bean>
 
     <bean id="httpSessionContextIntegrationFilter"
@@ -72,9 +66,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
     </bean>
                                         
-    <bean id="requestAuthenticationSocket"
-          class="edu.northwestern.bioinformatics.studycalendar.security.internal.RequestAuthenticationSocket"/>
-
     <bean id="anonymousProcessingFilter"
           class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
         <property name="key" value="PSC_ANON"/>
@@ -92,19 +83,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="accessDecisionManager">
             <ref local="accessDecisionManager"/>
         </property>
-        <!--
-            objectDefinitionSource is overridden by ControllerSecureUrlCreator
-            (ref'd in spring-servlet.xml). This value stays because Acegi complains if
-            there's no value when the bean is initialized.
-
-            Rejects everything by default so that if objectDefinitionSource isn't
-            updated, the application will be locked down.
-        -->
+        <!-- session authentication enforced for UI only -->
+        <!-- authorization is handled elsewhere -->
         <property name="objectDefinitionSource">
             <value>
-                CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
                 PATTERN_TYPE_APACHE_ANT
-                /**=INVALID
+                /pages/**=IS_AUTHENTICATED_FULLY
             </value>
         </property>
     </bean>
@@ -112,9 +96,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <bean id="accessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
         <property name="decisionVoters">
             <list>
-                <bean class="org.acegisecurity.vote.RoleVoter">
-                    <property name="rolePrefix" value=""/>
-                </bean>
+                <bean class="org.acegisecurity.vote.AuthenticatedVoter"/>
             </list>
         </property>
     </bean>

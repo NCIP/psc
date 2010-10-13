@@ -1,9 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -34,7 +35,10 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
+
+        // site is initialized in super.init
+        addAuthorizationsFor(Method.DELETE, ResourceAuthorization.createSeveral(
+            site, PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER));
     }
 
     @Override

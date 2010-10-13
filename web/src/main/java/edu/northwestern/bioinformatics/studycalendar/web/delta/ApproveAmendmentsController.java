@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -10,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
@@ -31,7 +29,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.SITE_COORDINATOR)
 public class ApproveAmendmentsController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudySiteDao studySiteDao;
     private NowFactory nowFactory;
@@ -45,6 +42,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
         setCrumb(new Crumb());
     }
 
+    @Override
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         String[] studySiteArray = queryParameters.get("studySite");
         try {
@@ -57,7 +55,6 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
             return ResourceAuthorization.createCollection(STUDY_QA_MANAGER);
         }
     }
-    
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

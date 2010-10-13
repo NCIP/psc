@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_EXCEPTIONS_TO;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_REPLY_TO;
+
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,13 +18,13 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class MailMessageFactory implements ServletContextAware {
-    //    private static Log log = LogFactory.getLog(MailMessageFactory.class);
+public class MailMessageFactory implements ServletContextAware, ApplicationPathAware {
     private static Logger log = LoggerFactory.getLogger(MailMessageFactory.class);
 
     private freemarker.template.Configuration freemarkerConfiguration;
     private ServletContext servletContext;
     private Configuration configuration;
+    private String applicationPath;
 
     ////// FACTORY
 
@@ -41,17 +43,12 @@ public class MailMessageFactory implements ServletContextAware {
         }
     }
 
-    public ScheduleNotificationMailMessage createScheduleNotificationMailMessage(String toAddress,
-                                                                                 final Notification notification) {
-        if (toAddress == null || StringUtils.isEmpty(toAddress)) {
-            log.error("to address is null or empty. can not send email for new schedules. ");
-            return null;
-        } else {
-            ScheduleNotificationMailMessage message = configureMessage(new ScheduleNotificationMailMessage());
-            message.setTo(toAddress);
-            message.setNotification(notification);
-            return message;
-        }
+    public NotificationMailMessage createNotificationMailMessage(String subjectHeader, String message) {
+        NotificationMailMessage mailMessage = new NotificationMailMessage();
+        mailMessage.setSubjectHeader(subjectHeader);
+        mailMessage.setMessage(message);
+        mailMessage.setApplicationPath(applicationPath);
+        return configureMessage(mailMessage);
     }
 
     private <T extends StudyCalendarMailMessage> T configureMessage(T message) {
@@ -74,5 +71,9 @@ public class MailMessageFactory implements ServletContextAware {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    public void setApplicationPath(String applicationPath) {
+        this.applicationPath = applicationPath;
     }
 }

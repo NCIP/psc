@@ -1,24 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import org.restlet.Context;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
-import org.restlet.resource.ResourceException;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.MediaType;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Jalpa Patel
@@ -30,15 +28,12 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR);
-
-        addAuthorizationsFor(Method.GET,
-            STUDY_CALENDAR_TEMPLATE_BUILDER,
-            DATA_READER);
+        addAuthorizationsFor(Method.GET, STUDY_CREATOR);
        
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
+    @Override
     public List<Study> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
         return studyConsumer.search(q);
@@ -53,6 +48,7 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
         }
     }
 
+    @Override
     public StudyCalendarXmlCollectionSerializer<Study> getXmlSerializer() {
         return xmlSerializer;
     }

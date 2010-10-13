@@ -37,6 +37,11 @@ public class ProvisioningRoleTest extends TestCase {
         assertEquals(PscRole.DATA_IMPORTER.getDescription(), actual.optString("description"));
     }
 
+    public void testJSONIncludesIsPscRole() throws Exception {
+        JSONObject actual = new ProvisioningRole(SuiteRole.DATA_READER).toJSON();
+        assertEquals("true", actual.optString("isPscRole"));
+    }
+
     public void testJSONIncludesDescriptionForSuiteOnlyRoles() throws Exception {
         JSONObject actual =
             new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();

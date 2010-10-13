@@ -7,7 +7,6 @@ function createAllStudySegmentControls() {
     $$('#epochs ul').each(function(ul) {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
-    populationAddButtonCreate()
 }
 
 //have to call this function separately in selectStudySegment.jsp        
@@ -156,63 +155,11 @@ function createAddEpochControl() {
     $('addEpoch').appendChild(addEpochControl)
 }
 
-function addToBeginSentence(){
-    var studyId = ${param.study}
-    var controlBox = Builder.node("span", {className: 'study-controls controls'})
-    var infoSentence = "To begin, "
-    var renameButton = createRenameControl('study', studyId, "enter", 'study')
-    var endOfInfoSentence = " protocol identifier."
-
-    Event.observe(renameButton, "click", function(e) {
-        Event.stop(e)
-        SC.inPlaceEditors["study-name"].enterEditMode()
-    })
-    var h1BeginSentence = Builder.node("span", {})
-    h1BeginSentence.innerHTML = infoSentence
-    var h1EndSentence = Builder.node("span", {})
-    h1EndSentence.innerHTML = endOfInfoSentence
-
-    controlBox.appendChild(h1BeginSentence)
-    controlBox.appendChild(renameButton)
-    controlBox.appendChild(h1EndSentence)
-    $('enterStudyNameSentence').appendChild(controlBox)
-}
-
-function hideShowEnterStudyName() {
-    if ($('study-name').innerHTML.startsWith('[ABC ')) {
-        $('enterStudyName').show()
-        $('admin-options').hide()
-    } else {
-        $('admin-options').hide()
-        $('enterStudyName').hide()
-    }
-}
-
 function hideShowReleaseTemplateButton() {
     if ($('errorMessages').empty()) {
         $('errorMessages').hide()
-        $('admin-options').show()
     } else {
         $('errorMessages').show()
-        $('admin-options').hide()
-    }
-}
-
-function hideShowAllControls() {
-    if ($('study-name').innerHTML.startsWith('[ABC ')) {
-        $('enterStudyName').show()
-        $('errorMessages').hide()
-        $('admin-options').hide()
-    } else {
-       if ($('errorMessages').empty()) {
-            $('enterStudyName').hide()
-            $('errorMessages').hide()
-            $('admin-options').show()
-       } else {
-            $('errorMessages').show()
-            $('admin-options').hide()
-            $('enterStudyName').hide()
-       }
     }
 }
 
@@ -231,11 +178,7 @@ function createStudyControls(anyProvidersAvailable, canEdit) {
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename", onComplete:function() {
-            if (canEdit) {
-               hideShowAllControls()
-            } else {
-               hideShowEnterStudyName() 
-            }
+            hideShowReleaseTemplateButton()
         }
     })
 

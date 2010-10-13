@@ -3,13 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -25,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
-import static org.apache.commons.collections.CollectionUtils.*;
-import static org.apache.commons.lang.StringUtils.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
+import static org.apache.commons.collections.CollectionUtils.collect;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class StudySiteService {
     private SiteService siteService;
@@ -40,42 +37,6 @@ public class StudySiteService {
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
     private final Log logger = LogFactory.getLog(getClass());
     private StudyDao studyDao;
-
-    public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
-        List<StudySite> studySites = new ArrayList<StudySite>();
-        if (user != null) {
-            UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
-            if (userRole != null) {
-                studySites.addAll(userRole.getStudySites());
-            }
-        }
-        return studySites;
-    }
-
-    public List<StudySite> getStudySitesForSubjectCoordinator(User user, Site site) {
-        List<StudySite> allStudySites = getAllStudySitesForSubjectCoordinator(user);
-        List<StudySite> availableStudySites = new ArrayList<StudySite>();
-
-        for (StudySite studySite : allStudySites) {
-            if (studySite.getSite().equals(site)) {
-                availableStudySites.add(studySite);
-            }
-        }
-        return availableStudySites;
-    }
-
-    public List<StudySite> getStudySitesForSubjectCoordinator(User user, Study study) {
-        List<StudySite> allStudySites = getAllStudySitesForSubjectCoordinator(user);
-        List<StudySite> availableStudySites = new ArrayList<StudySite>();
-
-        for (StudySite studySite : allStudySites) {
-            if (studySite.getStudy().equals(study)) {
-                availableStudySites.add(studySite);
-            }
-        }
-        return availableStudySites;
-    }
-
 
     public List<Site> refreshAssociatedSites(Study study) {
         List<StudySite> updated = refreshStudySitesForStudy(study);
@@ -116,11 +77,6 @@ public class StudySiteService {
         Study study = removing.getStudy();
         site.getStudySites().remove(removing);
         study.getStudySites().remove(removing);
-        if (removing.getUserRoles() != null) {
-            for (UserRole r : removing.getUserRoles()) {
-                r.getStudySites().remove(removing);
-            }
-        }
         studySiteDao.delete(removing);
     }
 

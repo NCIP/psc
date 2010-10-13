@@ -51,8 +51,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer"/>
     <bean id="previousScheduledActivityStateXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PreviousScheduledActivityStateXmlSerializer"/>
-    <bean id="userRolesXmlSerializer" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.UserRolesSerializer"/>
+    <bean id="userRoleMembershipsXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.UserRoleMembershipsXmlSerializer"/>
     <bean id="blackoutDateXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.BlackoutDateXmlSerializer"/>
     <!-- PlanTreeNode Serializers -->
@@ -82,9 +82,6 @@
 
     <bean id="labelXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.LabelXmlSerializer"/>
-
-    <bean id="sourcesXmlSerializer"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SourcesXmlSerializer"/>
 
     <!-- SourceSerializer is for CSV representation.Move to restlets.representation package for #692 -->
     <bean id="sourceSerializer" autowire="byName"

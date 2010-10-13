@@ -130,7 +130,15 @@
                         <ul>
                             <c:forEach items="${entry.value.events}" var="event">
                                 <li>
-                                    <c:if test="${not empty event.population}">${event.population.abbreviation}:</c:if>
+                                    <c:if test="${not empty event.population}">
+                                        <c:set var="populationId" value="${event.population.id}"/>
+                                        <c:forEach items="${study.populations}" var="population">
+                                            <c:if test="${population.id eq populationId}">
+                                                ${population.abbreviation}:
+                                            </c:if>
+                                        </c:forEach>    
+                                        <%--${event.population.abbreviation}:--%>
+                                    </c:if>
                                     <c:choose>
                                         <c:when test="${not editable}"><span>${event.activity.name}</span></c:when>
                                         <c:otherwise><a href="<c:url value="/pages/cal/managePeriodActivities?period=${event.period.id}"/>">${event.activity.name}</a></c:otherwise>

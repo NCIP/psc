@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
@@ -29,21 +28,29 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
     private StudyCalendarXmlCollectionSerializer<BlackoutDate> xmlSerializer;
     private Site site;
     private BlackoutDateDao blackoutDateDao;
+    private ResourceException siteLoadException;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
-        setAuthorizedFor(Method.POST, Role.SYSTEM_ADMINISTRATOR);
-
+        // initialize site first for authorization
+        try {
+            site = loadRequestedSiteObject();
+        } catch (ResourceException e) {
+            siteLoadException = e;
+        }
         addAuthorizationsFor(Method.GET, site,
                 PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
                 DATA_READER);
         addAuthorizationsFor(Method.POST, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
-
     }
 
     public Collection<BlackoutDate> getAllObjects() throws ResourceException {
+        Site requestedSite = getRequestedSiteObject();
+        return requestedSite.getBlackoutDates();
+    }
+
+    private Site loadRequestedSiteObject() throws ResourceException{
         String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
         if (siteIdentifier == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No site in request");
@@ -51,8 +58,15 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
         site = siteService.getByAssignedIdentifier(siteIdentifier);
         if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown site " + siteIdentifier );
+        }
+        return site;
+    }
+
+    private Site getRequestedSiteObject() throws ResourceException {
+        if (siteLoadException != null) {
+            throw siteLoadException;
         } else {
-            return site.getBlackoutDates();
+            return site;
         }
     }
 

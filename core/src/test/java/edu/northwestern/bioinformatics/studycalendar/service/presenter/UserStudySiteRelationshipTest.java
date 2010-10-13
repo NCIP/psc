@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -307,6 +307,27 @@ public class UserStudySiteRelationshipTest extends TestCase {
         assertFalse(
             actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
                 getCanAdministerTeam());
+    }
+
+    ////// canTakeSubjectOffStudy
+
+    public void testCanTakeSubjectOffStudy() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(study)).
+                getCanTakeSubjectOffStudy());
+    }
+
+    public void testCannotTakeSubjectOffStudyAsOther() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forStudies(study)).
+                getCanTakeSubjectOffStudy());
+    }
+
+    public void testCannotTakeSubjectOffStudyWhenThereAreNone() throws Exception {
+        nuF.getStudySubjectAssignments().clear();
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+                getCanTakeSubjectOffStudy());
     }
 
     ////// HELPERS

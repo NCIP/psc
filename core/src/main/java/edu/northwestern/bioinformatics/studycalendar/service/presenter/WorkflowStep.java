@@ -14,7 +14,7 @@ import static edu.northwestern.bioinformatics.studycalendar.service.presenter.Wo
  */
 public enum WorkflowStep {
     SET_ASSIGNED_IDENTIFIER(
-        STUDY, STUDY_CALENDAR_TEMPLATE_BUILDER /* TODO: should be Study Creator */,
+        STUDY, STUDY_CREATOR,
         "needs the assigned identifier set.", null, null),
     ADD_AT_LEAST_ONE_EPOCH(
         REVISION, STUDY_CALENDAR_TEMPLATE_BUILDER,

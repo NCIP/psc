@@ -25,10 +25,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService"/>
     <bean id="scheduleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
-    <bean id="userService" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.service.UserService">
-        <property name="authorizationManager" ref="csmAuthorizationManager"/>
-    </bean>
     <bean id="studyService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudyService"/>
     <bean id="amendmentService" autowire="byName"
@@ -37,14 +33,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
     <bean id="mutatorFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
-    <bean id="subjectCoordinatorDashboardService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
-    <bean id="userRoleService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
-    <bean id="authorizationService" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService"/>
     <bean id="importActivitiesService" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService">
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
@@ -118,8 +108,6 @@
         </property>
         <property name="mailSender" ref="mailSender"/>
         <property name="mailMessageFactory" ref="mailMessageFactory"/>
-        <property name="userService" ref="userService"/>
-        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
     <bean id="activityService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
@@ -137,11 +125,8 @@
 
     <bean id="pscUserService"
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserService">
-        <property name="userService" ref="userService"/>
-        <property name="transactionManager" ref="transactionManager"/>
         <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
-        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
         <property name="csmHelper" ref="suiteCsmHelper"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="studyDao" ref="studyDao"/>

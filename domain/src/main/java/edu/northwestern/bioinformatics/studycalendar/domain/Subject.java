@@ -36,7 +36,6 @@ public class Subject extends AbstractMutableDomainObject {
     // business methods
 
     // The subject identifier could be the Medical Record No based on the site
-
     public void addAssignment(StudySubjectAssignment studySubjectAssignment) {
         getAssignments().add(studySubjectAssignment);
         studySubjectAssignment.setSubject(this);
@@ -45,29 +44,53 @@ public class Subject extends AbstractMutableDomainObject {
     @Transient
     public String getLastFirst() {
         StringBuilder name = new StringBuilder();
-        boolean hasFirstName = getFirstName() != null;
-        if (getLastName() != null) {
+        boolean hasFirstName = true;
+        if (getFirstName() == null || getFirstName().length() == 0) {
+            hasFirstName = false;
+        }
+        boolean hasLastName = true;
+        if (getLastName() == null || getLastName().length() == 0) {
+            hasLastName = false;
+        }
+        if (hasLastName) {
             name.append(getLastName());
             if (hasFirstName) name.append(", ");
         }
         if (hasFirstName) {
             name.append(getFirstName());
         }
-        return name.toString();
+
+        if (name.length() > 0) {
+            return name.toString();
+        } else {
+            return getPersonId();
+        }
     }
 
     @Transient
     public String getFullName() {
         StringBuilder name = new StringBuilder();
-        boolean hasLastName = getLastName() != null;
-        if (getFirstName() != null) {
+        boolean hasFirstName = true;
+        if (getFirstName() == null || getFirstName().length() == 0) {
+            hasFirstName = false;
+        }
+        boolean hasLastName = true;
+        if (getLastName() == null || getLastName().length() == 0) {
+            hasLastName = false;
+        }
+
+        if (hasFirstName) {
             name.append(getFirstName());
             if (hasLastName) name.append(' ');
         }
         if (hasLastName) {
             name.append(getLastName());
         }
-        return name.toString();
+        if (name.length()>0) {
+            return name.toString();
+        } else {
+            return getPersonId();
+        }
     }
 
     // bean methods
@@ -135,14 +158,14 @@ public class Subject extends AbstractMutableDomainObject {
 
         final Subject that = (Subject) o;
 
-        if (dateOfBirth != null ? !dateOfBirth.equals(that.dateOfBirth) : that.dateOfBirth != null)
+        if (dateOfBirth != null ? !dateOfBirth.equals(that.getDateOfBirth()) : that.getDateOfBirth() != null)
             return false;
-        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null)
+        if (firstName != null ? !firstName.equals(that.getFirstName()) : that.getFirstName() != null)
             return false;
-        if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
-        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
-        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
-        if (assignments != null ? !assignments.equals(that.assignments) : that.assignments != null)
+        if (gender != null ? !gender.equals(that.getGender()) : that.getGender() != null) return false;
+        if (lastName != null ? !lastName.equals(that.getLastName()) : that.getLastName() != null) return false;
+        if (personId != null ? !personId.equals(that.getPersonId()) : that.getPersonId() != null) return false;
+        if (assignments != null ? !assignments.equals(that.getAssignments()) : that.getAssignments() != null)
             return false;
 
         return true;

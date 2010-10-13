@@ -34,7 +34,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
 
     private EditPopulationController controller;
     private EditPopulationCommand command;
-
+    private PopulationService populationService;
     private Population originalPopulation;
     private Study study;
 
@@ -43,7 +43,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         super.setUp();
         amendmentService = registerMockFor(AmendmentService.class);
         studyDao = registerDaoMockFor(StudyDao.class);
-        PopulationService populationService = registerMockFor(PopulationService.class);
+        populationService = registerMockFor(PopulationService.class);
         PopulationDao populationDao = registerDaoMockFor(PopulationDao.class);
 
         controller = new EditPopulationController();
@@ -93,7 +93,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), command.getPopulation().getAbbreviation());
         changes.add(changeName);
         changes.add(changeAbbreviation);
-
+        expect( populationService.lookupAndSuggestAbbreviation(originalPopulation, study)).andReturn(originalPopulation);
         expect(amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, study, changes.toArray(new Change[changes.size()]))).andReturn(originalPopulation).anyTimes();
 
         replayMocks();

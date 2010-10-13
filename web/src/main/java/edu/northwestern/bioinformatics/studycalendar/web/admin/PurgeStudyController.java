@@ -2,16 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.json.JSONArray;
@@ -25,7 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.apache.commons.lang.StringUtils.*;
+
 public class PurgeStudyController extends PscCancellableFormController implements PscAuthorizedHandler {
     private StudySiteDao studySiteDao;
     private StudyDao studyDao;

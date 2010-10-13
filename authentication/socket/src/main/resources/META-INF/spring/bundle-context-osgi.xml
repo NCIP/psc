@@ -23,18 +23,6 @@
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:service id="filterSecurityInterceptorConfigurerRegistration" ref="filterSecurityInterceptorConfigurer">
-        <osgi:interfaces>
-            <value>org.osgi.service.cm.ManagedService</value>
-            <value>edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer</value>
-        </osgi:interfaces>
-        <osgi:service-properties>
-            <entry key="service.pid">
-                <util:constant static-field="edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer.SERVICE_PID"/>
-            </entry>
-        </osgi:service-properties>
-    </osgi:service>
-
     <osgi:reference id="pscUserDetailsService"
                     interface="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService"/>
 </beans>

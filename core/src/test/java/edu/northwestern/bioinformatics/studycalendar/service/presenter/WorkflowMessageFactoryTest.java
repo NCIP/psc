@@ -42,7 +42,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
     }
 
     public void testMessageForStudyIdentWhenCanPerform() throws Exception {
-        expect(template.getCanDevelop()).andReturn(true);
+        expect(template.getCanAssignIdentifiers()).andReturn(true);
 
         replayMocks();
         WorkflowMessage msg = factory.
@@ -53,7 +53,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
     }
 
     public void testMessageForStudyIdentWhenCannotPerform() throws Exception {
-        expect(template.getCanDevelop()).andReturn(false);
+        expect(template.getCanAssignIdentifiers()).andReturn(false);
 
         replayMocks();
         WorkflowMessage msg = factory.
@@ -61,7 +61,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "needs the assigned identifier set.  A <em>Study Calendar Template Builder</em> can do this.",
+            "needs the assigned identifier set.  A <em>Study Creator</em> can do this.",
             msg.getHtml());
     }
 

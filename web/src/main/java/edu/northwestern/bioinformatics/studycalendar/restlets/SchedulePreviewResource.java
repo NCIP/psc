@@ -39,7 +39,6 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     public void init(Context context, Request request, Response response) {
         helper.setRequest(request);
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
         addAuthorizationsFor(Method.GET, helper.getReadAuthorizations());
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));

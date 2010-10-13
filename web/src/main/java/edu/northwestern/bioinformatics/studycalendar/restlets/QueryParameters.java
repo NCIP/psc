@@ -28,7 +28,11 @@ public enum QueryParameters {
     START_DATE,
     END_DATE,
     RESPONSIBLE_USER,
-    PERSON_ID
+    PERSON_ID,
+    PRIVILEGE,
+    BRIEF,
+    LIMIT,
+    OFFSET
     ;
 
     public String attributeName() {
@@ -46,5 +50,18 @@ public enum QueryParameters {
 
     public void putIn(Request request, String value) {
         request.getResourceRef().addQueryParameter(attributeName(), value);
+    }
+
+    public void replaceIn(Request request, String value) {
+        Form query = request.getResourceRef().getQueryAsForm();
+        query.removeAll(attributeName());
+        query.add(attributeName(), value);
+        request.getResourceRef().setQuery(query.getQueryString());
+    }
+
+    public void removeFrom(Request request) {
+        Form query = request.getResourceRef().getQueryAsForm();
+        query.removeAll(attributeName());
+        request.getResourceRef().setQuery(query.getQueryString());
     }
 }

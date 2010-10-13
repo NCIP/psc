@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import junit.framework.TestCase;
 import org.restlet.resource.Resource;
@@ -90,11 +89,7 @@ public class DispatcherServletInitializationTest extends TestCase {
                 msg.append("\n  ").append(s);
             }
 
-            if (((LegacyModeSwitch) ctxt.getBean("authorizationLegacyModeSwitch")).isOn()) {
-                System.out.println(msg.toString());
-            } else {
-                fail(msg.toString());
-            }
+            fail(msg.toString());
         }
     }
 

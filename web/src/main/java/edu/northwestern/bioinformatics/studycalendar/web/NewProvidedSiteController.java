@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,7 +20,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Jalpa Patel
  */
-@AccessControl(roles = {Role.SYSTEM_ADMINISTRATOR})
 public class NewProvidedSiteController extends PscAbstractController implements PscAuthorizedHandler {
     private SiteService siteService;
     public NewProvidedSiteController() {}

@@ -1,10 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
@@ -51,8 +48,10 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow();
         row2.setId(1002);
+        PlannedActivity pa2 = createPlannedActivity("activity2",0);
+        pa2.setCondition("Condition2");
         row2.setScheduledActivity(addLabels(
-            setGridId("GA2", createScheduledActivity("activity2", 2009, 10, 15, saState)), "L2"));
+            setGridId("GA2", createScheduledActivity(pa2, 2009, 10, 15, saState)), "L2"));
         row2.setSubject(setGridId("GRID-2",
             createSubject("2222", "subject", "two", DateTools.createDate(1950, 4, 5))));
         row2.setSite(site);
@@ -203,6 +202,22 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
     public void testSubjectPersonIdIncludedInData() throws Exception {
         assertEquals("Wrong person ID", "2222",
             writeAndGetRow(1).getJSONObject("subject").optString("person_id"));
+    }
+
+    public void testConditionIncludedInData() throws Exception {
+        assertEquals("Wrong condition", "Condition2", writeAndGetRow(1).optString("condition"));
+    }
+
+    public void testConditionNotIncludedInDataForReconsentActivity() throws Exception {
+        ScheduledActivitiesReportRow row3 = new ScheduledActivitiesReportRow();
+        row3.setScheduledActivity(setGridId("GA1", createReconsentScheduledActivity("activity1", 2009, 11, 12)));
+        row3.setSubject(setGridId("GRID-2",
+                    createSubject("2222", "subject", "two", DateTools.createDate(1950, 4, 5))));
+        row3.setSite(new Site());
+        row3.setStudy(new Study());
+
+        allRows.add(row3);
+        assertFalse("Condition included", writeAndGetRow(2).has("condition"));
     }
 
     private ScheduledActivityReportJsonRepresentation actual() {

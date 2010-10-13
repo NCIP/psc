@@ -34,6 +34,18 @@ public class RevisionWorkflowStatus {
 
     public List<WorkflowMessage> getMessages() {
         List<WorkflowMessage> messages = new LinkedList<WorkflowMessage>();
+        messages.addAll(getStructureMessages());
+
+        if (messages.isEmpty()) {
+            messages.add(workflowMessageFactory.createMessage(WorkflowStep.RELEASE_REVISION, utr));
+        }
+
+        return messages;
+    }
+
+    public List<WorkflowMessage> getStructureMessages() {
+        List<WorkflowMessage> messages = new LinkedList<WorkflowMessage>();
+
         if (revisedStudy.getPlannedCalendar().getEpochs().isEmpty()) {
             messages.add(workflowMessageFactory.createMessage(WorkflowStep.ADD_AT_LEAST_ONE_EPOCH, utr));
         } else {
@@ -45,10 +57,6 @@ public class RevisionWorkflowStatus {
                 }
                 appendMessages(epoch, messages);
             }
-        }
-
-        if (messages.isEmpty()) {
-            messages.add(workflowMessageFactory.createMessage(WorkflowStep.RELEASE_REVISION, utr));
         }
 
         return messages;

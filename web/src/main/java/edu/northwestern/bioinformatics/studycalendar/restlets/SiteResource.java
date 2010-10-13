@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.Context;
@@ -11,8 +10,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
@@ -21,28 +18,18 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Saurabh Agrawal
  */
 public class SiteResource extends AbstractRemovableStorableDomainObjectResource<Site> {
-
     private SiteService siteService;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        //TODO -- need to delete setAllAuthorizedFor and setAuthorizedFor when deleting the old user roles
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
-        setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
 
         Site site = getRequestedObjectDuringInit();
 
         addAuthorizationsFor(Method.PUT, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
         addAuthorizationsFor(Method.DELETE, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
-        addAuthorizationsFor(Method.GET, site,
-                PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
-                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-                USER_ADMINISTRATOR,
-                DATA_READER);
+        addAuthorizationsFor(Method.GET, site, PscRole.valuesWithSiteScoped());
     }
-
 
     @Override
     protected Site loadRequestedObject(Request request) {
@@ -63,16 +50,12 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     @Override
     public void store(final Site site) {
         try {
-
             Site existingSite = getRequestedObject();
             siteService.createOrMergeSites(existingSite, site);
-
         } catch (Exception e) {
             String message = "Can not update the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
-
         }
-
     }
 
     @Override
@@ -92,29 +75,10 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
         }
     }
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Representation representation = super.represent(variant);
-        if (getRequestedObject() != null ) {
-           for (UserRole userRole : getLegacyCurrentUser().getUserRoles()) {
-                if (userRole.getRole().equals(Role.SYSTEM_ADMINISTRATOR) || userRole.getRole().equals(Role.STUDY_ADMIN) || userRole.getRole().equals(Role.STUDY_COORDINATOR)) {
-                    return representation;
-                }
-                for (Site site :  userRole.getSites()) {
-                    if (getRequestedObject().equals(site)) {
-                        return representation;
-                    }
-                }
-                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,"User is not allowed " + getLegacyCurrentUser().getDisplayName());
-           }
-       }
-       throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown Site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
-    }
+    ////// CONFIGURATION
 
     @Required
     public void setSiteService(final SiteService siteService) {
         this.siteService = siteService;
     }
-
-
 }

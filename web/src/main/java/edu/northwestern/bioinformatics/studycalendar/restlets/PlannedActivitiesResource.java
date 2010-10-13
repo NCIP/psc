@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -39,7 +38,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         helper.setRequest(request);
 
         super.init(context, request, response);
-        setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
         addAuthorizationsFor(Method.POST,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));

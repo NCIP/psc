@@ -81,7 +81,6 @@
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
-                psc.subject.ScheduleData.setReadOnly(${readOnly});
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
@@ -209,7 +208,7 @@
     <tags:resigTemplate id="list_day_sa_entry">
         <li class="[#= stateClasses() #] [#= mineClass() #] ">
             <label>
-                [# if (hasId() && !isReadOnly()) { #]
+                [# if (hasId() && canUpdateSchedule()) { #]
                   <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
@@ -312,8 +311,10 @@
                                             <label>${notification.title}</label>
                                         </c:otherwise>
                                     </c:choose>
-                                    <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
-                                       notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    <c:if test="${canUpdateSchedule}">
+                                        <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
+                                            notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    </c:if>
                                 </li>
                             </c:forEach>
                             </ul>
@@ -336,14 +337,16 @@
                     <div class="value">
                         ${assignment.currentAmendment.displayName}
                         <c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">
-                            <a class="control"
-                               href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
+                            <c:if test="${canUpdateSchedule}">
+                                <a class="control"
+                                    href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
+                            </c:if>
                         </c:if>
                     </div>
                 </div>
             </c:forEach>
         </div>
-        <c:if test="${!readOnly}">
+        <c:if test="${canUpdateSchedule}">
               <%--************ Delay Or Advance Portion**********--%>
             <div class="accordionDiv">
                 <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>

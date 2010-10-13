@@ -2,19 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -26,6 +29,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author John Dzak
@@ -92,7 +100,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertAllowedMethods("POST", "GET");
     }
 
-    public void testGetWithAuthorizedRoles() {
+    public void testSubjectRolesMayView() {
         expectResolvedSubjectAssignment();
         expectSerializeScheduledCalendar();
         replayMocks();
@@ -102,7 +110,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
                 DATA_READER);
     }
 
-    public void testPostWithAuthorizedRoles() {
+    public void testOnlySscmMayPost() {
         expectResolvedSubjectAssignment();
         expectSerializeScheduledCalendar();
         replayMocks();
@@ -143,15 +151,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertEquals("Result is not right content type", MediaType.TEXT_CALENDAR, response.getEntity().getMediaType());
     }
 
-    public void testGetAllowedOnlyForSubjectCoordinator() {
-        assertLegacyRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
-    }
-
     ////// POST tests
-
-    public void testPostAllowedOnlyForSubjectCoordinator() {
-        assertLegacyRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
-    }
 
     public void testPostXmlForScheduledSegment() throws Exception {
         NextScheduledStudySegment nextSgmtSchdScheduled = new NextScheduledStudySegment();

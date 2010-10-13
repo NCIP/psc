@@ -2,22 +2,15 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractScheduledActivityStateXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
-import static org.easymock.EasyMock.*;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -33,14 +26,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.expect;
+
 /**
  * @author Saurabh Agrawal
  * @author Rhett Sutphin
  */
 public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<ScheduledActivityResource> {
     private ScheduledActivityDao scheduledActivityDao;
-    private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private ScheduleService scheduleService;
 
     private StudySubjectAssignment assignment;
     private ScheduledActivity scheduledActivity;
@@ -52,11 +46,9 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
-        scheduleService = registerMockFor(ScheduleService.class);
         scheduledActivity = Fixtures.setId(12, Fixtures.createScheduledActivity("A", 2007, Calendar.MARCH, 4));
         scheduledActivity.setGridId("SA-GRID");
 
-        studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         study = Fixtures.createSingleEpochStudy("AG 0701", "QoL");
         assignment = Fixtures.createAssignment(
             study,
@@ -82,8 +74,6 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
         ScheduledActivityResource resource = new ScheduledActivityResource();
         resource.setScheduledActivityDao(scheduledActivityDao);
         resource.setXmlSerializer(xmlSerializer);
-        resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
-        resource.setScheduleService(scheduleService);
         resource.setCurrentScheduledActivityStateXmlSerializer(currentScheduledActivityStateXmlSerializer);
         return resource;
     }

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Bundle;
@@ -33,7 +32,6 @@ public class OsgiBundleStateResource extends OsgiSingleBundleResource {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
         addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 

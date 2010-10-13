@@ -1,11 +1,13 @@
 psc.namespace('admin');
 
-psc.admin.ProvisionableUser = function (username, memberships) {
+psc.admin.ProvisionableUser = function (username, memberships, provisionableRoles) {
   this.username = username;
   this.memberships = memberships;
   if (!this.memberships) {
     this.memberships = {}
   }
+  this.provisionableRoles = provisionableRoles;
+
   this.changes = [];
 
   function scopeTypeFromCollectionName(collectionName) {
@@ -46,7 +48,20 @@ psc.admin.ProvisionableUser = function (username, memberships) {
     jQuery(this).trigger('membership-change', newChange);
   }).bind(this)
 
+  this.isProvisionableRole = function(roleKey) {
+    if (!provisionableRoles) return true;
+    return _(this.provisionableRoles).pluck('key').include(roleKey);
+  }
+
+  this.isProvisionableScope = function(roleKey, scopeType) {
+    if (!provisionableRoles) return true;
+    var role = _(this.provisionableRoles).detect(function(r){return r.key == roleKey});
+    if (!role) return false;
+    return role['scopes'] && _(role['scopes']).include(scopeType);
+  }
+
   this.add = function (roleKey, scope) {
+    if (!this.isProvisionableRole(roleKey)) {return;}
     var newMembership = false;
     if (this.memberships[roleKey] === undefined) {
       this.memberships[roleKey] = {};
@@ -55,18 +70,21 @@ psc.admin.ProvisionableUser = function (username, memberships) {
     var m = this.memberships[roleKey];
     if (typeof scope === 'object') {
       _(scope).each(function (value, key) {
-        if (!m[key]) { m[key] = []; }
-        _(value).each(function (ident) {
-          if (_(m[key]).indexOf(ident) == -1) {
-            m[key].push(ident);
-            registerChange({
-              role: roleKey,
-              kind: "add",
-              scopeType: scopeTypeFromCollectionName(key),
-              scopeIdentifier: ident
-            });
-          }
-        }, this);
+        var scopeType = scopeTypeFromCollectionName(key)
+        if (this.isProvisionableScope(roleKey, scopeType)) {
+          if (!m[key]) { m[key] = []; }
+          _(value).each(function (ident) {
+            if (_(m[key]).indexOf(ident) == -1) {
+              m[key].push(ident);
+              registerChange({
+                role: roleKey,
+                kind: "add",
+                scopeType: scopeTypeFromCollectionName(key),
+                scopeIdentifier: ident
+              });
+            }
+          }, this);
+        }
       }, this);
     }
     if (newMembership) {
@@ -121,5 +139,42 @@ psc.admin.ProvisionableUser = function (username, memberships) {
     var collectionName = collectionNameFromScopeType(scopeType);
     if (!this.memberships[roleKey][collectionName]) { return false; }
     return _(this.memberships[roleKey][collectionName]).include(scope[scopeType]);
-  }
+  };
+
+  this.hasAnyMemberships = function (roleKeys, scope) {
+    return _(roleKeys).any(function(roleKey) {
+      return this.hasMembership(roleKey, scope);
+    }, this);
+  };
+
+  this.hasAllMemberships = function(roleKeys, scope) {
+    return _(roleKeys).all(function(roleKey) {
+      return this.hasMembership(roleKey, scope);
+    }, this);
+  };
+
+  this.matchingMemberships = function(roleKeys, scope) {
+    return _(roleKeys).select(function(roleKey) {
+      return this.hasMembership(roleKey, scope);
+    }, this);
+  };
+
+  this.membershipsStatus = function(roleKeys, scope) {
+    var pKeys = selectProvisionableRolesKeys(roleKeys, scope);
+    if (this.hasAllMemberships(pKeys, scope)) {
+      return 'FULL';
+    } else if (this.hasAnyMemberships(pKeys, scope)) {
+      return 'PARTIAL';
+    } else {
+      return 'NONE';
+    }
+  };
+
+  var selectProvisionableRolesKeys = _(function(roleKeys, scope) {
+    return _(roleKeys).select(function(k) {
+      if (!scope) { return this.isProvisionableRole(k) }
+      var scopeType = _(scope).chain().keys().first().value();
+      return this.isProvisionableRole(k) && this.isProvisionableScope(k, scopeType);
+    }, this)
+  }).bind(this);
 }

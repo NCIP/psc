@@ -11,11 +11,7 @@
     <typedef class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.ControlledVocabularyObjectType" name="scheduledActivityMode">
         <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode</param>
     </typedef>
-    <typedef class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StringCodedEnumType" name="userRole">
-         <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.Role</param>
-    </typedef>
     <typedef class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StringCodedEnumType" name="gender">
         <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.Gender</param>
     </typedef>
-
 </hibernate-mapping>

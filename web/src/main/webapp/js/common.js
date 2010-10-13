@@ -340,6 +340,29 @@ function registerHeaderCollapse() {
     })
 }
 
+/* new class-only collapse.
+   Enable it by wrapping an h3 + div.division pair with a div.collapsible-child.  Give the
+   div.collapsible-child either the open or closed class also to specify its initial state.
+ */
+
+(function ($) {
+  $(function (loadEvt) {
+    $('.collapsible-child h3').click(function (evt) {
+      var child = $(this).parent();
+      if (child.hasClass("closed")) {
+        child.find('.division').css('display', 'none').end().
+          removeClass('closed').
+          find('.division').animate({ opacity: 'show', height: 'show' }, 250).end().
+          addClass('open');
+      } else {
+        child.removeClass('open').
+          find('.division').animate({ opacity: 'hide', height: 'hide' }, 250).end().
+          addClass('closed');
+      }
+    });
+  });
+}(jQuery));
+
 ////// INPUT HINTS
 
 SC.addInputHintBehavior = function(input) {

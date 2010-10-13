@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.osgi.framework.BundleContext;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -23,8 +22,6 @@ public abstract class OsgiAdminResource extends AbstractPscResource {
         super.init(context, request, response);
         setReadable(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
-
         addAuthorizationsFor(Method.GET, SYSTEM_ADMINISTRATOR);
     }
 

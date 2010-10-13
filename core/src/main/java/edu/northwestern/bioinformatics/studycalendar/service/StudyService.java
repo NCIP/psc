@@ -29,7 +29,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -52,7 +51,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import org.apache.commons.collections.CollectionUtils;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -61,7 +60,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -97,7 +95,7 @@ public class StudyService {
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
-
+        List<String> emailAddressList = new ArrayList<String>();
         for (StudySubjectAssignment assignment : subjectAssignments) {
             if (!assignment.isOff()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
@@ -114,16 +112,28 @@ public class StudyService {
                     scheduledActivityDao.save(reconsentEvent);
 
                     Notification notification = new Notification(reconsentEvent);
-                    //FIXME:SAURABH this will send same email message multiple times to same subject coordinator.
-                    // Update the logic here once the email message content is finalized.
                     assignment.addNotification(notification);
-                    notificationService.notifyUsersForNewScheduleNotifications(notification);
-
+                    User studySubjectCalendarManager = assignment.getStudySubjectCalendarManager();
+                    if (studySubjectCalendarManager != null) {
+                        if (!emailAddressList.contains(studySubjectCalendarManager.getEmailId())) {
+                            emailAddressList.add(studySubjectCalendarManager.getEmailId());
+                        }
+                    }
                 }
             }
-
+        }
+        if (!emailAddressList.isEmpty()) {
+            sendMailForScheduleReconsent(study, details, emailAddressList);
         }
         studyDao.save(study);
+    }
+
+    private void sendMailForScheduleReconsent(Study study, String details, List<String> emailAddressList) {
+        String subjectHeader = "Subjects on ".concat(study.getAssignedIdentifier()).concat(" need to be reconsented");
+        String message = "A reconsent activity with details ".concat(details).
+                concat(" has been added to the schedule of each subject on ").concat(study.getAssignedIdentifier()).
+                concat(". Check your dashboard for upcoming subjects that need to be reconsented.");
+        notificationService.sendNotificationMailToUsers(subjectHeader, message, emailAddressList);
     }
 
     private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
@@ -591,23 +601,13 @@ public class StudyService {
         Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNode.allByType(study);
         Class[] order = {
                 ScheduledActivity.class, ScheduledStudySegment.class, ScheduledCalendar.class, StudySubjectAssignment.class,
-                UserRole.class, StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
+                StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
         };
 
         for (Class klass : order) {
             if (nodes.containsKey(klass)) {
-                if (klass.equals(UserRole.class)) {
-                    for (Object o : nodes.get(klass)) {
-                        UserRole role = (UserRole) o;
-                        Collection<StudySite> intersect = CollectionUtils.intersection(study.getStudySites(), role.getStudySites());
-                        for (StudySite s : intersect) {
-                            role.removeStudySite(s);
-                        }
-                    }
-                } else {
-                    DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
-                    dao.deleteAll(nodes.get(klass));
-                }
+                DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
+                dao.deleteAll(nodes.get(klass));
             }
         }
     }
@@ -620,8 +620,6 @@ public class StudyService {
             putInMappedList(all, study.getClass(), study);
             
             for (StudySite studySite : study.getStudySites()) {
-                all.put(UserRole.class, (List) studySite.getUserRoles());
-
                 for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                     putInMappedList(all, assignment.getClass(), studySite);
 

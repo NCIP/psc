@@ -1152,6 +1152,25 @@
                     </method>
                 </resource>
             </resource>
+            <resource path="{source-name}/manual-target">
+                <param style="template" name="source-name"/>
+                <method name="PUT">
+                    <doc>
+                        <html:p>
+                            Update the named source as manual activity target source. Manual target field value must be true.
+                        </html:p>
+                        <html:div class="roles">
+                            Authorized to:
+                            <html:ul>
+                                <html:li>Business Administrator</html:li>
+                            </html:ul>
+                        </html:div>
+                    </doc>
+                    <request>
+                        <representation mediaType="application/json"/>
+                    </request>
+                </method>
+            </resource>
         </resource>
 
         <resource path="sites">
@@ -1298,6 +1317,59 @@
                     </resource>
                 </resource>
             </resource>
+        </resource>
+
+        <resource path="users">
+            <doc>
+                <html:p>
+                    The list of users known to the system.  The returned user documents can be brief
+                    (username, first &amp; last names, account expiration date) or full (the above,
+                    plus roles and role scopes).  If requesting full user information, in a
+                    deployment with many users, limiting the range using the "limit" and "offset"
+                    parameters may improve performance.
+                </html:p>
+            </doc>
+            <method name="GET">
+                <doc>
+                    <html:div class="roles">
+                        Authorized to:
+                        <html:ul>
+                            <html:li>User Administrator</html:li>
+                        </html:ul>
+                    </html:div>
+                </doc>
+                <request>
+                    <param style="query" name="q" type="xsd:string">
+                        <doc>
+                            If specified, only users whose username, first name, or last name
+                            contain the value (case-sensitive, unfortunately) will be included.
+                        </doc>
+                    </param>
+                    <param style="query" name="brief" type="xsd:boolean">
+                        <doc>
+                            If this parameter is "true" or omitted, only each user's first &amp;
+                            last name, username, and expiration date (if any) will be included
+                            in the response.  If "false", the users' roles and role scopes will
+                            be included also.
+                        </doc>
+                    </param>
+                    <param style="query" name="limit" type="xsd:integer">
+                        <doc>
+                            If specified, only this number of results will be returned.  Combine
+                            with "offset" to paginate the list.
+                        </doc>
+                    </param>
+                    <param style="query" name="offset" type="xsd:integer">
+                        <doc>
+                            If specified, the results starting with this value will be returned.
+                            Combine with "limit" to paginate the list.
+                        </doc>
+                    </param>
+                </request>
+                <response>
+                    <representation mediaType="application/json"/>
+                </response>
+            </method>
         </resource>
 
         <resource path="users/{username}/managed-schedules">

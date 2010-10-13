@@ -264,11 +264,11 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
         Period period = (Period) o;
 
-        if (repetitions != period.repetitions) return false;
-        if (duration != null ? !duration.equals(period.duration) : period.duration != null)
+        if (repetitions != period.getRepetitions()) return false;
+        if (duration != null ? !duration.equals(period.getDuration()) : period.getDuration() != null)
             return false;
-        if (name != null ? !name.equals(period.name) : period.name != null) return false;
-        if (startDay != null ? !startDay.equals(period.startDay) : period.startDay != null)
+        if (name != null ? !name.equals(period.getName()) : period.getName() != null) return false;
+        if (startDay != null ? !startDay.equals(period.getStartDay()) : period.getStartDay() != null)
             return false;
 
         return true;

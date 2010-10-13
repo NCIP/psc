@@ -4,21 +4,25 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import org.springframework.beans.BeanWrapperImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Rhett Sutphin
 */
 public class PscUserBuilder {
     private String username;
-    private Long csmUserId;
     private SuiteRoleMembership current;
     private List<SuiteRoleMembership> memberships;
+    private Map<String, Object> csmUserProperties;
 
     public PscUserBuilder() {
         this("josephine");
@@ -27,16 +31,26 @@ public class PscUserBuilder {
     public PscUserBuilder(String username) {
         this.username = username;
         memberships = new ArrayList<SuiteRoleMembership>(PscRole.values().length);
+        csmUserProperties = new HashMap<String, Object>();
     }
 
     public PscUser toUser() {
         pushCurrentMembership();
-        return AuthorizationObjectFactory.createPscUser(username, csmUserId,
+        PscUser pscUser = AuthorizationObjectFactory.createPscUser(username,
             memberships.toArray(new SuiteRoleMembership[memberships.size()]));
+        if (csmUserProperties.size() > 0) {
+            new BeanWrapperImpl(pscUser.getCsmUser()).setPropertyValues(csmUserProperties);
+        }
+        return pscUser;
     }
 
     public PscUserBuilder setCsmUserId(long id) {
-        csmUserId = id;
+        setCsmUserProperty("userId", id);
+        return this;
+    }
+
+    public PscUserBuilder setCsmUserProperty(String property, Object value) {
+        csmUserProperties.put(property, value);
         return this;
     }
 

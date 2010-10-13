@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -63,7 +63,7 @@ public class StudyWorkflowStatusTest extends TestCase {
 
     public void testDoesNotIncludeIdentifierMessageWhenDoesNotHaveTemporaryIdentifier() throws Exception {
         study.setAssignedIdentifier("ABC 1450");
-        assertNoMessage();
+        assertNoMessages();
     }
 
     public void testIncludesAssignSitesMessageWhenNoSites() throws Exception {
@@ -71,28 +71,17 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertMessage(WorkflowStep.ASSIGN_SITE);
     }
 
-    public void testDoesNotIncludeAssignSitesMessageWhenNoSitesButNotReleased() throws Exception {
-        study.getStudySites().clear();
-        study.setAmendment(null);
-        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
-    }
-
-    public void testIncludesReleaseMessageWhenNotReleased() throws Exception {
-        study.setAmendment(null);
-        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
-    }
-
     public void testDoesNotIncludeReleaseMessageWhenReleasedAtLeastOnce() throws Exception {
         study.setDevelopmentAmendment(new Amendment());
-        assertNoMessage();
+        assertNull(actual().getMessagesIgnoringRevisionMessages());
     }
 
-    private void assertNoMessage() {
-        assertNull(actual().getMessage());
+    private void assertNoMessages() {
+        assertTrue(actual().getMessages().isEmpty());
     }
 
     private void assertMessage(WorkflowStep expectedStep) {
-        WorkflowMessage actual = actual().getMessage();
+        WorkflowMessage actual = actual().getMessages().iterator().next();
         assertNotNull("No message", actual);
         assertEquals("Message is for wrong step", expectedStep, actual.getStep());
         assertNotNull("Message HTML is not generatable", actual.getHtml());
@@ -142,6 +131,25 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertAvailabilityNotPresent(TemplateAvailability.IN_DEVELOPMENT);
     }
 
+    public void testIsDevelopmentWhenUserCanSeeDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        assertAvailabilityPresent(TemplateAvailability.IN_DEVELOPMENT);
+    }
+
+    public void testIsNotDevelopmentWhenUserCannotSeeDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        SuiteRoleMembership mem = AuthorizationScopeMappings.
+            createSuiteRoleMembership(PscRole.STUDY_SITE_PARTICIPATION_ADMINISTRATOR).
+                forSites(nu, vanderbilt).forAllStudies();
+        StudyWorkflowStatus actual = new StudyWorkflowStatus(study,
+            AuthorizationObjectFactory.createPscUser("jo", mem),
+            new WorkflowMessageFactory(),
+            Fixtures.getTestingDeltaService());
+        assertEquals("Unexpected availability present", 1, actual.getTemplateAvailabilities().size());
+        assertFalse("Unexpected availability present", 
+                actual.getTemplateAvailabilities().contains(TemplateAvailability.IN_DEVELOPMENT));
+    }
+
     public void testIsPendingWhenReleasedAndHasStudyMessages() throws Exception {
         study.getStudySites().clear();
         assertAvailabilityPresent(TemplateAvailability.PENDING);
@@ -163,6 +171,13 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertAvailabilityPresent(TemplateAvailability.PENDING);
     }
 
+    public void testTemplateAvailabilityIsAvailableAndInDevelopment() throws Exception {
+        study.setDevelopmentAmendment(new Amendment());
+        assertAvailabilityPresent(TemplateAvailability.AVAILABLE);
+        assertAvailabilityPresent(TemplateAvailability.IN_DEVELOPMENT);
+        assertAvailabilityNotPresent(TemplateAvailability.PENDING);
+    }
+    
     private void assertAvailabilityPresent(TemplateAvailability availability) {
         Collection<TemplateAvailability> actual = actual().getTemplateAvailabilities();
         assertTrue("Missing expected availability " + availability + "; present: " + actual,

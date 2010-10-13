@@ -11,22 +11,27 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
- * A post-processor which injects the application context path into beans which
- * implement {@link edu.northwestern.bioinformatics.studycalendar.tools.spring.WebContextPathAware}.
- * The context path is injected on the first request, using {@link ServletWebContextPathAwareFilter}
+ * A post-processor which injects the web application context path into beans which
+ * implement {@link edu.northwestern.bioinformatics.studycalendar.tools.spring.WebContextPathAware}
+ * and application path into beans which implement 
+ * {@link edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware}.
+ * The context path and application path are injected on the first request, using {@link ServletWebContextPathAwareFilter}
  *
  * @author Rhett Sutphin
  */
 public class ServletWebContextPathPostProcessor implements BeanFactoryPostProcessor {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private Map<String, WebContextPathAware> awareBeans;
+    private Map<String, WebContextPathAware> webContextPathAwareBeans;
+    private Map<String, ApplicationPathAware> applicationPathAwareBeans;
     private volatile boolean registered = false;
 
     @SuppressWarnings({ "unchecked" })
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        awareBeans = (Map<String, WebContextPathAware>) BeanFactoryUtils.
+        webContextPathAwareBeans = (Map<String, WebContextPathAware>) BeanFactoryUtils.
             beansOfTypeIncludingAncestors(beanFactory, WebContextPathAware.class);
+        applicationPathAwareBeans = (Map<String, ApplicationPathAware>) BeanFactoryUtils.
+            beansOfTypeIncludingAncestors(beanFactory, ApplicationPathAware.class);
     }
 
     public void registerRequest(HttpServletRequest request) {
@@ -38,13 +43,23 @@ public class ServletWebContextPathPostProcessor implements BeanFactoryPostProces
         if (registered) return; // repeat since the outer one is deliberately unsynchronized
 
         String path = request.getContextPath();
-        log.debug("Setting web context path \"{}\" on {} bean(s)", path, awareBeans.size());
-        for (Map.Entry<String, WebContextPathAware> entry : awareBeans.entrySet()) {
+        log.debug("Setting web context path \"{}\" on {} bean(s)", path, webContextPathAwareBeans.size());
+        for (Map.Entry<String, WebContextPathAware> entry : webContextPathAwareBeans.entrySet()) {
             log.trace(" - setting on bean {}", entry.getKey());
             entry.getValue().setWebContextPath(path);
         }
 
+        // For Application Path
+        String applicationPath = request.getScheme().concat("://").concat(request.getServerName()).concat(":").
+                concat(Integer.toString(request.getServerPort())).concat(path);
+        log.debug("Setting application path \"{}\" on {} bean(s)", applicationPath, applicationPathAwareBeans.size());
+        for (Map.Entry<String, ApplicationPathAware> entry : applicationPathAwareBeans.entrySet()) {
+            log.trace(" - setting on bean {}", entry.getKey());
+            entry.getValue().setApplicationPath(applicationPath);
+        }
+        
         registered = true;
-        awareBeans = null; // memory paranoia
+        webContextPathAwareBeans = null; // memory paranoia
+        applicationPathAwareBeans = null;
     }
 }

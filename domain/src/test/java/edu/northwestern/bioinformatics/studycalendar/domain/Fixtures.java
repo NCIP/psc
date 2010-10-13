@@ -11,9 +11,6 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +22,6 @@ import java.util.TreeSet;
  * @author Rhett Sutphin
  */
 public class Fixtures {
-    private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     public static final ActivityType DEFAULT_ACTIVITY_TYPE = createActivityType("LAB_TEST");
     public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
 
@@ -132,10 +128,6 @@ public class Fixtures {
             )
         );
         return study;
-    }
-
-    public static Study createInDevelopmentTemplate() {
-        return createInDevelopmentTemplate(null);
     }
 
     public static StudySecondaryIdentifier addSecondaryIdentifier(Study s, String type, String value) {
@@ -373,6 +365,7 @@ public class Fixtures {
         Activity activity = createActivity(activityName);
         reconcentEvent.setActivity(activity);
         reconcentEvent.setIdealDate(DateTools.createDate(year, month, day - 2));
+        reconcentEvent.changeState(new Scheduled("Created From Reconsent",DateTools.createDate(year, month, day - 2)));
         return reconcentEvent;
     }
 
@@ -486,45 +479,14 @@ public class Fixtures {
         return site;
     }
 
-    public static void setUserRoles(User user, Role... roles) {
-        user.clearUserRoles();
-        for (Role role : roles) {
-            UserRole userRole = new UserRole(user, role);
-            user.getUserRoles().add(userRole);
-        }
-    }
-
-    public static User createUser(String name, Role... roles) {
-        return createUser(null, name, null, true, roles);
-    }
-
-    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) {
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setCsmUserId(csmUserId);
-        user.setActiveFlag(activeFlag);
-        setUserRoles(user, roles);
-        return user;
-    }
-
-    public static UserRole createUserRole(User user, Role role, Site... sites) {
-        UserRole userRole = new UserRole(user, role, sites);
-        user.addUserRole(userRole);
-        return userRole;
-    }
-
-    public static ProtectionGroup createProtectionGroup(String aName) {
-        ProtectionGroup pg = new ProtectionGroup();
-        pg.setProtectionGroupName(aName);
-        return pg;
-    }
-
-
-    public static ProtectionGroup createProtectionGroup(Long aId, String aName) {
-        ProtectionGroup pg = createProtectionGroup(aName);
-        pg.setProtectionGroupId(aId);
-        return pg;
+    public static SpecificDateBlackout createBlackoutDate(int year, int month, int day, String desc, Site site) {
+        SpecificDateBlackout bd = new SpecificDateBlackout();
+        bd.setDescription(desc);
+        bd.setSite(site);
+        bd.setDay(day);
+        bd.setMonth(month);
+        bd.setYear(year);
+        return bd;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
@@ -614,16 +576,6 @@ public class Fixtures {
         add.setChildId(newChildId);
         add.setIndex(index);
         return add;
-    }
-
-    public static BlackoutDate createBlackoutDate(int year, int month, int day, String description, Site site) {
-        SpecificDateBlackout blackoutDate = new SpecificDateBlackout();
-        blackoutDate.setYear(year);
-        blackoutDate.setMonth(month);
-        blackoutDate.setDay(day);
-        blackoutDate.setDescription(description);
-        blackoutDate.setSite(site);
-        return blackoutDate;
     }
 
     // static class

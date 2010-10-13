@@ -12,6 +12,10 @@ import java.util.Collections;
  */
 public class ServletWebContextPathPostProcessorTest extends TestCase {
     private static final String CONTEXT_PATH = "/frob";
+    private static final String SCHEME = "http";
+    private static final String SERVER_NAME = "testServer";
+    private static final int SERVER_PORT = 1111;
+    private static final String APPLICATION_PATH = "http://testServer:1111/frob";
 
     private ServletWebContextPathPostProcessor processor;
     private ConfigurableListableBeanFactory target;
@@ -30,14 +34,15 @@ public class ServletWebContextPathPostProcessorTest extends TestCase {
 
         target = new DefaultListableBeanFactory(parent);
         target.registerSingleton("someMap", Collections.singletonMap("foo", "baz"));
-        target.registerSingleton("aware", new TestContextPathAwareItem());
+        target.registerSingleton("contextAware", new TestContextPathAwareItem());
+        target.registerSingleton("applicationAware", new TestApplicationPathAwareItem());
     }
 
     public void testContextPathSetAfterFirstRequestSet() throws Exception {
         processor.postProcessBeanFactory(target);
         processor.registerRequest(request);
 
-        TestContextPathAwareItem item = (TestContextPathAwareItem) target.getBean("aware");
+        TestContextPathAwareItem item = (TestContextPathAwareItem) target.getBean("contextAware");
         assertEquals("Context path not set", CONTEXT_PATH, item.getContextPath());
     }
 
@@ -57,8 +62,19 @@ public class ServletWebContextPathPostProcessorTest extends TestCase {
         processor.registerRequest(request);
         processor.registerRequest(request2);
 
-        TestContextPathAwareItem item = (TestContextPathAwareItem) target.getBean("aware");
+        TestContextPathAwareItem item = (TestContextPathAwareItem) target.getBean("contextAware");
         assertEquals("Context path overridden", CONTEXT_PATH, item.getContextPath());
+    }
+
+    public void testApplicationPathSetAfterFirstRequestSet() throws Exception {
+        request.setScheme(SCHEME);
+        request.setServerName(SERVER_NAME);
+        request.setServerPort(SERVER_PORT);
+
+        processor.postProcessBeanFactory(target);
+        processor.registerRequest(request);
+        TestApplicationPathAwareItem item = (TestApplicationPathAwareItem) target.getBean("applicationAware");
+        assertEquals("Application path not set", APPLICATION_PATH, item.getApplicationPath());
     }
 
     private static class TestContextPathAwareItem implements WebContextPathAware {
@@ -70,6 +86,18 @@ public class ServletWebContextPathPostProcessorTest extends TestCase {
 
         public void setWebContextPath(String contextPath) {
             this.contextPath = contextPath;
+        }
+    }
+
+    private static class TestApplicationPathAwareItem implements ApplicationPathAware {
+        private String applicationPath;
+
+        public String getApplicationPath() {
+            return applicationPath;
+        }
+
+        public void setApplicationPath(String applicationPath) {
+            this.applicationPath = applicationPath;
         }
     }
 }

@@ -33,8 +33,9 @@
     <bean id="usersInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.UsersInitializer">
         <property name="yamlResource" value="file:@resources.target@/users.yml"/>
-        <property name="siteDao" ref="siteDao"/>
-        <property name="userService" ref="userService"/>
+        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
+        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
     </bean>
 
     <bean id="sampleActivitySourceInitializer"

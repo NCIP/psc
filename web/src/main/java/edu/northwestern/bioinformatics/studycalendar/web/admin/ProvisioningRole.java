@@ -58,6 +58,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
         safePut(o, "name", suiteRole.getDisplayName());
         safePut(o, "key", suiteRole.getCsmName());
         safePut(o, "description", getDescription());
+        safePut(o, "isPscRole", isPscRole());
         if (suiteRole.isScoped()) {
             JSONArray scopes = buildEnumArray(suiteRole.getScopes());
             safePut(o, "scopes", scopes);
@@ -94,15 +95,7 @@ public class ProvisioningRole implements Comparable<ProvisioningRole> {
     ////// COMPARABLE
 
     public int compareTo(ProvisioningRole other) {
-        if (isPscRole() && !other.isPscRole()) {
-            return -1;
-        } else if (!isPscRole() && other.isPscRole()) {
-            return 1;
-        } else if (isPscRole()) { // both PSC roles
-            return pscRole.ordinal() - other.pscRole.ordinal();
-        } else {
-            return getDisplayName().compareTo(other.getDisplayName());
-        }
+        return PscRole.ORDER.compare(this.suiteRole, other.suiteRole);
     }
 
     ////// OBJECT METHODS

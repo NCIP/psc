@@ -2,14 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -22,7 +20,6 @@ import java.util.Map;
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class NewPeriodController extends AbstractPeriodController<PeriodCommand> {
     private TemplateDevelopmentService templateDevelopmentService;
     private AmendmentService amendmentService;

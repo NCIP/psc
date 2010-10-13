@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparatorByLetterCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.ActivityTypeComparator;
@@ -20,8 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
-
-@AccessControl(roles = Role.STUDY_ADMIN)
 
 public class ActivityController extends PscAbstractController implements PscAuthorizedHandler {
     private ActivityDao activityDao;

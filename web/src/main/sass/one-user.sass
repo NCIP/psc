@@ -2,11 +2,15 @@
 !role_manager_width = 72em
 !role_tab_width = 15em
 !role_editor_width = !role_manager_width - !role_tab_width
+!group_role_height = 13em
 
 #role-manager
   position: relative
   height= !role_manager_height
   width= !role_manager_width
+.role-manager-view-option
+  text-align: right
+  margin: 0px 4px 8px 0
 #roles
   width= !role_tab_width
   position: absolute
@@ -38,7 +42,7 @@
     -moz-border-radius: 5px 0 0 5px
   .role-control
     width: 2em
-    visibility: hidden /* TODO */
+    position: absolute
 #role-editor
   position: absolute
   left= !role_tab_width
@@ -59,6 +63,9 @@
     width: 3em
   div.value
     margin-left: 4em
+    label.partial-membership
+      display: block
+      font-style: italic
   div.disabled label
     color: #999
 
@@ -70,3 +77,41 @@ div.row
     margin: 0
   div.value
     margin-left= !role_tab_width
+
+#multiple-role-content
+  .abstract-role-grouping
+    border: 1px solid #444
+    margin: 0 10px 10px 0
+    h2
+      text-align: center
+    div.row
+      div.label
+        width: 15px
+      div.value
+        margin-left: 1.8em
+
+  .column
+    position: absolute
+    width= (!role_editor_width / 4) - 1em
+  .column1
+    left: 0
+  .column2
+    left: 25%
+  .column3
+    left: 50%
+  #suite-roles-cell
+    left: 75%
+    height= !group_role_height * 2 + 1
+  .row1
+    top: 0
+    height= !group_role_height
+  .row2
+    top= !group_role_height + 1
+    height= !group_role_height
+
+#role-multiple-roles
+  background-color: #aaa
+
+#scope-container
+  margin-top= !group_role_height * 2 + 2
+

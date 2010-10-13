@@ -13,15 +13,12 @@ import java.util.HashMap;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
 /**
  * @author Jalpa Patel
  */
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class ManageSourcesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SourceDao sourceDao;
 

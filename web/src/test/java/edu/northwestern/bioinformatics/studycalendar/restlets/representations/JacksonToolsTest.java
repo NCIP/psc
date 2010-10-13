@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.representations.JacksonTools.*;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.codehaus.jackson.JsonGenerator;
+
+import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.restlets.representations.JacksonTools.*;
 
 /**
  * @author Rhett Sutphin
@@ -61,6 +65,20 @@ public class JacksonToolsTest extends WebTestCase {
     public void testWritePrimitiveWithNull() throws Exception {
         replayMocks();
         nullSafeWritePrimitiveField(generator, "foo", null);
+        verifyMocks();
+    }
+
+    public void testWriteDateWithDate() throws Exception {
+        generator.writeStringField("some_date", "2010-09-06");
+        replayMocks();
+        nullSafeWriteDateField(
+            generator, "some_date", DateTools.createDate(2010, Calendar.SEPTEMBER, 6));
+        verifyMocks();
+    }
+
+    public void testWriteDateWithNull() throws Exception {
+        replayMocks();
+        nullSafeWriteDateField(generator, "some_date", null);
         verifyMocks();
     }
 }

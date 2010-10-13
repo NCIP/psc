@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -22,7 +20,6 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 public class PscUserTest extends TestCase {
     private PscUser a, b;
     private User csmUser;
-    private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
     @Override
     protected void setUp() throws Exception {
@@ -32,37 +29,15 @@ public class PscUserTest extends TestCase {
         csmUser.setLoginName("jo");
         csmUser.setUpdateDate(new Date());
 
-        legacyUser = new edu.northwestern.bioinformatics.studycalendar.domain.User();
-        legacyUser.setName(csmUser.getLoginName());
-
         a = AuthorizationObjectFactory.createPscUser("a");
         a.getCsmUser().setFirstName("Aeneas");
         a.getCsmUser().setLastName("Miller");
         b = AuthorizationObjectFactory.createPscUser("b");
-        a.getCsmUser().setFirstName("Bacchus");
-        a.getCsmUser().setLastName("Vinter");
-    }
-
-    public void testAuthoritiesAreInternalRolesInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        GrantedAuthority[] actual = createLegacy().getAuthorities();
-        assertEquals("Wrong number of authorities", 2, actual.length);
-        assertEquals("Wrong 1st entry", Role.STUDY_ADMIN, actual[0]);
-        assertEquals("Wrong 2nd entry", Role.STUDY_COORDINATOR, actual[1]);
-    }
-
-    public void testHasRoleWhenHasInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        assertTrue(createLegacy().hasRole(Role.STUDY_COORDINATOR));
-    }
-
-    public void testHasRoleWhenDoesNotHaveInLegacyMode() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        assertFalse(createLegacy().hasRole(Role.SYSTEM_ADMINISTRATOR));
+        b.getCsmUser().setFirstName("Bacchus");
+        b.getCsmUser().setLastName("Agricola");
     }
 
     public void testAuthoritiesArePscRoles() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = create(
             createMembership(SuiteRole.STUDY_QA_MANAGER),
             createMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)
@@ -75,17 +50,14 @@ public class PscUserTest extends TestCase {
     }
 
     public void testHasRoleWhenHas() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         assertTrue(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.DATA_READER));
     }
 
     public void testHasRoleWhenDoesNotHave() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         assertFalse(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.SYSTEM_ADMINISTRATOR));
     }
 
     public void testAuthoritiesDoNotIncludeSuiteRolesWhichAreNotUsedInPsc() throws Exception {
-        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = create(
             createMembership(SuiteRole.DATA_ANALYST)
         ).getAuthorities();
@@ -220,32 +192,24 @@ public class PscUserTest extends TestCase {
 
     ////// NATURAL ORDER
 
-    public void testNaturalOrderIsByLastNameFirst() throws Exception {
-        a.getCsmUser().setFirstName("Z");
-        b.getCsmUser().setLoginName("a");
-
-        assertNegative(b.compareTo(a));
-        assertPositive(a.compareTo(b));
+    public void testNaturalOrderIsByLastFirst() throws Exception {
+        System.out.println("a.getLastFirst() = " + a.getLastFirst());
+        System.out.println("b.getLastFirst() = " + b.getLastFirst());
+        assertNaturalOrder(b, a);
     }
 
     public void testNaturalOrderIsByFirstNameSecond() throws Exception {
         a.getCsmUser().setLastName(null);
         b.getCsmUser().setLastName(null);
 
-        a.getCsmUser().setFirstName("Cassandra");
-
-        assertNegative(b.compareTo(a));
-        assertPositive(a.compareTo(b));
+        assertNaturalOrder(a, b);
     }
 
-    public void testNaturalOrderIsByUsernameThird() throws Exception {
-        a.getCsmUser().setLastName("Z");
-        a.getCsmUser().setFirstName("Z");
-        b.getCsmUser().setLastName("Z");
-        b.getCsmUser().setFirstName("Z");
+    public void testNaturalOrderComparesUsernameForUserWithNoLastFirst() throws Exception {
+        a.getCsmUser().setLastName(null);
+        a.getCsmUser().setFirstName(null);
 
-        assertNegative(a.compareTo(b));
-        assertPositive(b.compareTo(a));
+        assertNaturalOrder(a, b);
     }
 
     public void testNaturalOrderIsEqualWhenEqual() throws Exception {
@@ -253,14 +217,15 @@ public class PscUserTest extends TestCase {
         assertEquals(0, b.compareTo(b));
     }
 
+    public void assertNaturalOrder(PscUser first, PscUser second) {
+        assertNegative(first.compareTo(second));
+        assertPositive(second.compareTo(first));
+    }
+
     ////// HELPERS
 
     private PscUser create(SuiteRoleMembership... memberships) {
-        return new PscUser(csmUser, createMembershipMap(memberships), null);
-    }
-
-    private PscUser createLegacy(SuiteRoleMembership... memberships) {
-        return new PscUser(csmUser, createMembershipMap(memberships), legacyUser);
+        return new PscUser(csmUser, createMembershipMap(memberships));
     }
 
     private SuiteRoleMembership createMembership(SuiteRole suiteRole) {

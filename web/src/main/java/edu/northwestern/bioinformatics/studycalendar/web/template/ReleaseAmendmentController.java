@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.WorkflowService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -31,12 +33,13 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ReleaseAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
     private static final String UNNAMED_EPOCH = "[Unnamed epoch]";
+    private WorkflowService workflowService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ReleaseAmendmentController() {
         setCommandClass(ReleaseAmendmentCommand.class);
@@ -65,6 +68,10 @@ public class ReleaseAmendmentController extends PscSimpleFormController implemen
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
 
         ModelMap model = new ModelMap("epochs", epochs);
+
+        StudyWorkflowStatus workflow = workflowService.build(theRevisedStudy, applicationSecurityManager.getUser());
+        model.put("studyWorkflowMessages", workflow.getStructureRelatedMessages());
+
         model.addObject("study", command.getStudy());
         return model;
 
@@ -97,6 +104,16 @@ public class ReleaseAmendmentController extends PscSimpleFormController implemen
     @Required
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private static class Crumb extends DefaultCrumb {

@@ -34,8 +34,18 @@ public class AuthorizationScopeUpdaterListener implements PostUpdateEventListene
     ) {
         int propertyIndex = find(sharedIdentityPropertyName,
             event.getPersister().getPropertyNames());
-        String oldValue = (String) event.getOldState()[propertyIndex];
+
         String newValue = (String) event.getState()[propertyIndex];
+        String oldValue;
+        if (event.getOldState() == null) {
+            // this doesn't seem like it should be possible, but it does happen when runnning
+            // the API integration test setup code.
+            log.warn("Hibernate update of {} for authorization scope {} did not include old " +
+                "state information.  Scope update not possible.", event.getEntity(), scope);
+            return;
+        } else {
+            oldValue = (String) event.getOldState()[propertyIndex];
+        }
 
         // don't need to care about null here because these values are required to be not null
         // in the database -- if an update succeeded, they won't be null.

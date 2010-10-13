@@ -239,7 +239,6 @@
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="manual-flag" type="xsd:boolean"/>
     </xsd:complexType>
 
     <xsd:element name="activity" type="psc:Activity"/>
@@ -484,10 +483,29 @@
     <xsd:element name="role" type="psc:Role"/>
 
     <xsd:complexType name="Role">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="psc:role-sites" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:role-studies" minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="role-sites" type="psc:RoleSites" />
+
+    <xsd:complexType name="RoleSites">
         <xsd:sequence>
             <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="all" type="xsd:boolean" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="role-studies" type="psc:RoleStudies" />
+
+    <xsd:complexType name="RoleStudies">
+        <xsd:sequence>
+            <xsd:element name="study" type="psc:Study" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="all" type="xsd:boolean" use="required"/>
     </xsd:complexType>
 
     <xsd:element name="notifications" type="psc:Notifications"/>

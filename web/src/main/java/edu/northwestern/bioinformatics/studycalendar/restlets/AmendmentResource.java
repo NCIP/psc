@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -41,9 +40,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
-        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
         getRequestedObjectDuringInit(); // for side effects
         addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
         addAuthorizationsFor(Method.PUT,

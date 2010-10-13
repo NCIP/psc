@@ -95,8 +95,9 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
             JacksonTools.nullSafeWriteStringField(generator, "ideal_date", getApiDateFormat().format(row.getScheduledActivity().getIdealDate()));
             JacksonTools.nullSafeWriteStringField(generator, "details", row.getScheduledActivity().getDetails());
-            JacksonTools.nullSafeWriteStringField(generator, "condition", row.getScheduledActivity().getPlannedActivity().getCondition());
-
+            if (row.getScheduledActivity().getPlannedActivity() != null) {
+                JacksonTools.nullSafeWriteStringField(generator, "condition", row.getScheduledActivity().getPlannedActivity().getCondition());
+            }
             if (!row.getScheduledActivity().getLabels().isEmpty()) {
                 generator.writeArrayFieldStart("labels");
                 for (String label : row.getScheduledActivity().getLabels()) {

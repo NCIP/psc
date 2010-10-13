@@ -38,7 +38,7 @@ public class SourceDaoTest extends DaoTestCase {
         interruptSession();
         assertEquals("Should be three sources after saving", 3 ,dao.getCount());
 
-        getJdbcTemplate().update("DELETE FROM sources");
-        assertEquals("And now there should be none", 0, dao.getCount());
+        getJdbcTemplate().update("DELETE FROM sources WHERE id=-2");
+        assertEquals("And now there should be two", 2, dao.getCount());
     }
 }
