@@ -62,6 +62,41 @@ Screw.Unit(function () {
         });
       });
 
+
+      describe("external methods", function() {
+        it("should be able to get the state", function() {
+          expect(c.tristate('state')).to(equal, 'unchecked');
+        });
+
+        it("should be able to set the state", function() {
+          $(c).tristate('state', 'checked');
+          expect(c.attr('state')).to(equal, 'checked');
+        });
+      });
+//      describe("firing events", function () {
+//        var checkbox;
+//        var receivedData;
+//
+//        before(function () {
+//          checkbox = setup();
+//          receivedData = [];
+//          $(checkbox).bind("tristate-state-change", function (evt, data) {
+//            receivedData.push(data);
+//          });
+//        });
+//
+//        it("fires state change when clicked", function () {
+//          $(checkbox).click();
+//          expect(receivedData.length).to(equal, 1);
+//          expect(receivedData[0]).to(equal, 'checked');
+//        });
+//
+//        it("fires membership change for a remove", function () {
+//          user.remove('system_administrator');
+//          expect(receivedData.length).to(equal, 1);
+//        });
+//      });
+
     });
   }(jQuery));
 });

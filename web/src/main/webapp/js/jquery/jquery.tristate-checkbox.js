@@ -6,12 +6,9 @@
  * event is fired.
  */
 (function($) {
-    $.fn.tristate = function(settings) {
-      var config = {
+     var config = {
           initialState: 'unchecked'
       };
-
-      if (settings) $.extend(config, settings);
 
       var states = {
         checked: {
@@ -28,24 +25,39 @@
         }
       };
 
-      var state = function(val) {
-        if (val) {
-          if (!states[val]) {return;}
-          $(this).attr('state', val);
-          $(this).attr('checked', states[val].checked);
+    $.fn.tristate = function(method) {
+
+      var methods = {
+        init: function(options) {
+          options = $.extend({}, config, options);
+          
+          var initial = states[options.initialState.toLowerCase()] ? options.initialState.toLowerCase() : 'unchecked';
+          methods.state.call(this, initial);
+          $(this).click(function() {
+            var current = methods.state.call(this);
+            var next = states[current].next;
+            methods.state.call(this, next);
+            $(this).trigger('tristate-state-change');
+          });
+          return this;
+        },
+        state: function(val) {
+          if (val) {
+            if (!states[val]) {return;}
+            $(this).attr('state', val);
+            $(this).attr('checked', states[val].checked);
+          }
+          return $(this).attr('state');
         }
-        return $(this).attr('state');
       };
 
-      this.each(function() {
-        var initial = states[config.initialState.toLowerCase()] ? config.initialState.toLowerCase() : 'unchecked';
-        state.call(this, initial);
-        $(this).click(function() {
-          var current = state.call(this);
-          var next = states[current].next;
-          state.call(this, next);
-          $(this).trigger('tristate-state-change');
-        });
-      });
+      // Method calling logic
+      if ( methods[method] ) {
+        return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+      } else if ( typeof method === 'object' || ! method ) {
+        return methods.init.apply( this, arguments );
+      } else {
+        $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+      }
     };
 })(jQuery);
