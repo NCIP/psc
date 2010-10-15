@@ -98,10 +98,11 @@ psc.admin.UserAdmin = (function ($) {
       utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
     }))
 
-    registerMultipleGroupControl('#role-editor-pane', roles);
+    registerMultipleGroupControl('#role-editor-pane', roles, '#multiple-group-membership');
     registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites');
     registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies');
 
+    registerGroupControlIntermediateStateLabel('#role-editor-pane', '#multiple-group-membership', '#partial-multiple-group-membership-info', roles);
   }
 
   function uniqueStudies(studies) {
@@ -178,41 +179,45 @@ psc.admin.UserAdmin = (function ($) {
     });
   }
 
-  function registerMultipleGroupControl(pane, roles) {
-    var state = determineTristateCheckboxState(roles);
+  function registerMultipleGroupControl(pane, roles, inputSelector) {
+    var input = $(pane).find(inputSelector);
 
-    var input = $(pane).find('#multiple-group-membership:first');
-
-    $(input).tristate({initialState: state});
-
-    updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
-
-    $(input).bind('tristate-state-change',
-        _(updateGroupMembership).bind(this, function(evt) {return $(evt.target).tristate('state') == 'checked'}));
-    $(input).bind('tristate-state-change', _(function (pane, roles, evt) {
-      var state = $(evt.target).attr('state');
-      updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
-    }).bind(this, pane, roles));
+    $(input).
+        tristate({initialState: determineTristateCheckboxState(roles)}).
+        bind('tristate-state-change',
+          _(updateGroupMembership).bind(this, function(evt) {return $(evt.target).tristate('state') == 'checked'}));
   }
 
-  function updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue) {
+  function registerGroupControlIntermediateStateLabel(pane, input, label, roles) {
+    if (!$(input).tristate) {return;}
+
+    updateIntermediateStateLabel(pane, input, label, roles);
+
+    $(input).bind('tristate-state-change', _(function(pane, label, roles, evt) {
+      updateIntermediateStateLabel(pane, evt.target, label, roles);
+    }).bind(this, pane, label, roles));
+  }
+
+  function updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue) {
+    if (!$(input).tristate) {return;}
+
+    var state = $(input).tristate('state');
+    if (state != 'intermediate') { $(label).hide().empty(); return; }
+
     label = $(pane).find(label + ':first');
 
-    if (state == 'intermediate') {
-      var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue)
-      var text = 'Applies to {1}, but not {2}.'.
-          replace('{1}', displayableRoleNames(findRoles(c.applies))).
-          replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
+    var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue)
+    var text = 'Applies to {1}, but not {2}.'.
+        replace('{1}', displayableRoleNames(findRoles(c.applies))).
+        replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
 
-      if (c.scopeNotAvailable.length > 0) {
-        text += ' {1} assignment not available for {2}.'.
-            replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
-            replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
-      }
-      $(label).text('(' + text + ')').show();
-    } else {
-      $(label).hide().empty();
+    if (c.scopeNotAvailable.length > 0) {
+      text += ' {1} assignment not available for {2}.'.
+          replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
+          replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
     }
+
+    $(label).text('(' + text + ')').show();
   }
 
   function userRoleClassifications(roleKeys, scopeType, scopeValue) {
@@ -266,13 +271,13 @@ psc.admin.UserAdmin = (function ($) {
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
       var label = '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';
       $(input).tristate({initialState: state});
-      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
+//      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
       updateMultipleMembershipScope(_(roles).map(function(r){return r.key}), scopeType, scopeTypePlural, evt);
       var scopeValue = $(evt.target).attr(scopeType + '-identifier');
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
       var label = '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';
-      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
+//      updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue);
     }).bind(this, roles, scopeType, scopeTypePlural));
   }
 
