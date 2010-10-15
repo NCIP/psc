@@ -28,8 +28,13 @@ Screw.Unit(function () {
       });
 
       describe("configuration", function () {
-        it("should be in the intermediate state", function () {
+        it("should allow intermediate as the initial state", function () {
           setup('intermediate');
+          expect(c.attr('state')).to(equal, 'intermediate');
+        });
+
+        it("should allow Intermediate as the initial state", function() {
+          setup('Intermediate');
           expect(c.attr('state')).to(equal, 'intermediate');
         });
 
