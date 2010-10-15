@@ -65,7 +65,10 @@ psc.admin.UserAdmin = (function ($) {
   function startEditingMultiple(roleKeys) {
     var roles = findRoles(roleKeys);
 
-    $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {roles: roles}));
+    $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
+      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces},
+      roles: roles
+    }));
   }
 
   function addRoleAndScopesToMultipleTemplate(roleKeys) {
@@ -168,12 +171,6 @@ psc.admin.UserAdmin = (function ($) {
         replace('{1}', displayableRoleNames(findRoles(c.applies))).
         replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
 
-    if (c.scopeNotAvailable.length > 0) {
-      text += ' {1} assignment not available for {2}.'.
-          replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
-          replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
-    }
-
     $(label).text('(' + text + ')').show();
   }
 
@@ -233,8 +230,7 @@ psc.admin.UserAdmin = (function ($) {
     var c = {};
     var scope = buildScopeObject(scopeType, scopeValue);
 
-    c.applies =
-        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), user.matchingMemberships(roleKeys, scope));
+    c.applies = user.matchingMemberships(roleKeys, scope);
     c.doesNotApply =
         psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), c.applies);
     c.scopeNotAvailable =
