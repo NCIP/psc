@@ -82,16 +82,11 @@ psc.admin.UserAdmin = (function ($) {
       studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
       enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
       utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
-    }))
-
-    registerMultipleGroupControl('#role-editor-pane', roles);
-    registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
-    registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
-
+    }));
   }
 
   function addRoleAndScopesToMultipleTemplate(roleKeys) {
-    var roleKeys = roleKeys || []
+    roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
 
     var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
