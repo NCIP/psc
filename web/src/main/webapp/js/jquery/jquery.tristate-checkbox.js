@@ -50,10 +50,12 @@
           }
 
           if (!states[val]) {return;}
-          $(this).attr('state', val);
-          $(this).attr('checked', states[val].checked);
-          if (!suppressChangeEvent) {
-            $(this).trigger('tristate-state-change', val);
+          if ($(this).attr('state') !== val) {
+            $(this).attr('state', val);
+            $(this).attr('checked', states[val].checked);
+            if (!suppressChangeEvent) {
+              $(this).trigger('tristate-state-change', val);
+            }
           }
           return this;
         }

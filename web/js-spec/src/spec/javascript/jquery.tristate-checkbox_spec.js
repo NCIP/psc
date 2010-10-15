@@ -97,6 +97,11 @@ Screw.Unit(function () {
           expect(receivedData.length).to(equal, 1);
           expect(receivedData[0]).to(equal, 'checked');
         });
+
+        it("should not fire a state change when state is manually changed to the same state", function() {
+          $(c).tristate('state', 'unchecked');
+          expect(receivedData.length).to(equal, 0);
+        });
       });
 
       describe("chaining", function() {
