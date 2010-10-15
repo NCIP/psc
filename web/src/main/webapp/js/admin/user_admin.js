@@ -216,19 +216,19 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function userRoleClassifications(roleKeys, scopeType, scopeValue) {
-    var classifications = {};
+    var c = {};
     var scope = buildScopeObject(scopeType, scopeValue);
 
-    classifications.applies =
+    c.applies =
         psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), user.matchingMemberships(roleKeys, scope));
-    classifications.doesNotApply =
-        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), classifications.applies);
-    classifications.scopeNotAvailable =
+    c.doesNotApply =
+        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), c.applies);
+    c.scopeNotAvailable =
         psc.tools.Arrays.minus(
-            psc.tools.Arrays.minus(roleKeys, classifications.applies),
-            classifications.doesNotApply);
+            psc.tools.Arrays.minus(roleKeys, c.applies),
+            c.doesNotApply);
 
-    return classifications;
+    return c;
   }
 
   function findRoles(roleKeys) {
