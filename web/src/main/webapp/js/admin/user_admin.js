@@ -336,7 +336,7 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  ////// Syncronize functions
+  ////// Synchronize functions
   function syncRoleTabOnChange(evt, data) {
     if (user.hasMembership(data.role)) {
       $('a#role-' + data.role).addClass('member');
