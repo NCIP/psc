@@ -229,9 +229,7 @@ psc.admin.UserAdmin = (function ($) {
     c.doesNotApply =
         psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), c.applies);
     c.scopeNotAvailable =
-        psc.tools.Arrays.minus(
-            psc.tools.Arrays.minus(roleKeys, c.applies),
-            c.doesNotApply);
+        psc.tools.Arrays.minus(psc.tools.Arrays.minus(roleKeys, c.applies), c.doesNotApply);
 
     return c;
   }
