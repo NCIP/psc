@@ -62,7 +62,7 @@ psc.admin.UserAdmin = (function ($) {
           enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
         })).
         find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
-        click(_(updateGroupMembership).bind(this, function(evt) {return $(evt.target).attr('checked')})).end().
+        click(updateGroupMembership).end().
         parent().attr('role', roleKey);
       registerScopeControls('#role-editor-pane', role, 'site', 'sites');
       registerScopeControls('#role-editor-pane', role, 'study', 'studies');
@@ -167,13 +167,11 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function updateGroupMembership(isCheckedFn, evt) {
-    if (!isCheckedFn) {return;}
-
+  function updateGroupMembership(evt) {
     var roleKeys = evt.target.value ? evt.target.value.split(',') : [];
 
     _(roleKeys).each(function(k) {
-      if (isCheckedFn(evt)) {
+      if (isChecked(evt.target)) {
         user.add(k);
       } else {
         user.remove(k);
@@ -181,13 +179,25 @@ psc.admin.UserAdmin = (function ($) {
     });
   }
 
+  function isChecked(input) {
+    if (isTristateCheckbox(input)) {
+      return $(input).tristate('state') == 'checked';
+    } else {
+      return $(input).attr('checked');
+    }
+  }
+
+  function isTristateCheckbox(input) {
+    return !!$(input).tristate('state');
+  }
+
+
   function registerMultipleGroupControl(pane, inputSelector, roles) {
     var input = $(pane).find(inputSelector);
 
     $(input).
         tristate({initialState: determineTristateCheckboxState(roles)}).
-        bind('tristate-state-change',
-          _(updateGroupMembership).bind(this, function(evt) {return $(evt.target).tristate('state') == 'checked'}));
+        bind('tristate-state-change', updateGroupMembership);
   }
 
   function registerGroupControlIntermediateStateLabel(pane, input, label, roles) {
@@ -287,7 +297,9 @@ psc.admin.UserAdmin = (function ($) {
       var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
       $(input).tristate({initialState: state});
     }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
-      updateMultipleMembershipScope(_(roles).map(function(r){return r.key}), scopeType, scopeTypePlural, evt);
+      _(roles).each(function(r) {
+        updateMembershipScope(r.key, scopeType, scopeTypePlural, evt);
+      })
     }).bind(this, roles, scopeType, scopeTypePlural));
   }
 
@@ -318,29 +330,11 @@ psc.admin.UserAdmin = (function ($) {
   function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
     console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
     var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
-    if ($(evt.target).attr('checked')) {
+    if (isChecked(evt.target)) {
       user.add(roleKey, scope);
     } else {
       user.remove(roleKey, scope);
     }
-  }
-
-  function updateMultipleMembershipScope(roleKeys, scopeType, scopeListName, evt) {
-    var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
-    var state = $(evt.target).attr('state')
-
-    console.log("Updating user obj", roleKeys, scopeType, scopeListName, scope, state, evt);
-
-    _(roleKeys).each(function(roleKey) {
-      switch(state) {
-      case 'checked':
-        user.add(roleKey, scope); break;
-      case 'unchecked':
-        user.remove(roleKey, scope); break;
-      default:
-        console.log("State does not exist", state);
-      }
-    });
   }
 
   function syncRoleTabOnChange(evt, data) {
