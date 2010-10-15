@@ -29,7 +29,7 @@
       };
 
       var state = function(val) {
-        if (val !== undefined) {
+        if (val) {
           if (!states[val]) {return;}
           $(this).attr('state', val);
           $(this).attr('checked', states[val].checked);
