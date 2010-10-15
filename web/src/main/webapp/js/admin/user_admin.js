@@ -8,6 +8,8 @@ psc.admin.UserAdmin = (function ($) {
     provisionableSites.push(site.identifier)
   });
 
+  ////// Action functions
+
   function selectRole(roleKey) {
     $('a.role').removeClass('selected');
     $('#role-' + roleKey).addClass('selected');
@@ -38,19 +40,8 @@ psc.admin.UserAdmin = (function ($) {
     return false;
   }
 
-  function determineProvisionableStudies(role) {
-    var isTM = _(role.uses || []).indexOf("template_management") >= 0;
-    var isSP = _(role.uses || []).indexOf("site_participation") >= 0;
-    if (isTM && isSP) {
-      return PROVISIONABLE_STUDIES['template_management+site_participation'];
-    } else if (isTM) {
-      return PROVISIONABLE_STUDIES['template_management'];
-    } else {
-      // use participation even for roles that don't have uses
-      return PROVISIONABLE_STUDIES['site_participation'];
-    }
-  }
-
+  ////// Template insertion functions
+  
   function startEditing(roleKey) {
     var role = _.detect(PROVISIONABLE_ROLES, function (role) { return role.key === roleKey });
     if (role) {
@@ -96,6 +87,193 @@ psc.admin.UserAdmin = (function ($) {
     registerGroupControlIntermediateStateLabel('#role-editor-pane', roles);
     registerScopeControlIntermediateStateLabel('#role-editor-pane', roles, 'site', 'sites');
     registerScopeControlIntermediateStateLabel('#role-editor-pane', roles, 'study', 'studies');
+  }
+
+  ////// Registration functions
+
+  function registerMultipleGroupControl(pane, roles) {
+    var input = $(pane).find('#multiple-group-membership');
+
+    $(input).
+        tristate({initialState: determineTristateCheckboxState(roles)}).
+        bind('tristate-state-change', updateGroupMembership);
+  }
+
+  function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
+      $(input).attr(
+          'checked',
+          user.hasMembership(role.key, qMembership));
+    }).click(_(updateMembershipScope).bind(this, role.key, scopeType, scopeTypePlural));
+  }
+
+  function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var scopeValue = $(input).attr(scopeType + '-identifier');
+      var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
+      $(input).tristate({initialState: state});
+    }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
+      _(roles).each(function(r) {
+        updateMembershipScope(r.key, scopeType, scopeTypePlural, evt);
+      })
+    }).bind(this, roles, scopeType, scopeTypePlural));
+  }
+
+  function registerGroupControlIntermediateStateLabel(pane, roles) {
+    var input = '#multiple-group-membership', label = '#partial-multiple-group-membership-info';
+    if (!$(input).tristate) {return;}
+
+    updateIntermediateStateLabel(pane, input, label, roles);
+
+    $(input).bind('tristate-state-change', _(function(pane, label, roles, evt) {
+      updateIntermediateStateLabel(pane, evt.target, label, roles);
+    }).bind(this, pane, label, roles));
+  }
+
+  function registerScopeControlIntermediateStateLabel(pane, roles, scopeType, scopeTypePlural) {
+    var findScopeValue = function(input, scopeType) {return $(input).attr(scopeType + '-identifier');}
+    var findLabel = function(scopeType, scopeValue) {return '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';};
+
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var scopeValue = findScopeValue(input, scopeType);
+      var label = findLabel(scopeType, scopeValue);
+      updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue);
+    }).bind('tristate-state-change', _(function(pane, roles, scopeType, scopeTypePlural, evt) {
+      var input = evt.target;
+      var scopeValue = findScopeValue(input, scopeType);
+      var label = findLabel(scopeType, scopeValue);
+      updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue);
+    }).bind(this, pane, roles, scopeType, scopeTypePlural));
+  }
+
+  ////// Update functions
+
+  function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
+    console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
+    var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
+    if (isChecked(evt.target)) {
+      user.add(roleKey, scope);
+    } else {
+      user.remove(roleKey, scope);
+    }
+  }
+
+  function updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue) {
+    if (!$(input).tristate || $(input).tristate('state') != 'intermediate') {$(label).hide().empty(); return;}
+
+    var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue);
+
+    var text = 'Applies to {1}, but not {2}.'.
+        replace('{1}', displayableRoleNames(findRoles(c.applies))).
+        replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
+
+    if (c.scopeNotAvailable.length > 0) {
+      text += ' {1} assignment not available for {2}.'.
+          replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
+          replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
+    }
+
+    $(label).text('(' + text + ')').show();
+  }
+
+  function updateGroupMembership(evt) {
+    var roleKeys = evt.target.value ? evt.target.value.split(',') : [];
+
+    _(roleKeys).each(function(k) {
+      if (isChecked(evt.target)) {
+        user.add(k);
+      } else {
+        user.remove(k);
+      }
+    });
+  }
+
+
+  ////// Helper functions
+
+  function determineProvisionableStudies(role) {
+    var isTM = _(role.uses || []).indexOf("template_management") >= 0;
+    var isSP = _(role.uses || []).indexOf("site_participation") >= 0;
+    if (isTM && isSP) {
+      return PROVISIONABLE_STUDIES['template_management+site_participation'];
+    } else if (isTM) {
+      return PROVISIONABLE_STUDIES['template_management'];
+    } else {
+      // use participation even for roles that don't have uses
+      return PROVISIONABLE_STUDIES['site_participation'];
+    }
+  }
+
+  function buildScopeObject(scopeType, scopeValue) {
+    var scope = null;
+    if (scopeType) {
+      scope = {}; scope[scopeType] = scopeValue;
+    }
+    return scope;
+  }
+
+  function determineTristateCheckboxState(roles, scopeType, scopeValue) {
+    var roleKeys = mapRoleKeys(roles);
+    var scope = buildScopeObject(scopeType, scopeValue);
+
+    var status = user.membershipsStatus(roleKeys, scope);
+    console.log("Tri-state checkbox status", status, scopeType, scopeValue);
+    switch(status) {
+      case 'FULL':    return 'checked';
+      case 'PARTIAL': return 'intermediate';
+      case 'NONE':    return 'unchecked';
+      default:
+        console.log("Memberships status unknown: ", status);
+        return 'unchecked';
+    }
+  }
+
+  function userRoleClassifications(roleKeys, scopeType, scopeValue) {
+    var c = {};
+    var scope = buildScopeObject(scopeType, scopeValue);
+
+    c.applies =
+        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), user.matchingMemberships(roleKeys, scope));
+    c.doesNotApply =
+        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), c.applies);
+    c.scopeNotAvailable =
+        psc.tools.Arrays.minus(psc.tools.Arrays.minus(roleKeys, c.applies), c.doesNotApply);
+
+    return c;
+  }
+
+  function findRoles(roleKeys) {
+    roleKeys = roleKeys || [];
+    return _(PROVISIONABLE_ROLES).select(function (role) { return _.include(roleKeys, role.key)});
+  }
+
+  function isChecked(input) {
+    if (isTristateCheckbox(input)) {
+      return $(input).tristate('state') == 'checked';
+    } else {
+      return $(input).attr('checked');
+    }
+  }
+
+  function isTristateCheckbox(input) {
+    return !!$(input).tristate('state');
+  }
+
+  function mapRoleKeys(roles) {
+    return roles.map(function(r){return r.key});
+  }
+
+  function mapRoleNames(roles) {
+    return _(roles).map(function(r){return r.name});
+  }
+
+  function displayableRoleNames(roles) {
+    return _(roles).pluck('name').join(', ');
+  }
+
+  function escapeIdSpaces(id) {
+    return id.replace(' ', '--space--');
   }
 
   function uniqueStudies(studies) {
@@ -158,174 +336,7 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function updateGroupMembership(evt) {
-    var roleKeys = evt.target.value ? evt.target.value.split(',') : [];
-
-    _(roleKeys).each(function(k) {
-      if (isChecked(evt.target)) {
-        user.add(k);
-      } else {
-        user.remove(k);
-      }
-    });
-  }
-
-  function isChecked(input) {
-    if (isTristateCheckbox(input)) {
-      return $(input).tristate('state') == 'checked';
-    } else {
-      return $(input).attr('checked');
-    }
-  }
-
-  function isTristateCheckbox(input) {
-    return !!$(input).tristate('state');
-  }
-
-
-  function registerMultipleGroupControl(pane, roles) {
-    var input = $(pane).find('#multiple-group-membership');
-
-    $(input).
-        tristate({initialState: determineTristateCheckboxState(roles)}).
-        bind('tristate-state-change', updateGroupMembership);
-  }
-
-  function registerGroupControlIntermediateStateLabel(pane, roles) {
-    var input = '#multiple-group-membership', label = '#partial-multiple-group-membership-info';
-    if (!$(input).tristate) {return;}
-
-    updateIntermediateStateLabel(pane, input, label, roles);
-
-    $(input).bind('tristate-state-change', _(function(pane, label, roles, evt) {
-      updateIntermediateStateLabel(pane, evt.target, label, roles);
-    }).bind(this, pane, label, roles));
-  }
-
-  function registerScopeControlIntermediateStateLabel(pane, roles, scopeType, scopeTypePlural) {
-    var findScopeValue = function(input, scopeType) {return $(input).attr(scopeType + '-identifier');}
-    var findLabel = function(scopeType, scopeValue) {return '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';};
-
-    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var scopeValue = findScopeValue(input, scopeType);
-      var label = findLabel(scopeType, scopeValue);
-      updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue);
-    }).bind('tristate-state-change', _(function(pane, roles, scopeType, scopeTypePlural, evt) {
-      var input = evt.target;
-      var scopeValue = findScopeValue(input, scopeType);
-      var label = findLabel(scopeType, scopeValue);
-      updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue);
-    }).bind(this, pane, roles, scopeType, scopeTypePlural));
-  }
-
-  function updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue) {
-    if (!$(input).tristate || $(input).tristate('state') != 'intermediate') {$(label).hide().empty(); return;}
-
-    var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue);
-
-    var text = 'Applies to {1}, but not {2}.'.
-        replace('{1}', displayableRoleNames(findRoles(c.applies))).
-        replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
-
-    if (c.scopeNotAvailable.length > 0) {
-      text += ' {1} assignment not available for {2}.'.
-          replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
-          replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
-    }
-
-    $(label).text('(' + text + ')').show();
-  }
-
-  function userRoleClassifications(roleKeys, scopeType, scopeValue) {
-    var c = {};
-    var scope = buildScopeObject(scopeType, scopeValue);
-
-    c.applies =
-        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), user.matchingMemberships(roleKeys, scope));
-    c.doesNotApply =
-        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), c.applies);
-    c.scopeNotAvailable =
-        psc.tools.Arrays.minus(psc.tools.Arrays.minus(roleKeys, c.applies), c.doesNotApply);
-
-    return c;
-  }
-
-  function findRoles(roleKeys) {
-    roleKeys = roleKeys || [];
-    return _(PROVISIONABLE_ROLES).select(function (role) { return _.include(roleKeys, role.key)});
-  }
-
-  function determineTristateCheckboxState(roles, scopeType, scopeValue) {
-    var roleKeys = mapRoleKeys(roles);
-    var scope = buildScopeObject(scopeType, scopeValue);
-
-    var status = user.membershipsStatus(roleKeys, scope);
-    console.log("Tri-state checkbox status", status, scopeType, scopeValue);
-    switch(status) {
-      case 'FULL':    return 'checked';
-      case 'PARTIAL': return 'intermediate';
-      case 'NONE':    return 'unchecked';
-      default:
-        console.log("Memberships status unknown: ", status);
-        return 'unchecked';
-    }
-  }
-
-  function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
-    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
-      $(input).attr(
-          'checked',
-          user.hasMembership(role.key, qMembership));
-    }).click(_(updateMembershipScope).bind(this, role.key, scopeType, scopeTypePlural));
-  }
-
-  function registerMultipleScopeControls(pane, roles, scopeType, scopeTypePlural) {
-    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
-      var scopeValue = $(input).attr(scopeType + '-identifier');
-      var state = determineTristateCheckboxState(roles, scopeType, scopeValue);
-      $(input).tristate({initialState: state});
-    }).bind('tristate-state-change', _(function(roles, scopeType, scopeTypePlural, evt) {
-      _(roles).each(function(r) {
-        updateMembershipScope(r.key, scopeType, scopeTypePlural, evt);
-      })
-    }).bind(this, roles, scopeType, scopeTypePlural));
-  }
-
-  function buildScopeObject(scopeType, scopeValue) {
-    var scope = null;
-    if (scopeType) {
-      scope = {}; scope[scopeType] = scopeValue;
-    }
-    return scope;
-  }
-
-  function mapRoleKeys(roles) {
-    return roles.map(function(r){return r.key});
-  }
-
-  function mapRoleNames(roles) {
-    return _(roles).map(function(r){return r.name});
-  }
-
-  function displayableRoleNames(roles) {
-    return _(roles).pluck('name').join(', ');
-  }
-
-  function escapeIdSpaces(id) {
-    return id.replace(' ', '--space--');
-  }
-  
-  function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
-    console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
-    var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
-    if (isChecked(evt.target)) {
-      user.add(roleKey, scope);
-    } else {
-      user.remove(roleKey, scope);
-    }
-  }
-
+  ////// Syncronize functions
   function syncRoleTabOnChange(evt, data) {
     if (user.hasMembership(data.role)) {
       $('a#role-' + data.role).addClass('member');
