@@ -98,11 +98,11 @@ psc.admin.UserAdmin = (function ($) {
       utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
     }))
 
-    registerMultipleGroupControl('#role-editor-pane', '#multiple-group-membership', roles);
+    registerMultipleGroupControl('#role-editor-pane', roles);
     registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites');
     registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies');
 
-    registerGroupControlIntermediateStateLabel('#role-editor-pane', '#multiple-group-membership', '#partial-multiple-group-membership-info', roles);
+    registerGroupControlIntermediateStateLabel('#role-editor-pane', roles);
     registerScopeControlIntermediateStateLabel('#role-editor-pane', roles, 'site', 'sites');
     registerScopeControlIntermediateStateLabel('#role-editor-pane', roles, 'study', 'studies');
   }
@@ -192,15 +192,16 @@ psc.admin.UserAdmin = (function ($) {
   }
 
 
-  function registerMultipleGroupControl(pane, inputSelector, roles) {
-    var input = $(pane).find(inputSelector);
+  function registerMultipleGroupControl(pane, roles) {
+    var input = $(pane).find('#multiple-group-membership');
 
     $(input).
         tristate({initialState: determineTristateCheckboxState(roles)}).
         bind('tristate-state-change', updateGroupMembership);
   }
 
-  function registerGroupControlIntermediateStateLabel(pane, input, label, roles) {
+  function registerGroupControlIntermediateStateLabel(pane, roles) {
+    var input = '#multiple-group-membership', label = '#partial-multiple-group-membership-info';
     if (!$(input).tristate) {return;}
 
     updateIntermediateStateLabel(pane, input, label, roles);
