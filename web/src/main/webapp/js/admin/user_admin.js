@@ -98,7 +98,7 @@ psc.admin.UserAdmin = (function ($) {
       utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
     }))
 
-    registerMultipleGroupControl('#role-editor-pane', roles, '#multiple-group-membership');
+    registerMultipleGroupControl('#role-editor-pane', '#multiple-group-membership', roles);
     registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites');
     registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies');
 
@@ -179,7 +179,7 @@ psc.admin.UserAdmin = (function ($) {
     });
   }
 
-  function registerMultipleGroupControl(pane, roles, inputSelector) {
+  function registerMultipleGroupControl(pane, inputSelector, roles) {
     var input = $(pane).find(inputSelector);
 
     $(input).
