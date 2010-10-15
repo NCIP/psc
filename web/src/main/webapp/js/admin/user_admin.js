@@ -99,8 +99,8 @@ psc.admin.UserAdmin = (function ($) {
     }))
 
     registerMultipleGroupControl('#role-editor-pane', roles);
-    registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites')
-    registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies')
+    registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites');
+    registerMultipleScopeControls('#role-editor-pane', roles, 'study', 'studies');
 
   }
 
