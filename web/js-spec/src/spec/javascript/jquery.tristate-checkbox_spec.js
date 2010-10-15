@@ -107,7 +107,7 @@ Screw.Unit(function () {
       });
 
       describe("modifying multiple", function() {
-        it("should allow changing multiple checkbox states", function() {
+        it("should allow changing multiple checkbox states at once", function() {
           $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/><input type="checkbox" id="sam" value="hobbit"/>');
           $('#frodo').tristate();
           $('#sam').tristate();
