@@ -72,7 +72,7 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function startEditingMultiple(roleKeys) {
-    var roleKeys = roleKeys || []
+    roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
 
     var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
