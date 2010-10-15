@@ -87,7 +87,6 @@ Screw.Unit(function () {
 
         it("fires state change when clicked", function () {
           $(c).click();
-          console.log(receivedData)
           expect(receivedData.length).to(equal, 1);
           expect(receivedData[0]).to(equal, 'checked');
         });

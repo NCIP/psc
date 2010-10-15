@@ -349,24 +349,16 @@ psc.admin.UserAdmin = (function ($) {
       var isAll = $('#role-editor input.all.' + scopeClass + ":checked").length > 0;
       if (isAll) {
         var oneSelector = '#role-editor input.one.' + scopeClass;
-        var allSelector = '#role-editor input.all.' + scopeClass;
-        if ($(allSelector + "[state='checked']").length > 0) {
-          $(oneSelector + "[state='intermediate']").click();
-          $(oneSelector).
-            filter(':checked').click().end().
-            attr("disabled", true).
-            closest('div.row').addClass('disabled');
-        } else if ($(allSelector + "[state='intermediate']").length > 0) {
-          $(oneSelector).
-            filter(':checked').end().
-            attr("disabled", true).
-            closest('div.row').addClass('disabled');
-        } else {
-          $(oneSelector).
-            filter(':checked').click().end().
-            attr("disabled", true).
-            closest('div.row').addClass('disabled');
-        }
+
+        var regular = $(oneSelector).not('[state]').
+          filter(':checked').click().end()
+
+        var tristate = $(oneSelector + '[state]').
+          tristate('state', 'unchecked')
+        
+        regular.add(tristate).
+          attr("disabled", true).
+          closest('div.row').addClass('disabled');
       } else {
         $('#role-editor input.one.' + scopeClass).
           attr("disabled", false).
