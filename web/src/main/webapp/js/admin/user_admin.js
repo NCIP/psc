@@ -75,14 +75,7 @@ psc.admin.UserAdmin = (function ($) {
     roleKeys = roleKeys || []
     var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
 
-    var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
-    var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
-    $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-      roles: roles, sites: PROVISIONABLE_SITES,
-      studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
-      enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
-      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
-    }));
+    $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {roles: roles}));
   }
 
   function addRoleAndScopesToMultipleTemplate(roleKeys) {
