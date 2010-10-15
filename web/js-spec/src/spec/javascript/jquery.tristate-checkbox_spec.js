@@ -73,29 +73,30 @@ Screw.Unit(function () {
           expect(c.attr('state')).to(equal, 'checked');
         });
       });
-//      describe("firing events", function () {
-//        var checkbox;
-//        var receivedData;
-//
-//        before(function () {
-//          checkbox = setup();
-//          receivedData = [];
-//          $(checkbox).bind("tristate-state-change", function (evt, data) {
-//            receivedData.push(data);
-//          });
-//        });
-//
+      describe("firing events", function () {
+        var receivedData;
+
+        before(function () {
+          receivedData = [];
+          $(c).unbind('tristate-state-change');
+          $(c).bind("tristate-state-change", function (evt, data) {
+            receivedData.push(data);
+          });
+        });
+
 //        it("fires state change when clicked", function () {
-//          $(checkbox).click();
+//          $(c).click();
+//          console.log(receivedData)
 //          expect(receivedData.length).to(equal, 1);
 //          expect(receivedData[0]).to(equal, 'checked');
 //        });
-//
-//        it("fires membership change for a remove", function () {
-//          user.remove('system_administrator');
-//          expect(receivedData.length).to(equal, 1);
-//        });
-//      });
+
+        it("fires state change when state is manually changed", function () {
+          $(c).tristate('state', 'checked');
+          expect(receivedData.length).to(equal, 1);
+          expect(receivedData[0]).to(equal, 'checked');
+        });
+      });
 
     });
   }(jQuery));

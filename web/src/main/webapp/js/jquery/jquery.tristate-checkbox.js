@@ -32,20 +32,22 @@
           options = $.extend({}, config, options);
           
           var initial = states[options.initialState.toLowerCase()] ? options.initialState.toLowerCase() : 'unchecked';
-          methods.state.call(this, initial);
+          methods.state.call(this, initial, true);
           $(this).click(function() {
             var current = methods.state.call(this);
             var next = states[current].next;
             methods.state.call(this, next);
-            $(this).trigger('tristate-state-change');
           });
           return this;
         },
-        state: function(val) {
+        state: function(val, suppressChangeEvent) {
           if (val) {
             if (!states[val]) {return;}
             $(this).attr('state', val);
             $(this).attr('checked', states[val].checked);
+            if (!suppressChangeEvent) {
+              $(this).trigger('tristate-state-change', val);
+            }
           }
           return $(this).attr('state');
         }
