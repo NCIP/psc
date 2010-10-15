@@ -85,12 +85,12 @@ Screw.Unit(function () {
           });
         });
 
-//        it("fires state change when clicked", function () {
-//          $(c).click();
-//          console.log(receivedData)
-//          expect(receivedData.length).to(equal, 1);
-//          expect(receivedData[0]).to(equal, 'checked');
-//        });
+        it("fires state change when clicked", function () {
+          $(c).click();
+          console.log(receivedData)
+          expect(receivedData.length).to(equal, 1);
+          expect(receivedData[0]).to(equal, 'checked');
+        });
 
         it("fires state change when state is manually changed", function () {
           $(c).tristate('state', 'checked');
@@ -105,6 +105,8 @@ Screw.Unit(function () {
           expect(c.attr('state')).to(equal, 'checked');
         });
       });
+
+//      describe("multiple ")
 
     });
   }(jQuery));

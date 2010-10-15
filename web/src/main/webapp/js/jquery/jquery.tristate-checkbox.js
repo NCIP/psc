@@ -4,41 +4,44 @@
  *
  * When there is a state change, a 'tristate-state-change'
  * event is fired.
+ *
  */
 (function($) {
-     var config = {
-          initialState: 'unchecked'
-      };
+   var config = {
+        initialState: 'unchecked'
+    };
 
-      var states = {
-        checked: {
-          next: 'unchecked',
-          checked: true
-        },
-        unchecked: {
-          next: 'checked',
-          checked: false
-        },
-        intermediate: {
-          next: 'checked',
-          checked: true
-        }
-      };
-
+    var states = {
+      checked: {
+        next: 'unchecked',
+        checked: true
+      },
+      unchecked: {
+        next: 'checked',
+        checked: false
+      },
+      intermediate: {
+        next: 'checked',
+        checked: true
+      }
+    };
+  
     $.fn.tristate = function(method) {
 
       var methods = {
         init: function(options) {
+          var isInitialized = !!methods.state.call(this);
+          if (!isInitialized) {
+            $(this).click(function() {
+              var current = methods.state.call(this);
+              var next = states[current].next;
+              methods.state.call(this, next);
+            });
+          }
           options = $.extend({}, config, options);
-          
           var initial = states[options.initialState.toLowerCase()] ? options.initialState.toLowerCase() : 'unchecked';
           methods.state.call(this, initial, true);
-          $(this).unbind('click');
-          $(this).click(function() {
-            var current = methods.state.call(this);
-            var next = states[current].next;
-            methods.state.call(this, next);
-          });
+  
           return this;
         },
         state: function(val, suppressChangeEvent) {
