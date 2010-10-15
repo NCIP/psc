@@ -62,7 +62,7 @@ psc.admin.UserAdmin = (function ($) {
           enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl
         })).
         find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
-        click(updateGroupMembership).end().
+        click(_(updateGroupMembership).bind(this, function(evt) {return $(evt.target).attr('checked')})).end().
         parent().attr('role', roleKey);
       registerScopeControls('#role-editor-pane', role, 'site', 'sites');
       registerScopeControls('#role-editor-pane', role, 'study', 'studies');
@@ -164,13 +164,18 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function updateGroupMembership(evt) {
-    var r = evt.target.value;
-    if ($(evt.target).attr('checked')) {
-      user.add(r);
-    } else {
-      user.remove(r);
-    }
+  function updateGroupMembership(isCheckedFn, evt) {
+    if (!isCheckedFn) {return;}
+
+    var roleKeys = evt.target.value ? evt.target.value.split(',') : [];
+
+    _(roleKeys).each(function(k) {
+      if (isCheckedFn(evt)) {
+        user.add(k);
+      } else {
+        user.remove(k);
+      }
+    });
   }
 
   function registerMultipleGroupControl(pane, roles) {
@@ -182,28 +187,12 @@ psc.admin.UserAdmin = (function ($) {
 
     updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
 
-    $(input).bind('tristate-state-change', _(updateMultipleGroupMemberships).bind(this, mapRoleKeys(roles)));
+    $(input).bind('tristate-state-change',
+        _(updateGroupMembership).bind(this, function(evt) {return $(evt.target).tristate('state') == 'checked'}));
     $(input).bind('tristate-state-change', _(function (pane, roles, evt) {
       var state = $(evt.target).attr('state');
       updateIntermediateStateLabel(state, pane, '#partial-multiple-group-membership-info', roles);
     }).bind(this, pane, roles));
-  }
-
-  function updateMultipleGroupMemberships(roleKeys, evt) {
-    console.log("Updating user obj", roleKeys, evt)
-
-    var state = $(evt.target).attr('state');
-
-    _(roleKeys).each(function(k) {
-      switch(state) {
-      case 'checked':
-        user.add(k); break;
-      case 'unchecked':
-        user.remove(k); break;
-      default:
-        console.log("State does not exist", state);
-      }
-    });
   }
 
   function updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue) {
