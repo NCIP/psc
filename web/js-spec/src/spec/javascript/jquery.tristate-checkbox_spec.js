@@ -8,17 +8,17 @@ Screw.Unit(function () {
 
       function setup(state) {
         if (state) {
-          c.tristate({initialState: state});
+          return $('#frodo').tristate({initialState: state});
         } else {
-          c.tristate();
+          return $('#frodo').tristate();
         }
       }
 
       var c;
 
       before(function() {
-        c = $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/>');
-        setup();
+        $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/>');
+        c = setup();
       });
 
       describe("initial state", function() {
@@ -47,17 +47,17 @@ Screw.Unit(function () {
 
       describe("state changes", function() {
         it("unchecked to checked", function () {
-          setup('unchecked'); $('#frodo').trigger('click');
+          setup('unchecked').click();
           expect(c.attr('state')).to(equal, 'checked');
         });
 
         it("checked to unchecked", function () {
-          setup('checked'); $('#frodo').trigger('click');
+          setup('checked').click();
           expect(c.attr('state')).to(equal, 'unchecked');
         });
 
         it("intermediate to checked", function () {
-          setup('intermediate'); $('#frodo').trigger('click');
+          setup('intermediate').click();
           expect(c.attr('state')).to(equal, 'checked');
         });
       });
@@ -73,6 +73,7 @@ Screw.Unit(function () {
           expect(c.attr('state')).to(equal, 'checked');
         });
       });
+
       describe("firing events", function () {
         var receivedData;
 
@@ -95,6 +96,13 @@ Screw.Unit(function () {
           $(c).tristate('state', 'checked');
           expect(receivedData.length).to(equal, 1);
           expect(receivedData[0]).to(equal, 'checked');
+        });
+      });
+
+      describe("chaining", function() {
+        it("should allow chaining", function() {
+          $(c).tristate('state', 'unchecked').tristate('state', 'checked');;
+          expect(c.attr('state')).to(equal, 'checked');
         });
       });
 

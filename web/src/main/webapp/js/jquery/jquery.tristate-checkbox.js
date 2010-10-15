@@ -33,6 +33,7 @@
           
           var initial = states[options.initialState.toLowerCase()] ? options.initialState.toLowerCase() : 'unchecked';
           methods.state.call(this, initial, true);
+          $(this).unbind('click');
           $(this).click(function() {
             var current = methods.state.call(this);
             var next = states[current].next;
@@ -41,15 +42,17 @@
           return this;
         },
         state: function(val, suppressChangeEvent) {
-          if (val) {
-            if (!states[val]) {return;}
-            $(this).attr('state', val);
-            $(this).attr('checked', states[val].checked);
-            if (!suppressChangeEvent) {
-              $(this).trigger('tristate-state-change', val);
-            }
+          if (!val) {
+            return $(this).attr('state');
           }
-          return $(this).attr('state');
+
+          if (!states[val]) {return;}
+          $(this).attr('state', val);
+          $(this).attr('checked', states[val].checked);
+          if (!suppressChangeEvent) {
+            $(this).trigger('tristate-state-change', val);
+          }
+          return this;
         }
       };
 
