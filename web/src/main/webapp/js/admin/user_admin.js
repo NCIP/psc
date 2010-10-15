@@ -345,6 +345,7 @@ psc.admin.UserAdmin = (function ($) {
       if (isAll) {
         var oneSelector = '#role-editor input.one.' + scopeClass;
 
+        // TODO: Find way to get tri-state checkboxes without using the state attribute.
         var regular = $(oneSelector).not('[state]').
           filter(':checked').click().end()
 
