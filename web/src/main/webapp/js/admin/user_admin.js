@@ -10,9 +10,8 @@ psc.admin.UserAdmin = (function ($) {
 
   function selectRole(roleKey) {
     $('a.role').removeClass('selected');
-//    $('input.roles-to-edit').attr('checked', false);
     $('#role-' + roleKey).addClass('selected');
-//    $('input.roles-to-edit[value=' + roleKey + ']').attr('checked', true);
+    
     if (roleKey === 'multiple-roles') {
       startEditingMultiple();
       $('input.roles-to-edit').change(selectRoleCheckbox);
@@ -20,18 +19,6 @@ psc.admin.UserAdmin = (function ($) {
     } else {
       startEditing(roleKey);
     }
-  }
-
-  function selectMultipleRoles(roleKeys) {
-    _(roleKeys).each(function(key) {
-      $('#role-' + key).addClass('selected');
-    });
-  }
-
-  function deselectMultipleRoles(roleKeys) {
-    _(roleKeys).each(function(key) {
-      $('#role-' + key).removeClass('selected');
-    });
   }
 
   function selectRoleTab(evt) {
@@ -45,13 +32,6 @@ psc.admin.UserAdmin = (function ($) {
     var checked = _($('input.roles-to-edit:checked')).map(function(elt) {
       return $(elt).val();
     });
-
-//    var unchecked = _($('input.roles-to-edit:not(:checked)')).map(function(elt) {
-//      return $(elt).val();
-//    });
-//
-//    selectMultipleRoles(checked);
-//    deselectMultipleRoles(unchecked);
 
     addRoleAndScopesToMultipleTemplate(checked);
     syncAllVsOne();
@@ -287,12 +267,6 @@ psc.admin.UserAdmin = (function ($) {
     }).bind(this, roles, scopeType, scopeTypePlural));
   }
 
-  /*
-    "data_reader": {
-      "sites": ["__ALL__"],
-      "studies": ["__ALL__"]
-
-  */
   function buildScopeObject(scopeType, scopeValue) {
     var scope = null;
     if (scopeType) {
