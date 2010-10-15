@@ -141,4 +141,25 @@ Screw.Unit(function () {
       });
     });
   });
+
+  describe("Arrays", function() {
+    describe("minus", function() {
+      it("should subtract the second array from the first", function() {
+        expect(psc.tools.Arrays.minus(["foo", "bar"], ["bar", "stuff"])).to(
+            equal, ["foo"]);
+      });
+
+      it("should return the first array if the second is null or undefined", function() {
+        expect(psc.tools.Arrays.minus(["foo"], null)).to(equal, ["foo"]);
+      });
+
+      it("should return the an empty array if the first is null or undefined", function() {
+        expect(psc.tools.Arrays.minus(null, ["foo"])).to(equal, []);
+      });
+
+      it("should return the an empty array if both arrays are null", function() {
+        expect(psc.tools.Arrays.minus(null, null)).to(equal, []);
+      });
+    })
+  });
 });
