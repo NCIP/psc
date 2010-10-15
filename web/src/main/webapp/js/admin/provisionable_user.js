@@ -160,7 +160,7 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
   };
 
   this.membershipsStatus = function(roleKeys, scope) {
-    var pKeys = selectProvisionableRolesKeys(roleKeys, scope);
+    var pKeys = this.selectProvisionableRolesKeys(roleKeys, scope);
     if (this.hasAllMemberships(pKeys, scope)) {
       return 'FULL';
     } else if (this.hasAnyMemberships(pKeys, scope)) {
@@ -170,11 +170,11 @@ psc.admin.ProvisionableUser = function (username, memberships, provisionableRole
     }
   };
 
-  var selectProvisionableRolesKeys = _(function(roleKeys, scope) {
+  this.selectProvisionableRolesKeys = function(roleKeys, scope) {
     return _(roleKeys).select(function(k) {
       if (!scope) { return this.isProvisionableRole(k) }
       var scopeType = _(scope).chain().keys().first().value();
       return this.isProvisionableRole(k) && this.isProvisionableScope(k, scopeType);
     }, this)
-  }).bind(this);
+  };
 }

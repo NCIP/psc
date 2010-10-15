@@ -196,18 +196,43 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateIntermediateStateLabel(state, pane, label, roles, scopeType, scopeValue) {
-    var label = $(pane).find(label + ':first');
+    label = $(pane).find(label + ':first');
 
     if (state == 'intermediate') {
-      var roleKeys = mapRoleKeys(roles);
-      var scope = buildScopeObject(scopeType, scopeValue);
-      var matchingRoleKeys = user.matchingMemberships(roleKeys, scope);
-      var matchingRoles = _(PROVISIONABLE_ROLES).select(function (role) {return _(matchingRoleKeys).include(role.key)});
-      var nonMatchingRoles = _(roles).reject(function (role) {return _(matchingRoleKeys).include(role.key)});
-      $(label).html('(Applies to ' +  mapRoleNames(matchingRoles).join(', ') + ', but not ' + mapRoleNames(nonMatchingRoles).join(', ') + ')').show();
+      var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue)
+      var text = 'Applies to {1}, but not {2}.'.
+          replace('{1}', displayableRoleNames(findRoles(c.applies))).
+          replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
+
+      if (c.scopeNotAvailable.length > 0) {
+        text += ' {1} assignment not available for {2}.'.
+            replace('{1}', scopeType.charAt(0).toUpperCase() + scopeType.slice(1)).
+            replace('{2}', displayableRoleNames(findRoles(c.scopeNotAvailable)));
+      }
+      $(label).text('(' + text + ')').show();
     } else {
       $(label).hide().empty();
     }
+  }
+
+  function userRoleClassifications(roleKeys, scopeType, scopeValue) {
+    var classifications = {};
+    var scope = buildScopeObject(scopeType, scopeValue);
+
+    classifications.applies =
+        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), user.matchingMemberships(roleKeys, scope));
+    classifications.doesNotApply =
+        psc.tools.Arrays.minus(user.selectProvisionableRolesKeys(roleKeys, scope), classifications.applies);
+    classifications.scopeNotAvailable =
+        psc.tools.Arrays.minus(
+            psc.tools.Arrays.minus(roleKeys, classifications.applies),
+            classifications.doesNotApply);
+
+    return classifications;
+  }
+
+  function findRoles(roleKeys) {
+    return _(PROVISIONABLE_ROLES).select(function (role) { return _.include(roleKeys, role.key)});
   }
 
   function determineTristateCheckboxState(roles, scopeType, scopeValue) {
@@ -265,6 +290,10 @@ psc.admin.UserAdmin = (function ($) {
 
   function mapRoleNames(roles) {
     return _(roles).map(function(r){return r.name});
+  }
+
+  function displayableRoleNames(roles) {
+    return _(roles).pluck('name').join(', ');
   }
 
   function escapeIdSpaces(id) {
