@@ -106,7 +106,16 @@ Screw.Unit(function () {
         });
       });
 
-//      describe("multiple ")
+      describe("modifying multiple", function() {
+        it("should allow changing multiple checkbox states", function() {
+          $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/><input type="checkbox" id="sam" value="hobbit"/>');
+          $('#frodo').tristate();
+          $('#sam').tristate();
+          $('#magic input').tristate('state', 'intermediate');
+          expect($('#frodo').attr('state')).to(equal, 'intermediate');
+          expect($('#sam').attr('state')).to(equal, 'intermediate');
+        });
+      });
 
     });
   }(jQuery));
