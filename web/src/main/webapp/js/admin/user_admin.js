@@ -72,15 +72,13 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function startEditingMultiple(roleKeys) {
-    roleKeys = roleKeys || []
-    var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
+    var roles = findRoles(roleKeys);
 
     $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {roles: roles}));
   }
 
   function addRoleAndScopesToMultipleTemplate(roleKeys) {
-    roleKeys = roleKeys || []
-    var roles = _.select(PROVISIONABLE_ROLES, function (role) { return _.include(roleKeys, role.key)});
+    var roles = findRoles(roleKeys);
 
     var enableRoleControl = _(roles).any(function(r) {return isControlEnabled('role-control', r)});
     var enableSitesControl = _(roles).any(function(r) {return isControlEnabled('sites-control', r)});
@@ -221,14 +219,10 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function updateIntermediateStateLabel(pane, input, label, roles, scopeType, scopeValue) {
-    if (!$(input).tristate) {return;}
+    if (!$(input).tristate || $(input).tristate('state') != 'intermediate') {$(label).hide().empty(); return;}
 
-    var state = $(input).tristate('state');
-    if (state != 'intermediate') { $(label).hide().empty(); return; }
+    var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue);
 
-    label = $(pane).find(label + ':first');
-
-    var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue)
     var text = 'Applies to {1}, but not {2}.'.
         replace('{1}', displayableRoleNames(findRoles(c.applies))).
         replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
@@ -257,6 +251,7 @@ psc.admin.UserAdmin = (function ($) {
   }
 
   function findRoles(roleKeys) {
+    roleKeys = roleKeys || [];
     return _(PROVISIONABLE_ROLES).select(function (role) { return _.include(roleKeys, role.key)});
   }
 
