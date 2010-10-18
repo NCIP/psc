@@ -32,4 +32,8 @@ public enum PscRoleGroup {
     public String getDisplayName() {
         return displayName;
     }
+
+    public String getKey() {
+      return toString().toLowerCase();
+    }
 }

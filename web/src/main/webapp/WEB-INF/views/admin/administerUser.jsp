@@ -133,10 +133,12 @@
                                 <c:forEach items="${cell.roles}" var="role">
                                     <div class="row">
                                         <div class="label">
-                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
+                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}" id="${cell.group.key}_${role.key}"/>
                                         </div>
                                         <div class="value">
-                                            ${role.displayName}
+                                            <label for="${cell.group.key}_${role.key}">
+                                                ${role.displayName}
+                                            </label>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -150,10 +152,12 @@
                                 <c:forEach items="${map.value}" var="role">
                                     <div class="row">
                                         <div class="label">
-                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
+                                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"  id="${map.key.key}_${role.key}"/>
                                         </div>
                                         <div class="value">
-                                            ${role.displayName}
+                                            <label for="${map.key.key}_${role.key}">
+                                                ${role.displayName}
+                                            </label>
                                         </div>
                                     </div>
                                 </c:forEach>
