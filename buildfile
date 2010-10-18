@@ -22,8 +22,16 @@ APPLICATION_SHORT_NAME = 'psc'
 
 # enable JSP support in Jetty
 Java.classpath.concat([
-  "org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
-  "org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
+  #"org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
+  #"org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
+
+  # Same jsp version in jetty as of tomcat 5.5.
+  "org.mortbay.jetty:jsp-api-2.0:jar:#{Buildr::Jetty::VERSION}",
+  "tomcat:jasper-compiler:jar:5.5.15",
+  "tomcat:jasper-runtime:jar:5.5.15",
+  "tomcat:jasper-compiler-jdt:jar:5.5.15",
+  "org.slf4j:jcl-over-slf4j:jar:#{SLF4J_VERSION}",
+  "commons-el:commons-el:jar:1.0"
 ])
 jetty.url = jetty_url
 
