@@ -32,6 +32,7 @@
         var PROVISIONABLE_STUDIES = ${command.javaScriptProvisionableStudies};
     </script>
 
+    <tags:javascriptLink name="psc-tools/misc"/>
     <tags:javascriptLink name="admin/provisionable_user"/>
     <tags:javascriptLink name="admin/user_admin"/>
     <tags:javascriptLink name="jquery/jquery.tristate-checkbox"/>

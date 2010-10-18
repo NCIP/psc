@@ -8,17 +8,17 @@ Screw.Unit(function () {
 
       function setup(state) {
         if (state) {
-          c.tristate({initialState: state});
+          return $('#frodo').tristate({initialState: state});
         } else {
-          c.tristate();
+          return $('#frodo').tristate();
         }
       }
 
       var c;
 
       before(function() {
-        c = $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/>');
-        setup();
+        $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/>');
+        c = setup();
       });
 
       describe("initial state", function() {
@@ -28,8 +28,13 @@ Screw.Unit(function () {
       });
 
       describe("configuration", function () {
-        it("should be in the intermediate state", function () {
+        it("should allow intermediate as the initial state", function () {
           setup('intermediate');
+          expect(c.attr('state')).to(equal, 'intermediate');
+        });
+
+        it("should allow Intermediate as the initial state", function() {
+          setup('Intermediate');
           expect(c.attr('state')).to(equal, 'intermediate');
         });
 
@@ -42,18 +47,77 @@ Screw.Unit(function () {
 
       describe("state changes", function() {
         it("unchecked to checked", function () {
-          setup('unchecked'); $('#frodo').trigger('click');
+          setup('unchecked').click();
           expect(c.attr('state')).to(equal, 'checked');
         });
 
         it("checked to unchecked", function () {
-          setup('checked'); $('#frodo').trigger('click');
+          setup('checked').click();
           expect(c.attr('state')).to(equal, 'unchecked');
         });
 
         it("intermediate to checked", function () {
-          setup('intermediate'); $('#frodo').trigger('click');
+          setup('intermediate').click();
           expect(c.attr('state')).to(equal, 'checked');
+        });
+      });
+
+
+      describe("external methods", function() {
+        it("should be able to get the state", function() {
+          expect(c.tristate('state')).to(equal, 'unchecked');
+        });
+
+        it("should be able to set the state", function() {
+          $(c).tristate('state', 'checked');
+          expect(c.attr('state')).to(equal, 'checked');
+        });
+      });
+
+      describe("firing events", function () {
+        var receivedData;
+
+        before(function () {
+          receivedData = [];
+          $(c).unbind('tristate-state-change');
+          $(c).bind("tristate-state-change", function (evt, data) {
+            receivedData.push(data);
+          });
+        });
+
+        it("fires state change when clicked", function () {
+          $(c).click();
+          expect(receivedData.length).to(equal, 1);
+          expect(receivedData[0]).to(equal, 'checked');
+        });
+
+        it("fires state change when state is manually changed", function () {
+          $(c).tristate('state', 'checked');
+          expect(receivedData.length).to(equal, 1);
+          expect(receivedData[0]).to(equal, 'checked');
+        });
+
+        it("should not fire a state change when state is manually changed to the same state", function() {
+          $(c).tristate('state', 'unchecked');
+          expect(receivedData.length).to(equal, 0);
+        });
+      });
+
+      describe("chaining", function() {
+        it("should allow chaining", function() {
+          $(c).tristate('state', 'unchecked').tristate('state', 'checked');;
+          expect(c.attr('state')).to(equal, 'checked');
+        });
+      });
+
+      describe("modifying multiple", function() {
+        it("should allow changing multiple checkbox states at once", function() {
+          $('#magic').html('<input type="checkbox" id="frodo" value="hobbit"/><input type="checkbox" id="sam" value="hobbit"/>');
+          $('#frodo').tristate();
+          $('#sam').tristate();
+          $('#magic input').tristate('state', 'intermediate');
+          expect($('#frodo').attr('state')).to(equal, 'intermediate');
+          expect($('#sam').attr('state')).to(equal, 'intermediate');
         });
       });
 

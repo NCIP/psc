@@ -122,3 +122,27 @@ psc.tools.Uris = (function () {
     }
   };
 }());
+
+psc.tools.Arrays = (function() {
+  return {
+    minus: function(a1, a2) {
+      a1 = a1 || [];
+      a2 = a2 || [];
+
+      var result = [];
+      for (var i = 0; i < a1.length; i++) {
+        var found = false;
+        for (var j = 0; j < a2.length; j++) {
+          if (a1[i] == a2[j]) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          result.push(a1[i]);
+        }
+      }
+      return result;
+    }
+  };
+}());
