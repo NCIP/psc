@@ -171,7 +171,7 @@ psc.admin.UserAdmin = (function ($) {
         replace('{1}', displayableRoleNames(findRoles(c.applies))).
         replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
 
-    $(label).text('(' + text + ')').show();
+    $(pane).find(label).text('(' + text + ')').show();
   }
 
   function updateGroupMembership(evt) {
@@ -270,7 +270,7 @@ psc.admin.UserAdmin = (function ($) {
 
 
   function escapeReservedCssSelectorChars(id) {
-    return id.replace(/(#|;|&|,|\.|\+|\*|~|'|:|"|!|\^|\$|\[|\]|\(|\)|=|>|\||\/|@|\s)/g,"\\\\$1");
+    return id.replace(/(#|;|&|,|\.|\+|\*|~|'|:|"|!|\^|\$|\[|\]|\(|\)|=|>|\||\/|@|\s)/g,"\\$1");
   }
 
   function uniqueStudies(studies) {
