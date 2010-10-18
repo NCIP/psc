@@ -66,7 +66,7 @@ psc.admin.UserAdmin = (function ($) {
     var roles = findRoles(roleKeys);
 
     $('#role-editor-pane').html(resigTemplate('multiple_role_editor_template', {
-      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces},
+      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames},
       roles: roles
     }));
   }
@@ -80,8 +80,8 @@ psc.admin.UserAdmin = (function ($) {
       roles: roles, sites: PROVISIONABLE_SITES,
       studies: uniqueStudies(_(roles).map(function(r) {return determineProvisionableStudies(r)}).flatten()),
       enableRoleControl: enableRoleControl, enableSitesControl: enableSitesControl,
-      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames, escapeIdSpaces: escapeIdSpaces}
-    }))
+      utils: {mapRoleKeys: mapRoleKeys, mapRoleNames: mapRoleNames}
+    }));
 
     registerMultipleGroupControl('#role-editor-pane', roles);
     registerMultipleScopeControls('#role-editor-pane', roles, 'site', 'sites');
@@ -136,7 +136,7 @@ psc.admin.UserAdmin = (function ($) {
 
   function registerScopeControlIntermediateStateLabel(pane, roles, scopeType, scopeTypePlural) {
     var findScopeValue = function(input, scopeType) {return $(input).attr(scopeType + '-identifier');}
-    var findLabel = function(scopeType, scopeValue) {return '#partial-scope-' + scopeType + '-' + escapeIdSpaces(scopeValue) + '-info';};
+    var findLabel = function(scopeType, scopeValue) {return '#partial-scope-' + scopeType + '-' + escapeReservedCssSelectorChars(scopeValue) + '-info';};
 
     $(pane).find('input.scope-' + scopeType).each(function (i, input) {
       var scopeValue = findScopeValue(input, scopeType);
@@ -167,7 +167,7 @@ psc.admin.UserAdmin = (function ($) {
 
     var c = userRoleClassifications(mapRoleKeys(roles), scopeType, scopeValue);
 
-    var text = 'Applies to {1}, but not {2}.'.
+    var text = 'Applies to {1}, but not {2}'.
         replace('{1}', displayableRoleNames(findRoles(c.applies))).
         replace('{2}', displayableRoleNames(findRoles(c.doesNotApply)));
 
@@ -268,8 +268,9 @@ psc.admin.UserAdmin = (function ($) {
     return _(roles).pluck('name').join(', ');
   }
 
-  function escapeIdSpaces(id) {
-    return id.replace(' ', '--space--');
+
+  function escapeReservedCssSelectorChars(id) {
+    return id.replace(/(#|;|&|,|\.|\+|\*|~|'|:|"|!|\^|\$|\[|\]|\(|\)|=|>|\||\/|@|\s)/g,"\\\\$1");
   }
 
   function uniqueStudies(studies) {
