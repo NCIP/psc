@@ -1,6 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ attribute name="templateActions" required="false" type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAction>" %>
+<%@ attribute name="templateActions" required="false" type="java.util.Collection" %>
 
 if ($('release-revision-button')) {
   $('release-revision-button').up('li').hide();
