@@ -9,7 +9,7 @@
 <jsp:useBean id="startingNewUser" scope="request"
              type="java.lang.Boolean"/>
 <jsp:useBean id="roleGroupCells" scope="request"
-             type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserController.RoleGroupCell>"/>
+             type="java.util.Collection"/>
 
 <html>
 <head>
