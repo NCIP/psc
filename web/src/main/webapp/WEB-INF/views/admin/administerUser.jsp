@@ -181,9 +181,9 @@
                         <input type="checkbox" id="multiple-group-membership" class="role-group-membership" value="[#= utils.mapRoleKeys(roles) #]"/>
                     </div>
                     <div class="value"><label for="multiple-group-membership">
-                        Grant this user the [#= joinedRoleNames  #] roles.
+                        Grant this user the [#= joinedRoleNames  #] [#= _(roles).size() > 1 ? 'roles' : 'role' #].
                         [# if (_(roles).any(function(r){return r.scopes})) { #]
-                        Since these roles are scoped, you will also need to specify one or more
+                        Since [#= _(roles).size() > 1 ? 'these roles are' : 'this role is' #] scoped, you will also need to specify one or more
                         scopes below.
                         [# } #]</label>
                         <label for="multiple-group-membership" id="partial-multiple-group-membership-info" class="partial-membership"></label>
