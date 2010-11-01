@@ -36,8 +36,16 @@ public class PropertyChangeXmlSerializer extends AbstractChangeXmlSerializer {
 
     protected void setAdditionalProperties(final Element element, Change change) {
         ((PropertyChange) change).setPropertyName(element.attributeValue(PROPERTY_NAME));
-        ((PropertyChange) change).setOldValue(element.attributeValue(OLD_VALUE));
-        ((PropertyChange) change).setNewValue(element.attributeValue(NEW_VALUE));
+        String oldValue = element.attributeValue(OLD_VALUE);
+        if (oldValue == "") {
+            oldValue = null;
+        }
+        ((PropertyChange) change).setOldValue(oldValue);
+        String newValue = element.attributeValue(NEW_VALUE);
+        if (newValue == "") {
+            newValue = null;
+        }
+        ((PropertyChange) change).setNewValue(newValue);
     }
 
     @Override
