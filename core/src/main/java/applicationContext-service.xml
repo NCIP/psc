@@ -44,9 +44,6 @@
 
     <bean id="populationService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.PopulationService"/>
-    <bean id="importTemplateService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService">
-    </bean>
 
     <bean id="templateImportService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService">
