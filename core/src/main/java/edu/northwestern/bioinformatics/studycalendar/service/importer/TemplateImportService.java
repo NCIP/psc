@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Jalpa Patel
@@ -37,6 +38,7 @@ public class TemplateImportService {
     private ActivityService activityService;
     private AmendmentService amendmentService;
     private DaoFinder daoFinder;
+    private DaoTools daoTools;
 
     /**
      * This method will be called when importing study from within the Import Template Page
@@ -68,7 +70,7 @@ public class TemplateImportService {
         return studyXmlSerializer.readElement(element, new Study());
     }
 
-    public Study beforeSave(Study newStudy, Study oldStudy) {
+    private Study beforeSave(Study newStudy, Study oldStudy) {
         TemplateInternalReferenceIndex loadedIndex;
         List<Amendment> amendments = new ArrayList<Amendment>(newStudy.getAmendmentsListInReverseOrder());
         if (newStudy.getDevelopmentAmendment() != null) {
@@ -264,7 +266,8 @@ public class TemplateImportService {
         return null;
     }
 
-    public Study saveStudy(Study newStudy, Study oldStudy) {
+    @Transactional
+    private Study saveStudy(Study newStudy, Study oldStudy) {
         Amendment newDevelopment = newStudy.getDevelopmentAmendment();
         Study study;
         List<Amendment> toApply;
@@ -279,6 +282,9 @@ public class TemplateImportService {
 
         study.setDevelopmentAmendment(null);
         studyDao.save(study);
+        //Forcefully flush required for oracle.
+        daoTools.forceFlush();
+
         for (Amendment amendment: toApply) {
             study.setDevelopmentAmendment(amendment);
             resolveDeltaNodesAndChangeChildren(amendment, study);
@@ -302,7 +308,7 @@ public class TemplateImportService {
     private <T extends Changeable> T findRealNode(T nodeTemplate) {
         GridIdentifiableDao<T> dao = (GridIdentifiableDao<T>) daoFinder.findDao(nodeTemplate.getClass());
         if (dao instanceof PopulationDao) {
-            return (T) nodeTemplate;
+            return nodeTemplate;
         } else {
             return dao.getByGridId(nodeTemplate.getGridId());
         }
@@ -404,6 +410,11 @@ public class TemplateImportService {
     @Required
     public void setTemplateDevelopmentService(TemplateDevelopmentService templateDevelopmentService) {
         this.templateDevelopmentService = templateDevelopmentService;
+    }
+
+    @Required
+    public void setDaoTools(DaoTools daoTools) {
+        this.daoTools = daoTools;
     }
 }
 
