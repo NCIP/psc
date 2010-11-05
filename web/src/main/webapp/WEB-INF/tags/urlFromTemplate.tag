@@ -11,8 +11,9 @@
     StudySubjectAssignment studySubjectAssignment = (StudySubjectAssignment)subjectAssignment;
     DomainContext context = (DomainContext) request.getAttribute("domainContext");
     Template uriTemplate = (Template) ((Configuration) request.getAttribute("configuration")).getMap().get(property);
+    request.setAttribute("uriTemplate",uriTemplate);
 %>
 
-<c:if test="${not empty pageScope['uriTemplate']}">
+<c:if test="${not empty uriTemplate}">
     <c:url value="<%= uriTemplate.format(GeneratedUriTemplateVariable.getAllTemplateValues(context, studySubjectAssignment)) %>"/>
 </c:if>
