@@ -164,38 +164,29 @@
        })
 
         //scripts for copy period functionality
-        var templateAutocompleter;
-        function unselectPeriodBox(selectedCheckBox) {
-            $('periods').select('[checkbox[name="periodName"]').each(function(item) {
-                item.checked = false;
-              });
-            selectedCheckBox.checked = true
-            $('selectedPeriod').value=selectedCheckBox.id
-
+        function getSelectedPeriod(periodId) {
+            $('selectedPeriod').value = periodId
         }
         function updatePeriodsDisplay(input, li) {
             var id = li.id;
-            $('template-autocompleter-input').value = "";
-            $('template-autocompleter-input').hint = "Search for study";
-            updatePeriods(id)
+            loadPeriods(id)
             $('template-autocompleter-input-id').value = id
         }
 
-        function updatePeriods(studyId) {
+        function loadPeriods(studyId) {
             var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId
-            var lastRequest = new Ajax.Request(aElement);
+            new Ajax.Request(aElement);
         }
 
         function createTemplatesAutocompleter() {
            if ($('copy')) {
-            templateAutocompleter = new SC.FunctionalAutocompleter(
-                'template-autocompleter-input', 'template-autocompleter-div', studyAutocompleterChoices, {
+              new SC.FunctionalAutocompleter(
+                 'template-autocompleter-input', 'template-autocompleter-div', studyAutocompleterChoices, {
                     select: "templates-name",
                     afterUpdateElement: updatePeriodsDisplay,
                     revertOnEsc:true
-
-                }
-            );
+                 }
+              );
            }
         }
 
@@ -231,7 +222,7 @@
 
         function currentTemplateSelected() {
             if ($('copy')) {
-                updatePeriods($('template-autocompleter-input-id').value, 'true')
+                loadPeriods($F('template-autocompleter-input-id'))
             }
         }
         
@@ -261,7 +252,6 @@
 <body>
 <laf:box title="${commons:capitalize(verb)} period">
     <laf:division>
-        <%--<h2>${commons:capitalize(verb)} Period</h2>--%>
         <form:form method="post" id="period-form" >
             <h5 id="periodError"></h5>
             <div class="row odd">
@@ -336,7 +326,6 @@
                 Search for study:
                 <input id="template-autocompleter-input" type="text" autocomplete="off" value="" hint="Search for study" class="autocomplete"/>
                 <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
-                <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
                 <div id="template-autocompleter-div" class="autocomplete" style="z-index:1000" ></div>
             </div>
         </laf:division>
@@ -345,7 +334,7 @@
             <form:form method="post" id="copy-form" >
                 <div class="row" id="selected-epochs">
                 </div>
-
+                <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>                 
                 <div class="row">
                     <input id="copy" type="submit" value="Copy"/>
                 </div>                
