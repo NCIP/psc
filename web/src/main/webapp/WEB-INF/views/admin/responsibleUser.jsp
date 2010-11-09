@@ -94,7 +94,8 @@
                            cssClass="${commons:parity(studyStatus.index)} autoclear">
                     <div class="target-assignments" id="target-assignments-${studyEntry.value.studySite.id}">
                         <label class="all">
-                            <input type="checkbox" class="all" id="all-assignments-${studyEntry.value.studySite.id}"/> All
+                            <input type="checkbox" class="all" id="all-assignments-${studyEntry.value.studySite.id}"/>
+                            All for ${studyEntry.value.studySite.study.assignedIdentifier}
                         </label>
                         <c:forEach items="${studyEntry.value.assignments}" var="a">
                             <label>
