@@ -96,6 +96,8 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         Collection<ScheduledActivityMode> collection = command.getEventSpecificMode();
         System.out.println("collection " + collection);
         assertEquals("Wrong number of modes", 4, collection.size());
+        assertNotContains("Wrong state available", collection, ScheduledActivityMode.NOT_APPLICABLE);
+        assertNotContains("Wrong state available", collection, ScheduledActivityMode.CONDITIONAL);
     }
 
 
@@ -107,7 +109,9 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         replayMocks();
         Collection<ScheduledActivityMode> collection = command.getEventSpecificMode();
         System.out.println("collection " + collection);
-        assertEquals("Wrong number of modes", 6, collection.size());
+        assertEquals("Wrong number of modes", 4, collection.size());
+        assertNotContains("Wrong state available", collection, ScheduledActivityMode.CANCELED);
+        assertNotContains("Wrong state available", collection, ScheduledActivityMode.CONDITIONAL);
     }
 
 }

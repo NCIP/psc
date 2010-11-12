@@ -147,6 +147,7 @@
                         <label id="new-mode-selector-group">Change to
                             <form:select path="newMode" id="new-mode-selector">
                                 <form:option value="" label=""/>
+                                <form:option value="${scheduledActivity.currentState.mode.id}" label="leave the state same"/>
                                 <form:options items="${modes}" itemValue="id" itemLabel="name"/>
                             </form:select>
                         </label>
