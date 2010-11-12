@@ -93,7 +93,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), command.getPopulation().getAbbreviation());
         changes.add(changeName);
         changes.add(changeAbbreviation);
-        expect( populationService.lookupAndSuggestAbbreviation(originalPopulation, study)).andReturn(originalPopulation);
+        populationService.lookupForPopulationUse(command.getPopulation(), study);
         expect(amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, study, changes.toArray(new Change[changes.size()]))).andReturn(originalPopulation).anyTimes();
 
         replayMocks();
