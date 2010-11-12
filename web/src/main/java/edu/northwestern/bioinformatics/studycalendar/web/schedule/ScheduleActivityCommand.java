@@ -72,10 +72,13 @@ public class ScheduleActivityCommand {
     }
 
     public Collection<ScheduledActivityMode> getEventSpecificMode(){
-        List<ScheduledActivityMode> availableModes =  new ArrayList<ScheduledActivityMode>();
-        if (event != null) {
-            availableModes = ScheduledActivityMode.getAvailableModes(event.getCurrentState(), event.isConditionalEvent());
+        List<ScheduledActivityMode> availableModes =  new ArrayList<ScheduledActivityMode>(ScheduledActivityMode.values());
+        if (event != null && event.isConditionalEvent()) {
+            availableModes.remove(ScheduledActivityMode.CANCELED);
+        } else {
+            availableModes.remove(ScheduledActivityMode.NOT_APPLICABLE);
         }
+        availableModes.remove(ScheduledActivityMode.CONDITIONAL);
         return availableModes;
     }
 
