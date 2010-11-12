@@ -54,18 +54,21 @@ public class EditPopulationCommand implements Validatable, PscAuthorizedCommand 
     }
 
     public void apply() {
-        Change change;
-        List<Change> changes = new ArrayList<Change>();
-        population = populationService.lookupAndSuggestAbbreviation(population, study);
-        
+        if (population.getAbbreviation() == null) {
+            population.setAbbreviation(populationService.suggestAbbreviation(study, population.getName()));
+        }
+        populationService.lookupForPopulationUse(population, study);
         if (originalPopulation.getId() == null) {
-            change = Add.create(population);
+            Change change = Add.create(population);
             amendmentService.updateDevelopmentAmendmentForStudyAndSave(getStudy(), change);
         } else {
-            if (population.getName() !=null && population.getAbbreviation()!=null) {
+            List<Change> changes = new ArrayList<Change>();
+            if (population.getName() != null) {
                 Change changeName = PropertyChange.create("name", originalPopulation.getName(), population.getName());
-                Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), population.getAbbreviation());
                 changes.add(changeName);
+            }
+            if (population.getAbbreviation() != null){
+                Change changeAbbreviation = PropertyChange.create("abbreviation", originalPopulation.getAbbreviation(), population.getAbbreviation());
                 changes.add(changeAbbreviation);
             }
             amendmentService.updateDevelopmentAmendmentForStudyAndSave(originalPopulation, getStudy(), changes.toArray(new Change[changes.size()]));

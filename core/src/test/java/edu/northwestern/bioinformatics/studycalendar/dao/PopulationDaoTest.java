@@ -61,4 +61,9 @@ public class PopulationDaoTest extends ContextDaoTestCase<PopulationDao> {
         assertEquals("N", reloaded.getAbbreviation());
         assertEquals(-7, (int) reloaded.getStudy().getId());
     }
+
+    public void testGetAllForStudy() throws Exception {
+        List<Population> populations = getDao().getAllFor(studyDao.getById(-7));
+        assertEquals("Wrong number of populations", 2, populations.size());
+    }
 }

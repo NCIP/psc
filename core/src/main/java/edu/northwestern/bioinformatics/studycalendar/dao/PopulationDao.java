@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +43,18 @@ public class PopulationDao extends StudyCalendarMutableDomainObjectDao<Populatio
     public Set<String> getAbbreviations(Study study) {
         return new HashSet<String>(getHibernateTemplate().find(
                 "select p.abbreviation from Population p where p.study = ?", study));
+    }
+
+    /**
+     * Find all the populations for a study
+     *
+     * @param study the study to return the populations from
+     * @return a list of all populations retrieved from the given study
+     */
+    @SuppressWarnings({ "unchecked" })
+    public List<Population> getAllFor(Study study) {
+        return getHibernateTemplate().find(
+            "from Population p where p.study = ?", study);
     }
 
     @Transactional(readOnly = false)
