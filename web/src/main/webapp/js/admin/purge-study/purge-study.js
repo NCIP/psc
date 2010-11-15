@@ -109,6 +109,7 @@ psc.admin.ps.StudyDetails = (function ($) {
         $.ajax({url: uri,
             success: function(data) {
                 var study = psc.admin.ps.StudyDetails.generateStudyJSON(data);
+                study['assigned-identifier'] =  assignedIdentifier;
                 for (var i=0; i < callbacks.length; i++) {
                     callbacks[i](study);
                 }
@@ -127,22 +128,17 @@ psc.admin.ps.StudyDetails = (function ($) {
         },
 
         generateStudyJSON: function(xml) {
-            var studies = SC.objectifyXml("study", xml, function(elt, study) {
-                var longTitles = SC.objectifyXml("long-title", xml, function(elt, holder) {
-                    if (elt.childNodes[0] != null) {
-                        study['long-title'] = elt.childNodes[0].nodeValue; // The text node
-                    }
-                });
-
-                study['amendment'] = SC.objectifyXml("amendment", xml);
-                study['development-amendment'] = SC.objectifyXml("development-amendment", xml);
+            var study= {};
+            SC.objectifyXml("long-title", xml, function(elt, holder) {
+                if (elt.childNodes[0] != null) {
+                    study['long-title'] = elt.childNodes[0].nodeValue; // The text node
+                }
             });
 
-            if (studies.length == 0) {
-                return;
-            }
+            study['amendment'] = SC.objectifyXml("amendment", xml);
+            study['development-amendment'] = SC.objectifyXml("development-amendment", xml);
 
-            return studies[0];
+            return study;
         },
 
         populateStudyDetails: function(study) {
