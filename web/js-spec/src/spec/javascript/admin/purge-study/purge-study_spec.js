@@ -71,8 +71,6 @@ Screw.Unit(function () {
 
           it ("generates a JSON object from a study snaphot XML", function() {
               var result = psc.admin.ps.StudyDetails.generateStudyJSON(studySnapshot);
-              expect(result['provider']).to(equal, "alpha");
-              expect(result['assigned-identifier']).to(equal, "NCI-999");
               expect(result['long-title']).to(equal, "I am the loooong title.");
 
               expect(result['amendment'].length).to(equal, 2)
