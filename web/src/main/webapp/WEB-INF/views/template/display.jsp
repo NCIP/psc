@@ -9,6 +9,8 @@
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="pscfn" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/functions" %>
+
 
 <jsp:useBean scope="request" id="canEdit" type="java.lang.Boolean"/>
 <jsp:useBean scope="request" id="canAssignIdentifiers" type="java.lang.Boolean"/>
@@ -807,11 +809,9 @@
                   <c:set var="listOfSiteName" value="Unmanaged"/>
             </c:if>
             <c:if test="${not empty sites}">
-                <c:forEach items="${sites}" var="site" varStatus="siteIndex">
-                    <c:set var="listOfSiteName" value="${listOfSiteName} ${site.name}"/>
-                </c:forEach>
+                <c:set var="siteNames" value="${pscfn:pluck(sites, 'name')}"/>
+                <c:set var="listOfSiteName" value="${commons:join(siteNames, ', ')}"/>
             </c:if>
-            <c:set var="listOfSiteName" value='${fn:replace(fn:trim(listOfSiteName), " ", ", ")}'/>
 
             <div class="row odd">
                 <div class="label">Managing sites</div>
