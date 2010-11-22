@@ -106,10 +106,10 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        // default to no caching
-        Series<Parameter> headers = ((HttpResponse) response).getHttpCall().getResponseHeaders();
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-        headers.add("Pragma", "no-cache");
+        // default to no caching added in ResponseHeaderRestletFilter
+//        Series<Parameter> headers = ((HttpResponse) response).getHttpCall().getResponseHeaders();
+//        headers.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+//        headers.add("Pragma", "no-cache");
     }
 
     @Override
