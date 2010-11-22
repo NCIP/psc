@@ -14,6 +14,10 @@
     <bean id="metadataService" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService"/>
 
     <bean name="errorReportingFilter" class="edu.northwestern.bioinformatics.studycalendar.restlets.ErrorMailingRestletFilter" autowire="byName">
+         <property name="next" ref="responseHeaderFilter"/>
+    </bean>
+
+    <bean name="responseHeaderFilter" class="edu.northwestern.bioinformatics.studycalendar.restlets.ResponseHeaderRestletFilter" autowire="byName">
          <property name="next" ref="guard"/>
     </bean>
 

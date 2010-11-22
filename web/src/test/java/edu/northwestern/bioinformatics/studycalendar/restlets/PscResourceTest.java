@@ -153,14 +153,6 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertNotSame(fromThisThread, fromOtherThread[0]);
     }
 
-    public void testCachingIsDisabled() throws Exception {
-        doInitOnly();
-        Series<Parameter> actualHeaders = response.getHttpCall().getResponseHeaders();
-        assertEquals("no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
-            actualHeaders.getValues("Cache-Control"));
-        assertEquals("no-cache", actualHeaders.getFirstValue("Pragma"));
-    }
-
     public class TestResource extends AbstractPscResource {
         public TestResource() {
             setAllAuthorizedFor(GET);
