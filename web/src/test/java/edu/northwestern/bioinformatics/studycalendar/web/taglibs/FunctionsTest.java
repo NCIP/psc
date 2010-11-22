@@ -19,6 +19,24 @@ public class FunctionsTest extends StudyCalendarTestCase {
         assertEquals("Wrong second value", "Frank", result.next());
     }
 
+    public void testEscapeJsUsingBackSlash() throws Exception {
+        assertEquals("Wrong value", "\\\\", Functions.escapeJavascript("\\"));
+    }
+
+    public void testEscapeJsUsingXml() throws Exception {
+        assertEquals("Wrong value", "<\\/", Functions.escapeJavascript("</"));
+    }
+
+    public void testEscapeJsUsingDoubleQuote() throws Exception {
+        assertEquals("Wrong value", "\\\"", Functions.escapeJavascript("\""));
+    }
+    
+    public void testEscapeJsUsingSingleQuote() throws Exception {
+        assertEquals("Wrong value", "\\\'", Functions.escapeJavascript("\'"));
+    }
+
+    // Helper Class
+
     public static class Person {
         String name;
 

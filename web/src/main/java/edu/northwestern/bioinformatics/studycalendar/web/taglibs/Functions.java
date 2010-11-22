@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.taglibs;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 
 import java.beans.Expression;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 
@@ -19,6 +21,23 @@ public class Functions {
                 throw new StudyCalendarError("Unable to get the '" + property + "' property", e);
             }
 
+        }
+        return result;
+    }
+
+    public static Map<String, String> JS_ESCAPE_MAP = new MapBuilder<String, String>().
+        put("\\\\", "\\\\\\\\").
+        put("</", "<\\\\/").
+        put("\"", "\\\\\"").
+        put("\'", "\\\\\'").
+        toMap();
+
+    // Logic is based on code from
+    // http://api.rubyonrails.org/classes/ActionView/Helpers/JavaScriptHelper.html#method-i-escape_javascript
+    public static String escapeJavascript(String in) {
+        String result = in;
+        for (String unescaped : JS_ESCAPE_MAP.keySet()) {
+            result = result.replaceAll(unescaped, JS_ESCAPE_MAP.get(unescaped));
         }
         return result;
     }
