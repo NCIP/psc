@@ -8,12 +8,18 @@
   <description>PSC functions library</description>
   <display-name>PSC functions</display-name>
   <tlib-version>1.1</tlib-version>
-  <short-name>pscfn</short-name>
+  <short-name>psc</short-name>
   <uri>http://bioinformatics.northwestern.edu/taglibs/studycalendar/functions</uri>
 
   <function>
     <name>pluck</name>
     <function-class>edu.northwestern.bioinformatics.studycalendar.web.taglibs.Functions</function-class>
     <function-signature>Collection pluck( java.util.Collection, java.lang.String )</function-signature>
+  </function>
+
+  <function>
+    <name>escapeJavascript</name>
+    <function-class>edu.northwestern.bioinformatics.studycalendar.web.taglibs.Functions</function-class>
+    <function-signature>String escapeJavascript( java.lang.String )</function-signature>
   </function>
 </taglib>
