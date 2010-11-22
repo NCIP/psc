@@ -103,7 +103,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "1.0.6.RELEASE"
+CTMS_COMMONS_VERSION = "1.0.7.RELEASE"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
