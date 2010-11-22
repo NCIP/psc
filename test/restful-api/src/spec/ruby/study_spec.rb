@@ -190,6 +190,30 @@ describe "/study" do
       response.xml_attributes("period", "duration-unit").should include("month")
       response.xml_attributes("period", "duration-unit").should include("fortnight")
     end
+
+    it "it accepts a released study " do
+      @nu484_xml = psc_xml("study", 'assigned-identifier' => "NU484") { |ss|
+        ss.tag!('planned-calendar', 'id' =>'pc484')
+        ss.tag!('amendment', 'name' => '[Original]', 'date' => "2008-11-13", 'mandatory' => "true", 'released-date' => "2010-11-01T10:05:47.937Z"){ |da|
+          da.tag!('planned-calendar-delta', 'id' => 'pcd484', 'node-id' => 'pc484') { |pcd|
+            pcd.tag!('add', 'id' => 'add484') { |add|
+              add.tag!('epoch','id' => 'epoch484', 'name' => 'Treatment2') {|seg|
+                seg.tag!('study-segment', 'id' => "segment484", 'name' => 'initial study'){|period|
+                  period.tag!('period', 'id' => "period484", 'name' => "With Day", 'repetitions' => "1",
+                   'start-day' => "1", 'duration-quantity' => "28",  'duration-unit' => "day" )
+                }
+              }
+            }
+          }
+        }
+      }
+      put '/studies/NU484/template', @nu484_xml, :as => :juno
+      response.status_code.should == 201 #created
+      get '/studies/NU484/template', :as => :juno
+
+      response.status_code.should == 200 #OK
+      response.xml_attributes("study", "assigned-identifier").should include("NU484")
+    end
   end
 
 end

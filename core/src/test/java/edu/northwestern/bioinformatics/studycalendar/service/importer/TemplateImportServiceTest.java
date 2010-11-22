@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPopulation;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -37,6 +36,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
     private AmendmentService amendmentService;
     private DynamicMockDaoFinder daoFinder;
     private TemplateImportService service;
+    private DaoTools daoTools;
     public void setUp() throws Exception {
         super.setUp();
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
@@ -51,6 +51,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         daoFinder = new DynamicMockDaoFinder();
         activityDao = registerDaoMockFor(ActivityDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
+        daoTools =  registerMockFor(DaoTools.class);
 
         service = new TemplateImportService();
         service.setActivityDao(activityDao);
@@ -65,6 +66,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         service.setStudyXmlSerializer(studyXmlSerializer);
         service.setTemplateDevelopmentService(templateDevelopmentService);
         service.setTemplateService(templateService);
+        service.setDaoTools(daoTools);
 
     }
 
@@ -80,72 +82,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         super.verifyMocks();
     }
 
-    public void testSaveTemplateForNewStudy() {
-        Study study = createReleasesStudy();
-        studyDao.save(study);
-        expectDaoForPlannedCalendar(study);
-        Change change = study.getAmendment().getDeltas().get(0).getChanges().get(0);
-        expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).
-              getByGridId(((Add)change).getChild().getGridId())).andReturn(null);
-        amendmentService.amend(study);
-        studyService.save(study);
-        replayMocks();
-        service.saveStudy(study, null);
-        verifyMocks();
-    }
-
-    public void testSaveTemplateForNewStudyWithStudyDelta() throws Exception {
-        Study study = createReleasesStudy();
-
-        Study unresolved = new Study();
-        unresolved.setGridId("Points to nothing");
-        StudyDelta sd = new StudyDelta(unresolved);
-        Add a = new Add();
-        Population pop = Fixtures.setGridId("ABC", createPopulation("M", "Male"));
-        a.setChild(pop);
-        sd.addChange(a);
-        study.getAmendment().getDeltas().add(sd);
-
-        studyDao.save(study);
-        expectDaoForPlannedCalendar(study);
-        Change change = study.getAmendment().getDeltas().get(0).getChanges().get(0);
-        expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).
-            getByGridId(((Add)change).getChild().getGridId())).andReturn(null);
-        daoFinder.expectDaoFor(Population.class, PopulationDao.class);
-        amendmentService.amend(study);
-        studyService.save(study);
-        replayMocks();
-        service.saveStudy(study, null);
-        verifyMocks();
-    }
-
-    public void testSaveTemplateForExistingStudyWithStudyDelta() throws Exception {
-        Study study = createReleasesStudy();
-
-        Study unresolved = new Study();
-        unresolved.setGridId("Points to nothing");
-        StudyDelta sd = new StudyDelta(unresolved);
-        Add a = new Add();
-        Population pop = Fixtures.setGridId("ABC", createPopulation("M", "Male"));
-        a.setChild(pop);
-        sd.addChange(a);
-        study.getAmendment().getDeltas().add(sd);
-
-        studyDao.save(study);
-        expectDaoForPlannedCalendar(study);
-        Change change = study.getAmendment().getDeltas().get(0).getChanges().get(0);
-        expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).
-            getByGridId(((Add)change).getChild().getGridId())).andReturn(null);
-        daoFinder.expectDaoFor(Population.class, PopulationDao.class);
-        amendmentService.amend(study);
-        studyService.save(study);
-        replayMocks();
-        service.saveStudy(study, null);
-        verifyMocks();
-    }
-
-
-    public void testreadAndSaveTemplateForNewStudy() throws Exception {
+    public void testReadAndSaveTemplateForNewStudy() throws Exception {
         Study study = createStudy();
 
         InputStream target = registerMockFor(InputStream.class);
@@ -159,6 +96,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         EpochDao epochDao = daoFinder.expectDaoFor(Epoch.class, EpochDao.class);
         expect(epochDao.getByGridId(((Add)change).getChild().getGridId())).andReturn((Epoch)((Add)change).getChild());
         studyDao.save(study);
+        daoTools.forceFlush();
         studyService.save(study);
         replayMocks();
         service.readAndSaveTemplate(target);
@@ -225,6 +163,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         EpochDao epochDao = daoFinder.expectDaoFor(Epoch.class, EpochDao.class);
         expect(epochDao.getByGridId("new-epoch")).andReturn((Epoch)((Add)change).getChild());
         studyDao.save(study);
+        daoTools.forceFlush();
         studyService.save(study);
         replayMocks();
         service.readAndSaveTemplate(target);
@@ -271,6 +210,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         expectGridIdConflictsCheck(add, false);
         expectGridIdConflictsCheck(newDelta, false);
         studyDao.save(existingStudy);
+        daoTools.forceFlush();
         expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).getByGridId("epoch")).andReturn(epoch);
         expect(daoFinder.expectDaoFor(StudySegment.class, StudySegmentDao.class).getByGridId("segment1")).andReturn(studySegment);
         amendmentService.amend(existingStudy);
@@ -377,6 +317,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         expect(daoFinder.expectDaoFor(PlannedCalendar.class, PlannedCalendarDao.class).
               getByGridId(study.getPlannedCalendar().getGridId())).andReturn(null);
         studyDao.save(study);
+        daoTools.forceFlush();
         replayMocks();
         try {
             service.readAndSaveTemplate(target);
@@ -409,6 +350,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         expect(activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName())).andReturn(null);
         activityService.saveActivity(activity);
         studyDao.save(study);
+        daoTools.forceFlush();
         studyService.save(study);
         expectDaoForPlannedCalendar(study);
         expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).
@@ -437,6 +379,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         EpochDao epochDao = daoFinder.expectDaoFor(Epoch.class, EpochDao.class);
         expect(epochDao.getByGridId(((Add)change).getChild().getGridId())).andReturn((Epoch)((Add)change).getChild());
         studyDao.save(study);
+        daoTools.forceFlush();
         studyService.save(study);
         replayMocks();
         service.readAndSaveTemplate(target);
@@ -475,6 +418,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
             }
         }
         studyDao.save(existingStudy);
+        daoTools.forceFlush();
         studyService.save(existingStudy);
         assertEquals("Existing study has different identifier", "study", existingStudy.getAssignedIdentifier());
         assertNull(existingStudy.getLongTitle());
