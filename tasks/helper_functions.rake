@@ -121,3 +121,7 @@ def start_bundle(symbolic_name)
     return false
   end
 end
+
+def yourkit_agentpath
+  "/Applications/YourKit_Java_Profiler_9.5.1.app/bin/mac/libyjpagent.jnilib"
+end
