@@ -29,6 +29,7 @@
             float: left;
             width: 30em;
         }
+        div.clear { clear: both; }
     </style>
     <script type="text/javascript">
         (function ($) {
@@ -128,6 +129,7 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
+                    <div class="clear"></div>
                 </form:form>
             </c:forEach>
         </laf:division>
