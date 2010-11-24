@@ -1292,14 +1292,22 @@ define "psc" do
     dist_dir = "target/dist/bin"
     mkdir_p _("#{dist_dir}/conf-samples")
 
-    cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
+    psc_war = _(dist_dir, "psc.war")
+    cp project('web').packages.select { |p| p.type == :war }.to_s, psc_war
     # Ensure oracle driver is present in war
-    unless `jar tf '#{_(dist_dir, 'psc.war')}'` =~ /ojdbc/
+    unless `jar tf '#{psc_war}'` =~ /ojdbc/
       fail "Oracle JDBC driver not present in war.  Distributions must be built with ORACLE=yes."
     end
 
     cp _("datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
-    puts `svn export https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc '#{_("#{dist_dir}/psc_install.doc")}'`
+    doc_url = "https://cabig-kc.nci.nih.gov/CTMS/KC/index.php?title=Special:PdfPrint&page=PSC_Installation_Guide"
+    doc_target = _(dist_dir, "psc_install.pdf")
+    # UA must be specified to work around boneheaded NCI network
+    # management crap
+    system("curl '#{doc_url}' -o '#{doc_target}' -A Mozilla")
+    unless `file '#{doc_target}'` =~ /PDF doc/
+      fail "Install doc didn't download properly.  (It was expected to be a PDF in '#{doc_target}'.)"
+    end
 
     pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
 
