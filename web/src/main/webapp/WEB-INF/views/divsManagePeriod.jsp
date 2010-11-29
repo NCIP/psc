@@ -33,6 +33,7 @@
     <tags:javascriptLink name="manage-period/pa-labels" />
     <tags:javascriptLink name="manage-period/presentation" />
     <tags:javascriptLink name="resig-templates" />
+    <tags:javascriptLink name="psc-tools/misc" />
 
     <tags:resigTemplate id="new_activity_row_template">
         <tr class="new-row unused activity" activity-code="[#= code #]" activity-source="[#= source #]">
