@@ -146,3 +146,12 @@ psc.tools.Arrays = (function() {
     }
   };
 }());
+
+
+psc.tools.CssSelectors = (function() {
+  return {
+    escapeComponent: function(raw) {
+      return raw.replace(/(#|;|&|,|\.|\+|\*|~|'|:|"|!|\^|\$|\[|\]|\(|\)|=|>|\||\/|@|\s)/g,"\\$1");
+    }
+  }
+})();

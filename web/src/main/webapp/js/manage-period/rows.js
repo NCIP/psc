@@ -6,7 +6,7 @@ psc.template.mpa.ActivityRows = (function ($) {
   var Model = psc.template.mpa.Model;
   
   function addNewActivityGroup(activityType) {
-    var activitiesGroup = $("#activities tbody." + activityType.selector)[0]
+    var activitiesGroup = $("#activities tbody." + psc.tools.CssSelectors.escapeComponent(activityType.selector))[0]
     if (activitiesGroup) {
       console.log("There is already a group for %o", activityType.name)
       return;
@@ -14,7 +14,7 @@ psc.template.mpa.ActivityRows = (function ($) {
     var beforeBodyN = $.grep($('#activities tbody.activity-type'), function (e) { 
       return $(e).attr('activity-type').toLowerCase() < activityType.name.toLowerCase();
     }).length;
-    
+
     insertNewActivityTypeTbody("activities", "new_activity_tbody_template",
       beforeBodyN, activityType)
     insertNewActivityTypeTbody("days", "new_days_tbody_template",
@@ -22,7 +22,7 @@ psc.template.mpa.ActivityRows = (function ($) {
     insertNewActivityTypeTbody("notes", "new_notes_tbody_template",
       beforeBodyN, activityType)
 
-    return $("#activities ." + activityType.selector)[0];
+    return $("#activities ." + psc.tools.CssSelectors.escapeComponent(activityType.selector))[0];
   }
   
   function insertNewActivityTypeTbody(block, template, bodyN, activityType) {
@@ -42,7 +42,7 @@ psc.template.mpa.ActivityRows = (function ($) {
   }
 
   function addActivityRow(activity, activityType) {
-    var activitiesGroup = $("#activities tbody." + activityType.selector)[0]
+    var activitiesGroup = $("#activities tbody." + psc.tools.CssSelectors.escapeComponent(activityType.selector))[0]
     if (!activitiesGroup) { activitiesGroup = addNewActivityGroup(activityType) }
     var beforeTypeRow = $.grep($(activitiesGroup).find('tr.activity'), function (e) {
       return $(e).find('.activity-name').text().toLowerCase() < activity.name.toLowerCase();
@@ -80,7 +80,7 @@ psc.template.mpa.ActivityRows = (function ($) {
   function insertNewActivityRow(block, template, typeRowN, activity, activityType) {
     console.log("Inserting %s for %o", template, activity);
     var newRow = resigTemplate(template, activity);
-    var container = $('#' + block + ' tbody.' + activityType.selector);
+    var container = $('#' + block + ' tbody.' + psc.tools.CssSelectors.escapeComponent(activityType.selector));
     if (typeRowN >= container.find('tr.activity').length) {
       container.append(newRow);
     } else {
@@ -130,7 +130,7 @@ psc.template.mpa.ActivityRows = (function ($) {
 
     var uri = SC.relativeUri("/api/v1/activities");
     if (!selectedSource.blank()) {
-      uri += "/" + selectedSource;
+      uri += "/" + encodeURIComponent(selectedSource);
     }
 
     if (searchString.blank() && selectedSource.blank()) {
