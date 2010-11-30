@@ -14,7 +14,7 @@
                 </triggeringPolicy>
                 <encoder>
                     <pattern>
-                        %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %36logger{36} %-5level | %1X{depth} | %msg%n
+                        %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] | %X{userName} | %X{userIpAddress} | %36logger{36} %-5level | %1X{depth} | %msg%n
                     </pattern>
                 </encoder>
                 <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -33,7 +33,7 @@
         </filter>
         <encoder>
             <pattern>
-                %d [%thread] %logger{36} %-5level: %msg%n
+                %d [%thread] | %X{userName} | %X{userIpAddress} | %logger{36} %-5level: %msg%n
             </pattern>
         </encoder>
     </appender>
@@ -47,7 +47,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>
-                %date{HH:mm:ss} %-5level: %msg%n
+                %date{HH:mm:ss} | %X{userName} | %X{userIpAddress} | %-5level: %msg%n
             </pattern>
         </encoder>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
