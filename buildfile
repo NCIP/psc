@@ -1247,6 +1247,22 @@ define "psc" do
       test.options[:properties]['psc.config.datasource'] = db_name
     end
 
+    # wipe out db before the setup
+    task :wipe_db => [:set_db] do
+      ant('wipe_db') do |ant|
+        datasource_properties(ant)
+        ant.sql :src => _("src/spec/resources/sql/${datasource.driver}.purge.sql"),
+          :delimiter => '/',
+          :delimitertype => 'row',
+          :driver => "${datasource.driver}",
+          :url => "${datasource.url}",
+          :userid => "${datasource.username}",
+          :password => "${datasource.password}",
+          :autocommit => "true",
+          :classpath => project.test.compile.dependencies.collect { |a| a.to_s }.join(';')
+      end
+    end
+
     compile.with(project('web').and_dependencies)
     test.using(:integration, :rspec).
       with(
@@ -1274,7 +1290,7 @@ define "psc" do
     }
 
     desc "One-time setup for the RESTful API integrated tests"
-    task :setup => [:set_db, :'test:compile', project('psc:database').task('migrate')] do
+    task :setup => [:set_db, :'test:compile', :wipe_db, project('psc:database').task('migrate')] do
       Java::Commands.java(
         'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._,
         :classpath => test.compile.dependencies,
