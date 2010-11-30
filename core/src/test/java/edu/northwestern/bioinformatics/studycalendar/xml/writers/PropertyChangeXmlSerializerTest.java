@@ -27,6 +27,14 @@ public class PropertyChangeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong new value", "Epoch A", actual.attributeValue("new-value"));
     }
 
+    public void testCreateElementWhenPropertyValueIsNull() throws Exception {
+        propertyChange = PropertyChange.create("name", null, "Epoch A");
+        Element actual = serializer.createElement(propertyChange);
+        assertEquals("Wrong property", "name", actual.attributeValue("property-name"));
+        assertEquals("Old value should be empty string instead of null", "", actual.attributeValue("old-value"));
+        assertEquals("Wrong new value", "Epoch A", actual.attributeValue("new-value"));
+    }
+
     public void testReadElement() {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.attributeValue("property-name")).andReturn("name");
@@ -39,6 +47,21 @@ public class PropertyChangeXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Wrong property", "name", actual.getPropertyName());
         assertEquals("Wrong old value", "Epoch X", actual.getOldValue());
+        assertEquals("Wrong new value", "Epoch A", actual.getNewValue());
+    }
+
+    public void testReadElementWhenPropertyValueIsEmptyString() throws Exception {
+        expect(element.attributeValue("id")).andReturn("grid0");
+        expect(element.attributeValue("property-name")).andReturn("name");
+        expect(element.attributeValue("old-value")).andReturn("");
+        expect(element.attributeValue("new-value")).andReturn("Epoch A");
+        replayMocks();
+
+        PropertyChange actual = (PropertyChange) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong property", "name", actual.getPropertyName());
+        assertEquals("Old value should be null instead of empty string", null, actual.getOldValue());
         assertEquals("Wrong new value", "Epoch A", actual.getNewValue());
     }
 
