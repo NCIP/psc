@@ -47,7 +47,7 @@
         }
 
         #activityName label {
-            margin-left:10em;    
+            margin-left:10em;
         }
 
         #createNewActivity label {
@@ -83,8 +83,6 @@
             var input = $('sources').options[$('sources').selectedIndex].value
             if (input == null || input == "select") {
                 $('sources').selectedIndex = 0
-            } else {
-                loadActivities()
             }
             registerEventHandlers()
             enableExportOptions()
@@ -142,8 +140,10 @@
             indicator.reveal()
             var input = $('sources').options[$('sources').selectedIndex].value
             var data = ''
-            data = data+"sourceId"+"="+input+"&";
-            data = data+"index=0&";
+            if (input != "selectAll") {
+             data = data+"sourceId"+"="+input;
+            }
+            data = data+"&index=0";
             var href = '<c:url value="/pages/activities/getActivityBySource"/>'
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
