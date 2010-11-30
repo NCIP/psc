@@ -158,7 +158,7 @@ public class ActivityControllerTest extends ControllerTestCase {
     }
 
     @SuppressWarnings({"unchecked"})
-    public void testSourceAllForGET() throws Exception {
+    public void testSourceAllForGETWhenNoSourceId() throws Exception {
         Activity a11, a12;
         ActivityType at11, at12;
         at11 = Fixtures.createActivityType("Desease Measure");
@@ -172,9 +172,7 @@ public class ActivityControllerTest extends ControllerTestCase {
         listOfActivityTypes.add(at11);
         listOfActivityTypes.add(at12);
 
-        Source s = Fixtures.createSource("All sources");
-
-        request.addParameter("sourceId", "selectAll");
+        Source s = Fixtures.createSource("All sources");         
         request.addParameter("index", "0");
         request.setMethod("GET");
 
@@ -191,7 +189,6 @@ public class ActivityControllerTest extends ControllerTestCase {
 
         assertTrue("Missing model object", actualModel.containsKey("activitiesPerSource"));
         assertTrue("Missing source object", actualModel.containsKey("sourceId"));
-        assertEquals("Wrong source", "selectAll", actualModel.get("sourceId"));
     }
 
     @SuppressWarnings({ "unchecked" })
