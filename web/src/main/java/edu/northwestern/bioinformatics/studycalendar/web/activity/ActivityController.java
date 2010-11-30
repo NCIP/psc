@@ -39,34 +39,28 @@ public class ActivityController extends PscAbstractController implements PscAuth
         SortOrderEnum sortOrderEnum =  (sortOrder == null || sortOrder.equals("2"))
                 ? SortOrderEnum.DESCENDING : SortOrderEnum.ASCENDING;
         String sortItem = request.getParameter((new ParamEncoder("row").encodeParameterName(TableTagParameters.PARAMETER_SORT)));
-
+        String sourceId = ServletRequestUtils.getStringParameter(request, "sourceId");
         if ("POST".equals(request.getMethod())) {
-            String sourceId = ServletRequestUtils.getRequiredStringParameter(request, "sourceId");
             Integer index = ServletRequestUtils.getRequiredIntParameter(request, "index");
-            if (!sourceId.equals("select")) {
-                model = processRequest(model, sourceId, index, sortOrderEnum, sortItem);
-            }
+            model = processRequest(model, sourceId, index, sortOrderEnum, sortItem);
             return new ModelAndView("template/ajax/activityTableUpdate", model);
         } else {
             if (request.getParameterMap().isEmpty()) {
                 model.put("sources", sourceDao.getAll());
             } else {
-                String sourceId = ServletRequestUtils.getRequiredStringParameter(request, "sourceId");
                 model = processRequest(model, sourceId, 0, sortOrderEnum, sortItem);
                 model.put("sourceId", sourceId);
                 model.put("sources", sourceDao.getAll());
             }
-
             return new ModelAndView("activity", model);
         }
     }
 
     private Map<String, Object> processRequest( Map<String, Object> model, String sourceId, Integer index, SortOrderEnum sortOrderEnum, String sortItem) throws Exception{
-        List<Activity> activities;
-
-        if (sourceId.equals("selectAll")) {
+        List<Activity> activities = new ArrayList<Activity>();
+        if (sourceId == null) {
             activities = activityDao.getAll();
-        } else {
+        } else if(!sourceId.equals("select")) {
             activities = activityDao.getBySourceId(new Integer(sourceId));
         }
 
@@ -104,7 +98,7 @@ public class ActivityController extends PscAbstractController implements PscAuth
         }
 
         model.put("activityTypes", activityTypeDao.getAll());
-        if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
+        if (! (sourceId == null || sourceId.equals("select"))) {
             model.put("displayCreateNewActivity", Boolean.TRUE);
             model.put("showtable", Boolean.TRUE);
         } else {
