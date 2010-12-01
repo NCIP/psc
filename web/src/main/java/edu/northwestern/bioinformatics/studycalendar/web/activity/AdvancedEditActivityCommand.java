@@ -210,7 +210,7 @@ public class AdvancedEditActivityCommand implements Validatable {
             errors.rejectValue("activity.name", "error.activity.name.is.empty");
         }
 
-        if(activity.getCode() == null && activity.getCode().length() <= 0) {
+        if(activity.getCode() == null || activity.getCode().length() <= 0) {
             errors.rejectValue("activity.code", "error.activity.code.is.empty");
         }
     }

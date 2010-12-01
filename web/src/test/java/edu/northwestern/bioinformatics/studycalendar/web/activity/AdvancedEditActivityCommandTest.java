@@ -8,10 +8,12 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.create
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import org.apache.commons.lang.StringUtils;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.validation.BindException;
 
 
 import java.util.*;
@@ -178,6 +180,56 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testValidateWhenActivityNameIsEmptyString() throws Exception {
+        activity0.setName("");
+        replayMocks();
+        command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.activity.name.is.empty", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWhenActivityNameIsNull() throws Exception {
+        activity0.setName(null);
+        replayMocks();
+        command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.activity.name.is.empty", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWhenActivityCodeIsEmptyString() throws Exception {
+        activity0.setCode("");
+        replayMocks();
+        command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.activity.code.is.empty", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWhenActivityCodeIsNull() throws Exception {
+        activity0.setCode(null);
+        replayMocks();
+        command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
+        BindException errors =  new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.activity.code.is.empty", errors.getFieldError().getCode());
+    }
 
     private static ActivityProperty ActivityPropertyEq(ActivityProperty expectedActivityProperty) {
         EasyMock.reportMatcher(new ActivityPropertyMatcher(expectedActivityProperty));
