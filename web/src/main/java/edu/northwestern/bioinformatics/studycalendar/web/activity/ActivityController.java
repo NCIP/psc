@@ -60,7 +60,7 @@ public class ActivityController extends PscAbstractController implements PscAuth
         List<Activity> activities = new ArrayList<Activity>();
         if (sourceId == null) {
             activities = activityDao.getAll();
-        } else if(!sourceId.equals("select")) {
+        } else if(!sourceId.equals("select") || !sourceId.equals("selectAll")) {
             activities = activityDao.getBySourceId(new Integer(sourceId));
         }
 
