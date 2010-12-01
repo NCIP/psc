@@ -79,11 +79,11 @@ public class NewActivityController extends PscSimpleFormController implements Ps
         AdvancedEditActivityCommand command = (AdvancedEditActivityCommand) oCommand;
         Source source = sourceDao.getManualTargetSource();
         if (source != null) {
-            if (activityDao.getByCodeAndSourceName(command.getActivity().getName(), source.getName()) != null) {
+            if (activityDao.getByNameAndSourceName(command.getActivity().getName(), source.getName()) != null) {
                 errors.rejectValue("activity.name","error.activity.name.already.exists");
                 return showForm(request, response, errors);
             } else if (activityDao.getByCodeAndSourceName(command.getActivity().getCode(), source.getName()) != null) {
-                errors.rejectValue("activity.name","error.activity.code.already.exists");
+                errors.rejectValue("activity.code","error.activity.code.already.exists");
                 return showForm(request, response, errors);
             }
             command.getActivity().setSource(source);
