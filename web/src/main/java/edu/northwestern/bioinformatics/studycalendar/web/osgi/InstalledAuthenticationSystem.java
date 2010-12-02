@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationLogInfoFilter;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
@@ -9,11 +10,13 @@ import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawData
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.web.filters.FilterAdapter;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -48,12 +51,34 @@ public class InstalledAuthenticationSystem extends FilterAdapter implements Init
                 SecurityContextHolder.setContext(system.getCurrentSecurityContext());
                 log.debug("SecurityContext bridged from OSGi layer.  Now: {}", SecurityContextHolder.getContext());
 
+                String userName = getUserNameFromContext(system.getCurrentSecurityContext());
+                addLoggingVariables(userName);
+
                 filterChain.doFilter(servletRequest, servletResponse);
+
+                removeLoggingVariables();
 
                 log.debug("Filter processing complete.  Resetting SecurityContext to {}", original);
                 SecurityContextHolder.setContext(original);
             }
         });
+    }
+
+    private String getUserNameFromContext(SecurityContext ctx) {
+        String user = null;
+        Authentication authentication = ctx.getAuthentication();
+        if (authentication != null) {
+            user = authentication.getName();
+        }
+        return user;
+    }
+
+    private void addLoggingVariables(String userName) {
+        MDC.put(AuthenticationLogInfoFilter.USER_NAME_KEY, userName);
+    }
+
+    private void removeLoggingVariables() {
+        MDC.remove(AuthenticationLogInfoFilter.USER_NAME_KEY);
     }
 
     public CompleteAuthenticationSystem getCompleteAuthenticationSystem() {

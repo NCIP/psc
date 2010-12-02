@@ -6,7 +6,7 @@
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %d [%thread] | %X{userName} | %X{userIpAddress} | %logger{36} %-5level: %msg%n
+                %d [%thread] | %X{userIpAddress} | %X{userName} | %logger{36} %-5level: %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -24,7 +24,7 @@
         </triggeringPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] | %X{userName} | %X{userIpAddress} | %36logger{36} %-5level | %1X{depth} | %msg%n
+                %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] | %X{userIpAddress} | %X{userName} | %36logger{36} %-5level | %1X{depth} | %msg%n
             </Pattern>
         </layout>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">

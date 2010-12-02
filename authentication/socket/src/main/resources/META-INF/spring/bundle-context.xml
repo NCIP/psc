@@ -9,10 +9,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           class="edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl">
         <property name="filters">
             <list>
+                <ref bean="logInfoFilter"/>
                 <ref bean="httpSessionContextIntegrationFilter"/>
                 <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
+                <ref bean="AuthenticationLogInfoFilter"/>
                 <ref bean="exceptionTranslationFilter"/>
                 <ref bean="filterInvocationInterceptor"/>
             </list>
@@ -92,6 +94,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </value>
         </property>
     </bean>
+
+    <bean id="logInfoFilter"
+          class="edu.northwestern.bioinformatics.studycalendar.tools.HttpRequestLogInfoFilter"/>
+
+    <bean id="AuthenticationLogInfoFilter"
+          class="edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationLogInfoFilter"/>
 
     <bean id="accessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
         <property name="decisionVoters">
