@@ -68,6 +68,15 @@
     </listener>
 
     <filter>
+        <filter-name>LogInfoFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.tools.HttpRequestLogInfoFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogInfoFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>pre-authentication-setup-filter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.PreAuthenticationSetupFilter</filter-class>
     </filter>
@@ -141,15 +150,6 @@
     <filter-mapping>
         <filter-name>post-authentication-setup-filter</filter-name>
         <url-pattern>/pages/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>LogInfoFilter</filter-name>
-        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.LogInfoFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>LogInfoFilter</filter-name>
-        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
