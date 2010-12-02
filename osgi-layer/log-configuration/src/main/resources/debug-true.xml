@@ -11,7 +11,7 @@
         </triggeringPolicy>
         <encoder>
             <pattern>
-                %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %36logger{36} %-5level | %1X{depth} | %msg%n
+                %date{yyyy-MM-dd HH:mm:ss.SSS} | %X{userName} | %X{userIpAddress} | [%thread] %36logger{36} %-5level | %1X{depth} | %msg%n
             </pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">

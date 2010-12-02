@@ -144,6 +144,15 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>LogInfoFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.LogInfoFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogInfoFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>AuditInfoFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
     </filter>
