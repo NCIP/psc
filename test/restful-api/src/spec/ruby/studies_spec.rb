@@ -158,7 +158,7 @@ describe "/studies" do
 
     describe "study structure" do
       before do
-        @studies = response.json["studies"]
+        @studies = response.json["studies"].sort_by { |s| s["assigned_identifier"] }
         @study = @studies[0]
       end
 
