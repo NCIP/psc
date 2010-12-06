@@ -21,7 +21,7 @@ describe "/subjects/{subject-identifier}/schedules" do
           e.study_segment "B" do |a|
             a.period "P2", :start_day => 2, :duration => [3, :day], :repetitions => 1 do |p|
               p.activity "Lab Test", 1
-              p.activity "Physical Test", 2
+              p.activity "Physical Test", 3
             end
           end
         end
@@ -104,7 +104,7 @@ describe "/subjects/{subject-identifier}/schedules" do
           end
 
           it "has the correct days" do
-            @days.keys.sort.should == %w(2008-12-28 2008-12-29 2009-01-02)
+            @days.keys.sort.should == %w(2008-12-28 2008-12-29 2008-12-30 2009-01-02)
           end
 
           describe "[2008-12-29][activities][0]" do

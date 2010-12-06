@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
@@ -209,7 +210,7 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         return null;
     }
 
-    public void createJSONScheduledActivities(JsonGenerator generator, Boolean hidden_activities, List<ScheduledActivity> scheduledActivities) throws IOException{
+    public void createJSONScheduledActivities(JsonGenerator generator, Boolean hidden_activities, Collection<ScheduledActivity> scheduledActivities) throws IOException{
         generator.writeStartObject();
             if (hidden_activities != null) {
                 JacksonTools.nullSafeWriteStringField(generator, "hidden_activities", ""+ hidden_activities.toString());
@@ -217,7 +218,7 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
             generator.writeFieldName("activities");
 
             generator.writeStartArray();
-                for (ScheduledActivity scheduledActivity: scheduledActivities ) {
+                for (ScheduledActivity scheduledActivity : scheduledActivities) {
                     createJSONScheduledActivity(generator, scheduledActivity);
                 }
             generator.writeEndArray();

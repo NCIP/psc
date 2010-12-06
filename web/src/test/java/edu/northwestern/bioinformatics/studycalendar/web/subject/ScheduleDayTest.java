@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
@@ -93,6 +94,15 @@ public class ScheduleDayTest extends StudyCalendarTestCase {
 
     public void testIsTodayWhenItIsNot() throws Exception {
         assertFalse(createDay(2006, Calendar.MARCH, 6).isToday());
+    }
+
+    public void testActivitiesArePresentedInNaturalOrder() throws Exception {
+        day.getActivities().add(Fixtures.createScheduledActivity("B", 2008, Calendar.JANUARY, 4));
+        day.getActivities().add(Fixtures.createScheduledActivity("A", 2008, Calendar.JANUARY, 4));
+
+        Iterator<ScheduledActivity> it = day.getActivities().iterator();
+        assertEquals("Wrong first activity", "A", it.next().getActivity().getName());
+        assertEquals("Wrong second activity", "B", it.next().getActivity().getName());
     }
 
     private static ScheduleDay createDay(int year, int month, int day) {

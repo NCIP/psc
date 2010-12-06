@@ -9,8 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -18,7 +19,7 @@ import java.util.List;
 public class ScheduleDay implements Comparable<ScheduleDay> {
     private Date date;
     private Date today;
-    private List<ScheduledActivity> activities;
+    private SortedSet<ScheduledActivity> activities;
     private boolean hasHiddenActivities;
 
     private static ThreadLocal<DateFormat> DATE_CLASS_FORMATTER = new ThreadLocal<DateFormat>();
@@ -30,7 +31,7 @@ public class ScheduleDay implements Comparable<ScheduleDay> {
     public ScheduleDay(Date date, Date today) {
         this.date = date;
         this.today = today;
-        activities = new LinkedList<ScheduledActivity>();
+        activities = new TreeSet<ScheduledActivity>();
     }
 
     ////// LOGIC
@@ -75,7 +76,7 @@ public class ScheduleDay implements Comparable<ScheduleDay> {
         return date;
     }
 
-    public List<ScheduledActivity> getActivities() {
+    public SortedSet<ScheduledActivity> getActivities() {
         return activities;
     }
 
