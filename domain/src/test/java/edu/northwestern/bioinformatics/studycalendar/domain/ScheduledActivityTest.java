@@ -6,15 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -260,14 +260,6 @@ public class ScheduledActivityTest extends TestCase {
         assertNegative(sa1.compareTo(sa0));
     }
 
-    private PlannedActivity plannedActivityFromStudy(String ident) {
-        PlannedActivity pa = createPlannedActivity(activityA, 2);
-        Period p = createPeriod(1, 7, 1); p.addPlannedActivity(pa);
-        Study s = createSingleEpochStudy(ident, "E");
-        s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(p);
-        return pa;
-    }
-
     public void testCompareWithNoPlannedActivityDoesNotErrorOut() throws Exception {
         sa0.setPlannedActivity(null); sa1.setPlannedActivity(null);
         assertNegative(sa0.compareTo(sa1));
@@ -278,5 +270,57 @@ public class ScheduledActivityTest extends TestCase {
         sa1.setPlannedActivity(new PlannedActivity());
 
         assertNegative(sa0.compareTo(sa1));
+    }
+
+    public void testNaturalOrderSortsByAssignmentIdWhenOtherwiseEqual() throws Exception {
+        PlannedActivity pa = plannedActivityFromStudy("X");
+        sa0.setPlannedActivity(pa);
+
+        ScheduledActivity sa0prime = new ScheduledActivity();
+        sa0prime.setActivity(sa0.getActivity());
+        sa0prime.setPlannedActivity(pa);
+
+        setId(2, putActivityInAssignment(sa0));
+        setId(1, putActivityInAssignment(sa0prime));
+
+        assertPositive(sa0.compareTo(sa0prime));
+        assertNegative(sa0prime.compareTo(sa0));
+    }
+
+    public void testGetAssignmentReturnsAssignmentWhenAttached() throws Exception {
+        StudySubjectAssignment expected = putActivityInAssignment(sa0);
+        assertSame(expected, sa0.getStudySubjectAssignment());
+    }
+
+    public void testGetAssignmentWithoutSegmentReturnsNull() throws Exception {
+        assertNull(sa0.getStudySubjectAssignment());
+    }
+
+    public void testGetAssignmentWithoutCalendarReturnsNull() throws Exception {
+        putActivityInAssignment(sa0);
+        sa0.getScheduledStudySegment().setScheduledCalendar(null);
+        assertNull(sa0.getStudySubjectAssignment());
+    }
+
+    public void testGetAssignmentWithoutAssignmentReturnsNull() throws Exception {
+        putActivityInAssignment(sa0);
+        sa0.getScheduledStudySegment().getScheduledCalendar().setAssignment(null);
+        assertNull(sa0.getStudySubjectAssignment());
+    }
+
+    private StudySubjectAssignment putActivityInAssignment(ScheduledActivity sa) {
+        StudySubjectAssignment ssa0 = new StudySubjectAssignment();
+        ssa0.setScheduledCalendar(new ScheduledCalendar());
+        ssa0.getScheduledCalendar().addStudySegment(new ScheduledStudySegment());
+        ssa0.getScheduledCalendar().getScheduledStudySegments().get(0).addEvent(sa);
+        return ssa0;
+    }
+
+    private PlannedActivity plannedActivityFromStudy(String ident) {
+        PlannedActivity pa = createPlannedActivity(activityA, 2);
+        Period p = createPeriod(1, 7, 1); p.addPlannedActivity(pa);
+        Study s = createSingleEpochStudy(ident, "E");
+        s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(p);
+        return pa;
     }
 }
