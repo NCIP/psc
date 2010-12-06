@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -14,9 +15,10 @@ import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
+import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
 /**
  * @author Rhett Sutphin
@@ -110,8 +112,9 @@ public class MultipleAssignmentScheduleViewTest extends StudyCalendarTestCase {
         ScheduleDay afd2006 = schedule.getDays().get(639);
         assertDayOfDate("Test setup failure", 2006, Calendar.APRIL, 1, afd2006.getDate());
         assertEquals("Wrong number of activities accumulated on 2006-04-01", 2, afd2006.getActivities().size());
-        assertEquals("Missing A from 2006-04-01", "A", afd2006.getActivities().get(0).getActivity().getName());
-        assertEquals("Missing B from 2006-04-01", "B", afd2006.getActivities().get(1).getActivity().getName());
+        Iterator<ScheduledActivity> actIt = afd2006.getActivities().iterator();
+        assertEquals("Missing A from 2006-04-01", "A", actIt.next().getActivity().getName());
+        assertEquals("Missing B from 2006-04-01", "B", actIt.next().getActivity().getName());
         assertEquals("Wrong number of activities accumulated on 2004-07-01", 1, schedule.getDays().get(0).getActivities().size());
     }
 

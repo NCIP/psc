@@ -1,22 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.DtEnd;
+import net.fortuna.ical4j.model.property.Method;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Transp;
+import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.model.property.Url;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.List;
-import java.util.Collections;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * Utility class which provides functionality of generating ics calendar.
@@ -39,9 +46,8 @@ public class ICalTools {
         }
     }
 
-    public static Calendar generateICSCalendarForActivities(Calendar icsCalendar, Date date, List<ScheduledActivity> scheduledActivities, String baseUrl, Boolean includeSubject) {
-        Collections.sort(scheduledActivities);
-        for (final ScheduledActivity scheduleActivity :scheduledActivities ) {
+    public static Calendar generateICSCalendarForActivities(Calendar icsCalendar, Date date, Collection<ScheduledActivity> scheduledActivities, String baseUrl, Boolean includeSubject) {
+        for (final ScheduledActivity scheduleActivity : scheduledActivities) {
             VEvent vEvent = generateAllDayEventForScheduleActivity(date, scheduleActivity, baseUrl, includeSubject);
             if (vEvent != null) {
                 icsCalendar.getComponents().add(vEvent);
