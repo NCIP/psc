@@ -88,7 +88,19 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             int weightDiff = this.getPlannedActivity().compareWeightTo(other.getPlannedActivity());
             if (weightDiff != 0) return weightDiff;
         }
-        return getActivity().compareTo(other.getActivity());
+        int activityDiff = getActivity().compareTo(other.getActivity());
+        if (activityDiff != 0) {
+            return activityDiff;
+        }
+        return ComparisonTools.nullSafeCompare(
+            getStudySubjectAssignmentId(this), getStudySubjectAssignmentId(other));
+    }
+
+    // this is not something I want to have as part of the public API for this class,
+    // but I need to be able to invoke it on "other" SAs.
+    private static Integer getStudySubjectAssignmentId(ScheduledActivity sa) {
+        StudySubjectAssignment assignment = sa.getStudySubjectAssignment();
+        return assignment == null ? null : assignment.getId();
     }
 
     @Transient
@@ -98,6 +110,19 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         } catch (NullPointerException npe) {
             return null;
         }
+    }
+
+    /**
+     * Returns the assignment corresponding to this SA, or null if it isn't connected to one.
+     * (The latter should only be the case in testing.)
+     */
+    @Transient
+    protected StudySubjectAssignment getStudySubjectAssignment() {
+        ScheduledStudySegment seg = getScheduledStudySegment();
+        if (seg == null) return null;
+        ScheduledCalendar cal = seg.getScheduledCalendar();
+        if (cal == null) return null;
+        return cal.getAssignment();
     }
 
     @Transient
