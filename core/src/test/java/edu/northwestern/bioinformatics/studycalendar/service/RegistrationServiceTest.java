@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 
@@ -53,8 +53,12 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(userService.loadUserByUsername("sammyc")).andStubReturn(
             sammyc);
 
-        registration = Registration.create(segment, DateTools.createDate(2010, JANUARY, 25), subject);
-        registration.setStudySubjectCalendarManager(createPscUser("sammyc"));
+        registration = new Registration.Builder().
+            firstStudySegment(segment).
+            date(DateTools.createDate(2010, JANUARY, 25)).
+            subject(subject).
+            manager(createPscUser("sammyc")).
+            toRegistration();
 
         service =  new RegistrationService();
         service.setStudySegmentDao(studySegmentDao);

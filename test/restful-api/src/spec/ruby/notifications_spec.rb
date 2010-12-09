@@ -22,8 +22,11 @@ describe "/subjects/{subject-identifier}/assignments/{assignment-identifier}/not
 
     @studySegment = @nu480.planned_calendar.epochs.first.study_segments.first
     @studySubjectAssignment = application_context['subjectService'].assignSubject(
-      @subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26),
-      "SS001", Java::JavaUtil::HashSet.new, erin)
+      @studySite,
+      Psc::Service::Presenter::Registration::Builder.new.
+        subject(@subject).first_study_segment(@studySegment).
+        date(PscTest.createDate(2008, 12, 26)).manager(erin).
+        to_registration)
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment)
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 27), "Reconsent Activity1")
     application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 28), "Reconsent Activity2")

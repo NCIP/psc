@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.apache.commons.lang.StringUtils;
 import org.easymock.IArgumentMatcher;
@@ -72,6 +73,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setFirstName(subject.getFirstName());
         command.setLastName(subject.getLastName());
         command.setPersonId(subject.getPersonId());
+        command.setGender(subject.getGender().getCode());
         command.setDateOfBirth(BIRTH_DATE_S);
         command.setRadioButton(NEW);
         command.setIdentifier(subject.getPersonId());
@@ -91,8 +93,12 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setStudySubjectCalendarManager(expectedManager);
 
         subjectDao.save(subjectEq(subject));
-        expect(subjectService.assignSubject(subjectEq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
-                eq(STUDY_SUBJECT_ID), eq(populations), eq(expectedManager))).andReturn(assignment);
+        expect(subjectService.assignSubject(studySite,
+            new Registration.Builder().manager(expectedManager).
+                subject(subject).firstStudySegment(studySegment).date(START_DATE).
+                studySubjectId(STUDY_SUBJECT_ID).populations(populations).
+                toRegistration())
+        ).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 
@@ -106,15 +112,9 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         PscUser expectedManager = createPscUser("test_sscm", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
         command.setStudySubjectCalendarManager(expectedManager);
 
-        subjectDao.save(subjectEq(subject));
-        expect(subjectService.assignSubject(eq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
-                eq(STUDY_SUBJECT_ID), eq(populations), eq(expectedManager))).andReturn(assignment);
-        subjectService.updatePopulations(assignment, populations);
         replayMocks();
         try {
-
             command.assignSubject();
-            verifyMocks();
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException e) {
             assertEquals("test_sscm has insufficient privilege to create new subject.", e.getMessage());
@@ -124,8 +124,12 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
     public void testAssignSubjectWhenExistingSubject() throws Exception {
         command.setRadioButton(EXISTING);
         expect(subjectDao.findSubjectByGridOrPersonId(subject.getPersonId())).andReturn(subject);
-        expect(subjectService.assignSubject(eq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
-                eq(STUDY_SUBJECT_ID), eq(populations), (PscUser) eq(null))).andReturn(assignment);
+        expect(subjectService.assignSubject(studySite,
+            new Registration.Builder().
+                subject(subject).firstStudySegment(studySegment).date(START_DATE).
+                studySubjectId(STUDY_SUBJECT_ID).populations(populations).
+                toRegistration())
+        ).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
         StudySubjectAssignment actual = command.assignSubject();

@@ -14,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -165,15 +165,18 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         Subject expectedSubject = setId(4, new Subject());
         String expectedAssignmentId = "DC";
-        Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
-        posted.setStudySubjectCalendarManager(AuthorizationObjectFactory.createPscUser("jo"));
+        Registration posted = new Registration.Builder().
+            firstStudySegment(expectedSegment).
+            date(expectedDate).
+            subject(expectedSubject).
+            desiredAssignmentId(expectedAssignmentId).
+            manager(AuthorizationObjectFactory.createPscUser("jo")).
+            toRegistration();
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
         expectResolvedRegistration(posted);
-        expect(subjectService.assignSubject(
-            expectedSubject, studySite, expectedSegment, expectedDate,
-            expectedAssignmentId, null, posted.getStudySubjectCalendarManager())).
+        expect(subjectService.assignSubject(studySite, posted)).
             andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();
@@ -188,14 +191,25 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         Subject expectedSubject = setId(7, new Subject());
         String expectedAssignmentId = "DC";
-        Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
+        Registration posted = new Registration.Builder().
+            firstStudySegment(expectedSegment).
+            date(expectedDate).
+            subject(expectedSubject).
+            desiredAssignmentId(expectedAssignmentId).
+            toRegistration();
+
+        Registration expectedAssigned = new Registration.Builder().
+            firstStudySegment(expectedSegment).
+            date(expectedDate).
+            subject(expectedSubject).
+            desiredAssignmentId(expectedAssignmentId).
+            manager(getCurrentUser()).
+            toRegistration();
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
         expectResolvedRegistration(posted);
-        expect(subjectService.assignSubject(
-            expectedSubject, studySite, expectedSegment, expectedDate,
-            expectedAssignmentId, null, getCurrentUser())).
+        expect(subjectService.assignSubject(studySite, expectedAssigned)).
             andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();
@@ -209,14 +223,18 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         String expectedAssignmentId = "DC";
-        Registration posted = Registration.create(expectedSegment, expectedDate, existedSubject, expectedAssignmentId);
+        Registration posted = new Registration.Builder().
+            firstStudySegment(expectedSegment).
+            date(expectedDate).
+            subject(existedSubject).
+            desiredAssignmentId(expectedAssignmentId).
+            manager(AuthorizationObjectFactory.createPscUser("jo")).
+            toRegistration();
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
         expectResolvedRegistration(posted);
-        expect(subjectService.assignSubject(
-            existedSubject, studySite, expectedSegment, expectedDate,
-            expectedAssignmentId, null, getCurrentUser())).
+        expect(subjectService.assignSubject(studySite, posted)).
             andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();

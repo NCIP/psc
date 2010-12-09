@@ -29,6 +29,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -253,7 +254,15 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, null, user)).andReturn(newAssignment);
+            loadedStudy.getStudySites().get(0),
+            new Registration.Builder().
+                subject(loadedSubject).
+                firstStudySegment(loadedStudySegment).
+                date(START_DATE).
+                desiredAssignmentId(ASSIGNMENT_BIG_ID).
+                manager(user).
+                toRegistration())
+        ).andReturn(newAssignment);
         expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
@@ -270,8 +279,15 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         subjectDao.save(parameterSubject);
         expect(subjectService.assignSubject(
-            parameterSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, null, user)
-            ).andReturn(newAssignment);
+            loadedStudy.getStudySites().get(0),
+            new Registration.Builder().
+                subject(parameterSubject).
+                firstStudySegment(loadedStudySegment).
+                date(START_DATE).
+                desiredAssignmentId(ASSIGNMENT_BIG_ID).
+                manager(user).
+                toRegistration()
+            )).andReturn(newAssignment);
         expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
@@ -342,7 +358,15 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), defaultStudySegment, START_DATE, ASSIGNMENT_BIG_ID, null, user)).andReturn(newAssignment);
+            loadedStudy.getStudySites().get(0),
+            new Registration.Builder().
+                subject(loadedSubject).
+                firstStudySegment(defaultStudySegment).
+                date(START_DATE).
+                desiredAssignmentId(ASSIGNMENT_BIG_ID).
+                manager(user).
+                toRegistration())
+        ).andReturn(newAssignment);
         expect(mockApplicationSecurityManager.getUser()).andReturn(user).anyTimes();
         replayMocks();
         service.assignSubject(parameterStudy, parameterSubject, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);

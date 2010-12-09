@@ -45,10 +45,12 @@ describe "/reports/scheduled-activities.json" do
     #create a study subject assignment
     @studySegment = @study.plannedCalendar.epochs.first.studySegments.first
     @studySubjectAssignment = application_context['subjectService'].assignSubject(
-      @subject, @studySite, @studySegment, PscTest.createDate(2008, 12, 26) ,
-      "SS001", Java::JavaUtil::HashSet.new, erin
-    )
-    application_context['studySubjectAssignmentDao'].save(@studySubjectAssignment)
+      @studySite,
+      Psc::Service::Presenter::Registration::Builder.new.
+        subject(@subject).first_study_segment(@studySegment).
+        study_subject_id("SS001").
+        date(PscTest.createDate(2008, 12, 26)).manager(erin).
+        to_registration)
 
     #get Scheduled activity
     @scheduled_activity1 = @studySubjectAssignment.scheduledCalendar.scheduledStudySegments.first.activities.first

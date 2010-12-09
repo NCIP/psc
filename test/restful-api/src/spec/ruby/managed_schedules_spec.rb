@@ -53,17 +53,29 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
     @studySegment2 = @ecog170.plannedCalendar.epochs.first.studySegments.first
     @studySubjectAssignments= [
       @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
-        @subject1, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
-        "SS001", Java::JavaUtil::HashSet.new, erin),
+        @studySite1,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@subject1).first_study_segment(@studySegment1).
+          date(PscTest.createDate(2008, 12, 26)).manager(erin).
+          to_registration),
       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
-        @subject1, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
-        "SS002", Java::JavaUtil::HashSet.new, erin),
+        @studySite2,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@subject1).first_study_segment(@studySegment2).
+          date(PscTest.createDate(2008, 12, 28)).manager(erin).
+          to_registration),
       @studySubjectAssignment3 = application_context['subjectService'].assignSubject(
-        @subject2, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
-        "SS003", Java::JavaUtil::HashSet.new, erin),
+        @studySite2,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@subject2).first_study_segment(@studySegment2).
+          date(PscTest.createDate(2008, 12, 28)).manager(erin).
+          to_registration),
       @studySubjectAssignment4 = application_context['subjectService'].assignSubject(
-        @subject3, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
-        "SS004", Java::JavaUtil::HashSet.new, juno)
+        @studySite1,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@subject3).first_study_segment(@studySegment1).
+          date(PscTest.createDate(2008, 12, 26)).manager(juno).
+          to_registration)
     ]
     @studySubjectAssignments.each do |ssa|
       application_context['studySubjectAssignmentDao'].save(ssa)

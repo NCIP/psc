@@ -51,13 +51,17 @@ describe "/subjects/{subject-identifier}/schedules" do
     @studySegment1 = @nu480.plannedCalendar.epochs.first.studySegments.first
     @studySegment2 = @ecog170.plannedCalendar.epochs.first.studySegments.first
     @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
-      @subject, @studySite1, @studySegment1, PscTest.createDate(2008, 12, 26) ,
-      "SS001", Java::JavaUtil::HashSet.new, erin)
-    application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
+      @studySite1,
+      Psc::Service::Presenter::Registration::Builder.new.
+        subject(@subject).first_study_segment(@studySegment1).
+        date(PscTest.createDate(2008, 12, 26)).manager(erin).
+        to_registration)
     @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
-      @subject, @studySite2, @studySegment2, PscTest.createDate(2008, 12, 28) ,
-      "SS002", Java::JavaUtil::HashSet.new, erin)
-    application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)
+      @studySite2,
+      Psc::Service::Presenter::Registration::Builder.new.
+        subject(@subject).first_study_segment(@studySegment2).
+        date(PscTest.createDate(2008, 12, 28)).manager(erin).
+        to_registration)
   end
 
   describe "GET" do

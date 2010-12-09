@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -53,10 +53,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
                 value.setStudySubjectCalendarManager(getCurrentUser());
             }
             registrationService.resolveRegistration(value, getStudySite());
-            StudySubjectAssignment assigned = subjectService.assignSubject(
-                value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-                value.getDesiredStudySubjectAssignmentId(), null,
-                value.getStudySubjectCalendarManager());
+            StudySubjectAssignment assigned = subjectService.assignSubject(getStudySite(), value);
             return String.format("studies/%s/schedules/%s",
                 Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
                 Reference.encode(assigned.getGridId()));

@@ -2,10 +2,18 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
@@ -16,7 +24,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -103,7 +115,15 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     public StudySubjectAssignment assignSubject() {
         Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
-            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getPopulations(), getStudySubjectCalendarManager());
+            getStudySite(),
+            new Registration.Builder().
+                subject(subject).
+                firstStudySegment(getEffectiveStudySegment()).
+                date(convertStringToDate(getStartDate())).
+                studySubjectId(getStudySubjectId()).
+                populations(getPopulations()).
+                manager(getStudySubjectCalendarManager()).
+                toRegistration());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
