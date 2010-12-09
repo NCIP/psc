@@ -110,12 +110,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         verifyMocks();
     }
 
-    public void testBindStartDate() throws Exception {
-        request.setParameter("startDate", "09/20/1996");
-        AssignSubjectCommand command = getAndReturnCommand("startDate");
-        assertDayOfDate(1996, Calendar.SEPTEMBER, 20, command.convertStringToDate(command.getStartDate()));
-    }
-
     public void testBindStudySegment() throws Exception {
         request.setParameter("studySegment", "145");
         StudySegment expectedStudySegment = setId(145, createNamedInstance("B", StudySegment.class));

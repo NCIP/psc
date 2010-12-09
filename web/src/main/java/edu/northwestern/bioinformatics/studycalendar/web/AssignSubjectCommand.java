@@ -108,7 +108,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return assignment;
     }
 
-    public Subject createSubject() {
+    private Subject createSubject() {
         Subject subject = new Subject();
         subject.setFirstName(getFirstName());
         subject.setLastName(getLastName());
@@ -118,7 +118,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return subject;
     }
 
-    public Subject createAndSaveNewOrExtractExistingSubject() {
+    private Subject createAndSaveNewOrExtractExistingSubject() {
         Subject subject;
         if (creatingNewSubject()) {
             if (canCreateSubjects()) {
@@ -146,7 +146,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return StudySite.findStudySite(getStudy(), getSite());
     }
 
-    public Date convertStringToDate(String dateString) {
+    private Date convertStringToDate(String dateString) {
         Date convertedDate;
         try {
             convertedDate = FormatTools.getLocal().getDateFormat().parse(dateString);
@@ -157,7 +157,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
         return convertedDate;
     }
 
-    public boolean canCreateSubjects() {
+    private boolean canCreateSubjects() {
         UserStudySiteRelationship ussr =
                 new UserStudySiteRelationship(getStudySubjectCalendarManager(), getStudySite());
         return ussr.getCanCreateSubjects();

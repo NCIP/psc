@@ -3,82 +3,96 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.apache.commons.lang.StringUtils;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import org.springframework.validation.BindException;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
-import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
  */
 public class AssignSubjectCommandTest extends StudyCalendarTestCase {
+    private static final String STUDY_SUBJECT_ID = "SSId1";
+    private static final Date BIRTH_DATE = DateTools.createDate(2008, Calendar.DECEMBER,  1, 0, 0, 0);
+    private static final String BIRTH_DATE_S = "12/01/2008";
+    private static final Date START_DATE = DateTools.createDate(2012, Calendar.FEBRUARY, 12, 0, 0, 0);
+    private static final String START_DATE_S = "02/12/2012";
+
     private AssignSubjectCommand command;
     private SubjectService subjectService;
     private SubjectDao subjectDao;
     private Subject subject;
+    // TODO: these should be constants on the command
     private String EXISTING = "existing";
     private String NEW = "new";
     private  StudySite studySite;
     private  StudySubjectAssignment assignment;
     private  Set<Population> populations;
+    private StudySegment studySegment;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         subjectService = registerMockFor(SubjectService.class);
         subjectDao = registerDaoMockFor(SubjectDao.class);
-        command = new AssignSubjectCommand();
-        command.setSubjectService(subjectService);
-        command.setSubjectDao(subjectDao);
-        String dateOfBirthString = "12/01/2008";
-        Date dateOfBirth = command.convertStringToDate(dateOfBirthString);
-        subject = createSubject("11", "Fred", "Jones", dateOfBirth, Gender.MALE);
-        subject.setGridId("grid_id_123");
 
-        command.setFirstName(subject.getFirstName());
-        command.setLastName(subject.getLastName());
-        command.setPersonId(subject.getPersonId());
-        command.setDateOfBirth(dateOfBirthString);
-        command.setStartDate("01/02/2008");
-        command.setRadioButton(NEW);
+        subject = createSubject("11", "Fred", "Jones", BIRTH_DATE, Gender.MALE);
+        studySegment = setId(17,
+            edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance("Worcestershire", StudySegment.class));
         Study study = createNamedInstance("Study A", Study.class);
         Site site = createNamedInstance("Northwestern", Site.class);
         studySite = setId(14, createStudySite(study, site));
-        assignment = new StudySubjectAssignment();
         populations = Collections.singleton(new Population());
-        String studySubjectId = "SSId1";
 
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-        String stringDate = formatter.format(date);
+        command = new AssignSubjectCommand();
+        command.setSubjectService(subjectService);
+        command.setSubjectDao(subjectDao);
+        command.setFirstName(subject.getFirstName());
+        command.setLastName(subject.getLastName());
+        command.setPersonId(subject.getPersonId());
+        command.setDateOfBirth(BIRTH_DATE_S);
+        command.setRadioButton(NEW);
         command.setIdentifier(subject.getPersonId());
-        command.setStartDate(stringDate);
-        command.setStudySubjectId(studySubjectId);
+        command.setStartDate(START_DATE_S);
+        command.setStudySubjectId(STUDY_SUBJECT_ID);
         command.setStudy(study);
         command.setSite(site);
-        command.setStudySegment(setId(17, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance("Worcestershire", StudySegment.class)));
+        command.setStudySegment(studySegment);
         command.setPopulations(populations);
+
+        assignment = new StudySubjectAssignment();
         assignment.setSubject(subject);
     }
 
     public void testAssignSubjectWhenUserCanCreateNewSubject() throws Exception {
+        PscUser expectedManager = createPscUser("test_sm", PscRole.SUBJECT_MANAGER);
+        command.setStudySubjectCalendarManager(expectedManager);
+
         subjectDao.save(subjectEq(subject));
-        command.setStudySubjectCalendarManager(createPscUser("test", PscRole.SUBJECT_MANAGER));
-        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
-                EasyMock.eq(command.getStudySubjectId()), (Set<Population>) EasyMock.notNull(), EasyMock.eq(command.getStudySubjectCalendarManager()))).andReturn(assignment);
+        expect(subjectService.assignSubject(subjectEq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
+                eq(STUDY_SUBJECT_ID), eq(populations), eq(expectedManager))).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 
@@ -89,10 +103,12 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
     }
 
     public void testAssignSubjectWhenUserCanNotCreateNewSubject() throws Exception {
+        PscUser expectedManager = createPscUser("test_sscm", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+        command.setStudySubjectCalendarManager(expectedManager);
+
         subjectDao.save(subjectEq(subject));
-        command.setStudySubjectCalendarManager(createPscUser("test", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER));
-        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
-                EasyMock.eq(command.getStudySubjectId()), (Set<Population>) EasyMock.notNull(), EasyMock.eq(command.getStudySubjectCalendarManager()))).andReturn(assignment);
+        expect(subjectService.assignSubject(eq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
+                eq(STUDY_SUBJECT_ID), eq(populations), eq(expectedManager))).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
         try {
@@ -101,15 +117,15 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
             verifyMocks();
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException e) {
-            assertEquals("test has insufficient privilege to create new subject.", e.getMessage());
+            assertEquals("test_sscm has insufficient privilege to create new subject.", e.getMessage());
         }
     }
 
     public void testAssignSubjectWhenExistingSubject() throws Exception {
         command.setRadioButton(EXISTING);
         expect(subjectDao.findSubjectByGridOrPersonId(subject.getPersonId())).andReturn(subject);
-        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
-                EasyMock.eq(command.getStudySubjectId()), (Set<Population>) EasyMock.notNull(), EasyMock.eq(command.getStudySubjectCalendarManager()))).andReturn(assignment);
+        expect(subjectService.assignSubject(eq(subject), eq(studySite), eq(studySegment), eq(START_DATE),
+                eq(STUDY_SUBJECT_ID), eq(populations), (PscUser) eq(null))).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
         StudySubjectAssignment actual = command.assignSubject();
@@ -198,8 +214,8 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
 
     public void testValidateExistingByGridId() throws Exception {
         command.setRadioButton(EXISTING);
-        command.setIdentifier(subject.getGridId());
-        expect(subjectDao.findSubjectByGridOrPersonId(subject.getGridId())).andReturn(subject);
+        command.setIdentifier("187");
+        expect(subjectDao.findSubjectByGridOrPersonId("187")).andReturn(subject);
         replayMocks();
 
         BindException errors = new BindException(subject, StringUtils.EMPTY);
