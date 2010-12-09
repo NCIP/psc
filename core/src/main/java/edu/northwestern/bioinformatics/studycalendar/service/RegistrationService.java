@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import org.springframework.beans.factory.annotation.Required;
 
 /**

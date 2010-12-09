@@ -27,9 +27,11 @@ describe "/schedule" do
 
     #create a study subject assignment
     @studySubjectAssignment1 = application_context['subjectService'].assignSubject(
-      @subject1, @studySite1, @studySegment1, @date, "ID001", Java::JavaUtil::HashSet.new, erin)
-    @studySubjectAssignment1.grid_id = "assignment1" #replace auto-generated assignment-id
-    application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
+      @studySite1,
+      Psc::Service::Presenter::Registration::Builder.new.
+        subject(@subject1).first_study_segment(@studySegment1).
+        date(@date).manager(erin).desired_assignment_id("assignment1").
+        to_registration)
   end
 
   describe "GET" do
@@ -38,9 +40,11 @@ describe "/schedule" do
        @birthDate2 = PscTest.createDate(1985, 5, 1)
        @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)
        @studySubjectAssignment2 = application_context['subjectService'].assignSubject(
-         @subject2, @studySite1, @studySegment1, @date, "ID002", Java::JavaUtil::HashSet.new, erin)
-       @studySubjectAssignment2.grid_id = "assignment2" #replace auto-generated assignment-id
-       application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)
+         @studySite1,
+         Psc::Service::Presenter::Registration::Builder.new.
+           subject(@subject2).first_study_segment(@studySegment1).
+           date(@date).manager(erin).desired_assignment_id("assignment2").
+           to_registration)
      end
 
     it "forbids access to a scheduled study segment of a given assignment to an unauthorized user" do

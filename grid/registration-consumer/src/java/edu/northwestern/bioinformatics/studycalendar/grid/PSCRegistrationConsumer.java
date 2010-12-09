@@ -325,8 +325,12 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
     		StudySubjectAssignment newAssignment = null;
     		try {
-    			newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-    					startDate, registrationGridId,registrationGridId, Collections.<Population>emptySet(), null);
+    			newAssignment = subjectService.assignSubject(studySite,
+                    new edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration.Builder().
+                        subject(subject).firstStudySegment(loadedStudySegment).date(startDate).
+                        desiredAssignmentId(registrationGridId).studySubjectId(registrationGridId).
+                        populations(Collections.<Population>emptySet()).
+                        toRegistration());
     		} catch (StudyCalendarSystemException exp) {
     			throw getRegistrationConsumerException(exp.getMessage());
 

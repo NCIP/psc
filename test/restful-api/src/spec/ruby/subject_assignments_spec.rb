@@ -22,13 +22,17 @@ describe "/subject_assignments" do
 
       # register alan
       application_context['subjectService'].assignSubject(
-        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26),
-        "ID001", Java::JavaUtil::HashSet.new, erin)
+        @nu480_at_pitt,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@alan).first_study_segment(@treatmentA).date(PscTest.createDate(2008, 12, 26)).
+          study_subject_id("NU480-001").manager(erin).to_registration)
 
       # register bob
       application_context['subjectService'].assignSubject(
-        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13),
-        "ID002", Java::JavaUtil::HashSet.new, erin)
+        @nu480_at_pitt,
+        Psc::Service::Presenter::Registration::Builder.new.
+          subject(@bob).first_study_segment(@treatmentB).date(PscTest.createDate(2008, 1, 13)).
+          study_subject_id("NU480-002").manager(erin).to_registration)
     end
 
     it "forbids access to a subject assignment to an unauthorized user" do
@@ -53,7 +57,7 @@ describe "/subject_assignments" do
     before do
       @subject_registration_xml = psc_xml(
         "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin"
+        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
       ) { |subject|
         subject.tag!('subject',
             'first-name' => "Andre", 'last-name' => "Suzuki",
@@ -72,7 +76,13 @@ describe "/subject_assignments" do
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
-      response.meta['location'].should =~ %r(studies/NU480/schedules/[^/]+)
+      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
+    end
+
+    it "uses the specified assignment ID" do
+      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+
+      application_context["studySubjectAssignmentDao"].getByGridId("POP-4").should_not be_nil
     end
 
     it "gives 400 if studySegment with gridId from xml not found in system" do

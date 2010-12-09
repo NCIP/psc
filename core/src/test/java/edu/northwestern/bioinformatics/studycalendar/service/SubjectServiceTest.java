@@ -31,6 +31,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -126,7 +127,11 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         StudySubjectAssignment actualAssignment = service.assignSubject(
-            subjectIn, studySite, expectedStudySegment, startDate, studySubjectId, null, user);
+            studySite,
+            new Registration.Builder().
+                subject(subjectIn).firstStudySegment(expectedStudySegment).date(startDate).
+                studySubjectId(studySubjectId).manager(user).
+                toRegistration());
         verifyMocks();
 
         assertNotNull("Assignment not returned", actualAssignment);
@@ -161,7 +166,11 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
 
         replayMocks();
-        StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null, (PscUser) null);
+        StudySubjectAssignment actual = service.assignSubject(
+            ss,
+            new Registration.Builder().subject(subject).firstStudySegment(seg).
+                date(DateTools.createDate(2006, JANUARY, 11)).
+                toRegistration());
         verifyMocks();
 
         assertSame("Wrong amendment for new assignment", currentApproved, actual.getCurrentAmendment());
@@ -186,7 +195,11 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null, (PscUser) null);
+            service.assignSubject(
+                ss,
+                new Registration.Builder().subject(subject).firstStudySegment(seg).
+                    date(DateTools.createDate(2006, JANUARY, 11)).
+                    toRegistration());
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
             assertEquals("The template for ECOG 2502 has not been approved by Mayo", scse.getMessage());
@@ -727,7 +740,13 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         subjectDao.save((Subject) notNull());
         replayMocks();
 
-        StudySubjectAssignment actual = service.assignSubject(subject, studySite, segment, createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "123", new HashSet<Population>(asList(population)), user);
+        StudySubjectAssignment actual = service.assignSubject(
+            studySite,
+            new Registration.Builder().subject(subject).firstStudySegment(segment).
+                date(createDate(1990, Calendar.JANUARY, 15, 0, 0, 0)).
+                studySubjectId("123").populations(new HashSet<Population>(asList(population))).
+                manager(user).
+                toRegistration());
         verifyMocks();
 
         assertFalse(actual.getScheduledCalendar().getScheduledStudySegments().get(0).getActivities().isEmpty());

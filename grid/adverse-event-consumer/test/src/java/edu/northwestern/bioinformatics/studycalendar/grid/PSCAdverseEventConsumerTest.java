@@ -24,6 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import gov.nih.nci.cabig.ccts.ae.domain.AENotificationType;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -394,8 +395,12 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 				logger.debug("creating subject assignment");
 
                 newAssignment = subjectService.assignSubject(
-                    subject, studySite, loadedStudySegment, new Date(),
-                    assignmentGridId, assignmentGridId, Collections.<Population>emptySet(), null
+                    studySite,
+                    new Registration.Builder().
+                        subject(subject).firstStudySegment(loadedStudySegment).date(new Date()).
+                        desiredAssignmentId(assignmentGridId).studySubjectId(assignmentGridId).
+                        populations(Collections.<Population>emptySet()).
+                        toRegistration()
                 );
 				ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
 				logger.debug("Created assignment " + newAssignment.getId());
