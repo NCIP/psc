@@ -58,7 +58,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
 
         PscUser user = applicationSecurityManager.getUser();
         StudySubjectAssignment newAssignment = subjectService.assignSubject(
-                loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user, null);
+                loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, null, user);
         return newAssignment.getScheduledCalendar();
     }
 

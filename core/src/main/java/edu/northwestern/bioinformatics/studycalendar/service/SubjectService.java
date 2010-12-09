@@ -36,16 +36,6 @@ public class SubjectService {
     private SubjectDao subjectDao;
     private AmendmentService amendmentService;
 
-    @Deprecated
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, PscUser subjectCoordinator, Set<Population> populations) {
-        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator, populations);
-    }
-
-    @Deprecated
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, PscUser subjectCoordinator, Set<Population> populations) {
-        return assignSubject(subject, studySite, studySegmentOfFirstEpoch, startDate, assignmentGridIdentifier, studySubjectId, populations, subjectCoordinator);
-    }
-
     public StudySubjectAssignment assignSubject(
         Subject subject, StudySite study,
         StudySegment studySegmentOfFirstEpoch, Date startDate,
