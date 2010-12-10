@@ -1,8 +1,8 @@
 <included>
     <appender name="DEBUGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${catalina.home}/logs/studycalendar-plugins-debug.log</file>
+        <file>${catalina.base}/logs/studycalendar-plugins-debug.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <FileNamePattern>${catalina.home}/logs/studycalendar-plugins-debug.%i.log</FileNamePattern>
+            <FileNamePattern>${catalina.base}/logs/studycalendar-plugins-debug.%i.log</FileNamePattern>
             <MinIndex>1</MinIndex>
             <MaxIndex>1</MaxIndex>
         </rollingPolicy>

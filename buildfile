@@ -1179,7 +1179,7 @@ define "psc" do
     directory _('tmp/logs')
 
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
-      Java.java.lang.System.setProperty("catalina.home", _('tmp').to_s)
+      Java.java.lang.System.setProperty("catalina.base", _('tmp').to_s)
       Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
       Java.java.lang.System.setProperty("psc.logging.debug", ENV['PSC_DEBUG'] || "true")
 

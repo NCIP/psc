@@ -49,7 +49,7 @@ public class LegacyUserProvisioningRecordExporter implements ServletContextListe
     }
 
     private String exportRecords() {
-        String catalinaHome = System.getProperty("catalina.home");
+        String catalinaHome = System.getProperty("catalina.base");
 
         if (isNotEmpty(catalinaHome)) {
             File logDir = new File(catalinaHome + File.separator + "logs");
@@ -73,7 +73,7 @@ public class LegacyUserProvisioningRecordExporter implements ServletContextListe
                 throw new StudyCalendarSystemException(msg);
             }
         } else {
-            String msg = "Problem exporting the legacy user provisioning data. $CATALINA_HOME is not set.";
+            String msg = "Problem exporting the legacy user provisioning data. $CATALINA_BASE is not set.";
             log.debug(msg);
             throw new StudyCalendarSystemException(msg);
         }

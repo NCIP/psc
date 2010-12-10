@@ -3,9 +3,9 @@
     <if condition='p("psc.logging.debug").equals("true")'>
         <then>
             <appender name="DEBUGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>${catalina.home}/logs/studycalendar-debug.log</file>
+                <file>${catalina.base}/logs/studycalendar-debug.log</file>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-                    <FileNamePattern>${catalina.home}/logs/studycalendar-debug.%i.log</FileNamePattern>
+                    <FileNamePattern>${catalina.base}/logs/studycalendar-debug.%i.log</FileNamePattern>
                     <MinIndex>1</MinIndex>
                     <MaxIndex>1</MaxIndex>
                 </rollingPolicy>
@@ -39,10 +39,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${catalina.home}/logs/studycalendar.log</file>
+        <file>${catalina.base}/logs/studycalendar.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${catalina.home}/logs/studycalendar.%d{yyyy-MM-dd}.log.gz
+                ${catalina.base}/logs/studycalendar.%d{yyyy-MM-dd}.log.gz
             </FileNamePattern>
         </rollingPolicy>
         <encoder>

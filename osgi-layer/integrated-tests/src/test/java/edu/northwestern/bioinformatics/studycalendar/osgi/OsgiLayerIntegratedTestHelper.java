@@ -43,7 +43,7 @@ public class OsgiLayerIntegratedTestHelper {
 
     public static synchronized BundleContext getBundleContext() throws IOException {
         if (bundleContext == null) {
-            System.setProperty("catalina.home",
+            System.setProperty("catalina.base",
                 getModuleRelativeDirectory("osgi-layer:integrated-tests", "tmp").getAbsolutePath());
             LauncherSettings settings = new LauncherSettings(
                 getModuleRelativeDirectory("osgi-layer", "target/test/da-launcher").getAbsolutePath());

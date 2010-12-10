@@ -20,10 +20,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${catalina.home}/logs/studycalendar-plugins.log</file>
+        <file>${catalina.base}/logs/studycalendar-plugins.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${catalina.home}/logs/studycalendar-plugins.%d{yyyy-MM-dd}.log.gz
+                ${catalina.base}/logs/studycalendar-plugins.%d{yyyy-MM-dd}.log.gz
             </FileNamePattern>
         </rollingPolicy>
         <encoder>

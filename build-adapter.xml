@@ -14,6 +14,7 @@
     <property name="unixfamily" value="Linux,Mac OS X,Mac OS,HP UX,Digital Unix"/>
     <property name="windowsfamily" value="Windows 2000,Windows 98,Windows NT,Windows Vista,Windows XP" />
     <property environment="env"/>
+    <property name="tomcat.relative.path" value="${env.CATALINA_BASE}"/>
     <property name="tomcat.relative.path" value="${env.CATALINA_HOME}"/>
     <available file="${jruby.local.script}" property="jruby.exists" />
 
@@ -135,13 +136,14 @@
 
     <target name="deploy:psc:grid" depends="install" description="Deploys PSC grid services">
         <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc tomcat_hostname=${tomcat.hostname}">
-            <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
+            <env key="CATALINA_BASE" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </jruby>
     </target>
 
     <target name="clean" depends="install">
+        <echo message="Catalina: ${tomcat.relative.path}"/>
         <jruby line="-S buildr clean"/>
     </target>
 

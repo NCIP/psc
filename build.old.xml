@@ -673,15 +673,15 @@ the script "buildfile".
     </target>
 
     <target name="tomcat.security" depends="tomcat.init" description="Automatically copies global (CSM) configuration files to Tomcat.">
-        <fail message="Could not locate Tomcat.  Please set the catalina.home property (tools/tomcat/tomcat.properties is a good place to do this).">
+        <fail message="Could not locate Tomcat.  Please set the catalina.base property (tools/tomcat/tomcat.properties is a good place to do this).">
             <condition>
-                <not><isset property="catalina.home"/></not>
+                <not><isset property="catalina.base"/></not>
             </condition>
         </fail>
-        <property name="catalina.home" value="PLEASE SET catalina.home EXTERNALLY"/>
-        <echo>Configuring CSM and UPT for the Tomcat instance in ${catalina.home}</echo>
+        <property name="catalina.base" value="PLEASE SET catalina.base EXTERNALLY"/>
+        <echo>Configuring CSM and UPT for the Tomcat instance in ${catalina.base}</echo>
 
-        <property name="tomcat.security.dir" value="${catalina.home}/conf/cabig"/>
+        <property name="tomcat.security.dir" value="${catalina.base}/conf/cabig"/>
         <mkdir dir="${tomcat.security.dir}"/>
         <copy todir="${tomcat.security.dir}" overwrite="true">
             <filterset>
@@ -702,7 +702,7 @@ the script "buildfile".
 The automatic portion of the security setup is complete.  If you have not
 done so already, please perform the following manual actions.
 
-* In ${catalina.home}/conf/catalina.properties, add two lines:
+* In ${catalina.base}/conf/catalina.properties, add two lines:
   gov.nih.nci.security.configFile=${tomcat.security.dir}/ApplicationSecurityConfig.xml
   java.security.auth.login.config=${tomcat.security.dir}/csm_jaas.config
 
