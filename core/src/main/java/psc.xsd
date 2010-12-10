@@ -329,6 +329,7 @@
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
         <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
+        <xsd:attribute name="study-subject-id" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="amendment-approvals" type="psc:amendment-approvals"/>

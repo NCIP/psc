@@ -42,6 +42,7 @@ public enum XsdAttribute {
     REGISTRATION_DATE("date"),
     REGISTRATION_SUBJECT_COORDINATOR_NAME("subject-coordinator-name"),
     REGISTRATION_DESIRED_ASSIGNMENT_ID("desired-assignment-id"),
+    REGISTRATION_STUDY_SUBJECT_ID("study-subject-id"),
     ASSIGNMENT_STUDY_NAME("study-name"),
     ASSIGNMENT_SITE_NAME("site-name"),
     SUBJECT_FIRST_NAME("first-name"),

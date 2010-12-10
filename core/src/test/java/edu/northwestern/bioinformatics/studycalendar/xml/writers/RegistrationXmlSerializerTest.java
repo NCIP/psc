@@ -26,6 +26,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Subject subject;
     private String dateString;
     private String desiredAssignmentId;
+    private String studySubjectId;
     private Element element;
 
     @Override
@@ -42,8 +43,9 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         date = DateUtils.createDate(2008, JANUARY, 15);
         dateString = "2008-01-15";
         desiredAssignmentId = "12345";
+        studySubjectId = "6789";
 
-        element = createElement(segment, dateString, expectedCoordinator.getUsername(), desiredAssignmentId);
+        element = createElement(segment, dateString, expectedCoordinator.getUsername(), desiredAssignmentId, studySubjectId);
     }
 
     public void testReadElement() {
@@ -61,7 +63,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhenStudySegmentIsNull() {
-        Element elt = createElement(null, dateString, expectedCoordinator.getUsername(), desiredAssignmentId);
+        Element elt = createElement(null, dateString, expectedCoordinator.getUsername(), desiredAssignmentId, studySubjectId);
         try {
             serializer.readElement(elt);
             fail("An exception should be thrown");
@@ -71,7 +73,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhenDateIsNull() {
-        Element elt = createElement(segment, null, expectedCoordinator.getUsername(), desiredAssignmentId);
+        Element elt = createElement(segment, null, expectedCoordinator.getUsername(), desiredAssignmentId, studySubjectId);
         try {
             serializer.readElement(elt);
             fail("An exception should be thrown");
@@ -86,10 +88,11 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(subjectSerializer.readElement(null)).andReturn(subject);
     }
 
-    private Element createElement(StudySegment segment, String date, String scName, String desiredAssignmentId) {
+    private Element createElement(StudySegment segment, String date, String scName, String desiredAssignmentId, String studySubjectId) {
         Element elt = new BaseElement("registration");
         elt.addAttribute("date", date);
         elt.addAttribute("desired-assignment-id", desiredAssignmentId);
+        elt.addAttribute("study-subject-id", studySubjectId);
         if (segment != null) elt.addAttribute("first-study-segment-id", segment.getGridId());
         if (scName != null) elt.addAttribute("subject-coordinator-name", scName);
         return elt;

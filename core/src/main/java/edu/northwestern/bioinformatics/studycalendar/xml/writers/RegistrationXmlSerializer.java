@@ -36,6 +36,7 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
         String segmentId = REGISTRATION_FIRST_STUDY_SEGMENT_ID.from(elt);
         String subjCoordName = REGISTRATION_SUBJECT_COORDINATOR_NAME.from(elt);
         String desiredAssignId = REGISTRATION_DESIRED_ASSIGNMENT_ID.from(elt);
+        String studySubjectId = REGISTRATION_STUDY_SUBJECT_ID.from(elt);
 
         Subject subject = subjectXmlSerializer.readElement(elt.element(SUBJECT.xmlName()));
 
@@ -50,6 +51,7 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
         reg.setFirstStudySegment(segment);
         reg.setDate(date);
         reg.setDesiredStudySubjectAssignmentId(desiredAssignId);
+        reg.setStudySubjectId(studySubjectId);
         reg.setStudySubjectCalendarManager(subjCoord);
 
         return reg;
