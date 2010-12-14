@@ -17,14 +17,16 @@ public class SecurityContextHolderTestHelper {
     }
 
     public static void setSecurityContext(PscUser principal, String password) {
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-            principal, password, principal.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authRequest);
+        if (principal == null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        } else {
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+                principal, password, principal.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authRequest);
+        }
     }
 
     public static void setSecurityContext(PscUser principal) {
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-            principal, "hmsbadpass", principal.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authRequest);
+        setSecurityContext(principal, "hmsbadpass");
     }
 }

@@ -3,7 +3,7 @@
     <AMENDMENTS id="-2" name="abc" amendment_date="2006-02-01"/>
     <AMENDMENTS id="-200" name="def" amendment_date="2008-05-17"/>
 
-    <SITES id="-201" name="Old site" assigned_identifier="Old site"/>
+    <SITES id="-201" name="Old site" assigned_identifier="OS-75"/>
 
     <!-- For some reason, these amendments must be below Sites for the previous_amendment_id column to be inserted -->
     <AMENDMENTS id="-1" amendment_date="2007-01-01" previous_amendment_id="-2"/>
@@ -62,5 +62,26 @@
     <SCHEDULED_ACTIVITIES id="-800" scheduled_study_segment_id="-700" planned_activity_id="-2004" activity_id="-1002" source_amendment_id="-220" ideal_date="2010-01-10" current_state_mode_id="1" current_state_date="2010-01-15" current_state_reason="Rescheduled"/>
 
     <SCHEDULED_ACTIVITY_STATES id="-900" scheduled_activity_id="-800" mode_id="3" actual_date="2010-01-10" list_index="0"/>
+
+    <CSM_USER user_id="-45" login_name="alice" first_name="Alice" last_name="Wunderland"/>
+
+    <CSM_PROTECTION_ELEMENT protection_element_id="-2000"
+                            protection_element_name="HealthcareSite.OS-75"
+                            object_id="HealthcareSite.Old site"
+                            application_id="2"
+        />
+    <CSM_PROTECTION_GROUP protection_group_id="-2000"
+                          protection_group_name="HealthcareSite.OS-75"
+                          large_element_count_flag="0"
+                          application_id="2"
+        />
+    <CSM_PG_PE pg_pe_id="-2000" protection_group_id="-2000" protection_element_id="-2000"/>
+    <!-- Alice is a Study Creator for one site only -->
+    <CSM_USER_GROUP user_group_id="-260" user_id="-45" group_id="7"/>
+    <CSM_USER_GROUP_ROLE_PG
+        user_group_role_pg_id="-2450" user_id="-45" role_id="7" protection_group_id="-2000"/>
+
+    <!-- cleanup only -->
+    <MANAGING_SITES/>
 </dataset>
 

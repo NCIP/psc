@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.nwu.bioinformatics.commons.CollectionUtils;
-import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
-import java.util.List;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -22,6 +24,18 @@ public abstract class StudyCalendarMutableDomainObjectDao<T extends MutableDomai
     @SuppressWarnings("unchecked")
     public List<T> getAll(){
          return getHibernateTemplate().find("from " + domainClass().getName());
+    }
+
+    /**
+     * Reassociates the given objects with the current hibernate session.
+     *
+     * @return the input collection for chaining
+     */
+    public <C extends Collection<T>> C reassociate(C collection) {
+        for (T t : collection) {
+            getHibernateTemplate().update(t);
+        }
+        return collection;
     }
 
     public T getByGridId(T template) {
