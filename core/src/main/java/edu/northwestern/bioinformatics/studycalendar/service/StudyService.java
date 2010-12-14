@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
@@ -79,6 +80,7 @@ public class StudyService {
 
     private ActivityDao activityDao;
     private StudyDao studyDao;
+    private SiteDao siteDao;
     private DeltaService deltaService;
     private TemplateService templateService;
     private PlannedCalendarDao plannedCalendarDao;
@@ -171,14 +173,16 @@ public class StudyService {
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
     private void applyDefaultManagingSites(Study study) {
         PscUser user = applicationSecurityManager.getUser();
         if (user == null) return;
         SuiteRoleMembership mem =
             user.getMemberships().get(PscRole.STUDY_CREATOR.getSuiteRole());
         if (mem != null && !mem.isAllSites()) {
-            for (Object site : mem.getSites()) {
-                study.addManagingSite((Site) site);
+            List<Site> sites = siteDao.reassociate((List<Site>) mem.getSites());
+            for (Site site : sites) {
+                study.addManagingSite(site);
             }
         }
     }
@@ -541,6 +545,11 @@ public class StudyService {
     @Required
     public StudyDao getStudyDao() {
         return studyDao;
+    }
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
 
     @Required

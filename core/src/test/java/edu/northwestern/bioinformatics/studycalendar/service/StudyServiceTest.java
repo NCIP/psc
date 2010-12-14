@@ -2,10 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -24,6 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
@@ -50,15 +51,17 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static org.easymock.EasyMock.*;
 
+// TODO: this test is a mockful mess.  It needs more stubs so that individual cases are clearer.
 public class StudyServiceTest extends StudyCalendarTestCase {
     private static final Timestamp NOW = DateTools.createTimestamp(2001, Calendar.FEBRUARY, 4);
 
     private StudyService service;
     private StudyDao studyDao;
+    private SiteDao siteDao;
     private ActivityDao activityDao;
     private Study study;
     StudySubjectAssignment subjectAssignment;
@@ -77,6 +80,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         psFactory = registerMockFor(ProvisioningSessionFactory.class);
 
         studyDao = registerMockFor(StudyDao.class);
+        siteDao = registerMockFor(SiteDao.class);
         deltaService = registerMockFor(DeltaService.class);
         scheduledActivityDao=registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerMockFor(ActivityDao.class);
@@ -91,6 +95,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         service = new StudyService();
         service.setStudyDao(studyDao);
+        service.setSiteDao(siteDao);
         service.setActivityDao(activityDao);
         service.setDeltaService(deltaService);
         service.setNowFactory(staticNowFactory);
@@ -231,9 +236,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDefaultManagingSitesSetFromUser() throws Exception {
+        List<Site> sites = Arrays.asList(createSite("A", "A"), createSite("B", "B"));
         PscUser principal = createUserAndSetCsmId();
-        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).
-                    forSites(createSite("A", "A"), createSite("B", "B"));
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(sites);
         principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
 
         createAndExpectSession(principal);
@@ -243,6 +248,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
 
         studyDao.save(expected);
+        expect(siteDao.reassociate(sites)).andReturn(sites);
         replayMocks();
 
         service.save(expected);

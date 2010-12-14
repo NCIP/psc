@@ -2,17 +2,61 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityStateDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledStudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -23,6 +67,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private StudySiteDao studySiteDao;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
+    private PscUserService pscUserService;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduledActivityStateDao scheduledActivityStateDao;
@@ -34,6 +79,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         super.setUp();
         service = (StudyService) getApplicationContext().getBean("studyService");
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
+        pscUserService = (PscUserService) getApplicationContext().getBean("pscUserService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
         studySiteDao = (StudySiteDao) getApplicationContext().getBean("studySiteDao");
         amendmentService = (AmendmentService) getApplicationContext().getBean("amendmentService");
@@ -47,6 +93,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+
+        SecurityContextHolderTestHelper.setSecurityContext(null);
     }
 
     private int saveBasicSkeleton() {
@@ -847,5 +895,24 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         ChildrenChange add = (ChildrenChange) (fullHistory.getAmendment().getDeltas().get(0).getChanges().get(0));
         assertNotNull("Add does not have child node", add.getChild());
         assertEquals("Add has wrong child class", StudySegment.class, add.getChild().getClass());
+    }
+
+    public void testDefaultManagingSitesApplyWhenUserSitesAreDetached() throws Exception {
+        PscUser alice = pscUserService.getAuthorizableUser("alice");
+        SecurityContextHolderTestHelper.setSecurityContext(alice);
+        // force load & check assumptions
+        assertEquals("Test setup failure",
+            1, alice.getMembership(PscRole.STUDY_CREATOR).getSites().size());
+        assertEquals("Test setup failure",
+            "Old site",
+            ((Site) alice.getMembership(PscRole.STUDY_CREATOR).getSites().get(0)).getName());
+
+        interruptSession();
+
+        int id = saveBasicSkeleton();
+        Study reloaded = studyDao.getById(id);
+        assertEquals("Wrong number of managing sites", 1, reloaded.getManagingSites().size());
+        assertEquals("Wrong managing site",
+            "Old site", reloaded.getManagingSites().iterator().next().getName());
     }
 }
