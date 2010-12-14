@@ -65,6 +65,7 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
 
     @SuppressWarnings({ "unchecked" })
     public List<Site> getByAssignedIdentifiers(List<String> assignedIdentifiers) {
+        if (assignedIdentifiers.isEmpty()) { return Collections.emptyList(); }
         List fromDatabase = getHibernateTemplate().findByCriteria(
             criteria().add(MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
 
