@@ -213,9 +213,12 @@
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 [# if(hasAssignment()) { #]
-                  <span title="Assignment" class="assignment">[#= assignment.name #]</span> /
+                  <span title="Assignment" class="assignment">[#= assignment.name #] </span> /
                 [# } else { #]
                   <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
+                [# } #]
+                [# if(hasStudySubjectId()) { #]
+                  <span title="Study Subject Id" class="studySubjectId"> [#= study_subject_id #] / </span>
                 [# } #]
                 <span title="Segment" class="segment">[#= study_segment #]</span> /
             </label>

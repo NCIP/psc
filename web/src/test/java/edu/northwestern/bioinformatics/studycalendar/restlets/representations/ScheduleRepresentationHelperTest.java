@@ -98,6 +98,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
         StudySubjectAssignment ssa = createAssignment(study,site,subject);
+        ssa.setStudySubjectId("Study Subject Id");
         ssa.setStudySubjectCalendarManager(AuthorizationObjectFactory.createCsmUser(14L, "SammyC"));
         state = new Scheduled();
         state.setDate(DateTools.createDate(2009, Calendar.APRIL, 3));
@@ -465,6 +466,18 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         generator.writeEndObject();
         JSONObject actual = outputAsObject();
         assertTrue(actual.getJSONObject("activities").isNull("details"));
+    }
+
+    public void testStudySubjectIdInJson() throws Exception {
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing study subject id", "Study Subject Id", actual.getJSONObject("activities").get("study_subject_id"));
     }
 
     public void testConditionalInJson() throws Exception {

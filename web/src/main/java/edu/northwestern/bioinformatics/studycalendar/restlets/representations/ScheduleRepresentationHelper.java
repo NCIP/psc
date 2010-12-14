@@ -144,15 +144,16 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
                 JacksonTools.nullSafeWriteStringField(generator, "plan_day", scheduledActivity.getPlannedActivity().getPlanDay());
             }
             generator.writeFieldName("current_state");
-                createJSONStateInfo(generator, scheduledActivity.getCurrentState());
+            createJSONStateInfo(generator, scheduledActivity.getCurrentState());
 
-                generator.writeFieldName("activity");
-                createJSONActivity(generator, scheduledActivity.getActivity());
+            generator.writeFieldName("activity");
+            createJSONActivity(generator, scheduledActivity.getActivity());
 
-                if (scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment() != null) {
-                    generator.writeFieldName("assignment");
-                    createJSONAssignmentProperties(generator, scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment());
-                    JacksonTools.nullSafeWriteStringField(generator, "subject", scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName());
+            if (scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment() != null) {
+                generator.writeFieldName("assignment");
+                createJSONAssignmentProperties(generator, scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment());
+                JacksonTools.nullSafeWriteStringField(generator, "subject", scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName());
+                JacksonTools.nullSafeWriteStringField(generator, "study_subject_id", scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getStudySubjectId());
             }
 
             JacksonTools.nullSafeWriteStringField(generator, "details", scheduledActivity.getDetails());

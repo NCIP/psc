@@ -90,6 +90,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return sa.assignment !== undefined;
       },
 
+      hasStudySubjectId: function() {
+        return (sa.study_subject_id !== undefined && sa.study_subject_id.length>0);
+      },
+
       canUpdateSchedule: function() {
         return this.hasAssignment() && jQuery.inArray("update", sa.assignment.privileges) >= 0
       },
