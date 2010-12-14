@@ -14,8 +14,9 @@
     <property name="unixfamily" value="Linux,Mac OS X,Mac OS,HP UX,Digital Unix"/>
     <property name="windowsfamily" value="Windows 2000,Windows 98,Windows NT,Windows Vista,Windows XP" />
     <property environment="env"/>
-    <property name="tomcat.relative.path" value="${env.CATALINA_BASE}"/>
-    <property name="tomcat.relative.path" value="${env.CATALINA_HOME}"/>
+    <property name="tomcat.base" value="${env.CATALINA_BASE}"/>
+    <property name="tomcat.base" value="${env.CATALINA_HOME}"/> <!-- set base to home if base not set -->
+    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
     <available file="${jruby.local.script}" property="jruby.exists" />
 
  <!--Standard sub project build TARGETS -->
@@ -118,13 +119,13 @@
     </target>
 
     <target name="deploy:psc:webapp" description="Deploys pre-built war file">
-        <delete dir="${tomcat.relative.path}/webapps/psc.war" />
-        <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
+        <delete dir="${tomcat.base}/webapps/psc.war" />
+        <copy todir="${tomcat.base}/webapps" file="${basedir}/web/target/psc.war"/>
     </target>
 
     <target name="build:deploy:psc:webapp" depends="build:war" description="Builds and deploy war file ">
-        <delete dir="${tomcat.relative.path}/webapps/psc.war" />
-        <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
+        <delete dir="${tomcat.base}/webapps/psc.war" />
+        <copy todir="${tomcat.base}/webapps" file="${basedir}/web/target/psc.war"/>
     </target>
 
     <target name="build:grid" depends="install" description="Builds PSC grid services">
@@ -136,14 +137,14 @@
 
     <target name="deploy:psc:grid" depends="install" description="Deploys PSC grid services">
         <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc tomcat_hostname=${tomcat.hostname}">
-            <env key="CATALINA_BASE" value="${tomcat.relative.path}"/>
+            <env key="CATALINA_BASE" value="${tomcat.base}"/>
+            <env key="CATALINA_HOME" value="${tomcat.home}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </jruby>
     </target>
 
     <target name="clean" depends="install">
-        <echo message="Catalina: ${tomcat.relative.path}"/>
         <jruby line="-S buildr clean"/>
     </target>
 
