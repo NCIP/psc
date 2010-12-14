@@ -47,10 +47,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -898,6 +902,12 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     }
 
     public void testDefaultManagingSitesApplyWhenUserSitesAreDetached() throws Exception {
+        SuiteRoleMembership sc =
+            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites("OS-75");
+        createProvisioningSession(-45).replaceRole(sc);
+
+        interruptSession();
+
         PscUser alice = pscUserService.getAuthorizableUser("alice");
         SecurityContextHolderTestHelper.setSecurityContext(alice);
         // force load & check assumptions
@@ -914,5 +924,14 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertEquals("Wrong number of managing sites", 1, reloaded.getManagingSites().size());
         assertEquals("Wrong managing site",
             "Old site", reloaded.getManagingSites().iterator().next().getName());
+
+        // manual teardown because it's not possible to put csm_user_group roles in the
+        // testdata in a database-independent way
+        createProvisioningSession(-45).deleteRole(sc.getRole());
+    }
+
+    private ProvisioningSession createProvisioningSession(int userId) {
+        return ((ProvisioningSessionFactory) getApplicationContext().getBean("provisioningSessionFactory")).
+            createSession(userId);
     }
 }

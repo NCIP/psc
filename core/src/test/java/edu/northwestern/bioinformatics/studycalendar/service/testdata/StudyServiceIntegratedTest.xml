@@ -65,22 +65,6 @@
 
     <CSM_USER user_id="-45" login_name="alice" first_name="Alice" last_name="Wunderland"/>
 
-    <CSM_PROTECTION_ELEMENT protection_element_id="-2000"
-                            protection_element_name="HealthcareSite.OS-75"
-                            object_id="HealthcareSite.Old site"
-                            application_id="2"
-        />
-    <CSM_PROTECTION_GROUP protection_group_id="-2000"
-                          protection_group_name="HealthcareSite.OS-75"
-                          large_element_count_flag="0"
-                          application_id="2"
-        />
-    <CSM_PG_PE pg_pe_id="-2000" protection_group_id="-2000" protection_element_id="-2000"/>
-    <!-- Alice is a Study Creator for one site only -->
-    <CSM_USER_GROUP user_group_id="-260" user_id="-45" group_id="7"/>
-    <CSM_USER_GROUP_ROLE_PG
-        user_group_role_pg_id="-2450" user_id="-45" role_id="7" protection_group_id="-2000"/>
-
     <!-- cleanup only -->
     <MANAGING_SITES/>
 </dataset>
