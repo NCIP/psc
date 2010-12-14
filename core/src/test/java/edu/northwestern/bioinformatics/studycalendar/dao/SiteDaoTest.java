@@ -62,8 +62,13 @@ public class SiteDaoTest extends DaoTestCase {
         assertEquals("Wrong second site", new Integer(-11), actual.get(1).getId());
     }
 
-    public void testGetByAssignedIdentifiersReturnEmptyForUnknown() throws Exception {
+    public void testGetByAssignedIdentifiersReturnsEmptyForUnknown() throws Exception {
         List<Site> actual = siteDao.getByAssignedIdentifiers(Arrays.asList("IL037"));
+        assertEquals("Wrong number of sites found", 0, actual.size());
+    }
+
+    public void testGetByAssignedIdentifiersReturnsEmptyForEmptyList() throws Exception {
+        List<Site> actual = siteDao.getByAssignedIdentifiers(Collections.<String>emptyList());
         assertEquals("Wrong number of sites found", 0, actual.size());
     }
 
