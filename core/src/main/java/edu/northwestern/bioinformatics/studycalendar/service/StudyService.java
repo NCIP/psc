@@ -190,13 +190,17 @@ public class StudyService {
     private void applyDefaultStudyAccess(Study study) {
         PscUser user = applicationSecurityManager.getUser();
         if (user == null) return;
+        SuiteRoleMembership mem2 =
+                    user.getMemberships().get(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getSuiteRole());
+        if (mem2 == null) return;
+
         ProvisioningSession session = provisioningSessionFactory.createSession(
                 user.getCsmUser().getUserId());
         SuiteRoleMembership mem1 =
-           session.getProvisionableRoleMembership(SuiteRole.STUDY_CREATOR);
-        SuiteRoleMembership mem2 =
-            session.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
-        if (mem1 != null && mem2 != null && !mem2.isAllStudies()) {
+            user.getMemberships().get(PscRole.STUDY_CREATOR.getSuiteRole());
+        mem2 = session.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+
+        if (mem1 != null && !mem2.isAllStudies()) {
             if (!mem1.isAllSites() && !mem2.isAllSites()) {
                 List<?> mem1Sites = mem1.getSites();
                 for (Object site : mem2.getSites()) {

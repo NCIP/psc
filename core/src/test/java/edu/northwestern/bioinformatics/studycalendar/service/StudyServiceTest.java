@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
@@ -242,8 +243,6 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
 
         createAndExpectSession(principal);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
 
         Study expected = createNamedInstance("A", Study.class);
 
@@ -266,8 +265,6 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
 
         createAndExpectSession(principal);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
 
         Study expected = createNamedInstance("A", Study.class);
 
@@ -287,10 +284,6 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         principal.getMemberships().put(SuiteRole.STUDY_QA_MANAGER, mem);
 
         createAndExpectSession(principal);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, null);
-        expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, true, null);
-
-
         Study expected = createNamedInstance("A", Study.class);
 
         studyDao.save(expected);
@@ -343,15 +336,21 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
-        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
+        SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+
         createAndExpectSession(principal);
         pSession.replaceRole(SCTB);
         studyDao.save(expected);
         assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
         assertFalse("Membership made for specified study",
             SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
-
+        List<Site> sites = Arrays.asList(site1);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);
         replayMocks();
         service.save(expected);
         verifyMocks();
@@ -367,8 +366,16 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
-        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site2);
+
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site2);
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
+        SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site2);
+
+        List<Site> sites = Arrays.asList(site1);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);
+
         createAndExpectSession(principal);
         studyDao.save(expected);
 
@@ -386,8 +393,12 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, true, site1);
-        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
+
+        List<Site> sites = Arrays.asList(site1);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);
+        SuiteRoleMembership SCTB = principal.getMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
         createAndExpectSession(principal);
         studyDao.save(expected);
 
@@ -395,9 +406,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.save(expected);
         verifyMocks();
 
-        assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
+        assertNull("Membership SCTB made for specified study", SCTB);
         assertFalse("Membership made for specified study",
-            SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+            principal.getMembership(PscRole.STUDY_CREATOR).getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
     }
 
     public void testApplyDefaultStudyAccessWhenBuilderUserHasAllStudies() throws Exception {
@@ -405,10 +416,15 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
         SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site1).forAllStudies();
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
         createAndExpectSession(principal);
+
         expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)).andReturn(SCTB);
+        List<Site> sites = Arrays.asList(site1);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);
         studyDao.save(expected);
 
         replayMocks();
@@ -422,9 +438,13 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
         SuiteRoleMembership SC = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forAllSites();
-        SuiteRoleMembership SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, SC);
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
+
+        SCTB = expectCreateAndGetMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, false, site1);
         createAndExpectSession(principal);
-        expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CREATOR)).andReturn(SC);
+
         studyDao.save(expected);
         pSession.replaceRole(SCTB);
 
@@ -444,12 +464,19 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         Study expected = createNamedInstance("A", Study.class);
         expected.setAssignedIdentifier("StudyA");
         PscUser principal = createUserAndSetCsmId();
+
+        SuiteRoleMembership SC = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, SC);
         SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites();
-        expectCreateAndGetMembership(SuiteRole.STUDY_CREATOR, false, site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
+
         createAndExpectSession(principal);
         expect(pSession.getProvisionableRoleMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)).andReturn(SCTB);
         studyDao.save(expected);
         pSession.replaceRole(SCTB);
+
+        List<Site> sites = Arrays.asList(site1);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);        
 
         assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
         assertFalse("Membership made for specified study",
