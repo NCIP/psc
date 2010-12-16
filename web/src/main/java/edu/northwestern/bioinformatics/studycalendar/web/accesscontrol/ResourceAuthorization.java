@@ -36,13 +36,13 @@ public class ResourceAuthorization {
 
     public static ResourceAuthorization create(PscRole role, Site site) {
         ResourceAuthorization ra = create(role);
-        if (site != null) ra.addScope(ScopeType.SITE, site);
+        if (site != null && role.isSiteScoped()) ra.addScope(ScopeType.SITE, site);
         return ra;
     }
 
     public static ResourceAuthorization create(PscRole role, Site site, Study study) {
         ResourceAuthorization ra = create(role, site);
-        if (study != null) ra.addScope(ScopeType.STUDY, study);
+        if (study != null && role.isStudyScoped()) ra.addScope(ScopeType.STUDY, study);
         return ra;
     }
 

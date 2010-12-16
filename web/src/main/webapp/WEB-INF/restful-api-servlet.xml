@@ -30,7 +30,7 @@
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
-    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>
+    <bean name="router" class="org.restlet.ext.spring.SpringBeanRouter"/>
 
     <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
 

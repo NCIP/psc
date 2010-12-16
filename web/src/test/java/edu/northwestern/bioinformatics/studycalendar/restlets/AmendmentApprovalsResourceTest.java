@@ -91,12 +91,12 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGet404sOnMissingStudySite() throws Exception {
+    public void testGet403sOnMissingStudySite() throws Exception {
         study.getStudySites().clear();
         site.getStudySites().clear();
         expectResolvedStudyAndSite(study, site);
         doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 
     ////// POST

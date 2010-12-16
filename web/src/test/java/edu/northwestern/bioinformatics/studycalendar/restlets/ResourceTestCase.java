@@ -86,7 +86,7 @@ public abstract class ResourceTestCase<R extends ServerResource> extends Restlet
         verifyMocks();
     }
 
-    private void simulateFinderHandle() {
+    protected void simulateFinderHandle() {
         doInitOnly();
         if (response.getStatus().isSuccess()) {
             getResource().handle();

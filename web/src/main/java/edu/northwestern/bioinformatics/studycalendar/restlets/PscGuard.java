@@ -31,9 +31,7 @@ import java.util.regex.Pattern;
  * and then puts the Acegi authentication token as a request attribute under the key
  * {@link #AUTH_TOKEN_ATTRIBUTE_KEY}.
  * <p>
- * Authorization is handled by {@link AuthorizingFinder} based on resources
- * implementing {@link AuthorizedResource}.
- *  
+ * Authorization is handled in {@link AbstractPscResource}.
  *
  * @author Rhett Sutphin
  */

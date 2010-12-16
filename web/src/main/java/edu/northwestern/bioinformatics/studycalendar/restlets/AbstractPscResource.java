@@ -1,6 +1,7 @@
 
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -9,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import org.acegisecurity.Authentication;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,48 @@ public class AbstractPscResource extends ServerResource implements AuthorizedRes
             throw new ClassCastException(
                 "PSC's Principal is expected to always be a " + PscUser.class.getName() +
                     ".  Right now it is a " + token.getPrincipal().getClass().getName() + '.');
+        }
+    }
+
+    @Override
+    public Representation handle() {
+        if (isAuthorized()) {
+            return super.handle();
+        } else {
+            getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+                "Authenticated account is not authorized for this resource and method");
+            return null;
+        }
+    }
+
+    protected boolean isAuthorized() {
+        log.debug("Authorizing {}", getClass().getSimpleName());
+        Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
+        if (token == null) {
+            // this should not be possible
+            throw new StudyCalendarSystemException("Cannot authorize an unauthenticated request");
+        }
+        Collection<ResourceAuthorization> authList = authorizations(getRequest().getMethod());
+        if (authList == null) {
+            log.debug("Resource is open to all authenticated users for {}",
+                getRequest().getMethod());
+            return true;
+        } else if (authList.size() == 0) {
+            log.warn("Resource has no authorizations for {}",
+                getRequest().getMethod());
+            return false;
+        } else {
+            log.debug("Authorizations for this resource are {}", authList);
+            PscUser user = (PscUser) token.getPrincipal();
+            for (ResourceAuthorization authorization : authList) {
+                if (authorization.permits(user)) {
+                    log.debug("User {} permitted under {}", user, authorization);
+                    return true;
+                }
+            }
+            log.debug("No resource authorizations fit {} ({})",
+                user, user.getMemberships().values());
+            return false;
         }
     }
 

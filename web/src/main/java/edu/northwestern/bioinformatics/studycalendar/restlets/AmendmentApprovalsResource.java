@@ -48,7 +48,7 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
                 getStudySite().getStudy().getNaturalKey(), getStudySite().getSite().getNaturalKey(),
                 amendmentApproval.getAmendment().getNaturalKey());
         } catch (StudyCalendarValidationException scve) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage(), scve);
         }
     }
 

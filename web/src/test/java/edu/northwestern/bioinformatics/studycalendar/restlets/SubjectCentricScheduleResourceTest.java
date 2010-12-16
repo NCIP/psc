@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -25,13 +26,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static edu.nwu.bioinformatics.commons.DateUtils.*;
-import static org.easymock.EasyMock.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 
 /**
@@ -107,11 +106,20 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void test403WhenUserCannotAccessSchedule() throws Exception {
-        expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
+    public void test403WhenUserCannotAccessAnySchedule() throws Exception {
         setCurrentUser(AuthorizationObjectFactory.createPscUser("bad", PscRole.SYSTEM_ADMINISTRATOR));
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
+    }
+
+    public void test403WhenUserCannotAccessThisScheduleInParticular() throws Exception {
+        expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
+        setCurrentUser(new PscUserBuilder("schlect").
+            add(PscRole.DATA_READER).forSites(createSite("Mayo")).forAllStudies().
+            toUser());
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN,
+            "User schlect doesn't have permission to view this schedule");
     }
 
     public void testGet400WhenNoSubjectIdentifierInRequest() throws Exception {

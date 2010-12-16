@@ -21,13 +21,17 @@ public abstract class AuthorizedResourceTestCase<R extends ServerResource & Auth
         super.setUp();
 
         PscUser user = AuthorizationObjectFactory.
-            createPscUser("josephine", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+            createPscUser("josephine", PscRole.values());
         setCurrentUser(user);
     }
 
     protected void setCurrentUser(PscUser u) {
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(
-            u, "dc", u.getAuthorities()));
+        if (u == null) {
+            PscGuard.setCurrentAuthenticationToken(request, null);
+        } else {
+            PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(
+                u, "dc", u.getAuthorities()));
+        }
     }
 
     protected PscUser getCurrentUser() {

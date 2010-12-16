@@ -3,15 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import org.restlet.data.Status;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static org.easymock.EasyMock.*;
@@ -24,12 +22,14 @@ public class SchedulePreviewResourceTest extends AuthorizedResourceTestCase<Sche
     private SubjectService subjectService;
     private Study study;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
         helper = registerMockFor(AmendedTemplateHelper.class);
         helper.setRequest(request);
-        expect(helper.getReadAuthorizations()).andStubReturn(Collections.<ResourceAuthorization>emptySet());
+        expect(helper.getReadAuthorizations()).
+            andStubReturn(ResourceAuthorization.createCollection(PscRole.values()));
         subjectService =  registerMockFor(SubjectService.class);
         study = createSingleEpochStudy("DC", "Treatment", "A", "B");
         assignIds(study.getPlannedCalendar().getEpochs().get(0), 0);
@@ -160,6 +160,6 @@ public class SchedulePreviewResourceTest extends AuthorizedResourceTestCase<Sche
     }
 
     private void requestJson() {
-        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(MediaType.APPLICATION_JSON)));
+        setAcceptedMediaTypes(MediaType.APPLICATION_JSON);
     }
 }

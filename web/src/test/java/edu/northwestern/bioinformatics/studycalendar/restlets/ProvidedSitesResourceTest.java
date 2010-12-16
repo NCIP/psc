@@ -2,19 +2,20 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.SiteListJsonRepresentation;
-import static org.easymock.EasyMock.expect;
-import org.restlet.data.Status;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Jalpa Patel
  */
-public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesResource>{
+public class ProvidedSitesResourceTest extends AuthorizedResourceTestCase<ProvidedSitesResource>{
     private SiteConsumer siteConsumer;
 
     public void setUp() throws Exception {
@@ -23,7 +24,7 @@ public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesRes
     }
 
     @Override
-    protected ProvidedSitesResource createResource() {
+    protected ProvidedSitesResource createAuthorizedResource() {
         ProvidedSitesResource resource = new ProvidedSitesResource();
         resource.setXmlSerializer(xmlSerializer);
         resource.setSiteConsumer(siteConsumer);
