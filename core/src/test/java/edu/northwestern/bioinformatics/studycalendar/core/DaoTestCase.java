@@ -78,7 +78,6 @@ public abstract class DaoTestCase extends StudyCalendarDbTestCase {
 
     private List<OpenSessionInViewInterceptor> interceptors() {
         return Arrays.asList((OpenSessionInViewInterceptor) getApplicationContext().getBean(
-            "auditOpenSessionInViewInterceptor"), (OpenSessionInViewInterceptor) getApplicationContext().getBean(
             "openSessionInViewInterceptor"));
     }
 

@@ -85,10 +85,20 @@
         </property>
 
         <property name="entityInterceptor">
-            <ref local="chainedInterceptor"/>
+            <ref local="gridIdentifierInterceptor"/>
         </property>
         <property name="eventListeners">
             <map>
+                <entry key="post-insert">
+                   <list>
+                        <ref local="auditCreateEventListener"/>
+                    </list>
+                </entry>
+                <entry key="post-delete">
+                   <list>
+                        <ref local="auditDeleteEventListener"/>
+                    </list>
+                </entry>
                 <entry key="post-load">
                     <list>
                         <ref local="changeChildResolverListener" />
@@ -98,6 +108,7 @@
                 <entry key="post-update">
                     <list>
                         <ref local="authorizationScopeUpdaterListener"/>
+                        <ref local="auditUpdateEventListener"/>
                     </list>
                 </entry>
             </map>
@@ -118,37 +129,22 @@
         <property name="suiteCsmHelper" ref="suiteCsmHelper"/>
     </bean>
 
-    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
-        <property name="mappingLocations">
-            <list>
-                <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
-                <!--<value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/overrides.xml</value>-->
-            </list>
-        </property>
-        <property name="namingStrategy">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
-        </property>
-        <property name="annotatedClasses">
-            <list>
-                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
-                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
-          </list>
-        </property>
+    <bean id="auditCreateEventListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditCreateEventListener">
+        <property name="auditEventHelper" ref="auditEventHelper"/>
     </bean>
 
-    <bean  id="gridIdentifierInterceptor" class="edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierInterceptor" autowire="byType"></bean>
+    <bean id="auditDeleteEventListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditDeleteEventListener">
+        <property name="auditEventHelper" ref="auditEventHelper"/>
+    </bean>
 
-	<bean id="chainedInterceptor" class="gov.nih.nci.cabig.ctms.audit.ChainedInterceptor" autowire="byType">
-		<property name="interceptors">
-			<list>
-				<ref local="gridIdentifierInterceptor"/>
-                <ref local="auditInterceptor" />
-			</list>
-		</property>
-	</bean>
+    <bean id="auditUpdateEventListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditUpdateEventListener">
+        <property name="auditEventHelper" ref="auditEventHelper"/>
+    </bean>
 
-	<bean id="auditInterceptor" class="gov.nih.nci.cabig.ctms.audit.AuditInterceptorImpl" autowire="byType">
-		<property name="dataAuditRepository" ref="dataAuditRepository"></property>
+    <bean id="auditEventHelper" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventHelper" autowire="byName">
 		<property name="auditableEntities">
 			<list>
 				 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySegment</value>
@@ -205,18 +201,13 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty</value>
             </list>
 		</property>
-		<property name="auditAll"><value>false</value></property>
 	</bean>
+
+    <bean  id="gridIdentifierInterceptor" class="edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierInterceptor" autowire="byType"></bean>
 
     <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.dao.LocalGridIdentifierCreator" autowire="byName"/>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
-        <property name="singleSession"><value>true</value></property>
-        <property name="flushModeName"><value>FLUSH_AUTO</value></property>
-    </bean>
-
-    <bean id="auditOpenSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
-        <property name="sessionFactory"><ref local="auditSessionFactory"/></property>
         <property name="singleSession"><value>true</value></property>
         <property name="flushModeName"><value>FLUSH_AUTO</value></property>
     </bean>
@@ -241,6 +232,22 @@
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 
+    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
+            </list>
+        </property>
+        <property name="namingStrategy">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
+          </list>
+        </property>
+    </bean>
     <!-- ACTUAL DAOS -->
     <bean name="dataAuditRepository" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository">
         <property name="sessionFactory">
@@ -291,4 +298,7 @@
     <bean id="blackoutDateDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao"/>
     <bean id="activityTypeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao"/>
     <bean id="activityPropertyDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao"/>
+    <bean id="auditEventDao" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
 </beans>

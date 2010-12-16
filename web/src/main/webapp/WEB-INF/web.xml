@@ -162,31 +162,6 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
-        <init-param>
-            <param-name>interceptorBeanName</param-name>
-            <param-value>auditOpenSessionInViewInterceptor</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/public/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/pages/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/api/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/setup/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
         <init-param>

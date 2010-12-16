@@ -66,6 +66,16 @@
         repetitions="3"
         />
 
+    <PERIODS
+        id="-1111"
+        version="0"
+        start_day="8"
+        name="Treatment"
+        duration_quantity="6"
+        duration_unit="week"
+        repetitions="3"
+        />
+
     <STUDIES id="-101" assigned_identifier="Don't care" long_title="Study"/>
     <PLANNED_CALENDARS id="-101" study_id="-101"/>
     <EPOCHS id="-101" planned_calendar_id="-101" name="Don't care"/>

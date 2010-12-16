@@ -78,7 +78,7 @@ module PscTest
     end
 
     def open_session_interceptors
-      %w(auditOpenSessionInViewInterceptor openSessionInViewInterceptor).collect do |bean_name|
+      %w(openSessionInViewInterceptor).collect do |bean_name|
         application_context[bean_name]
       end
     end
