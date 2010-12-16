@@ -2,10 +2,8 @@ describe "/activities/{source-name}" do
 
   describe "GET" do
     it "forbids access to sources for an unauthorized user" do
-      get '/activities/Northwestern%20University', :as => nil
-      response.status_code.should == 401
-      response.status_message.should == "Unauthorized"
-      response.content_type.should == 'text/html'
+      get '/activities/Northwestern%20University', :as => :zelda
+      response.status_code.should == 403
     end
 
     it "allows access to activities under a specific source for an authorized user" do
@@ -39,8 +37,8 @@ describe "/activities/{source-name}" do
     end
 
     it "prevents creation of a non-existing source for unauthorized user" do
-      put '/activities/Dental', @source_xml, :as => nil
-      response.status_code.should == 401
+      put '/activities/Dental', @source_xml, :as => :zelda
+      response.status_code.should == 403
     end
 
     it "allows creation of a non-existing source with zero activity" do

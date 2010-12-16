@@ -1,10 +1,8 @@
 describe "/activities" do
   describe "GET" do
     it "forbids access to sources for an unauthorized user" do
-      get '/activities', :as => nil
-      response.status_code.should == 401
-      response.status_message.should == "Unauthorized"
-      response.content_type.should == 'text/html'
+      get '/activities', :as => :zelda
+      response.status_code.should == 403
     end
 
     it "allows access to sources for an authorized user" do

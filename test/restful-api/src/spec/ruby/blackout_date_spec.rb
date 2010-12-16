@@ -9,10 +9,8 @@ describe "/blackout-date" do
     end
 
     it "forbid access to blackout-dates for unauthorized user" do
-      get '/sites/PA015/blackout-dates', :as => nil
-      response.status_code.should == 401
-      response.status_message.should == "Unauthorized"
-      response.content_type.should == 'text/html'
+      get '/sites/PA015/blackout-dates', :as => :erin
+      response.status_code.should == 403
     end
 
     it "allows access to blackout-dates for authorized user" do

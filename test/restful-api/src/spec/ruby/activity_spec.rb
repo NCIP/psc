@@ -9,10 +9,8 @@ describe "/activity" do
     end
 
     it "forbids activity creation for an unauthorized user" do
-        put '/activities/Diabetes/Code1', @activity_xml, :as => nil #unauthorized user
-        response.status_code.should == 401
-        response.status_message.should == "Unauthorized"
-        response.content_type.should == 'text/html'
+        put '/activities/Diabetes/Code1', @activity_xml, :as => :zelda
+        response.status_code.should == 403
     end
 
     it "forbids creation of a specific activity to an authorized user when source has not yet existed" do
@@ -63,10 +61,8 @@ describe "/activity" do
       end
 
       it "forbids access to a specific activity for an unauthorized user" do
-        get '/activities/Malaria/diag1', :as => nil
-        response.status_code.should == 401
-        response.status_message.should == "Unauthorized"
-        response.content_type.should == 'text/html'
+        get '/activities/Malaria/diag1', :as => :zelda
+        response.status_code.should == 403
       end
 
       it "allows access to a specific activity for an authorized user" do
