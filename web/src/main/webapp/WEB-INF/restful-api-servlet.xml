@@ -62,12 +62,6 @@
         <property name="studyConsumer" ref="studyConsumerBean"/>
     </bean>
 
-     <bean name="/provided-sites/{site-identifier}/provided-studies"
-          id="providedStudySitesResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedStudySitesResource">
-        <property name="xmlSerializer" ref="studiesXmlSerializer"/>
-    </bean>
-
     <bean name="/studies/{study-identifier}/template"
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
