@@ -43,6 +43,35 @@
         </html:p>
 
         <html:p class="main">
+            Many of PSC's resources may be represented by multiple media types.  If you don't
+            designate a particular media type when GETting the resource, PSC doesn't define which
+            variant you'll get.  You can select the type you want either by using the HTTP-standard
+            <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a>
+            header or by a file-like extension on the URI.  If you want to use the extension method,
+            the extension mappings are below.  (The media types supported by a particular
+            resource are listed along with the other details in the main body of this document.)
+        </html:p>
+
+        <html:table class="compare">
+            <html:tr>
+                <html:th class="row">MIME Type</html:th>
+                <html:th>Extension</html:th>
+            </html:tr>
+            <html:tr>
+                <html:th class="row">application/json</html:th>
+                <html:td>json</html:td>
+            </html:tr>
+            <html:tr>
+                <html:th class="row">text/calendar</html:th>
+                <html:td>ics</html:td>
+            </html:tr>
+            <html:tr>
+                <html:th class="row">text/xml</html:th>
+                <html:td>xml</html:td>
+            </html:tr>
+        </html:table>
+
+        <html:p class="main">
             Resources marked <html:em class="pending">Pending</html:em> are planned
             for a future release of PSC but are not yet implemented.
         </html:p>
