@@ -81,6 +81,10 @@
 
                 <value>edu.northwestern.bioinformatics.studycalendar.configuration.AuthenticationSystemConfigurationEntry</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty</value>
+
+                <!-- TODO remove ctms common annotated class, once psc audit dao implements methods of ctms daos using jdbctemplate -->
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
             </list>
         </property>
 
@@ -147,7 +151,7 @@
     <bean id="auditEventHelper" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventHelper" autowire="byName">
 		<property name="auditableEntities">
 			<list>
-				 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySegment</value>
+				<value>edu.northwestern.bioinformatics.studycalendar.domain.StudySegment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Period</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
@@ -168,17 +172,13 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed</value>
-                <value>
-                    edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable
-                </value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.auditing.LoginAudit</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Notification</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout</value>
-                <value>
-                    edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout
-                </value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
 
                 <!-- Amendments & customizations -->
@@ -232,36 +232,11 @@
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 
-    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
-        <property name="mappingLocations">
-            <list>
-                <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
-            </list>
-        </property>
-        <property name="namingStrategy">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
-        </property>
-        <property name="annotatedClasses">
-            <list>
-                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
-                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
-          </list>
-        </property>
-    </bean>
-    <!-- ACTUAL DAOS -->
-    <bean name="dataAuditRepository" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository">
-        <property name="sessionFactory">
-            <ref local="auditSessionFactory"/>
-        </property>
-    </bean>
-
+    <!-- TODO remove ctmscommon data audit dao mappings once psc audit dao implements all methods -->
+    <bean name="dataAuditRepository" parent="daoTemplate" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository" />
     <bean id="auditHistoryRepository" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository">
         <property name="auditHistoryDao">
-            <bean class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryDao">
-                <property name="sessionFactory">
-                    <ref local="auditSessionFactory"/>
-                </property>
-            </bean>
+            <bean parent="daoTemplate" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryDao" />
         </property>
     </bean>
 
