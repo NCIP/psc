@@ -34,16 +34,6 @@ public class DocResourceTest extends ResourceTestCase<DocResource> {
         assertNotNull("Could not load template", template);
     }
 
-    public void testGetContentIsHtml() throws Exception {
-        doGet();
-        String text = response.getEntity().getText();
-
-        assertResponseStatus(Status.SUCCESS_OK);
-        assertEquals("Response is not HTML", MediaType.TEXT_HTML, response.getEntity().getMediaType());
-        assertContains(text, "<html");
-        assertContains(text, "Patient Study Calendar RESTful API"); // Title
-    }
-
     public void testResourceVariants() throws Exception {
         doGet();
         List<Variant> variants = getResource().getVariants();
@@ -61,15 +51,17 @@ public class DocResourceTest extends ResourceTestCase<DocResource> {
     public void testResourceRepresentationCanBeXsd() throws Exception {
         setAcceptedMediaTypes(MediaType.APPLICATION_W3C_SCHEMA);
         doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
         Representation represent = response.getEntity();
         assertNotNull("Could not get the representation ", represent);
         assertEquals("Response is not XSD", MediaType.APPLICATION_W3C_SCHEMA_XML, represent.getMediaType());
         assertContains(represent.getText(), "<xsd:schema");
     }
 
-   public void testResourceRepresentationCanBeWadl() throws Exception {
+    public void testResourceRepresentationCanBeWadl() throws Exception {
         setAcceptedMediaTypes(MediaType.APPLICATION_WADL);
         doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
         Representation represent = response.getEntity();
         assertNotNull("Could not get the representation ", represent);
         assertEquals("Response is not WADL", MediaType.APPLICATION_WADL_XML, represent.getMediaType());
