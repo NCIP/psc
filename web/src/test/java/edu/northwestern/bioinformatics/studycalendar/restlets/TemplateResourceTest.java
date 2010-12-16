@@ -15,7 +15,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
+import org.restlet.representation.InputRepresentation;
 
 import java.io.InputStream;
 import java.util.Calendar;

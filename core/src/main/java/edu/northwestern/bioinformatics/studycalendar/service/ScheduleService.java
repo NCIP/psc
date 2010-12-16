@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStu
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.lang.StringTools;
 import org.springframework.beans.factory.annotation.Required;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 import java.util.*;
 

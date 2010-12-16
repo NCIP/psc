@@ -171,7 +171,7 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
     }
 
     public void testIsDevelopmentWhenIdentIsNull() throws Exception {
-        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, null);
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.removeFrom(request);
         assertFalse(helper.isDevelopmentRequest());
     }
 

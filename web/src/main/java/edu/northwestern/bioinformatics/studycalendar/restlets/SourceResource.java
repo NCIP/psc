@@ -1,18 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Context;
-import org.restlet.resource.Variant;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.data.*;
-import org.json.JSONObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 

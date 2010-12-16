@@ -22,7 +22,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
+import org.restlet.representation.InputRepresentation;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.data.Status;
-import org.restlet.data.MediaType;
-import org.restlet.resource.Variant;
-import org.restlet.resource.Representation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 
 import java.util.List;
-
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
 
 /**
  * @author Nataliya Shurupova

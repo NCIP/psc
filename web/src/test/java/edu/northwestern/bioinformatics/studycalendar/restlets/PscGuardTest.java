@@ -70,7 +70,7 @@ public class PscGuardTest extends RestletTestCase {
         request.setResourceRef(BASE_URI);
 
         // register token auth helper
-        new PscAuthenticationHelper().afterPropertiesSet();
+        new PscAuthenticatorHelper().afterPropertiesSet();
     }
 
     public void testAuthenticationSkippedForExcepts() throws Exception {

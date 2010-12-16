@@ -16,7 +16,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.resource.Variant;
+import org.restlet.representation.Variant;
 
 import java.util.ArrayList;
 import java.util.Collections;

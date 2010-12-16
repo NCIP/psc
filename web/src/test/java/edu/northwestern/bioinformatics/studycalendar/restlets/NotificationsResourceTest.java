@@ -1,22 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Preference;
+import org.restlet.data.Status;
+
+import java.util.Arrays;
+import java.util.Calendar;
+
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import java.util.Calendar;
-import java.util.Arrays;
-
 import static org.easymock.EasyMock.expect;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
-import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 
 /**
  * @author Jalpa Patel
@@ -85,7 +90,7 @@ public class NotificationsResourceTest extends AuthorizedResourceTestCase<Notifi
     }
 
     public void testGet400WhenNoSubjectAssignmentIdentifierInRequest() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName(), null);
+        UriTemplateParameters.ASSIGNMENT_IDENTIFIER.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);

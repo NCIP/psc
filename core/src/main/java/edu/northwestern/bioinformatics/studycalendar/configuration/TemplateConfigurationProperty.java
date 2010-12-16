@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 public class TemplateConfigurationProperty extends DefaultConfigurationProperty<Template> {
     public TemplateConfigurationProperty(String propertyName) {

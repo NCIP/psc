@@ -5,11 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarX
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.springframework.context.ApplicationContext;
 
 import java.io.ByteArrayInputStream;
@@ -154,10 +153,6 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected ApplicationContext getApiServletApplicationContext() {
         return StudyCalendarTestWebApplicationContextBuilder.
             createWebApplicationContextForServlet("restful-api", servletContext);
-    }
-
-    protected void setAccept(MediaType requestType) {
-        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(requestType)));
     }
 
     private static class MockXmlRepresentation extends StringRepresentation {

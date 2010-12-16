@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.restlet.data.Form;
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 import java.util.Arrays;
 import java.util.Collection;

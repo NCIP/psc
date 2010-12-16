@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import freemarker.template.Configuration;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
+import org.restlet.Request;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 import java.util.Map;
 import java.util.Collections;

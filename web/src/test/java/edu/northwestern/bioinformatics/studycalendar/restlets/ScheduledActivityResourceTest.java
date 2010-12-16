@@ -16,7 +16,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.resource.InputRepresentation;
+import org.restlet.representation.InputRepresentation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

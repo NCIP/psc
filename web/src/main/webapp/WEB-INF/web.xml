@@ -270,7 +270,7 @@
 
     <servlet>
         <servlet-name>restful-api</servlet-name>
-        <servlet-class>com.noelios.restlet.ext.spring.RestletFrameworkServlet</servlet-class>
+        <servlet-class>org.restlet.ext.spring.RestletFrameworkServlet</servlet-class>
         <init-param>
             <param-name>targetRestletBeanName</param-name>
             <param-value>apiApplication</param-value>

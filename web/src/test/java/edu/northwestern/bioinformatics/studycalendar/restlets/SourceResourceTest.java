@@ -1,16 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
-import static org.easymock.EasyMock.expect;
-
+import org.json.JSONObject;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
-import org.json.JSONObject;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSource;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Jalpa Patel
@@ -45,7 +44,7 @@ public class SourceResourceTest  extends AuthorizedResourceTestCase<SourceResour
     }
 
     public void test400WhenNoSourceInRequest() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.SOURCE_NAME.attributeName(), null);
+        UriTemplateParameters.SOURCE_NAME.removeFrom(request);
 
         doPut();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No source name in the request");

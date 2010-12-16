@@ -1,15 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.resource.*;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
+import freemarker.template.Configuration;
 import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.springframework.beans.factory.annotation.Required;
+import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import freemarker.template.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Nataliya Shurupova
@@ -25,7 +29,7 @@ public class DocResource extends Resource {
         public void init(Context context, Request request, Response response) {
             super.init(context, request, response);
             getVariants().add(new Variant(MediaType.TEXT_HTML));
-            getVariants().add(new ClasspathResourceRepresentation(MediaType.APPLICATION_W3C_SCHEMA_XML, "psc.xsd"));
+            getVariants().add(new ClasspathResourceRepresentation(MediaType.APPLICATION_W3C_SCHEMA, "psc.xsd"));
             getVariants().add(PscWadlRepresentation.create(freemarkerConfiguration, request));
         }
 

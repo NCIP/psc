@@ -12,10 +12,10 @@ import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.easymock.classextension.EasyMock;
 import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.BeanFactory;
@@ -38,13 +38,14 @@ public class AuthorizingFinderTest extends RestletTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         beanFactory = registerMockFor(BeanFactory.class);
-        finder = new AuthorizingFinder(beanFactory, BEAN_NAME);
+        finder = new AuthorizingFinder(null, beanFactory, BEAN_NAME);
     }
 
     public void testNonAuthorizingResourceAlwaysLetIn() throws Exception {
         request.setMethod(GET);
 
         Resource mockResource = registerMockFor(Resource.class);
+        expect(beanFactory.containsBean(BEAN_NAME)).andReturn(true);
         expect(beanFactory.getBean(BEAN_NAME)).andReturn(mockResource);
         expect(mockResource.allowGet()).andReturn(true);
         mockResource.init((Context) EasyMock.anyObject(), eq(request), eq(response));
@@ -109,6 +110,7 @@ public class AuthorizingFinderTest extends RestletTestCase {
 
     private void expectStatusForMethod(Method method, Status status) {
         request.setMethod(method);
+        expect(beanFactory.containsBean(BEAN_NAME)).andReturn(true);
         expect(beanFactory.getBean(BEAN_NAME)).andReturn(new TestAuthorizingResource());
 
         replayMocks();

@@ -91,7 +91,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
     }
 
     public void testRenderXml() throws Exception {
-        setAccept(MediaType.TEXT_XML);
+        setAcceptedMediaTypes(MediaType.TEXT_XML);
         expect(ssaXmlSerializer.createDocumentString(Arrays.asList(a_nu_1))).
             andReturn(MOCK_XML);
 
@@ -100,7 +100,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
     }
 
     public void testRenderICS() throws Exception {
-        setAccept(MediaType.TEXT_CALENDAR);
+        setAcceptedMediaTypes(MediaType.TEXT_CALENDAR);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
@@ -109,7 +109,7 @@ public class ManagedSchedulesResourceTest extends AuthorizedResourceTestCase<Man
     }
 
     public void testRenderJSON() throws Exception {
-        setAccept(MediaType.APPLICATION_JSON);
+        setAcceptedMediaTypes(MediaType.APPLICATION_JSON);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);

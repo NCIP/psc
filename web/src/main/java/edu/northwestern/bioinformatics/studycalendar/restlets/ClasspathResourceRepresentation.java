@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.resource.StreamRepresentation;
+import org.restlet.representation.StreamRepresentation;
 import org.restlet.data.MediaType;
 import org.springframework.core.io.ClassPathResource;
 import org.apache.commons.io.IOUtils;

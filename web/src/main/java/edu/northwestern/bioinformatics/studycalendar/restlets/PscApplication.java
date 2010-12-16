@@ -11,6 +11,5 @@ public class PscApplication extends Application {
     public PscApplication() {
         super();
         getTunnelService().setExtensionsTunnel(true);
-
     }
 }

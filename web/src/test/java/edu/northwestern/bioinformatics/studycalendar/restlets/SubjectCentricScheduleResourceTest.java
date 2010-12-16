@@ -115,7 +115,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     }
 
     public void testGet400WhenNoSubjectIdentifierInRequest() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName(), null);
+        UriTemplateParameters.SUBJECT_IDENTIFIER.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);

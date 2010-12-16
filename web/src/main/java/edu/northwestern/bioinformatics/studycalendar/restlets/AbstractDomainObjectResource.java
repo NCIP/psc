@@ -4,12 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSeriali
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 
 /**
  * Implements GET for a resource backed by a single domain object.

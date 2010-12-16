@@ -41,14 +41,14 @@ public class UserRoleResourceTest extends AuthorizedResourceTestCase<UserRoleRes
     }
 
     public void test400ForNoUserName() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), null);
+        UriTemplateParameters.USERNAME.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No user name in request");
     }
 
     public void test400ForNoRoleName() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.ROLENAME.attributeName(), null);
+        UriTemplateParameters.ROLENAME.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No role name in request");

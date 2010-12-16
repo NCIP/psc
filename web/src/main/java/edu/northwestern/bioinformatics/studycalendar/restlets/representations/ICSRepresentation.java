@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import org.restlet.data.MediaType;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.StringRepresentation;
 
 import net.fortuna.ical4j.model.Calendar;
 /**

@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 import java.util.LinkedList;
 import java.util.List;

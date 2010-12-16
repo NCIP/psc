@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 import java.util.HashMap;
 import java.util.Map;

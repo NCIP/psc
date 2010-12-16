@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.restlets.RestletTestCase;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

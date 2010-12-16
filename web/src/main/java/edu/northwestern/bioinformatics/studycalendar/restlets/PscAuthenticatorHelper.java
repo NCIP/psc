@@ -1,19 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import com.noelios.restlet.Engine;
-import com.noelios.restlet.authentication.AuthenticationHelper;
-import org.restlet.Guard;
+import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
+import org.restlet.engine.Engine;
+import org.restlet.engine.http.header.ChallengeWriter;
+import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.security.Guard;
 import org.restlet.util.Series;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author Rhett Sutphin
  */
-public class PscAuthenticationHelper extends AuthenticationHelper implements InitializingBean {
-    public PscAuthenticationHelper() {
+public class PscAuthenticatorHelper extends AuthenticatorHelper implements InitializingBean {
+    public PscAuthenticatorHelper() {
         super(PscGuard.PSC_TOKEN, false, true);
     }
 
@@ -32,13 +33,13 @@ public class PscAuthenticationHelper extends AuthenticationHelper implements Ini
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb, ChallengeResponse challenge, Request request, Series<Parameter> httpHeaders) {
-        sb.append(challenge.getCredentials());
+    public void formatRawResponse(ChallengeWriter cw, ChallengeResponse challenge, Request request, Series<Parameter> httpHeaders) {
+        cw.append(challenge.getRawValue());
     }
 
     ////// LIFECYCLE
 
     public void afterPropertiesSet() throws Exception {
-        Engine.getInstance().getRegisteredAuthentications().add(this);
+        Engine.getInstance().getRegisteredAuthenticators().add(this);
     }
 }

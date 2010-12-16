@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import com.noelios.restlet.http.HttpRequest;
-import com.noelios.restlet.http.HttpResponse;
-import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.engine.http.HttpRequest;
+import org.restlet.engine.http.HttpResponse;
+import org.restlet.routing.Filter;
 import org.restlet.util.Series;
+
 import java.util.Set;
 
 /**

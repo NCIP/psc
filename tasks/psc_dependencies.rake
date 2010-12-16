@@ -106,7 +106,7 @@ end
 CTMS_COMMONS_VERSION = "1.0.8.RELEASE"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
-RESTLET_VERSION = "1.1.1"
+RESTLET_VERSION = "2.0.3"
 SLF4J_VERSION = "1.5.11"
 LOGBACK_VERSION = "0.9.20"
 CAGRID_VERSION = "1.3"
@@ -386,13 +386,12 @@ WEB = [
 ]
 
 RESTLET = struct({
-  :framework        => "org.restlet:org.restlet:jar:#{RESTLET_VERSION}",
-  :spring_ext       => "org.restlet:org.restlet.ext.spring:jar:#{RESTLET_VERSION}",
-  :freemarker_ext   => "org.restlet:org.restlet.ext.freemarker:jar:#{RESTLET_VERSION}",
-  :json_ext         => "org.restlet:org.restlet.ext.json:jar:#{RESTLET_VERSION}",
-  :nre              => "com.noelios.restlet:com.noelios.restlet:jar:#{RESTLET_VERSION}",
-  :servlet_nre_ext  => "com.noelios.restlet:com.noelios.restlet.ext.servlet:jar:#{RESTLET_VERSION}",
-  :spring_nre_ext   => "com.noelios.restlet:com.noelios.restlet.ext.spring:jar:#{RESTLET_VERSION}"
+  :framework        => "org.restlet.jee:org.restlet:jar:#{RESTLET_VERSION}",
+  :spring_ext       => "org.restlet.jee:org.restlet.ext.spring:jar:#{RESTLET_VERSION}",
+  :freemarker_ext   => "org.restlet.jee:org.restlet.ext.freemarker:jar:#{RESTLET_VERSION}",
+  :json_ext         => "org.restlet.jee:org.restlet.ext.json:jar:#{RESTLET_VERSION}",
+  :servlet_ext      => "org.restlet.jee:org.restlet.ext.servlet:jar:#{RESTLET_VERSION}",
+  :xml_ext          => "org.restlet.jee:org.restlet.ext.xml:jar:#{RESTLET_VERSION}",
 })
 
 CONTAINER_PROVIDED = [

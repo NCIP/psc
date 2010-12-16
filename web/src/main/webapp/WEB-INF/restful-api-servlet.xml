@@ -7,7 +7,7 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <bean name="apiApplication" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscApplication">
-        <property name="root" ref="errorReportingFilter"/>
+        <property name="inboundRoot" ref="errorReportingFilter"/>
         <property name="metadataService" ref="metadataService"/>
     </bean>
 
@@ -309,5 +309,5 @@
 
     <!-- this bean isn't wired to anything, but it self-registers with the restlet engine -->
     <bean id="pscAuthenticationHelper"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticationHelper"/>
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticatorHelper"/>
 </beans>

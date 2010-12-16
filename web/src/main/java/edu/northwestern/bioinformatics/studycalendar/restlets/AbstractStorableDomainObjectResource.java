@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 
 import java.io.IOException;

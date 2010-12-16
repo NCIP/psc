@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopment
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
+import org.restlet.representation.InputRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;

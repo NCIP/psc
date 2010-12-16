@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.configuration;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.configuration.TemplateConfigurationProperty;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 public class TemplateConfigurationPropertyTest extends StudyCalendarTestCase {
     private TemplateConfigurationProperty property;

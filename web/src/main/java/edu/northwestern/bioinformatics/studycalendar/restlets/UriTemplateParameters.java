@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 /**
  * @author Rhett Sutphin
@@ -47,5 +47,9 @@ public enum UriTemplateParameters {
 
     public void putIn(Request request, Object value) {
         request.getAttributes().put(attributeName(), value);
+    }
+
+    public void removeFrom(Request request) {
+        request.getAttributes().remove(attributeName());
     }
 }

@@ -5,13 +5,17 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import org.restlet.data.*;
-import org.restlet.resource.StringRepresentation;
-import org.springframework.beans.factory.annotation.Required;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.Collection;

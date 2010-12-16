@@ -1,18 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Saurabh Agrawal
@@ -89,7 +90,7 @@ public class BlackoutDatesResourceTest extends AuthorizedResourceTestCase<Blacko
     }
 
     public void testGet400IfSiteIsNull() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), null);
+        UriTemplateParameters.SITE_IDENTIFIER.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);

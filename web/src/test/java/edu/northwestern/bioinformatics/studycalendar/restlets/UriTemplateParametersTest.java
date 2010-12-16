@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 /**
  * @author Rhett Sutphin

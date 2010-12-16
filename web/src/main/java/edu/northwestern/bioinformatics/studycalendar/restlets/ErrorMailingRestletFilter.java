@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
-import org.restlet.Filter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.ext.servlet.ServletUtils;
+import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
@@ -30,7 +30,7 @@ public class ErrorMailingRestletFilter extends Filter {
     }
 
     private void sendMailIfPossible(Request request, RuntimeException exception) {
-        ExceptionMailMessage mailMessage = mailMessageFactory.createExceptionMailMessage(exception, ServletCall.getRequest(request));
+        ExceptionMailMessage mailMessage = mailMessageFactory.createExceptionMailMessage(exception, ServletUtils.getRequest(request));
         if (mailMessage != null) {
             try {
                 mailSender.send(mailMessage);

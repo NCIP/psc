@@ -1,8 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import com.noelios.restlet.ext.servlet.ServletCall;
-import com.noelios.restlet.http.HttpRequest;
-import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -12,6 +9,9 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.http.HttpRequest;
+import org.restlet.engine.http.HttpResponse;
+import org.restlet.ext.servlet.internal.ServletCall;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -60,6 +60,10 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         request.setRootRef(new Reference(ROOT_URI));
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
         response = new HttpResponse(servletCall, request);
+
+        // Most of the tests expect XML to be the most-preferred variant.
+        // This default seems to have changed in Restlet 2.0.
+        setAcceptedMediaTypes(MediaType.TEXT_XML);
     }
 
     protected void useHttpRequest() {

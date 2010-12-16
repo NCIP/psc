@@ -3,14 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
-import static org.easymock.EasyMock.expect;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.restlet.data.Status;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Jalpa Patel
@@ -45,7 +48,7 @@ public class UserRolesResourceTest extends AuthorizedResourceTestCase<UserRolesR
     }
 
     public void test400ForNoUserName() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), null);
+        UriTemplateParameters.USERNAME.removeFrom(request);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No user name in request");

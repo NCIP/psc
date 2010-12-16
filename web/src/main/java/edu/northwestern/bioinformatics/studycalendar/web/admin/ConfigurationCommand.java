@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import org.springframework.validation.Errors;
-import org.restlet.util.Template;
-import edu.nwu.bioinformatics.commons.spring.Validatable;
 import edu.northwestern.bioinformatics.studycalendar.service.GeneratedUriTemplateVariable;
-import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
-
+import edu.nwu.bioinformatics.commons.spring.Validatable;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import org.restlet.routing.Template;
+import org.springframework.validation.Errors;
 
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
+
+import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
 
 /**
  * @author Rhett Sutphin

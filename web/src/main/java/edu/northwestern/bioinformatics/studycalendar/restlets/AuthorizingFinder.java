@@ -4,11 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.acegisecurity.Authentication;
-import org.restlet.Handler;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.spring.SpringBeanFinder;
+import org.restlet.resource.Handler;
+import org.restlet.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -21,12 +22,12 @@ import java.util.Collection;
 public class AuthorizingFinder extends SpringBeanFinder {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public AuthorizingFinder(BeanFactory beanFactory, String beanName) {
-        super(beanFactory, beanName);
+    public AuthorizingFinder(Router router, BeanFactory beanFactory, String beanName) {
+        super(router, beanFactory, beanName);
     }
 
     @Override
-    protected Handler findTarget(Request request, Response response) {
+    public Handler findTarget(Request request, Response response) {
         Handler found = super.findTarget(request, response);
         if (found == null) {
             return null;
@@ -73,4 +74,12 @@ public class AuthorizingFinder extends SpringBeanFinder {
             return true;
         }
     }
+
+    /*
+    @Override
+    public ServerResource find(Request request, Response response) {
+        // No PSC resources are ServerResources yet
+        return null;
+    }
+    */
 }

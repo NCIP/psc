@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import junit.framework.TestCase;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 import java.io.IOException;
 import java.io.StringWriter;

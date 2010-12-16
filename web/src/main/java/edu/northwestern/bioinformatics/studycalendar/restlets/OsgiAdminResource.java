@@ -4,9 +4,9 @@ import org.osgi.framework.BundleContext;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.Variant;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.representation.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;

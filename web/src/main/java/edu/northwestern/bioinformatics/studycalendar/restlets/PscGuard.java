@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import com.noelios.restlet.Engine;
-import com.noelios.restlet.authentication.AuthenticationHelper;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
@@ -11,14 +9,16 @@ import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.context.SecurityContextImpl;
-import org.restlet.Guard;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.security.Guard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -96,7 +96,7 @@ public class PscGuard extends Guard {
 
         if (cr != null) {
             if (this.supportsScheme(cr.getScheme())) {
-                AuthenticationHelper helper = Engine.getInstance()
+                AuthenticatorHelper helper = Engine.getInstance()
                         .findHelper(cr.getScheme(), false, true);
 
                 if (helper != null) {
@@ -172,7 +172,11 @@ public class PscGuard extends Guard {
     }
 
     public static void setCurrentAuthenticationToken(Request request, Authentication auth) {
-        request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+        if (auth == null) {
+            request.getAttributes().remove(AUTH_TOKEN_ATTRIBUTE_KEY);
+        } else {
+            request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+        }
     }
 
     public static Authentication getCurrentAuthenticationToken(Request request) {
