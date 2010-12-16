@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Server;
@@ -44,7 +45,8 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
+        servletContext = new MockServletContext(
+            WebTestCase.findWebappSrcDirectory(), new FileSystemResourceLoader());
         servletRequest = new MockHttpServletRequest(servletContext);
         servletRequest.addHeader("Host", HOST);
         servletRequest.setContent(new byte[0]);

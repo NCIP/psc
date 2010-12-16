@@ -24,19 +24,8 @@ public class DispatcherServletInitializationTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        servletContext = new MockServletContext(findWebappDirectory(), new FileSystemResourceLoader());
-    }
-
-    private String findWebappDirectory() {
-        File dir = new File("src/main/webapp");
-        if (dir.exists()) {
-            return dir.getPath();
-        }
-        dir = new File("web", dir.toString());
-        if (dir.exists()) {
-            return dir.getPath();
-        }
-        throw new IllegalStateException("Could not find webapp path");
+        servletContext = new MockServletContext(
+            WebTestCase.findWebappSrcDirectory(), new FileSystemResourceLoader());
     }
 
     public void testSpringServletContext() throws Exception {

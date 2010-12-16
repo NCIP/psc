@@ -9,6 +9,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
+
 /**
  * @author Rhett Sutphin
  */
@@ -34,4 +36,15 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
         controllerTools.setTemplateService(templateService);
     }
 
+    public static String findWebappSrcDirectory() {
+        File dir = new File("src/main/webapp");
+        if (dir.exists()) {
+            return dir.getPath();
+        }
+        dir = new File("web", dir.toString());
+        if (dir.exists()) {
+            return dir.getPath();
+        }
+        throw new IllegalStateException("Could not find webapp path");
+    }
 }
