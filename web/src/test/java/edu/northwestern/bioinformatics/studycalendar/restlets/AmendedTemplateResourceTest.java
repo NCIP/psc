@@ -79,8 +79,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         doGet();
 
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        assertEntityTextContains("404");
-        assertEntityTextContains("It's not there.  I checked twice.");
+        assertClientErrorReason("It's not there.  I checked twice.");
     }
 
     public void testAuthorizedForReadsPerHelper() throws Exception {

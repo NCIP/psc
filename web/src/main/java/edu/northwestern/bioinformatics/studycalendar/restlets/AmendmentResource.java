@@ -9,10 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -38,8 +36,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     private TemplateDevelopmentService templateDevelopmentService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         getRequestedObjectDuringInit(); // for side effects
         addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
         addAuthorizationsFor(Method.PUT,
@@ -49,9 +47,9 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
 
-        Representation representation = super.represent(variant);
+        Representation representation = super.get(variant);
 
         AmendmentXmlSerializer studyXmlSerializer = getXmlSerializer();
         try {

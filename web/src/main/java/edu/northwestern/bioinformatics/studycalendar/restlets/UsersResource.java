@@ -9,11 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.VisibleAu
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
@@ -32,14 +29,14 @@ public class UsersResource extends AbstractPscResource {
     private PscUserService pscUserService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, PscRole.SYSTEM_ADMINISTRATOR, PscRole.USER_ADMINISTRATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             List<User> results = pscUserService.search(QueryParameters.Q.extractFrom(getRequest()));
             Integer limit = extractLimit();
@@ -61,7 +58,7 @@ public class UsersResource extends AbstractPscResource {
 
             return rep;
         } else {
-            return super.represent(variant);
+            return super.get(variant);
         }
     }
 

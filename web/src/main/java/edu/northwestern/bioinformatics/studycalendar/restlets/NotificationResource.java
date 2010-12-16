@@ -8,11 +8,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -30,8 +28,8 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
     public NotificationDao notificationDao;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         Study study = null;
         Site site = null;
@@ -74,7 +72,7 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
     }
 
      @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(getRequestedObject());
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
@@ -91,7 +89,7 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public void storeRepresentation(Representation representation) throws ResourceException {
+    public Representation put(Representation representation, Variant variant) throws ResourceException {
         if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
             try {
                 JSONObject entity = new JSONObject(representation.getText());
@@ -108,6 +106,8 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
             throw new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
+
+        return null;
     }
 
     @Override

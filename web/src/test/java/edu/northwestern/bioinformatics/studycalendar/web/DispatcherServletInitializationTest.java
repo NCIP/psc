@@ -3,13 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import junit.framework.TestCase;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.servlet.mvc.Controller;
 
-import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ public class DispatcherServletInitializationTest extends TestCase {
     public void testAllResourcesArePrototypeScope() throws Exception {
         ApplicationContext ctxt = createWebApplicationContextForServlet("restful-api", servletContext);
 
-        String[] beanNames = ctxt.getBeanNamesForType(Resource.class);
+        String[] beanNames = ctxt.getBeanNamesForType(ServerResource.class);
         assertTrue("Should have found at least one resource", beanNames.length > 0);
 
         for (String beanName : beanNames) {

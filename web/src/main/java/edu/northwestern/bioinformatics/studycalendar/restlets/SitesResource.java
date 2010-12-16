@@ -4,10 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
@@ -20,8 +17,8 @@ public class SitesResource extends AbstractCollectionResource<Site> {
     private StudyCalendarXmlCollectionSerializer<Site> xmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, PscRole.valuesWithSiteScoped());
     }
 

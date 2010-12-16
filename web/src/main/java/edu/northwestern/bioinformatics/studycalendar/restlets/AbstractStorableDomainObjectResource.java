@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
 import java.io.IOException;
@@ -15,13 +17,16 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public abstract class AbstractStorableDomainObjectResource<D extends DomainObject> extends AbstractDomainObjectResource<D> {
-
-    @Override public boolean allowPut() { return true; }
+    @Override
+    public void doInit() {
+        super.doInit();
+        getAllowedMethods().add(Method.PUT);
+    }
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public void storeRepresentation(Representation entity) throws ResourceException {
-        if (entity.getMediaType() == MediaType.TEXT_XML) {
+    public Representation put(Representation entity, Variant variant) throws ResourceException {
+        if (entity.getMediaType().includes(MediaType.TEXT_XML)) {
             validateEntity(entity);
             D read;
             try {
@@ -37,6 +42,8 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
             } else {
                 getResponse().setStatus(Status.SUCCESS_OK);
             }
+
+            return null;
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }

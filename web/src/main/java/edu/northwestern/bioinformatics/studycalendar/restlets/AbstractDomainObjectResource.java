@@ -2,10 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
@@ -31,24 +30,24 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     protected abstract D loadRequestedObject(Request request) throws ResourceException;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        setReadable(true);
-        setModifiable(false);
+    public void doInit() {
+        super.doInit();
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
+        getAllowedMethods().add(Method.GET);
 
         try {
-            requestedObject = loadRequestedObject(request);
+            requestedObject = loadRequestedObject(getRequest());
         } catch (ResourceException e) {
             // Defer throwing exception until the subclass actually attempts to access the object
             objectLoadException = e;
         }
-        setAvailable(requestedObject != null || objectLoadException != null);
+        setExisting(requestedObject != null || objectLoadException != null);
         if (requestedObject != null) {
-            log.debug("Request {} maps to {}", request.getResourceRef(), requestedObject);
+            log.debug("Request {} maps to {}", getRequest().getResourceRef(), requestedObject);
         } else {
-            log.debug("Request {} does not map to an existing domain object", request.getResourceRef());
+            log.debug("Request {} does not map to an existing domain object",
+                getRequest().getResourceRef());
         }
     }
 
@@ -69,7 +68,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(getRequestedObject());
         } else if (variant.getMediaType() == MediaType.TEXT_CALENDAR) {

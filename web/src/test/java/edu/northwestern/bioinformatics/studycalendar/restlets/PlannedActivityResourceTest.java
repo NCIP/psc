@@ -108,8 +108,8 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
 
         doPut();
 
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        assertEntityTextContains("You can only update planned activities in the development version of the template");
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+            "You can only update planned activities in the development version of the template");
     }
 
     public void testPutCreatesANewPlannedActivityIfNotPresent() throws Exception {
@@ -146,8 +146,7 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
 
         doPut();
 
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        assertEntityTextContains(
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST,
             "The planned activity unique-in-all-the-world exists, but is not part of the designated study");
     }
 
@@ -284,7 +283,7 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
         doDelete();
 
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        assertEntityTextContains("No such thing in there");
+        assertClientErrorReason("No such thing in there");
     }
 
     public void testDeletePreventedUnlessInDevelopment() throws Exception {
@@ -293,8 +292,8 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
 
         doDelete();
 
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        assertEntityTextContains("You can only delete planned activities from the development version of the template");
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+            "You can only delete planned activities from the development version of the template");
     }
 
     public void testDelete() throws Exception {

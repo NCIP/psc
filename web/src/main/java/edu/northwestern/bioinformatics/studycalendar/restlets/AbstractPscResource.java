@@ -7,17 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.acegisecurity.Authentication;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpResponse;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Resource;
-import org.restlet.util.Series;
+import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +24,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class AbstractPscResource extends Resource implements AuthorizedResource {
+public class AbstractPscResource extends ServerResource implements AuthorizedResource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     /** For error messages and the like */
@@ -47,10 +39,8 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     private static final Collection<ResourceAuthorization> NONE_AUTHORIZED = Collections.emptySet();
 
     private Map<Method, Collection<ResourceAuthorization>> authorizations;
-    private String clientErrorReason;
 
     public AbstractPscResource() { }
-    public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
 
     public Collection<ResourceAuthorization> authorizations(Method method) {
         if (getAuthorizationsByMethod().containsKey(method)) {
@@ -61,6 +51,7 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     }
 
     protected void setAllAuthorizedFor(Method method) {
+        getAllowedMethods().add(method);
         getAuthorizationsByMethod().put(method, null);
     }
 
@@ -81,6 +72,7 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     }
 
     protected void addAuthorizationsFor(Method method, Collection<ResourceAuthorization> authorizations) {
+        getAllowedMethods().add(method);
         getAuthorizationsByMethod().put(method, authorizations);
     }
 
@@ -105,57 +97,20 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     }
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        // default to no caching added in ResponseHeaderRestletFilter
-//        Series<Parameter> headers = ((HttpResponse) response).getHttpCall().getResponseHeaders();
-//        headers.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-//        headers.add("Pragma", "no-cache");
+    public void updateAllowedMethods() {
+        // Do nothing.  The default impl resets the methods from the annotations,
+        // but we're not using annotations.
     }
 
     @Override
-    public void handleGet() {
-        super.handleGet();
-        defaultErrorResponse();
-    }
+    // The default one does too much stuff.  The parts of that stuff PSC needs are in
+    // PscStatusService.
+    protected void doCatch(Throwable throwable) {
+        Status status = getStatusService().getStatus(throwable, this);
 
-    @Override
-    public void handlePost() {
-        super.handlePost();
-        defaultErrorResponse();
-    }
-
-    @Override
-    public void handlePut() {
-        super.handlePut();
-        defaultErrorResponse();
-    }
-
-    @Override
-    public void handleDelete() {
-        super.handleDelete();
-        defaultErrorResponse();
-    }
-
-    // TODO: maybe there's an Application-level way to do this instead.
-    private void defaultErrorResponse() {
-        if (getResponse().getStatus().isClientError() && getResponse().getEntity() == null) {
-            getResponse().setEntity(new StringRepresentation(
-                createDefaultClientErrorEntity(getResponse().getStatus()), MediaType.TEXT_PLAIN));
+        if (getResponse() != null) {
+            getResponse().setStatus(status);
         }
-    }
-
-    private StringBuilder createDefaultClientErrorEntity(Status status) {
-        StringBuilder message = new StringBuilder().
-            append(status.getCode()).append(' ').append(status.getName());
-        if (status.getDescription() != null) {
-            message.append("\n\n").append(status.getDescription());
-        }
-        if (clientErrorReason != null) {
-            message.append("\n\n").append(clientErrorReason);
-        }
-        message.append('\n');
-        return message;
     }
 
     /**
@@ -166,10 +121,12 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
      */
     protected void setClientErrorReason(String reason, String... params) {
         if (reason != null) {
-            clientErrorReason = String.format(reason, (Object[]) params);
+            String clientErrorReason = String.format(reason, (Object[]) params);
+            getRequest().getAttributes().put(
+                PscStatusService.CLIENT_ERROR_REASON_KEY, clientErrorReason);
             log.debug("client error: {}", clientErrorReason);
         } else {
-            clientErrorReason = null;
+            getRequest().getAttributes().remove(PscStatusService.CLIENT_ERROR_REASON_KEY);
         }
     }
 

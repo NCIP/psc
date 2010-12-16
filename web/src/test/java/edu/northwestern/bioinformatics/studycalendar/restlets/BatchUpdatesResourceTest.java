@@ -77,7 +77,7 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
     }
 
     public void testAllowedMethods() throws Exception {
-        assertAllowedMethods("POST", "GET");
+        assertAllowedMethods("POST");
     }
 
     public void testPostWithAuthorizedRoles() {

@@ -5,20 +5,19 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Status;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
+
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 
 /**
  * @author Rhett Sutphin
@@ -33,23 +32,24 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     private StudySite studySite;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        setReadable(true);
-        study = studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER.extractFrom(request));
-        log.debug("Resolved study from {} as {}", STUDY_IDENTIFIER.extractFrom(request), study);
-        site = siteDao.getByAssignedIdentifier(SITE_IDENTIFIER.extractFrom(request));
-        log.debug("Resolved site from {} as {}", SITE_IDENTIFIER.extractFrom(request), site);
+    public void doInit() {
+        super.doInit();
+
+        study = studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER.extractFrom(getRequest()));
+        log.debug("Resolved study from {} as {}", STUDY_IDENTIFIER.extractFrom(getRequest()), study);
+        site = siteDao.getByAssignedIdentifier(SITE_IDENTIFIER.extractFrom(getRequest()));
+        log.debug("Resolved site from {} as {}", SITE_IDENTIFIER.extractFrom(getRequest()), site);
 
         if (study != null && site != null) {
             studySite = study.getStudySite(site);
         }
-        setAvailable(studySite != null);
-        log.debug("Site {} participating in study", isAvailable() ? "is" : "is not");
-        getVariants().add(new Variant(MediaType.TEXT_XML));
-    }
+        setExisting(studySite != null);
+        log.debug("Site {} participating in study", isExisting() ? "is" : "is not");
 
-    @Override public boolean allowPost() { return true; }
+        getVariants().add(new Variant(MediaType.TEXT_XML));
+        getAllowedMethods().add(Method.GET);
+        getAllowedMethods().add(Method.POST);
+    }
 
     protected StudySite getStudySite() {
         return studySite;
@@ -81,7 +81,7 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     protected abstract Representation createXmlRepresentation(StudySite target) throws ResourceException;
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         verifyStudySiteExists();
 
         if (variant.getMediaType().equals(MediaType.TEXT_XML)) {
@@ -94,7 +94,7 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     protected abstract String acceptValue(V value) throws ResourceException;
 
     @Override
-    public void acceptRepresentation(Representation entity) throws ResourceException {
+    public Representation post(Representation entity, Variant variant) throws ResourceException {
         verifyStudySiteExists();
 
         if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
@@ -115,6 +115,8 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
         }
+
+        return null;
     }
 
     ////// CONFIGURATION

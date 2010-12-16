@@ -4,10 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Method;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +15,7 @@ import java.util.Collection;
 /**
  * @author John Dzak
  */
-public abstract class AuthorizedResourceTestCase<R extends Resource & AuthorizedResource> extends ResourceTestCase<R> {
+public abstract class AuthorizedResourceTestCase<R extends ServerResource & AuthorizedResource> extends ResourceTestCase<R> {
     @Override
     protected void setUp() throws Exception {
         super.setUp();

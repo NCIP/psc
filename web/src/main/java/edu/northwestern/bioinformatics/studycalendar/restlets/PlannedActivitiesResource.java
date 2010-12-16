@@ -10,11 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -34,14 +32,14 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     private TemplateService templateService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        helper.setRequest(request);
+    public void doInit() {
+        helper.setRequest(getRequest());
 
-        super.init(context, request, response);
+        super.doInit();
         addAuthorizationsFor(Method.POST,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
-        setReadable(false); // pending
+        getAllowedMethods().remove(Method.GET); // pending
         getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
     }
 
@@ -55,12 +53,10 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         }
     }
 
-    @Override public boolean allowPost() { return true; }
-
     @Override
     @SuppressWarnings("unused")
-    public void acceptRepresentation(Representation entity) throws ResourceException {
-        if (!isAvailable()) {
+    public Representation post(Representation entity, Variant variant) throws ResourceException {
+        if (!isExisting()) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
         }
         if (!helper.isDevelopmentRequest()) {
@@ -70,6 +66,8 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         if (entity.getMediaType().includes(MediaType.APPLICATION_WWW_FORM)) {
             acceptForm(entity);
         }
+
+        return null;
     }
 
     private void acceptForm(Representation entity) throws ResourceException {
@@ -81,7 +79,7 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
             amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(
                 getRequestedObject(), newPlannedActivity);
         } catch (StudyCalendarUserException e) {
-            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage(), e);
+            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
         }
 
         if (newPlannedActivity.getGridId() == null) {

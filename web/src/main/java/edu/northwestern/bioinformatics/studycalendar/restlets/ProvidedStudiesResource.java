@@ -4,11 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
@@ -26,8 +23,8 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     private StudyConsumer studyConsumer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, STUDY_CREATOR);
        
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
@@ -40,11 +37,11 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             return new StudyListJsonRepresentation(getAllObjects());
         } else {
-            return super.represent(variant);
+            return super.get(variant);
         }
     }
 

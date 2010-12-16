@@ -12,11 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -43,8 +40,8 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private AuthorizationManager csmAuthorizationManager;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         addAuthorizationsFor(Method.GET,
             STUDY_SUBJECT_CALENDAR_MANAGER,
@@ -152,7 +149,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             return new ScheduledActivityReportJsonRepresentation(buildFilters(), allRows);

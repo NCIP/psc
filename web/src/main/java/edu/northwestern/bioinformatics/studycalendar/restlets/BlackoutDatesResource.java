@@ -7,10 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
@@ -31,8 +28,8 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
     private ResourceException siteLoadException;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         // initialize site first for authorization
         try {
             site = loadRequestedSiteObject();
@@ -79,8 +76,6 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
                     blackoutDate.getSite().getAssignedIdentifier(), blackoutDate.getGridId());
         } catch (StudyCalendarValidationException scve) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
-        } catch (Exception e) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
     }
 

@@ -1,24 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.easymock.classextension.EasyMock.expect;
-
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Saurabh Agrarwal
@@ -103,7 +100,8 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
 
     public void testPutActivityForNonExistentSource() throws Exception {
         expect(sourceDao.getByName(SOURCE_NAME)).andReturn(null);
-        
+        expectReadXmlFromRequestAs(activity);
+
         doPut();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }

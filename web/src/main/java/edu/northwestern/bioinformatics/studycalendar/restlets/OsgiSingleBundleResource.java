@@ -17,7 +17,7 @@ public class OsgiSingleBundleResource extends OsgiAdminResource {
                 bundle = getBundleContext().getBundle(Long.parseLong(bundleId));
             } catch (NumberFormatException nfe) {
                 throw new ResourceException(
-                    Status.CLIENT_ERROR_BAD_REQUEST, "Invalid bundle ID " + bundleId, nfe);
+                    Status.CLIENT_ERROR_BAD_REQUEST, "Invalid bundle ID " + bundleId);
             }
             if (bundle == null) {
                 throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No bundle with ID " + bundleId);

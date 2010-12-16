@@ -12,11 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -36,11 +34,9 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
     private ScheduledActivityDao scheduledActivityDao;
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
 
-    @Override public boolean allowPost() { return true; }
-
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         Study study = null;
         Site site = null;
@@ -94,7 +90,7 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
      * @throws ResourceException
      */
     @Override
-    public void acceptRepresentation(final Representation representation) throws ResourceException {
+    public Representation post(final Representation representation, Variant variant) throws ResourceException {
         ScheduledActivityState newState = null;
         if (representation.getMediaType() == MediaType.TEXT_XML) {
             try {
@@ -141,6 +137,8 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
             getResponse().setStatus(Status.SUCCESS_CREATED);
             getResponse().setLocationRef(getRequest().getOriginalRef());
         }
+
+        return null;
     }
 
     ////// CONFIGURATION

@@ -2,14 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 
 import java.util.Collection;
 
@@ -18,19 +16,14 @@ import java.util.Collection;
  */
 public abstract class AbstractCollectionResource<D extends DomainObject> extends AbstractPscResource {
     @Override
-    public boolean allowGet() {
-        return true;
-    }
-
-    @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        setReadable(true);
+    public void doInit() {
+        super.doInit();
+        getAllowedMethods().add(Method.GET);
         getVariants().add(new Variant(MediaType.TEXT_XML));
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(getAllObjects());
         } else {

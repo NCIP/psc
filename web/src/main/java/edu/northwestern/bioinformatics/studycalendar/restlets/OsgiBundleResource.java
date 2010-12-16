@@ -7,14 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Bundle;
 import org.osgi.service.metatype.MetaTypeService;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Dictionary;
@@ -28,14 +25,8 @@ public class OsgiBundleResource extends OsgiAdminResource {
     private OsgiLayerTools osgiLayerTools;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        setModifiable(false);
-    }
-
-    @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         String idStr = UriTemplateParameters.BUNDLE_ID.extractFrom(getRequest());
         if (idStr != null) {
             try {

@@ -9,12 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -34,7 +31,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Jalpa Patel
  */
-public class BatchUpdatesResource extends AbstractPscResource{
+public class BatchUpdatesResource extends AbstractPscResource {
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
 
@@ -42,8 +39,8 @@ public class BatchUpdatesResource extends AbstractPscResource{
         new HashMap<Integer, UserStudySubjectAssignmentRelationship>();
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         addAuthorizationsFor(Method.POST,
                 STUDY_SUBJECT_CALENDAR_MANAGER);
@@ -52,13 +49,8 @@ public class BatchUpdatesResource extends AbstractPscResource{
     }
 
     @Override
-    public boolean allowPost() {
-        return true;
-    }
-
-    @Override
     @SuppressWarnings("unused")
-    public void acceptRepresentation(Representation representation) throws ResourceException {
+    public Representation post(Representation representation, Variant variant) throws ResourceException {
         PscUser user = getCurrentUser();
         if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
             try {
@@ -115,6 +107,8 @@ public class BatchUpdatesResource extends AbstractPscResource{
             throw new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
+
+        return null;
     }
 
     private UserStudySubjectAssignmentRelationship findUserStudySubjectAssignmentRelationship(StudySubjectAssignment scheduledStudyAssignment) {

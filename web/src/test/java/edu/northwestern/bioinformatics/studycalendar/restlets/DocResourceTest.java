@@ -50,32 +50,29 @@ public class DocResourceTest extends ResourceTestCase<DocResource> {
         assertEquals("Quantity of the variants is incorrect ", 3, variants.size());
     }
 
-
-    public void testResourceRepresentationIsHtml() throws Exception {
+    public void testResourceRepresentationDefaultsToHtml() throws Exception {
         doGet();
-        List<Variant> variants = getResource().getVariants();
-        Representation represent = getResource().represent(variants.get(0));
+        Representation represent = response.getEntity();
         assertEquals("Response is not HTML", MediaType.TEXT_HTML, represent.getMediaType());
         assertContains(represent.getText(), "<html");
         assertContains(represent.getText(), "Patient Study Calendar RESTful API");
     }
 
-
-    public void testResourceRepresentationIsXsd() throws Exception {
+    public void testResourceRepresentationCanBeXsd() throws Exception {
+        setAcceptedMediaTypes(MediaType.APPLICATION_W3C_SCHEMA);
         doGet();
-        List<Variant> variants = getResource().getVariants();
-        Representation represent = getResource().represent(variants.get(1));
+        Representation represent = response.getEntity();
         assertNotNull("Could not get the representation ", represent);
-        assertEquals("Response is not HTML", MediaType.APPLICATION_W3C_SCHEMA_XML, represent.getMediaType());
+        assertEquals("Response is not XSD", MediaType.APPLICATION_W3C_SCHEMA_XML, represent.getMediaType());
         assertContains(represent.getText(), "<xsd:schema");
     }
 
-   public void testResourceRepresentationIsWadl() throws Exception {
+   public void testResourceRepresentationCanBeWadl() throws Exception {
+        setAcceptedMediaTypes(MediaType.APPLICATION_WADL);
         doGet();
-        List<Variant> variants = getResource().getVariants();
-        Representation represent = getResource().represent(variants.get(2));
+        Representation represent = response.getEntity();
         assertNotNull("Could not get the representation ", represent);
-        assertEquals("Response is not HTML", MediaType.APPLICATION_WADL_XML, represent.getMediaType());
+        assertEquals("Response is not WADL", MediaType.APPLICATION_WADL_XML, represent.getMediaType());
         assertContains(represent.getText(), "<application");
         assertContains(represent.getText(), "http://research.sun.com/wadl/2006/10"); // WADL namespace
         assertContains(represent.getText(), String.format("<resources base=\"%s\">", ROOT_URI)); // WADL root element

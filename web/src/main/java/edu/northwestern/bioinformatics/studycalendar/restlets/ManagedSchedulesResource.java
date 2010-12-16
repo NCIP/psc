@@ -15,11 +15,8 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import net.fortuna.ical4j.model.Calendar;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -41,8 +38,8 @@ public class ManagedSchedulesResource extends AbstractPscResource {
     private TemplateService templateService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, PscRole.STUDY_TEAM_ADMINISTRATOR,
             PscRole.STUDY_SUBJECT_CALENDAR_MANAGER, PscRole.DATA_READER);
 
@@ -54,7 +51,7 @@ public class ManagedSchedulesResource extends AbstractPscResource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         List<UserStudySubjectAssignmentRelationship> relatedAssignments =
             pscUserService.getManagedAssignments(getRequestedUser(), getCurrentUser());
         List<StudySubjectAssignment> assignments = extractAssignments(relatedAssignments);

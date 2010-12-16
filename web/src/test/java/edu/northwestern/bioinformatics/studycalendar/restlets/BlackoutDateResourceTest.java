@@ -57,12 +57,11 @@ public class BlackoutDateResourceTest extends AuthorizedResourceTestCase<Blackou
         assertRolesAllowedForMethod(Method.DELETE, PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
-    public void testDeleteHolidayWhichDoesNotExists() throws Exception {
+    public void testDeleteHolidayWhichDoesNotExist() throws Exception {
         expectFoundSite(site);
         doDelete();
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
-
 
     public void testDeleteHolidayWhichExists() throws Exception {
         monthDayHoliday.setGridId("blackoutDateId");
@@ -72,11 +71,8 @@ public class BlackoutDateResourceTest extends AuthorizedResourceTestCase<Blackou
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
-
     private void expectFoundSite(Site expectedSite) {
         expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
     }
-
-
 }
 

@@ -8,10 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -32,8 +30,8 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     private StudySiteService studySiteService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         StudySite ss = getRequestedObjectDuringInit();
         Site site = null;

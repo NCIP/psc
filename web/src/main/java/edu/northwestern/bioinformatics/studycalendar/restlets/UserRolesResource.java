@@ -5,9 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -28,8 +25,8 @@ public class UserRolesResource extends AbstractPscResource {
     private StudyCalendarXmlCollectionSerializer<SuiteRoleMembership> xmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.TEXT_XML));
     }
@@ -63,7 +60,7 @@ public class UserRolesResource extends AbstractPscResource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.TEXT_XML)) {
             return createXmlRepresentation(getAllObjects());
         } else {

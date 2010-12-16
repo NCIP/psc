@@ -8,23 +8,20 @@ import org.restlet.data.Method;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.springframework.context.ApplicationContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
-public abstract class ResourceTestCase<R extends Resource> extends RestletTestCase {
+public abstract class ResourceTestCase<R extends ServerResource> extends RestletTestCase {
     protected static final String MOCK_XML = "<foo></foo>";
     protected static final Representation MOCK_XML_REP = new MockXmlRepresentation(MOCK_XML, MediaType.TEXT_XML);
 
@@ -58,66 +55,53 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     }
 
     protected void doInitOnly() {
-        getResource().init(null, request, response);
+        getResource().init(context, request, response);
     }
 
     protected void doGet() {
         replayMocks();
         request.setMethod(Method.GET);
-        doInitOnly();
-        getResource().handleGet();
+        simulateFinderHandle();
         verifyMocks();
     }
 
     protected void doPut() {
         replayMocks();
         request.setMethod(Method.PUT);
-        doInitOnly();
-        getResource().handlePut();
+        simulateFinderHandle();
         verifyMocks();
     }
 
     protected void doPost() {
         replayMocks();
         request.setMethod(Method.POST);
-        doInitOnly();
-        getResource().handlePost();
+        simulateFinderHandle();
         verifyMocks();
     }
 
     protected void doDelete() {
         replayMocks();
         request.setMethod(Method.DELETE);
-        doInitOnly();
-        getResource().handleDelete();
+        simulateFinderHandle();
         verifyMocks();
     }
 
-    private static final String[] ALL_METHODS = { "GET", "PUT", "POST", "DELETE" };
-
-    protected void assertAllowedMethods(String... allowedMethods) throws Exception {
-        List<String> disallowedMethods = new ArrayList<String>(Arrays.asList(ALL_METHODS));
-        for (int i = 0; i < allowedMethods.length; i++) {
-            allowedMethods[i] = allowedMethods[i].toUpperCase();
-            disallowedMethods.remove(allowedMethods[i]);
-        }
+    private void simulateFinderHandle() {
         doInitOnly();
-        for (String method : allowedMethods) {
-            assertTrue(method + " should be allowed", isMethodAllowed(method));
-        }
-        for (String method : disallowedMethods) {
-            assertFalse(method + " should not be allowed", isMethodAllowed(method));
+        if (response.getStatus().isSuccess()) {
+            getResource().handle();
         }
     }
 
-    private boolean isMethodAllowed(String method) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        StringBuilder checkerName = new StringBuilder(method.toLowerCase());
-        checkerName.setCharAt(0, Character.toUpperCase(checkerName.charAt(0)));
-        checkerName.insert(0, "allow");
-        java.lang.reflect.Method checker = getResource().getClass().getMethod(checkerName.toString());
-        Boolean result = (Boolean) checker.invoke(getResource());
-        assertNotNull("Test execution failure", result);
-        return result;
+    protected void assertAllowedMethods(String... allowedMethods) throws Exception {
+        doInitOnly();
+        Set<Method> actual = getResource().getAllowedMethods();
+        assertEquals("Wrong number of allowed methods: " + actual,
+            allowedMethods.length, actual.size());
+        for (String allowedMethod : allowedMethods) {
+            assertTrue("Missing " + allowedMethod + " from " + actual,
+                actual.contains(Method.valueOf(allowedMethod)));
+        }
     }
 
     protected void expectReadXmlFromRequestAs(Object expectedRead) throws Exception {
@@ -144,6 +128,13 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         assertEquals("Wrong text", CapturingStudyCalendarXmlFactoryStub.XML_STRING, actualEntityBody);
     }
     
+    protected void assertClientErrorReason(String expected) {
+        assertTrue("No client error reason set",
+            request.getAttributes().containsKey(PscStatusService.CLIENT_ERROR_REASON_KEY));
+        assertEquals("Wrong client error reason", expected,
+            request.getAttributes().get(PscStatusService.CLIENT_ERROR_REASON_KEY));
+    }
+
     protected void assertEntityTextContains(String expected) throws IOException {
         Representation entity = response.getEntity();
         assertNotNull("No entity returned", entity);

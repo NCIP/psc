@@ -108,7 +108,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         doPost();
 
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        assertEntityTextContains("No such thing in there");
+        assertClientErrorReason("No such thing in there");
     }
     
     public void testPostPreventedUnlessInDevelopment() throws Exception {
@@ -117,8 +117,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        assertEntityTextContains("You can only add new planned activities to the development version of the template");
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+            "You can only add new planned activities to the development version of the template");
     }
 
     public void testAddPlannedActivityWithMinimumAttributes() throws Exception {
@@ -142,8 +142,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Activity not found");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Activity not found");
     }
 
     public void testAddPlannedActivityWithDetailsAndCondition() throws Exception {
@@ -186,8 +185,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Population not found");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Population not found");
     }
 
     public void testAddPlannedActivityRequiresDay() throws Exception {
@@ -197,8 +195,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Missing required parameter day");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Missing required parameter day");
     }
 
     public void testAddPlannedActivityDayMustBeInteger() throws Exception {
@@ -209,8 +207,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Parameter day must be an integer ('twelve' isn't)");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Parameter day must be an integer ('twelve' isn't)");
     }
 
     public void testAddPlannedActivityRequiresActivitySource() throws Exception {
@@ -220,8 +218,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Missing required parameter activity-source");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Missing required parameter activity-source");
     }
 
     public void testAddPlannedActivityRequiresActivityCode() throws Exception {
@@ -231,8 +229,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("Missing required parameter activity-code");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Missing required parameter activity-code");
     }
 
     public void testAddPlannedActivityFailsWithSCValidationExceptionFromDomainLayer() throws Exception {
@@ -246,8 +244,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        assertEntityTextContains("I have some bad news");
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "I have some bad news");
     }
 
     public void testAddPlannedActivityConvertsHtmlEntitiesToText() throws Exception {

@@ -2,15 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
 import freemarker.template.Configuration;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -18,7 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author Nataliya Shurupova
  */
-public class DocResource extends Resource {
+public class DocResource extends ServerResource {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -26,15 +23,15 @@ public class DocResource extends Resource {
     private static final String WSDL_DOC_XSLT = "/edu/northwestern/bioinformatics/studycalendar/restlets/wadl_documentation.xsl";
 
     @Override
-        public void init(Context context, Request request, Response response) {
-            super.init(context, request, response);
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
-            getVariants().add(new ClasspathResourceRepresentation(MediaType.APPLICATION_W3C_SCHEMA, "psc.xsd"));
-            getVariants().add(PscWadlRepresentation.create(freemarkerConfiguration, request));
-        }
+    public void doInit() {
+        super.doInit();
+        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        getVariants().add(new ClasspathResourceRepresentation(MediaType.APPLICATION_W3C_SCHEMA, "psc.xsd"));
+        getVariants().add(PscWadlRepresentation.create(freemarkerConfiguration, getRequest()));
+    }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (MediaType.TEXT_HTML.includes(variant.getMediaType())) {
             TransformRepresentation transform = new TransformRepresentation(
                 PscWadlRepresentation.create(freemarkerConfiguration, getRequest()),
@@ -43,7 +40,7 @@ public class DocResource extends Resource {
             transform.setMediaType(MediaType.TEXT_HTML);
             return transform;
         } else {
-            return super.represent(variant);
+            return super.get(variant);
         }
 
     }

@@ -7,10 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.restlet.Context;
+import org.restlet.data.Disposition;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -31,25 +30,25 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     private TemplateImportService templateImportService;
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Representation representation = super.represent(variant);
+    public Representation get(Variant variant) throws ResourceException {
+        Representation representation = super.get(variant);
         if (useDownloadMode) {
-            representation.setDownloadable(true);
-            representation.setDownloadName(getRequestedObject().getAssignedIdentifier() + ".xml");
+            representation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT));
+            representation.getDisposition().setFilename(getRequestedObject().getAssignedIdentifier() + ".xml");
         }
         representation.setModificationDate(getRequestedObject().getLastModifiedDate());
         return representation;
     }
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         Study study = getRequestedObjectDuringInit();
         addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
         addAuthorizationsFor(Method.PUT,
             ResourceAuthorization.createTemplateManagementAuthorizations(study, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
 
-        useDownloadMode = request.getResourceRef().getQueryAsForm().getNames().contains("download");
+        useDownloadMode = getRequest().getResourceRef().getQueryAsForm().getNames().contains("download");
     }
 
     @Override
@@ -65,10 +64,8 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         return base;
     }
 
-    @Override public boolean allowPut() { return true; }
-
     @Override
-    public void storeRepresentation(Representation entity) throws ResourceException {
+    public Representation put(Representation entity, Variant variant) throws ResourceException {
         Study out;
         try {
             Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
@@ -86,6 +83,8 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         } else {
             getResponse().setStatus(Status.SUCCESS_OK);
         }
+
+        return null;
     }
 
     ////// CONFIGURATION

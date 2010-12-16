@@ -213,24 +213,15 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
         expectFoundAmendment();
         doDelete();
 
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
+        assertEquals("Result should be 400", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
     }
 
-    public void testDeleteAmendmentWhichIsDoesNotApplyToStudy() throws Exception {
+    public void testDeleteUnknownAmendment() throws Exception {
         expectFoundStudy();
         expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(null);
         doDelete();
 
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
-    }
-
-    public void testDeleteAmendmentWhichIsNull() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), "");
-        expectFoundStudy();
-        expectAmendmentNotFound();
-        doDelete();
-
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testDeleteDevelopmentAmendment() throws Exception {

@@ -5,10 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,11 +32,11 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
     private StudySubjectAssignment assignment;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
-        String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
-        studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(getRequest());
+        studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest());
         assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
 
         StudySite ss = assignment.getStudySite();
@@ -53,9 +50,9 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
             scheduledCalendar = assignment.getScheduledCalendar();
         }
 
-        String year = UriTemplateParameters.YEAR.extractFrom(request);
-        String month = UriTemplateParameters.MONTH.extractFrom(request);
-        String day = UriTemplateParameters.DAY.extractFrom(request);
+        String year = UriTemplateParameters.YEAR.extractFrom(getRequest());
+        String month = UriTemplateParameters.MONTH.extractFrom(getRequest());
+        String day = UriTemplateParameters.DAY.extractFrom(getRequest());
 
         try {
             date = DateTools.createDate(

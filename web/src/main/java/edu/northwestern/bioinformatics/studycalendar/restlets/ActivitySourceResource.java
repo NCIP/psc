@@ -6,10 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -29,8 +27,8 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     private ActivityTypeDao activityTypeDao;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         addAuthorizationsFor(Method.GET,
                 STUDY_CALENDAR_TEMPLATE_BUILDER,

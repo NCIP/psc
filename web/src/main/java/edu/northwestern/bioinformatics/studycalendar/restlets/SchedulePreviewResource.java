@@ -5,13 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import org.apache.commons.collections15.CollectionUtils;
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -36,9 +34,9 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     private TemplateService templateService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        helper.setRequest(request);
-        super.init(context, request, response);
+    public void doInit() {
+        helper.setRequest(getRequest());
+        super.doInit();
         addAuthorizationsFor(Method.GET, helper.getReadAuthorizations());
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
@@ -118,12 +116,12 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (getRequestedObject() != null) {
             if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
                 return createJSONRepresentation(getRequestedObject());
             } else {
-                return super.represent(variant);
+                return super.get(variant);
             }
         } else {
             return null;

@@ -5,9 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -25,14 +22,18 @@ public class UserRoleResource extends AbstractPscResource {
     private PscUserService pscUserService;
     private StudyCalendarXmlSerializer<SuiteRoleMembership> xmlSerializer;
 
+    private SuiteRoleMembership suiteRoleMembership;
+
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.TEXT_XML));
+        suiteRoleMembership = loadRequestedObject();
+        setExisting(suiteRoleMembership != null);
     }
 
-    protected SuiteRoleMembership getRequestedObject() throws ResourceException {
+    protected SuiteRoleMembership loadRequestedObject() throws ResourceException {
         String userName = UriTemplateParameters.USERNAME.extractFrom(getRequest());
         String roleName = UriTemplateParameters.ROLENAME.extractFrom(getRequest());
         if (userName == null) {
@@ -68,14 +69,9 @@ public class UserRoleResource extends AbstractPscResource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.TEXT_XML)) {
-            SuiteRoleMembership userRole = getRequestedObject();
-            if (userRole != null) {
-                return createXmlRepresentation(userRole);
-            } else {
-                return null;
-            }
+            return createXmlRepresentation(suiteRoleMembership);
         } else {
             return null;
         }

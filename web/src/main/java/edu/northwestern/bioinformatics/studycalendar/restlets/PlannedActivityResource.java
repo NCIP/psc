@@ -16,11 +16,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -51,9 +49,9 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
     private TemplateService templateService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        helper.setRequest(request);
-        super.init(context, request, response);
+    public void doInit() {
+        helper.setRequest(getRequest());
+        super.doInit();
         getVariants().clear();
         getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
         addAuthorizationsFor(Method.GET,
@@ -65,12 +63,7 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         addAuthorizationsFor(Method.DELETE,
             ResourceAuthorization.createTemplateManagementAuthorizations(
                 helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
-        setReadable(true);
     }
-
-    @Override public boolean allowPut() { return true; }
-
-    @Override public boolean allowDelete() { return true; }
 
     @Override
     protected PlannedActivity loadRequestedObject(Request request) {
@@ -84,13 +77,13 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
 
     @Override
     @SuppressWarnings("unused")
-    public void storeRepresentation(Representation entity) throws ResourceException {
+    public Representation put(Representation entity, Variant variant) throws ResourceException {
         if (!helper.isDevelopmentRequest()) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                 "You can only update planned activities in the development version of the template");
         }
         PlannedActivityForm form ;
-        if (isAvailable()) {
+        if (isExisting()) {
             form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao);
             updatePlannedActivityFrom(form);
         } else {
@@ -106,11 +99,13 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             type = MediaType.TEXT_PLAIN;
         }
         getResponse().setEntity(responseEntity, type);
+
+        return null;
     }
 
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().isCompatible(MediaType.APPLICATION_WWW_FORM)) {
             String ident = UriTemplateParameters.PLANNED_ACTIVITY_IDENTIFIER.extractFrom(getRequest());
             PlannedActivity pa = plannedActivityDao.getByGridId(ident);
@@ -181,8 +176,8 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
 
     @Override
     @SuppressWarnings("unused")
-    public void removeRepresentations() throws ResourceException {
-        if (!isAvailable()) {
+    public Representation delete(Variant variant) throws ResourceException {
+        if (!isExisting()) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
         }
         if (!helper.isDevelopmentRequest()) {
@@ -192,6 +187,8 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         amendmentService.updateDevelopmentAmendmentAndSave(
             templateService.findParent(getRequestedObject()), Remove.create(getRequestedObject()));
         getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+
+        return null;
     }
     
     private Study getStudy() throws ResourceException {

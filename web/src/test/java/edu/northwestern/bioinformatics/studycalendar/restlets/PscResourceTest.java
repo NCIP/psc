@@ -8,8 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.restlet.data.Parameter;
-import org.restlet.util.Series;
+import org.restlet.resource.ResourceException;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -33,6 +32,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         super.setUp();
         siteA = Fixtures.createSite("A", "a?");
         studyB = Fixtures.createReleasedTemplate("B");
+        doInitOnly();
     }
 
     @Override
@@ -153,8 +153,23 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertNotSame(fromThisThread, fromOtherThread[0]);
     }
 
+    public void testClientErrorReasonSetAsRequestAttributeForStatusService() throws Exception {
+        getResource().setClientErrorReason("Bad %s", "qi");
+        assertEquals("Bad qi",
+            request.getAttributes().get(PscStatusService.CLIENT_ERROR_REASON_KEY));
+    }
+
+    public void testClientErrorReasonSetToNullRemovesAttribute() throws Exception {
+        request.getAttributes().put(PscStatusService.CLIENT_ERROR_REASON_KEY, "Raisins in there");
+        getResource().setClientErrorReason(null);
+        assertFalse(request.getAttributes().containsKey(PscStatusService.CLIENT_ERROR_REASON_KEY));
+    }
+
     public class TestResource extends AbstractPscResource {
-        public TestResource() {
+        @Override
+        protected void doInit() throws ResourceException {
+            super.doInit();
+
             setAllAuthorizedFor(GET);
 
             addAuthorizationsFor(PUT, PscRole.SYSTEM_ADMINISTRATOR);

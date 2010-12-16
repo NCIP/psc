@@ -5,10 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
@@ -23,22 +21,15 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
     private Site site;
 
     @Override
-    public boolean allowPut() {
-        return false;
-    }
-
-    @Override
-    public boolean allowGet() {
-        return false;
-    }
-
-    @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         // site is initialized in super.init
         addAuthorizationsFor(Method.DELETE, ResourceAuthorization.createSeveral(
             site, PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER));
+
+        getAllowedMethods().remove(Method.GET);
+        getAllowedMethods().remove(Method.PUT);
     }
 
     @Override

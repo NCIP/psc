@@ -2,9 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.service.LabelService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -25,8 +22,8 @@ public class LabelResource extends AbstractPscResource {
     private StudyCalendarXmlCollectionSerializer<String> xmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.TEXT_XML));
     }
@@ -39,7 +36,7 @@ public class LabelResource extends AbstractPscResource {
 
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.TEXT_XML)) {
             return createXmlRepresentation(getAllObjects());
         } else {

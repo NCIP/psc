@@ -7,9 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.Study
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
@@ -24,8 +21,8 @@ public class ProvidedStudySitesResource extends AbstractCollectionResource<Study
     private StudySiteConsumer studySiteConsumer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
     }
 
     @Override

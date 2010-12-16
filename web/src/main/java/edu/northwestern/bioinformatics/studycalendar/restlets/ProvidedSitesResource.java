@@ -4,11 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.SiteListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
@@ -23,8 +20,8 @@ public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
     private SiteConsumer siteConsumer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
@@ -36,11 +33,11 @@ public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             return new SiteListJsonRepresentation(getAllObjects());
         } else {
-            return super.represent(variant);
+            return super.get(variant);
         }
     }
 

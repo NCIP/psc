@@ -6,10 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
@@ -29,8 +26,8 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     private StudyCalendarXmlCollectionSerializer<Source> xmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         setAllAuthorizedFor(Method.GET);
         
         addAuthorizationsFor(Method.GET,

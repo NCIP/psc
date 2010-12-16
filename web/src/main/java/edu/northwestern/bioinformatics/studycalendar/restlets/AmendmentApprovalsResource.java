@@ -5,11 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -27,8 +24,8 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
     private AmendmentService amendmentService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         addAuthorizationsFor(Method.GET, createSiteParticipationAuthorizations(getStudy()));
         addAuthorizationsFor(Method.POST, getSite(), STUDY_QA_MANAGER);

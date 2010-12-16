@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
@@ -20,15 +18,15 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
     private AmendedTemplateHelper helper;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        helper.setRequest(request);
-        super.init(context, request, response);
+    public void doInit() {
+        helper.setRequest(getRequest());
+        super.doInit();
         addAuthorizationsFor(Method.GET, helper.getReadAuthorizations());
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Representation representation = super.represent(variant);
+    public Representation get(Variant variant) throws ResourceException {
+        Representation representation = super.get(variant);
         Date modifiedDate = getRequestedObject().getLastModifiedDate();
         representation.setModificationDate(modifiedDate);
         return representation;

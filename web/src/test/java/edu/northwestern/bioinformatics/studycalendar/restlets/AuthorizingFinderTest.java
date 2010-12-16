@@ -12,10 +12,9 @@ import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.easymock.classextension.EasyMock;
 import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.BeanFactory;
@@ -122,23 +121,23 @@ public class AuthorizingFinderTest extends RestletTestCase {
 
     private static class TestAuthorizingResource extends AbstractPscResource {
         @Override
-        public void init(Context context, Request request, Response response) {
-            super.init(context, request, response);
+        public void doInit() {
+            super.doInit();
             addAuthorizationsFor(POST, PscRole.SYSTEM_ADMINISTRATOR);
             addAuthorizationsFor(DELETE,
                 ResourceAuthorization.create(PscRole.STUDY_QA_MANAGER, Fixtures.createSite("A", "a")));
-            setReadable(true);
-            setModifiable(true);
         }
 
         @Override
-        public void acceptRepresentation(Representation entity) throws ResourceException {
+        public Representation put(Representation entity, Variant variant) throws ResourceException {
             // dummy
+            return null;
         }
 
         @Override
-        public void removeRepresentations() throws ResourceException {
+        public Representation delete(Variant variant) throws ResourceException {
             // dummy
+            return null;
         }
     }
 }

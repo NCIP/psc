@@ -18,11 +18,9 @@ import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStu
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
 import net.fortuna.ical4j.model.Calendar;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -51,8 +49,8 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     private ScheduleService scheduleService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         ScheduledCalendar scheduledCalendar = getRequestedObjectDuringInit();
         Study study = null;
@@ -69,11 +67,6 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         addAuthorizationsFor(Method.POST, site, study, STUDY_SUBJECT_CALENDAR_MANAGER);
 
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
-    }
-
-    @Override
-    public boolean allowPost() {
-        return true;
     }
 
     @Override
@@ -111,7 +104,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     @Override
-    public void acceptRepresentation(final Representation entity) throws ResourceException {
+    public Representation post(final Representation entity, Variant variant) throws ResourceException {
         if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
 
             NextScheduledStudySegment scheduled;
@@ -141,6 +134,8 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
             throw new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + entity.getMediaType());
         }
+
+        return null;
     }
 
     private ScheduledStudySegment store(NextScheduledStudySegment scheduled) throws ResourceException {

@@ -9,11 +9,8 @@ import org.codehaus.jackson.JsonGenerator;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -40,15 +37,13 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
     private OsgiLayerTools osgiLayerTools;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 
-    @Override public boolean allowPut() { return true; }
-
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             final ServiceReference ref = getServiceReference();
             if (log.isDebugEnabled()) {
@@ -70,7 +65,7 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
 
     @Override
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public void storeRepresentation(Representation representation) throws ResourceException {
+    public Representation put(Representation representation, Variant variant) throws ResourceException {
         if (representation.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             verifyPutParameters();
             try {
@@ -83,6 +78,8 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Only JSON is supported for PUT");
         }
+
+        return null;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

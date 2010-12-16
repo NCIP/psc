@@ -9,9 +9,11 @@
     <bean name="apiApplication" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscApplication">
         <property name="inboundRoot" ref="errorReportingFilter"/>
         <property name="metadataService" ref="metadataService"/>
+        <property name="statusService" ref="statusService"/>
     </bean>
 
     <bean id="metadataService" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService"/>
+    <bean id="statusService" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscStatusService"/>
 
     <bean name="errorReportingFilter" class="edu.northwestern.bioinformatics.studycalendar.restlets.ErrorMailingRestletFilter" autowire="byName">
          <property name="next" ref="responseHeaderFilter"/>

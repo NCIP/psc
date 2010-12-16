@@ -7,12 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -31,8 +28,8 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, getSite(), getStudy(),
                 STUDY_TEAM_ADMINISTRATOR,
                 STUDY_SUBJECT_CALENDAR_MANAGER,

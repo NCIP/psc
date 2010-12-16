@@ -10,9 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -33,8 +30,8 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
     private StudyCalendarXmlCollectionSerializer<Notification> xmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 
         StudySubjectAssignment assignment = getStudySubjectAssignment();
@@ -78,7 +75,7 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(getAllObjects());
         }

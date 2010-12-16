@@ -8,11 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudy
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -32,8 +29,8 @@ public class SubjectsResource extends AbstractPscResource {
     private PscUserService pscUserService;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, STUDY_SUBJECT_CALENDAR_MANAGER);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
@@ -44,7 +41,7 @@ public class SubjectsResource extends AbstractPscResource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             return createJSONRepresentation(getAllObjects());
         } else {

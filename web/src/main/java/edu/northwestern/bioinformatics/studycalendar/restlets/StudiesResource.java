@@ -9,12 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
@@ -41,15 +38,13 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
         addAuthorizationsFor(Method.GET, PscRole.valuesWithStudyAccess());
         addAuthorizationsFor(Method.POST, STUDY_CALENDAR_TEMPLATE_BUILDER);
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
-
-    @Override public boolean allowPost() { return true; }
 
     @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
@@ -85,16 +80,16 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             return new StudyListJsonRepresentation(getAllObjects(), getCurrentUser());
         } else {
-            return super.represent(variant);
+            return super.get(variant);
         }
     }
 
     @Override
-    public void acceptRepresentation(Representation entity) throws ResourceException {
+    public Representation post(Representation entity, Variant variant) throws ResourceException {
         if (MediaType.TEXT_XML.includes(entity.getMediaType())) {
             Study read;
             try {
@@ -117,6 +112,8 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }
+
+        return null;
     }
 
     @Override

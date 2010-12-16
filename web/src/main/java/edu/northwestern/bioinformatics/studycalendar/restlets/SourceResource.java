@@ -4,9 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -24,20 +21,11 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  */
 public class SourceResource extends AbstractPscResource {
     public SourceService sourceService;
-    @Override
-    public boolean allowPut()
-    {
-        return true;
-    }
 
     @Override
-    public boolean allowGet() {
-        return false;
-    }
-
-    @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
+        getAllowedMethods().remove(Method.GET);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         addAuthorizationsFor(Method.PUT,
                 BUSINESS_ADMINISTRATOR);
@@ -45,7 +33,7 @@ public class SourceResource extends AbstractPscResource {
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public void storeRepresentation(Representation representation) throws ResourceException {
+    public Representation put(Representation representation, Variant variant) throws ResourceException {
         String sourceName = UriTemplateParameters.SOURCE_NAME.extractFrom(getRequest());
         if (sourceName == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No source name in the request");
@@ -74,6 +62,8 @@ public class SourceResource extends AbstractPscResource {
             throw new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
+
+        return null;
     }
 
     @Required

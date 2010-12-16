@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -13,8 +12,8 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 @Deprecated /* Remove in 2.10 */
 public class SubjectCoordinatorSchedulesResource extends AbstractPscResource {
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    public void doInit() {
+        super.doInit();
 
         addAuthorizationsFor(Method.GET,
             STUDY_SUBJECT_CALENDAR_MANAGER,
@@ -23,9 +22,10 @@ public class SubjectCoordinatorSchedulesResource extends AbstractPscResource {
     }
 
     @Override
-    public void handleGet() {
-        getResponse().redirectPermanent(
+    public Representation get(Variant variant) {
+        redirectPermanent(
             String.format("%s/api/v1/users/%s/managed-schedules", 
                 getApplicationBaseUrl(), UriTemplateParameters.USERNAME.extractFrom(getRequest())));
+        return null;
     }
 }
