@@ -32,10 +32,10 @@ public class AuditEventHelper {
 
     public AuditEvent createAuditEvent(final Object entity, final Operation operation) {
         DataAuditInfo info = (DataAuditInfo) gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal();
-        if (info == null) {
-            throw new AuditSystemException("Can not audit; no local audit info available");
-        }
         if (auditable(entity)) {
+            if (info == null) {
+                throw new AuditSystemException("Can not audit; no local audit info available");
+            }
             if (log.isTraceEnabled()) {
                 String idS;
                 if (entity instanceof DomainObject) {
