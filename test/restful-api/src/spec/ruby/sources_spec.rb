@@ -15,7 +15,7 @@ describe "/activities" do
     end
 
     it "allows access to a specific group of activity(s) by specifying a query parameter" do
-      get '/activities/?q=x-ray', :as => :juno
+      get '/activities?q=x-ray', :as => :juno
 
       response.status_code.should == 200
       response.content_type.should == 'text/xml'

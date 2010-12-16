@@ -142,7 +142,7 @@ describe "/study" do
     it "it accepts a study from a study coordinator" do
       put '/studies/NU482/template', @nu482_xml, :as => :juno
       response.status_code.should == 201 #created
-      get '/studies/', :as => :alice
+      get '/studies', :as => :alice
 
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU482")

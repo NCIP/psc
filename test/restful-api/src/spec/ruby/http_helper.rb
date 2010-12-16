@@ -10,6 +10,14 @@ module HttpHelper
 
   def get(relative_uri, options={})
     process_options!(options)
+
+    # Default to XML if an explicit Accept header or extension is not
+    # present.  This was the default in Restlet 1.1, so many of the
+    # specs expect it.
+    unless options["Accept"] || relative_uri =~ /\.\w+$/
+      options["Accept"] = "text/xml"
+    end
+
     options[:method] = :get
     execute_request!(relative_uri, options)
   end
