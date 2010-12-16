@@ -46,10 +46,12 @@ class RequestLoggerFormatter < Spec::Runner::Formatter::BaseTextFormatter
   end
 
   def example_failed(example, counter, failure)
+    output.puts @current_record.to_html if ENV['REQUEST_LOG_INCLUDE_ALL']
     @current_record = nil
   end
 
   def example_pending(example, message)
+    output.puts @current_record.to_html if ENV['REQUEST_LOG_INCLUDE_ALL']
     @current_record = nil
   end
 
