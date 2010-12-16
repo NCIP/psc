@@ -2,6 +2,9 @@
 
 <%@attribute name="logoImageUrl" required="true"%>
 <%@attribute name="logoText" required="true"%>
+<%@attribute name="logoDimensionsWidth" required="true"%>
+<%@attribute name="logoDimensionsHeight" required="true"%>
+
 <%@attribute name="tagline" required="true"%>
 <%@attribute name="taglineImageUrl" required="true"%>
 <%@attribute name="logoutUrl" required="true"%>
@@ -23,7 +26,7 @@
 
 <div id="header">
     <div class="background-R">
-        <img src="${logoImageUrl}" alt="${logoText}" id="logo" width="129" height="40">
+        <img src="${logoImageUrl}" alt="${logoText}" id="logo" width="${logoDimensionsWidth}" height="${logoDimensionsHeight}">
         <img src="${taglineImageUrl}" alt="${tagline}" id="tagline" width="268" height="22">
     </div>
 

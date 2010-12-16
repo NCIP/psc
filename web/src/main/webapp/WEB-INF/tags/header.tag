@@ -4,6 +4,8 @@
 <laf:header>
     <jsp:attribute name="logoText">${configuration.map.logoAltText}</jsp:attribute>
     <jsp:attribute name="logoImageUrl"><c:url value="${configuration.map.logoImageUrl}"/></jsp:attribute>
+    <jsp:attribute name="logoDimensionsWidth"><c:url value="${configuration.map.logoDimensionsWidth}"/></jsp:attribute>
+    <jsp:attribute name="logoDimensionsHeight"><c:url value="${configuration.map.logoDimensionsHeight}"/></jsp:attribute>
     <jsp:attribute name="tagline">Patient Study Calendar</jsp:attribute>
     <jsp:attribute name="taglineImageUrl"><c:url value="/images/tagline.png"/></jsp:attribute>
     <jsp:attribute name="logoutUrl"><c:url value="/auth/logout"/></jsp:attribute>

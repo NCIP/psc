@@ -50,6 +50,12 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<String>
             LOGO_IMAGE_URL = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoImageUrl"));
     public static final ConfigurationProperty<String>
+                LOGO_DIMENSIONS_WIDTH = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsWidth"));
+    public static final ConfigurationProperty<String>
+                LOGO_DIMENSIONS_HEIGHT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsHeight"));
+
+
+    public static final ConfigurationProperty<String>
             LOGO_ALT_TEXT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoAltText"));
     public static final ConfigurationProperty<Template>
             STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
