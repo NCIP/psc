@@ -1,4 +1,4 @@
-describe "/amendment_approval" do
+describe "/studies/{study-identifier}/sites/{site-identifier}/approvals" do
   describe "POST" do
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))

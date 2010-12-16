@@ -1,4 +1,4 @@
-describe "/blackout-date" do
+describe "/sites/{site-identifier}/blackout-dates" do
 
   describe "GET" do
     before do
@@ -58,8 +58,10 @@ describe "/blackout-date" do
         response.entity.should =~ %r(Site 'siteIdUnknown' not found. Please define a site that exists.)
       end
   end
+end
 
-  describe "DELETE" do
+describe "DELETE" do
+  describe "/sites/{site-identifier}/blackout-dates/{blackout-date-identifier}" do
     before do
       @blackoutdate = PscTest::Fixtures.createBlackoutDate(2008, 10, 12, "My birthday", mayo)
       @blackoutdate.grid_id = "1111"

@@ -1,4 +1,4 @@
-describe "/study-site-link" do
+describe "/studies/{study-identifier}/sites/{site-identifier}" do
 
   before do
     @studies = [

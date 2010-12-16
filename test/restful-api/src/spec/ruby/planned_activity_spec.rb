@@ -3,7 +3,7 @@
 # /studies/{study-identifier}/template/{amendment-identifier}/epochs/{epoch-name}/study-segments/
 # {segment-name}/periods/{period-identifier}/planned-activities/{planned-activity-identifier}
 
-describe "/planned-activity" do
+describe "/studies/{study-identifier}/template/{amendment-identifier}/epochs/{epoch-name}/study-segments/{segment-name}/periods/{period-identifier}/planned-activities/{planned-activity-identifier}" do
 
   before do
     #create study
@@ -51,6 +51,7 @@ describe "/planned-activity" do
 
   describe "GET" do
 
+    # TODO: this is out of place
     it "shows a study snapshot" do
       # code below display a study-snapshot
       get "/studies/NU480/template/2008-11-10~am", :as => :juno

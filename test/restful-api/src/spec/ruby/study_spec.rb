@@ -1,4 +1,4 @@
-describe "/study" do
+describe "/studies/{study-identifier}/template" do
   before do
     @studies = [
       # Released, but not approved studies

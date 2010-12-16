@@ -1,4 +1,4 @@
-describe "/scheduled_activity" do
+describe "/studies/{study-identifier}/schedules/{assignment-identifier}/activities/{scheduled-activity-identifier}" do
   before do
       #create study with an amendment
       @study = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))

@@ -1,4 +1,4 @@
-describe "/site" do
+describe "/sites/{site-identifier}" do
   before do
     @massgeneral = PscTest::Fixtures.createSite("Massachussets General Hospital", "MA034")
     application_context['siteDao'].save(@massgeneral)

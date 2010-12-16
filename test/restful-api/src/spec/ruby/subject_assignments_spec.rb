@@ -1,4 +1,4 @@
-describe "/subject_assignments" do
+describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignments" do
 
   before do
     #create a study with an amendment
