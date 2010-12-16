@@ -106,7 +106,8 @@ public abstract class ResourceTestCase<R extends ServerResource> extends Restlet
 
     protected void expectReadXmlFromRequestAs(Object expectedRead) throws Exception {
         final InputStream in = registerMockFor(InputStream.class);
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+        // Restlet 2 doesn't ensure enum instance identity in media types when parsing responses
+        request.setEntity(new InputRepresentation(in, new MediaType(MediaType.TEXT_XML.getName())));
 
         expect(xmlSerializer.readDocument(in)).andReturn(expectedRead);
     }

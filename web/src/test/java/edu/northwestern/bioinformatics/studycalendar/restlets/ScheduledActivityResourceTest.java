@@ -152,7 +152,8 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
         List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
         scheduledActivityList.add(scheduledActivity);
 
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+        // Restlet 2 doesn't preserve enum instance identity when parsing responses
+        request.setEntity(new InputRepresentation(in, new MediaType("text/xml")));
         expectGetScheduledActivity();
         scheduledActivityDao.save(scheduledActivity);
         doPost();

@@ -39,7 +39,7 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
      */
     @Override
     public Representation post(final Representation entity, Variant variant) throws ResourceException {
-        if (entity.getMediaType() == MediaType.TEXT_XML) {
+        if (MediaType.TEXT_XML.includes(entity.getMediaType())) {
             validateEntity(entity);
             //Collection<D> read;
             final D read;
@@ -66,7 +66,8 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
 
             return null;
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
+            throw new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + entity.getMediaType());
         }
     }
 

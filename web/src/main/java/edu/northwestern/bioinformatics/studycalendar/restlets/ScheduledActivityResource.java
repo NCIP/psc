@@ -92,7 +92,7 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
     @Override
     public Representation post(final Representation representation, Variant variant) throws ResourceException {
         ScheduledActivityState newState = null;
-        if (representation.getMediaType() == MediaType.TEXT_XML) {
+        if (MediaType.TEXT_XML.includes(representation.getMediaType())) {
             try {
                 newState = currentScheduledActivityStateXmlSerializer.readDocument(representation.getStream());
             } catch (IOException e) {
