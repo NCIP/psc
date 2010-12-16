@@ -1,0 +1,18 @@
+This directory is for staging a snapshot of Restlet when necessary.
+Follow the directions below to add or update a snapshot.  When the
+snapshot is present, set a version for restlet along the lines of
+"2.0.3.PSC001" (reflecting the source version) in
+tasks/psc_dependencies.rake.  If you commit the snapshot, please note
+what version below.
+
+Build directions:
+
+* Use this command:
+
+  $ ant -f ${RESTLET}/build/build.xml -Deditions=jee -Ddo-maven=yes build
+
+* Copy all the artifacts, not just any ones you particularly want to test:
+
+  $ cp -Rpv ${RESTLET}/build/temp/jee/dist/maven2/restlet-jee-2.0snapshot/org/restlet/jee/* .
+
+Built from revision [none].

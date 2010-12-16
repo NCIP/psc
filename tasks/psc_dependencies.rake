@@ -385,13 +385,27 @@ WEB = [
   "org.springframework:spring-test:jar:#{SPRING_VERSION}"
 ]
 
+def restlet_lib(name)
+  spec = "org.restlet.jee:#{name}:jar:#{RESTLET_VERSION}"
+  if RESTLET_VERSION =~ /PSC/
+    snapshot_base = "restlet-snapshot"
+    version = Dir[File.join("static-lib", snapshot_base, "org.restlet", "*")].first.split('/').last
+    artifact(spec.sub(":jar:", ":jar:sources:")).from(
+      static_lib(File.join(snapshot_base, name, version, "#{name}-#{version}-sources.jar")))
+    artifact(spec).from(
+      static_lib(File.join(snapshot_base, name, version, "#{name}-#{version}.jar")))
+  else
+    spec
+  end
+end
+
 RESTLET = struct({
-  :framework        => "org.restlet.jee:org.restlet:jar:#{RESTLET_VERSION}",
-  :spring_ext       => "org.restlet.jee:org.restlet.ext.spring:jar:#{RESTLET_VERSION}",
-  :freemarker_ext   => "org.restlet.jee:org.restlet.ext.freemarker:jar:#{RESTLET_VERSION}",
-  :json_ext         => "org.restlet.jee:org.restlet.ext.json:jar:#{RESTLET_VERSION}",
-  :servlet_ext      => "org.restlet.jee:org.restlet.ext.servlet:jar:#{RESTLET_VERSION}",
-  :xml_ext          => "org.restlet.jee:org.restlet.ext.xml:jar:#{RESTLET_VERSION}",
+  :framework        => restlet_lib("org.restlet"),
+  :spring_ext       => restlet_lib("org.restlet.ext.spring"),
+  :freemarker_ext   => restlet_lib("org.restlet.ext.freemarker"),
+  :json_ext         => restlet_lib("org.restlet.ext.json"),
+  :servlet_ext      => restlet_lib("org.restlet.ext.servlet"),
+  :xml_ext          => restlet_lib("org.restlet.ext.xml")
 })
 
 CONTAINER_PROVIDED = [
