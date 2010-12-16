@@ -1,0 +1,33 @@
+<dataset>
+    <AUDIT_EVENTS
+        id="-100"
+        ip_address="255.255.255.255"
+        user_name="testUser"
+        time="2010-08-16 23:24:58.361"
+        class_name="edu.northwestern.bioinformatics.studycalendar.domain.Activity"
+        operation="CREATE"
+        url="/psc/pages/activities/addNewActivity"
+        version="0"
+        object_id="11" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-100"
+        audit_event_id="-100"
+        attribute_name="gridId"
+        new_value="grid1"
+        version="0" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-101"
+        audit_event_id="-100"
+        attribute_name="assignedIdentifier"
+        new_value="AssignId1"
+        version="0" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-102"
+        audit_event_id="-100"
+        attribute_name="name"
+        new_value="Name1"
+        version="0" />
+</dataset>
