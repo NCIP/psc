@@ -20,7 +20,7 @@ public class UserAction extends AbstractMutableDomainObject {
     private Integer csmUserId;
     private String context;
     private String actionType;
-    private Boolean undone;
+    private boolean undone;
     private User resolvedUser;
 
     public String getDescription() {
@@ -39,6 +39,9 @@ public class UserAction extends AbstractMutableDomainObject {
         this.csmUserId = csmUserId;
     }
 
+    public UserAction() {
+        this.undone = false;
+    }
 
     /*
      TODO: I would prefer that this field's type be PscUser.  However, that would introduce
@@ -83,11 +86,11 @@ public class UserAction extends AbstractMutableDomainObject {
         this.actionType = actionType;
     }
 
-    public Boolean getUndone() {
+    public boolean isUndone() {
         return undone;
     }
 
-    public void setUndone(Boolean undone) {
+    public void setUndone(boolean undone) {
         this.undone = undone;
     }
 }

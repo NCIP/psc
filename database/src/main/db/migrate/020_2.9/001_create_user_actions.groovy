@@ -6,7 +6,7 @@ class CreateUserActions extends edu.northwestern.bioinformatics.bering.Migration
             t.addColumn("context", "string", nullable:false)
             t.addColumn("description", "string", nullable:false)
             t.addColumn("action_type", "string", nullable:false)
-            t.addColumn("undone", "boolean", defaultValue:false)
+            t.addColumn("undone", "boolean", defaultValue:"0")
             t.addColumn("grid_id", "string", limit: 255)
         }
     }
