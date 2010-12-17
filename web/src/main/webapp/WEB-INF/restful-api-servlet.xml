@@ -296,6 +296,9 @@
     <bean name="/osgi/bundles/{bundle-id}/services/{service-identifier}/properties" id="osgiServicePropertiesResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiServicePropertiesResource"/>
 
+    <bean name="/user-actions" id="userActionsResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UserActionsResource" />
+
     <!-- AUXILIARIES -->
 
     <bean id="resourceFreemarkerConfiguration"

@@ -13,7 +13,7 @@ describe "/user-actions" do
     it "should successfully create a user action" do
       action = user_action("Delayed 45 activities for Jo Carlson by 6 days", "http://fake.us/api/v1/subjects/0000001/schedules")
 
-      post "/user-actions/", action, 'Content-Type' => 'application/json'
+      post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
       response.status_code.should == 201
 
       # response.status_message.should == "Created"
