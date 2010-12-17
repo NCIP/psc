@@ -22,7 +22,7 @@ describe "/user-actions" do
     describe "success" do
       before(:each) do
         action = user_action("Delay", "Delayed 45 activities", "http://fake/psc/api/v1/subjects")
-        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
       end
 
       it "should respond with a 201 for success" do
@@ -45,28 +45,40 @@ describe "/user-actions" do
     end
 
     describe "failure" do
-      it "should respond with a 400 when no description is passed" do
+      it "should respond with a 400 when there is no description property " do
         action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects")
-        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.entity.should include("Missing attribute: description")
       end
 
       it "should respond with a 400 when description is null" do
         action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects", true)
-        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.entity.should include("Blank attribute: description")
       end
 
       it "should respond with a 400 when description is blank" do
         action = user_action("Delay", "", "http://fake/psc/api/v1/subjects")
-        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.entity.should include("Blank attribute: description")
       end
 
-      it "should fail when user doesn't have required privileges"
+      it "should respond with a 400 when there is no action type" do
+        action = user_action(nil, "Delayed 45 activities", "http://fake/psc/api/v1/subjects")
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.entity.should include("Missing attribute: actionType")
+      end
+
+      it "should respond with a 400 when there is no contexts type" do
+        action = user_action("Delay", "Delayed 45 activities", nil)
+        post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.entity.should include("Missing attribute: context")
+      end
     end
   end
 end
