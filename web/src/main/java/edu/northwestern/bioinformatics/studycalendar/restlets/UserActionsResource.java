@@ -47,12 +47,6 @@ public class UserActionsResource extends AbstractPscResource {
         }
     }
 
-    @Required
-    public void setUserActionDao(UserActionDao userActionDao) {
-        this.userActionDao = userActionDao;
-    }
-
-
     private UserActionJSONRepresentation createJSONRepresentation(Representation representation) throws ResourceException {
         try {
             return new UserActionJSONRepresentation(representation.getText());
@@ -62,18 +56,6 @@ public class UserActionsResource extends AbstractPscResource {
             throw new StudyCalendarSystemException("Problem reading JSON", e);
         }
     }
-
-//    private class UserActionPost {
-//        private JSONObject json;
-//
-//        private UserActionPost(JSONObject json) {
-//            this.json = json;
-//        }
-//
-//        public UserAction apply() {
-//
-//        }
-//    }
 
     private class UserActionJSONRepresentation {
         private JSONObject wrapper;
@@ -94,5 +76,22 @@ public class UserActionsResource extends AbstractPscResource {
             }
             return action;
         }
+    }
+
+    //    private class UserActionPost {
+//        private JSONObject json;
+//
+//        private UserActionPost(JSONObject json) {
+//            this.json = json;
+//        }
+//
+//        public UserAction apply() {
+//
+//        }
+//    }
+    
+    @Required
+    public void setUserActionDao(UserActionDao userActionDao) {
+        this.userActionDao = userActionDao;
     }
 }
