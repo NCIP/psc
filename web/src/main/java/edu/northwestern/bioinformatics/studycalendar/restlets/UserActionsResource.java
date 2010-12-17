@@ -3,14 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
-import gov.nih.nci.logging.api.util.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
-import org.restlet.data.*;
-import org.restlet.resource.Representation;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -24,19 +25,16 @@ public class UserActionsResource extends AbstractPscResource {
     private UserActionDao userActionDao;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
+    protected void doInit() throws ResourceException {
+        super.doInit();
         setAllAuthorizedFor(Method.POST);
-        setReadable(false);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
-    @Override public boolean allowPost() { return true; }
-
     @Override
-    public void acceptRepresentation(Representation representation) throws ResourceException {
-        if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
-            UserActionJSONRepresentation json = createJSONRepresentation(representation);
+    protected Representation post(Representation entity, Variant variant) throws ResourceException {
+        if (entity.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
+            UserActionJSONRepresentation json = createJSONRepresentation(entity);
 
             String errorMessage = json.validate();
             if (errorMessage != null) {
@@ -53,8 +51,9 @@ public class UserActionsResource extends AbstractPscResource {
                 "user-actions/%s", Reference.encode(action.getGridId())));
         } else {
             throw new ResourceException(
-                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + entity.getMediaType());
         }
+        return null;
     }
 
     private UserActionJSONRepresentation createJSONRepresentation(Representation representation) throws ResourceException {
@@ -103,18 +102,6 @@ public class UserActionsResource extends AbstractPscResource {
             return null;
         }
     }
-
-    //    private class UserActionPost {
-//        private JSONObject json;
-//
-//        private UserActionPost(JSONObject json) {
-//            this.json = json;
-//        }
-//
-//        public UserAction apply() {
-//
-//        }
-//    }
     
     @Required
     public void setUserActionDao(UserActionDao userActionDao) {
