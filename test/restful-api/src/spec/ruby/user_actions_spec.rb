@@ -1,6 +1,17 @@
 describe "/user-actions" do
-    def user_action(action_type, description, context)
-      "{actionType: \"#{action_type}\", description: \"#{description}\", context: \"#{context}\"}"
+    def user_action(action_type, description, context, show_null_attributes = false)
+      attrs = {}
+      attrs['context'] = context
+      attrs['actionType'] = action_type
+      attrs['description'] = description
+
+      attrs.reject!{|a,b| b.nil?} unless show_null_attributes
+
+      <<-JSON
+        {
+          #{attrs.collect{|a,b| "#{a}: " + (b ? "\"#{b}\"" : "null")}.join(', ')}
+        }
+      JSON
     end
 
     def retrieve(grid_id)
@@ -35,14 +46,14 @@ describe "/user-actions" do
 
     describe "failure" do
       it "should respond with a 400 when no description is passed" do
-        action = "{actionType: \"Delay\", context: \"http://fake/psc/api/v1/subjects\"}"
+        action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects")
         post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.entity.should include("Missing attribute: description")
       end
 
       it "should respond with a 400 when description is null" do
-        action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects")
+        action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects", true)
         post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
         response.status_code.should == 400
         response.entity.should include("Blank attribute: description")
