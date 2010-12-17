@@ -1831,6 +1831,42 @@
                 </response>
             </method>
         </resource>
+
+      <resource path="user-actions">
+          <doc>
+              <html:p>
+                  An action performed by a user in a certain context
+                  which can be used to reference undoable changes.
+              </html:p>
+          </doc>
+
+          <method name="POST">
+             <doc>
+                 <html:p>
+                      Creates a user action.
+                 </html:p>
+                 <html:div class="roles">
+                     Authorized to:
+                     <html:ul>
+                         <html:li>Public</html:li>
+                     </html:ul>
+                 </html:div>
+              </doc>
+              <response>
+                <doc>
+                  <html:p>
+                    {
+                    description: "Delayed 45 activities for Jo Carlson by 6 days",
+                    context: "{PSC}/api/v1/subjects/0000001/schedules",
+                    actionType: "Delay"
+                    }
+                  </html:p>
+                </doc>
+                <representation mediaType="application/json"/>
+              </response>
+          </method>
+      </resource>
+
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
