@@ -234,8 +234,29 @@
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 
-    <!-- TODO remove ctmscommon data audit dao mappings once psc audit dao implements all methods -->
-    <bean name="dataAuditRepository" parent="daoTemplate" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository" />
+    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
+            </list>
+        </property>
+        <property name="namingStrategy">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
+                <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent</value>
+          </list>
+        </property>
+    </bean>
+    <!-- ACTUAL DAOS -->
+    <bean name="dataAuditRepository" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository">
+        <property name="sessionFactory">
+            <ref local="auditSessionFactory"/>
+        </property>
+    </bean>
+
     <bean id="auditHistoryRepository" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository">
         <property name="auditHistoryDao">
             <bean parent="daoTemplate" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryDao" />
@@ -279,4 +300,8 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
     <bean id="userActionDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao"/>
+
+    <bean id="auditEventDao" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
 </beans>

@@ -35,10 +35,11 @@ public class AuditDeleteEventListenerIntegratedTest extends AuditEventListenerTe
 
         int objectId = -1111;
         List<Map> eventIds = getJdbcTemplate().queryForList("select id from audit_events where object_id = ? and class_name = ? and operation = 'DELETE'", new Object[]{objectId, Period.class.getName()});
-        Number eventId = (Number)eventIds.get(0).get("id");
+
+        int eventId = (Integer)eventIds.get(0).get("id");
         assertNotNull("Audit event for DELETE is not created ", eventId);
         
-        List<Map> rows = getAuditEventValuesForEvent(eventId.intValue());
+        List<Map> rows = getAuditEventValuesForEvent(eventId);
         assertEquals("No of rows are different", 6, rows.size());
         Map durationQuantityRow = rows.get(1);
         Map durationUnitRow = rows.get(2);
