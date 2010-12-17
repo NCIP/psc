@@ -1,0 +1,17 @@
+<dataset>
+  <USERS
+    id="-999"
+    name="Joe"
+    csm_user_id="-999"/>
+
+  <USER_ACTIONS 
+    id="-100"
+    description="Notification dismissed"
+    undone="0"
+    uri="http://foo/bar"
+    action_type="Dismissal"
+    user_id="-999"
+    grid_id="Alabaster"
+    />
+
+</dataset>

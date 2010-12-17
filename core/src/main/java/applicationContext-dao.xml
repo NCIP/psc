@@ -58,6 +58,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserAction</value>
 
                 <!-- Amendments & customizations -->
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment</value>
@@ -180,6 +181,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Population</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.UserAction</value>
 
                 <!-- Amendments & customizations -->
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment</value>
@@ -276,4 +278,5 @@
     <bean id="auditEventDao" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
+    <bean id="userActionDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao"/>
 </beans>
