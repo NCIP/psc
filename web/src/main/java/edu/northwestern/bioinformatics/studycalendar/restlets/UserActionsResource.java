@@ -32,7 +32,7 @@ public class UserActionsResource extends AbstractPscResource {
             UserAction action = new UserAction();
             action.setDescription("Dismissed Notification");
             action.setUser(getCurrentUser().getCsmUser());
-            action.setUri("http://foo/bar");
+            action.setContext("http://foo/bar");
             action.setActionType("Bla");
 
             userActionDao.save(action);

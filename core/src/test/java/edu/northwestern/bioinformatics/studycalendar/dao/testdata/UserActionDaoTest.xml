@@ -3,7 +3,7 @@
     id="-100"
     description="Notification dismissed"
     undone="0"
-    uri="http://foo/bar"
+    context="http://foo/bar"
     action_type="Dismissal"
     csm_user_id="-999"
     grid_id="Alabaster"

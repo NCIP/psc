@@ -18,10 +18,10 @@ import javax.persistence.Transient;
 public class UserAction extends AbstractMutableDomainObject {
     private String description;
     private Integer csmUserId;
-    private User resolvedUser;
-    private String uri;
+    private String context;
     private String actionType;
     private Boolean undone;
+    private User resolvedUser;
 
     public String getDescription() {
         return description;
@@ -67,12 +67,12 @@ public class UserAction extends AbstractMutableDomainObject {
         }
     }
 
-    public String getUri() {
-        return uri;
+    public String getContext() {
+        return context;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setContext(String context) {
+        this.context = context;
     }
 
     public String getActionType() {

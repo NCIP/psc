@@ -3,7 +3,7 @@ class CreateUserActions extends edu.northwestern.bioinformatics.bering.Migration
         createTable("user_actions") { t ->
             t.addVersionColumn()
             t.addColumn("csm_user_id", "integer", nullable: false)
-            t.addColumn("uri", "string", nullable:false)
+            t.addColumn("context", "string", nullable:false)
             t.addColumn("description", "string", nullable:false)
             t.addColumn("action_type", "string", nullable:false)
             t.addColumn("undone", "boolean", defaultValue:false)
