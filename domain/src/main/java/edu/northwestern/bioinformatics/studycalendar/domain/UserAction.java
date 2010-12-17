@@ -19,6 +19,9 @@ public class UserAction extends AbstractMutableDomainObject {
     private String description;
     private Integer csmUserId;
     private User resolvedUser;
+    private String uri;
+    private String actionType;
+    private Boolean undone;
 
     public String getDescription() {
         return description;
@@ -62,5 +65,29 @@ public class UserAction extends AbstractMutableDomainObject {
         } else {
             setCsmUserId(null);
         }
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
+    }
+
+    public Boolean getUndone() {
+        return undone;
+    }
+
+    public void setUndone(Boolean undone) {
+        this.undone = undone;
     }
 }
