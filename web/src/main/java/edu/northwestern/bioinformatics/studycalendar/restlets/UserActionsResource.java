@@ -15,12 +15,11 @@ public class UserActionsResource extends AbstractPscResource {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.POST);
-        setModifiable(true);
+        setReadable(false);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     @Override public boolean allowPost() { return true; }
-
 
     @Override
     public void acceptRepresentation(Representation representation) throws ResourceException {
