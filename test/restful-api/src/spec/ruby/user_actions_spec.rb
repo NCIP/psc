@@ -2,12 +2,7 @@ describe "/user-actions" do
   describe "POST" do
 
     def user_action(description, context)
-      <<-JSON
-        {
-          description: description,
-          context: context
-        }
-      JSON
+        "{description: #{description}, context: #{context}}"
     end
 
     it "should successfully create a user action" do
