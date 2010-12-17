@@ -4,8 +4,8 @@ describe "/user-actions" do
     def user_action(description, context)
       <<-JSON
         {
-          description: "Delayed 45 activities for Jo Carlson by 6 days",
-          context: "http://fake.us/api/v1/subjects/0000001/schedules"
+          description: description,
+          context: context
         }
       JSON
     end
@@ -15,9 +15,7 @@ describe "/user-actions" do
 
       post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
       response.status_code.should == 201
-
-      # response.status_message.should == "Created"
-      # response.meta['location'].should =~ %r{api/v1/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}$}
+      response.meta['location'].should =~ %r{api/v1/user-actions/.+$}
     end
   end
 end
