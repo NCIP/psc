@@ -10,7 +10,7 @@ describe "/user-actions" do
   describe "POST" do
     describe "success" do
       before(:each) do
-        action = user_action("Delay", "Delayed 45 activities", "http://fake.psc/api/v1/subjects/0000001/schedules")
+        action = user_action("Delay", "Delayed 45 activities", "http://fake/psc/api/v1/subjects")
         post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
       end
 
@@ -27,15 +27,35 @@ describe "/user-actions" do
         actual = retrieve(grid_id)
         actual.actionType.should == "Delay"
         actual.description.should == "Delayed 45 activities"
-        actual.context.should == "http://fake.psc/api/v1/subjects/0000001/schedules"
+        actual.context.should == "http://fake/psc/api/v1/subjects"
         actual.undone.should be(false)
         actual.csm_user_id.should_not be_nil
       end
+    end
 
-      describe "failure" do
-         it "should fail when no description is passed"
-         it "should fail when user doesn't have required privileges"
+    describe "failure" do
+      it "should respond with a 400 when no description is passed" do
+        action = "{actionType: \"Delay\", context: \"http://fake/psc/api/v1/subjects\"}"
+        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.entity.should include("Missing attribute: description")
       end
+
+      it "should respond with a 400 when description is null" do
+        action = user_action("Delay", nil, "http://fake/psc/api/v1/subjects")
+        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.entity.should include("Blank attribute: description")
+      end
+
+      it "should respond with a 400 when description is blank" do
+        action = user_action("Delay", "", "http://fake/psc/api/v1/subjects")
+        post "/user-actions", action, :as => :juno, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.entity.should include("Blank attribute: description")
+      end
+
+      it "should fail when user doesn't have required privileges"
     end
   end
 end

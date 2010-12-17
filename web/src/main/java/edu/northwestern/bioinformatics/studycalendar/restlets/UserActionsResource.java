@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import gov.nih.nci.logging.api.util.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.Context;
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
+
+import static gov.nih.nci.logging.api.util.StringUtils.isBlank;
 
 public class UserActionsResource extends AbstractPscResource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -34,6 +37,13 @@ public class UserActionsResource extends AbstractPscResource {
     public void acceptRepresentation(Representation representation) throws ResourceException {
         if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
             UserActionJSONRepresentation json = createJSONRepresentation(representation);
+
+            String errorMessage = json.validate();
+            if (errorMessage != null) {
+                throw new ResourceException(
+                    Status.CLIENT_ERROR_BAD_REQUEST, errorMessage);
+            }
+
             UserAction action = json.createUserAction();
 
             userActionDao.save(action);
@@ -75,6 +85,22 @@ public class UserActionsResource extends AbstractPscResource {
                 throw new StudyCalendarSystemException("Problem reading JSON", e);
             }
             return action;
+        }
+
+        private String[] REQUIRED_KEYS = {"description", "context", "actionType"};
+        public String validate() {
+            for (String key : REQUIRED_KEYS) {
+                try {
+                    if (!wrapper.has(key)) {
+                        return "Missing attribute: " + key;
+                    } else if (wrapper.isNull(key) || isBlank(wrapper.getString(key))) {
+                        return "Blank attribute: " + key;
+                    }
+                } catch (JSONException e) {
+                    return "Missing attribute: " + key;
+                }
+            }
+            return null;
         }
     }
 
