@@ -308,6 +308,16 @@
                         font-size: 1.0em;
                         border-left: 1px solid #000;
                     }
+
+                    pre{
+                        background-color: #FAFAFA;
+                        border: 1px solid #DADADA;
+                        margin: 1em 1em 1em 1.6em;
+                        overflow-x: auto;
+                        overflow-y: hidden;
+                        padding: 2px 2px 2px 0;
+                        width: auto;
+                    }
                 </style>
             </head>
             <body>
