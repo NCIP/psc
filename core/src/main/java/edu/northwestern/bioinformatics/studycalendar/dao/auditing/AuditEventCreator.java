@@ -23,7 +23,13 @@ public class AuditEventCreator {
 
     private boolean canAudit(final Object entity) {
         if (entity instanceof AbstractMutableDomainObject) {
-            return true;
+            if (((AbstractMutableDomainObject) entity).getId() != null) {
+               return true;
+            } else {
+                log.debug("Entity {} doesn't have any Id.", new Object[]{ entity.getClass().getName()});
+                return false;
+            }
+
         } else {
             log.debug("No auditing for instances of " + entity.getClass().getName());
             return false;

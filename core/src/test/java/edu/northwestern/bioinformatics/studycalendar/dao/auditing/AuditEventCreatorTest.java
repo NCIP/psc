@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
@@ -21,6 +20,7 @@ public class AuditEventCreatorTest extends StudyCalendarTestCase {
     private DataAuditInfo info;
     private AuditEventCreator auditEventCreator;
     private AuditEventDao auditEventDao;
+    private Study study;
     public void setUp() throws Exception {
         super.setUp();
         auditEventDao = registerDaoMockFor(AuditEventDao.class);
@@ -28,14 +28,15 @@ public class AuditEventCreatorTest extends StudyCalendarTestCase {
         auditEventCreator.setAuditEventDao(auditEventDao);
         info = new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo(USERNAME, IP_ADDRESS, new Date(), URL);
         DataAuditInfo.setLocal(info);
+        study = new Study();
+        study.setId(12);
     }
 
     public void testCreateAuditEvent() throws Exception {
-        Study study = new Study();
-        study.setId(12);
         replayMocks();
         DataAuditEvent event = auditEventCreator.createAuditEvent(study, Operation.CREATE);
         verifyMocks();
+
         assertNotNull("Event is not created", event);
         assertEquals("Wrong userName", USERNAME, event.getInfo().getUsername());
         assertEquals("Wrong IP address", IP_ADDRESS, event.getInfo().getIp());
@@ -43,10 +44,17 @@ public class AuditEventCreatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong Class Name", "edu.northwestern.bioinformatics.studycalendar.domain.Study", event.getReference().getClassName());
     }
 
-    public void testCreateAuditEventWhenEntityCanNotBeAudit() throws Exception {
+    public void testCreateAuditEventWhenEntityIsNotMutableDomainObject() throws Exception {
         Object obj = new Object();
         replayMocks();
         DataAuditEvent actualEvent = auditEventCreator.createAuditEvent(obj, Operation.CREATE);
+        verifyMocks();
+        assertNull("Event is created", actualEvent);
+    }
+
+    public void testCreateAuditEventWhenEntityDoesNotHaveId() throws Exception {
+        replayMocks();
+        DataAuditEvent actualEvent = auditEventCreator.createAuditEvent(new Study(), Operation.CREATE);
         verifyMocks();
         assertNull("Event is created", actualEvent);
     }
@@ -55,7 +63,7 @@ public class AuditEventCreatorTest extends StudyCalendarTestCase {
         DataAuditInfo.setLocal(null);
         replayMocks();
         try {
-            auditEventCreator.createAuditEvent(new Study(), Operation.CREATE);
+            auditEventCreator.createAuditEvent(study, Operation.CREATE);
             fail("Exception not thrown");
         } catch (AuditSystemException ase) {
             assertEquals("Can not audit; no local audit info available", ase.getMessage());
