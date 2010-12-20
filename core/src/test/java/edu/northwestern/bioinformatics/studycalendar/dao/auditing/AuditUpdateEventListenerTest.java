@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
@@ -22,19 +21,19 @@ public class AuditUpdateEventListenerTest extends StudyCalendarTestCase {
     private AuditUpdateEventListener listener;
     private EntityPersister studyPersister;
     private DataAuditInfo info;
-    private AuditEventHelper auditEventHelper;
+    private AuditEventCreator auditEventCreator;
     private Study study;
     private Type[] types = {new StringType(), new StringType(), new StringType()};
     public void setUp() throws Exception {
         super.setUp();
 
-        auditEventHelper = registerMockFor(AuditEventHelper.class);
+        auditEventCreator = registerMockFor(AuditEventCreator.class);
         studyPersister = registerMockFor(EntityPersister.class);
         expect(studyPersister.getPropertyNames()).andStubReturn(
             new String[] { "longTitle", "assignedIdentifier", "gridId" });
         expect(studyPersister.getPropertyTypes()).andStubReturn(types);
         listener = new AuditUpdateEventListener();
-        listener.setAuditEventHelper(auditEventHelper);
+        listener.setAuditEventCreator(auditEventCreator);
         info = new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("username", "10.10.10.155", new Date(), "/psc/pages/newStudy");
         DataAuditInfo.setLocal(info);
         study = new Study();
@@ -45,8 +44,8 @@ public class AuditUpdateEventListenerTest extends StudyCalendarTestCase {
             new Object[] { "Foo", "114", "G" },
             new Object[] { "Bar", "114", "G" }, studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
-        expect(auditEventHelper.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
-        auditEventHelper.saveAuditEvent(event);
+        expect(auditEventCreator.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
+        auditEventCreator.saveAuditEvent(event);
 
         fireEvent(postUpdateEvent);
     }
@@ -56,8 +55,8 @@ public class AuditUpdateEventListenerTest extends StudyCalendarTestCase {
             new Object[] { "Foo", "114", "G" },
             new Object[] { "Foo", "141", "G" }, studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
-        expect(auditEventHelper.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
-        auditEventHelper.saveAuditEvent(event);
+        expect(auditEventCreator.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
+        auditEventCreator.saveAuditEvent(event);
 
         fireEvent(postUpdateEvent);
     }
@@ -67,8 +66,8 @@ public class AuditUpdateEventListenerTest extends StudyCalendarTestCase {
             new Object[] { "Foo", "114", "G" },
             new Object[] { "Foo", "114", "Grid1" }, studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
-        expect(auditEventHelper.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
-        auditEventHelper.saveAuditEvent(event);
+        expect(auditEventCreator.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
+        auditEventCreator.saveAuditEvent(event);
 
         fireEvent(postUpdateEvent);
     }
@@ -77,7 +76,7 @@ public class AuditUpdateEventListenerTest extends StudyCalendarTestCase {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 14,
             new Object[] { "Foo", "114", "G" },
             new Object[] { "Foo", "114", "G" }, studyPersister, null);
-        expect(auditEventHelper.createAuditEvent(study, Operation.UPDATE)).andReturn(null);
+        expect(auditEventCreator.createAuditEvent(study, Operation.UPDATE)).andReturn(null);
 
         fireEvent(postUpdateEvent);
     }

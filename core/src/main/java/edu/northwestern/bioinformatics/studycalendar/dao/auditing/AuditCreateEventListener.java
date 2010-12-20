@@ -10,10 +10,10 @@ import org.hibernate.type.Type;
  * @author Jalpa Patel
  */
 public class AuditCreateEventListener implements PostInsertEventListener {
-    private AuditEventHelper auditEventHelper;
+    private AuditEventCreator auditEventCreator;
 
     public void onPostInsert(PostInsertEvent event) {
-        AuditEvent dataAuditEvent = auditEventHelper.createAuditEvent(event.getEntity(), Operation.CREATE);
+        AuditEvent dataAuditEvent = auditEventCreator.createAuditEvent(event.getEntity(), Operation.CREATE);
         if (dataAuditEvent != null) {
             Type[] propertyTypes = event.getPersister().getPropertyTypes();
             String[] propertyNames =  event.getPersister().getPropertyNames();
@@ -21,11 +21,11 @@ public class AuditCreateEventListener implements PostInsertEventListener {
             for (int i = 0; i < state.length; i++) {
                 dataAuditEvent.appendEventValues(propertyTypes[i], propertyNames[i], null, state[i]);
             }
-            auditEventHelper.saveAuditEvent(dataAuditEvent);
+            auditEventCreator.saveAuditEvent(dataAuditEvent);
         }
     }
 
-    public void setAuditEventHelper(AuditEventHelper auditEventHelper) {
-        this.auditEventHelper = auditEventHelper;
+    public void setAuditEventCreator(AuditEventCreator auditEventCreator) {
+        this.auditEventCreator = auditEventCreator;
     }
 }

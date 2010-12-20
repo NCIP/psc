@@ -5,6 +5,7 @@ import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
 import gov.nih.nci.cabig.ctms.audit.exception.AuditSystemException;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +17,12 @@ import java.util.*;
  * @author Jalpa Patel
  */
 @Transactional
-public class AuditEventHelper {
+public class AuditEventCreator {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private AuditEventDao auditEventDao;
-    private List<String> auditableEntities = new ArrayList<String>();
 
-    private boolean auditable(final Object entity) {
-        if (auditableEntities.contains(entity.getClass().getName())) {
+    private boolean canAudit(final Object entity) {
+        if (entity instanceof AbstractMutableDomainObject) {
             return true;
         } else {
             log.debug("No auditing for instances of " + entity.getClass().getName());
@@ -32,7 +32,7 @@ public class AuditEventHelper {
 
     public AuditEvent createAuditEvent(final Object entity, final Operation operation) {
         DataAuditInfo info = (DataAuditInfo) gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal();
-        if (auditable(entity)) {
+        if (canAudit(entity)) {
             if (info == null) {
                 throw new AuditSystemException("Can not audit; no local audit info available");
             }
@@ -57,9 +57,5 @@ public class AuditEventHelper {
 
     public void setAuditEventDao(AuditEventDao auditEventDao) {
         this.auditEventDao = auditEventDao;
-    }
-
-    public void setAuditableEntities(List<String> auditableEntities) {
-        this.auditableEntities = auditableEntities;
     }
 }

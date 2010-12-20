@@ -14,23 +14,18 @@ import java.util.*;
 /**
  * @author Jalpa Patel
  */
-public class AuditEventHelperTest  extends StudyCalendarTestCase {
+public class AuditEventCreatorTest extends StudyCalendarTestCase {
     private final String USERNAME = "testUser";
     private final String IP_ADDRESS = "10.10.10.155";
     private final String URL = "/psc/pages/newStudy";
     private DataAuditInfo info;
-    private AuditEventHelper auditEventHelper;
+    private AuditEventCreator auditEventCreator;
     private AuditEventDao auditEventDao;
-    private List<String> auditableEntities = new ArrayList<String>();
     public void setUp() throws Exception {
         super.setUp();
         auditEventDao = registerDaoMockFor(AuditEventDao.class);
-        auditableEntities.add("edu.northwestern.bioinformatics.studycalendar.domain.StudySegment");
-        auditableEntities.add("edu.northwestern.bioinformatics.studycalendar.domain.Study");
-
-        auditEventHelper = new AuditEventHelper();
-        auditEventHelper.setAuditEventDao(auditEventDao);
-        auditEventHelper.setAuditableEntities(auditableEntities);
+        auditEventCreator = new AuditEventCreator();
+        auditEventCreator.setAuditEventDao(auditEventDao);
         info = new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo(USERNAME, IP_ADDRESS, new Date(), URL);
         DataAuditInfo.setLocal(info);
     }
@@ -39,7 +34,7 @@ public class AuditEventHelperTest  extends StudyCalendarTestCase {
         Study study = new Study();
         study.setId(12);
         replayMocks();
-        DataAuditEvent event = auditEventHelper.createAuditEvent(study, Operation.CREATE);
+        DataAuditEvent event = auditEventCreator.createAuditEvent(study, Operation.CREATE);
         verifyMocks();
         assertNotNull("Event is not created", event);
         assertEquals("Wrong userName", USERNAME, event.getInfo().getUsername());
@@ -48,11 +43,10 @@ public class AuditEventHelperTest  extends StudyCalendarTestCase {
         assertEquals("Wrong Class Name", "edu.northwestern.bioinformatics.studycalendar.domain.Study", event.getReference().getClassName());
     }
 
-    public void testCreateAuditEventWhenNoAuditableEntities() throws Exception {
-        Activity activity = new Activity();
-        activity.setId(12);
+    public void testCreateAuditEventWhenEntityCanNotBeAudit() throws Exception {
+        Object obj = new Object();
         replayMocks();
-        DataAuditEvent actualEvent = auditEventHelper.createAuditEvent(activity, Operation.CREATE);
+        DataAuditEvent actualEvent = auditEventCreator.createAuditEvent(obj, Operation.CREATE);
         verifyMocks();
         assertNull("Event is created", actualEvent);
     }
@@ -61,7 +55,7 @@ public class AuditEventHelperTest  extends StudyCalendarTestCase {
         DataAuditInfo.setLocal(null);
         replayMocks();
         try {
-            auditEventHelper.createAuditEvent(new Study(), Operation.CREATE);
+            auditEventCreator.createAuditEvent(new Study(), Operation.CREATE);
             fail("Exception not thrown");
         } catch (AuditSystemException ase) {
             assertEquals("Can not audit; no local audit info available", ase.getMessage());

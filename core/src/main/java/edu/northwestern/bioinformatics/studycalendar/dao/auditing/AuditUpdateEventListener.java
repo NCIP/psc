@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class AuditUpdateEventListener implements PostUpdateEventListener {
-    private AuditEventHelper auditEventHelper;
+    private AuditEventCreator auditEventCreator;
     private final Logger log = LoggerFactory.getLogger(getClass());
     public void onPostUpdate(PostUpdateEvent event) {
         if (event.getOldState() == null) {
@@ -23,7 +23,7 @@ public class AuditUpdateEventListener implements PostUpdateEventListener {
                 "state information.  Audit event for update operation not possible.", event.getEntity());
             return;
         } else {
-            AuditEvent dataAuditEvent = auditEventHelper.createAuditEvent(event.getEntity(), Operation.UPDATE);
+            AuditEvent dataAuditEvent = auditEventCreator.createAuditEvent(event.getEntity(), Operation.UPDATE);
             if (dataAuditEvent != null) {
                 Type[] propertyTypes = event.getPersister().getPropertyTypes();
                 String[] propertyNames =  event.getPersister().getPropertyNames();
@@ -32,12 +32,12 @@ public class AuditUpdateEventListener implements PostUpdateEventListener {
                 for (int i = 0; i < state.length; i++) {
                     dataAuditEvent.appendEventValues(propertyTypes[i], propertyNames[i], oldState[i], state[i]);
                 }
-                auditEventHelper.saveAuditEvent(dataAuditEvent);
+                auditEventCreator.saveAuditEvent(dataAuditEvent);
             }
         }
     }
 
-    public void setAuditEventHelper(AuditEventHelper auditEventHelper) {
-        this.auditEventHelper = auditEventHelper;
+    public void setAuditEventCreator(AuditEventCreator auditEventCreator) {
+        this.auditEventCreator = auditEventCreator;
     }
 }
