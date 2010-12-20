@@ -500,13 +500,14 @@
                 <xsl:apply-templates select="wadl:representation"/>
             </ul>
         </xsl:if>
+        <xsl:apply-templates select="wadl:doc"/>
     </xsl:template>
 
     <xsl:template match="wadl:response">
         <xsl:apply-templates select="." mode="param-group">
             <xsl:with-param name="prefix">response</xsl:with-param>
             <xsl:with-param name="style">header</xsl:with-param>
-        </xsl:apply-templates> 
+        </xsl:apply-templates>
         <xsl:if test="wadl:representation">
             <p><em>available response representations:</em></p>
             <ul>

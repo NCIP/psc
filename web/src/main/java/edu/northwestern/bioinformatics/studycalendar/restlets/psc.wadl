@@ -1,8 +1,3 @@
-<#--
-    This is actually a freemarker template for the WADL, not the WADL itself.
-    It is used by PscWadlRepresentation to render out the WADL with the actual deployment
-    base URI in place.
-    -->
 <?xml version="1.0"?>
 <application xmlns="http://research.sun.com/wadl/2006/10"
              xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
@@ -1852,17 +1847,21 @@
                      </html:ul>
                  </html:div>
               </doc>
-              <response>
-                <doc>
-                  <html:p>
-                    {
+              <request>
+                  <representation mediaType="application/json"/>
+                  <doc>
+                    <html:p><html:em>Example JSON</html:em></html:p>
+                    <html:p>
+                      {
                       description: "Delayed 45 activities for Jo Carlson by 6 days",
                       context: "{PSC}/api/v1/subjects/0000001/schedules",
                       actionType: "Delay"
-                    }
-                  </html:p>
-                </doc>
-                <representation mediaType="application/json"/>
+                      }
+                    </html:p>
+                  </doc>
+              </request>
+              <response>
+                  <representation mediaType="application/json"/>
               </response>
           </method>
       </resource>
