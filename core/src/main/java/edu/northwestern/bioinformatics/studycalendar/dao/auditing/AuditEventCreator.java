@@ -26,7 +26,7 @@ public class AuditEventCreator {
             if (((AbstractMutableDomainObject) entity).getId() != null) {
                return true;
             } else {
-                log.debug("Entity {} doesn't have any Id.", new Object[]{ entity.getClass().getName()});
+                log.error("Entity {} doesn't have any Id.", new Object[] { entity.getClass().getName()});
                 return false;
             }
 
