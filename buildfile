@@ -1,4 +1,7 @@
 ENV['JAVA_OPTS'] ||= "-Xmx512M -XX:MaxPermSize=256M -Dcom.sun.management.jmxremote"
+if ENV['YOURKIT']
+  ENV['JAVA_OPTS'] += " -agentpath:#{yourkit_agentpath}=disablestacktelemetry,disableexceptiontelemetry,builtinprobes=none,delay=10000,sessionname=buildr-server-psc"
+end
 puts "Using JAVA_OPTS=#{ENV['JAVA_OPTS'].inspect}"
 
 require "buildr"
