@@ -1,3 +1,8 @@
+<#--
+    This is actually a freemarker template for the WADL, not the WADL itself.
+    It is used by PscWadlRepresentation to render out the WADL with the actual deployment
+    base URI in place.
+    -->
 <?xml version="1.0"?>
 <application xmlns="http://research.sun.com/wadl/2006/10"
              xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
