@@ -309,7 +309,7 @@
                         border-left: 1px solid #000;
                     }
 
-                    pre{
+                    pre.example {
                         background-color: #FAFAFA;
                         border: 1px solid #DADADA;
                         margin: 1em 1em 1em 1.6em;

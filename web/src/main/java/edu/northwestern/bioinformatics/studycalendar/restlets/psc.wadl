@@ -1850,7 +1850,7 @@
               <request>
                   <representation mediaType="application/json"/>
                   <doc>
-<html:pre>
+<html:pre class="example">
   {
     description: "Delayed 45 activities for Jo Carlson by 6 days",
     context: "{PSC}/api/v1/subjects/0000001/schedules",
