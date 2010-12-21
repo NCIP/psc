@@ -101,23 +101,4 @@
     <PERIODS id="-200" version="0" start_day="8" name="Treatment 1" duration_quantity="6" duration_unit="week" repetitions="3" />
     <DELTAS id="-200" node_id="-200" node_type="segmnt" amendment_id="-200"/>
     <CHANGES id="-200" delta_id="-200" old_value="-200" action="remove"/>
-
-    <AUDIT_EVENTS
-        id="-100"
-        ip_address="255.255.255.255"
-        user_name="testUser"
-        time="2010-08-16 23:24:58.361"
-        class_name="edu.northwestern.bioinformatics.studycalendar.domain.Period"
-        operation="CREATE"
-        url="/psc/pages/newPeriod"
-        version="0"
-        object_id="-19" />
-
-    <AUDIT_EVENT_VALUES
-        id = "-100"
-        audit_event_id="-100"
-        attribute_name="gridId"
-        new_value="grid1"
-        version="0" />
-
 </dataset>

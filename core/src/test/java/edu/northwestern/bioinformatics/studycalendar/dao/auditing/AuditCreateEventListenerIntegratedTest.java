@@ -4,10 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDaoTest;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
-
-import java.util.List;
-import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPeriod;
 
@@ -42,26 +40,23 @@ public class AuditCreateEventListenerIntegratedTest extends AuditEventListenerTe
         int eventId = getEventIdForObject(id, Period.class.getName(), Operation.CREATE.name());
         assertNotNull("Audit event for CREATE is not created ", eventId);
 
-        List<Map> rows = getAuditEventValuesForEvent(eventId);
-        assertEquals("No of rows are different", 7, rows.size());
-
-        Map durationQuantityRow = rows.get(2);
-        Map durationUnitRow = rows.get(3);
-        Map nameRow = rows.get(4);
+        DataAuditEventValue durationQuantityValue = getAuditEventValueFor(eventId, "duration.quantity");
+        DataAuditEventValue durationUnitValue = getAuditEventValueFor(eventId, "duration.unit");
+        DataAuditEventValue nameValue = getAuditEventValueFor(eventId, "name");
 
         // Testing duration.quantity
-        assertEquals("Duration.quantity attribute name doesn't match", "duration.quantity", durationQuantityRow.get(ATTRIBUTE_NAME));
-        assertEquals("Duration.quantity previous value doesn't match", null, durationQuantityRow.get(PREVIOUS_VALUE));
-        assertEquals("Duration.quantity new value doesn't match", "2", durationQuantityRow.get(NEW_VALUE));
+        assertNotNull("No data audit event value for duration.quantity", durationQuantityValue);
+        assertEquals("Duration.quantity previous value doesn't match", null, durationQuantityValue.getPreviousValue());
+        assertEquals("Duration.quantity new value doesn't match", "2", durationQuantityValue.getCurrentValue());
 
         // Testing duration.Unit
-        assertEquals("Duration.Unit attribute name doesn't match", "duration.unit", durationUnitRow.get(ATTRIBUTE_NAME));
-        assertEquals("Duration.Unit previous value doesn't match", null, durationUnitRow.get(PREVIOUS_VALUE));
-        assertEquals("Duration.Unit new value doesn't match", "week", durationUnitRow.get(NEW_VALUE));
+        assertNotNull("No data audit event value for duration.unit", durationUnitValue);
+        assertEquals("Duration.Unit previous value doesn't match", null, durationUnitValue.getPreviousValue());
+        assertEquals("Duration.Unit new value doesn't match", "week", durationUnitValue.getCurrentValue());
 
         // Testing name
-        assertEquals("Name attribute name doesn't match", "name", nameRow.get(ATTRIBUTE_NAME));
-        assertEquals("Name previous value doesn't match", null, nameRow.get(PREVIOUS_VALUE));
-        assertEquals("Name new value doesn't match", "TestPeriod", nameRow.get(NEW_VALUE));
+        assertNotNull("No data audit event value for name", nameValue);
+        assertEquals("Name previous value doesn't match", null, nameValue.getPreviousValue());
+        assertEquals("Name new value doesn't match", "TestPeriod", nameValue.getCurrentValue());
     }
 }
