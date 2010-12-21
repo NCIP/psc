@@ -123,5 +123,15 @@ def start_bundle(symbolic_name)
 end
 
 def yourkit_agentpath
-  "/Applications/YourKit_Java_Profiler_9.5.1.app/bin/mac/libyjpagent.jnilib"
+  if ENV['YOURKIT_AGENT']
+    ENV['YOURKIT_AGENT']
+  elsif `uname -s` =~ /Darwin/
+    # find the most-recent installed version of YourKit
+    yourkit = Dir["/Applications/YourKit_Java_Profiler_*.app"].sort_by { |p|
+      p.scan(/YourKit_Java_Profiler_(\d+)\.(\d+).(\d+)/).first.collect(&:to_i)
+    }.last
+    return "#{yourkit}/bin/mac/libyjpagent.jnilib" if yourkit # fall through otherwise
+  end
+
+  fail "Please specify the path to the YourKit agent using YOURKIT_AGENT=/usr/local/whatever"
 end
