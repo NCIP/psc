@@ -58,4 +58,9 @@ public class DefaultPerson implements Person {
         result = 31 * result + (kind != null ? kind.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append(getName()).append(" the ").append(getKind()).toString();
+    }
 }
