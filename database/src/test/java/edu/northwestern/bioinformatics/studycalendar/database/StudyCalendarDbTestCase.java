@@ -39,7 +39,15 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
     @Override
     protected void tearDown() throws Exception {
         DataAuditInfo.setLocal(null);
+        emptyAuditTables();
         super.tearDown();
+    }
+
+     /** Empty all the audit tables from the database */
+    private void emptyAuditTables() throws Exception
+    {
+        getJdbcTemplate().execute("DELETE FROM AUDIT_EVENTS");
+        getJdbcTemplate().execute("DELETE FROM AUDIT_EVENT_VALUES");
     }
 
     @Override
