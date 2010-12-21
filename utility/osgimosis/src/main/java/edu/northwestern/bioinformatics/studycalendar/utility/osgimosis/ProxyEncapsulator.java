@@ -8,15 +8,15 @@ import net.sf.cglib.proxy.NoOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @author Rhett Sutphin
@@ -149,7 +149,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
             public int accept(Method method) { return Modifier.isPublic(method.getModifiers()) ? 0 : 1; }
         });
         enh.setUseFactory(false);
-        enh.setClassLoader(nearClassLoader);
+        enh.setClassLoader(new SingleUseNearClassLoader());
         return enh;
     }
 
@@ -159,5 +159,16 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
 
     public ClassLoader getFarClassLoader() {
         return farClassLoader;
+    }
+
+    /**
+     * A pure-delegating CL which will have no references outside of the proxy class itself.
+     * It exists solely to ensure that every reference to the CGLIB-generated proxy class is
+     * GC-able once the proxy object goes out of scope.
+     */
+    class SingleUseNearClassLoader extends ClassLoader {
+        public SingleUseNearClassLoader() {
+            super(ProxyEncapsulator.this.nearClassLoader);
+        }
     }
 }

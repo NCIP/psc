@@ -45,14 +45,14 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
                         // constructor invokes a method that returns itself.
                         return proxy;
                     } else {
-                        return getMembrane().traverse(farResult, proxy.getClass().getClassLoader());
+                        return getMembrane().traverse(farResult, proxyTargetClassLoader(proxy));
                     }
                 } catch (IllegalAccessException iae) {
                     log.error(String.format("Bridging method %s to %s failed due to illegal access", nearMethod, farMethod), iae);
                     throw iae;
                 } catch (InvocationTargetException ite) {
                     throw (Throwable) getMembrane().traverse(ite.getTargetException(),
-                        proxy.getClass().getClassLoader());
+                        proxyTargetClassLoader(proxy));
                 }
             } finally {
                 Membrane.popMDC();
@@ -60,6 +60,17 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
         } else {
             throw new MembraneException(
                 "Method '%s' was not found in the delegate object", nearMethod.getName());
+        }
+    }
+
+    /**
+     * The actual proxy classloader is often a one-use CL.  Don't let it leak outside.
+     */
+    private ClassLoader proxyTargetClassLoader(Object proxy) {
+        if (proxy.getClass().getClassLoader() instanceof ProxyEncapsulator.SingleUseNearClassLoader) {
+            return proxy.getClass().getClassLoader().getParent();
+        } else {
+            return proxy.getClass().getClassLoader();
         }
     }
 
@@ -91,7 +102,7 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
         } else if (parameterType.getClassLoader() != null) {
             return parameterType.getClassLoader();
         } else {
-            return far.getClass().getClassLoader();
+            return proxyTargetClassLoader(far);
         }
     }
 }

@@ -239,9 +239,9 @@ public class MembraneTest extends OsgimosisTestCase {
 
         Method get = List.class.getMethod("get", Integer.TYPE);
         assertSame("Item from A not proxied into default CL", defaultClassLoader(),
-            get.invoke(inDefaultFromA, 0).getClass().getClassLoader());
+            get.invoke(inDefaultFromA, 0).getClass().getClassLoader().getParent());
         assertSame("Item from default CL not proxied into A", loaderA,
-            get.invoke(inAFromDefault, 0).getClass().getClassLoader());
+            get.invoke(inAFromDefault, 0).getClass().getClassLoader().getParent());
     }
 
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

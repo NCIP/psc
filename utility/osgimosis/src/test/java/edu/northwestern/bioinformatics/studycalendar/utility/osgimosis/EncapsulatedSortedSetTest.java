@@ -74,6 +74,6 @@ public class EncapsulatedSortedSetTest extends EncapsulatedCollectionTestCase {
         SortedSet<Person> nearSet = new TreeSet<Person>(Arrays.asList(nearPolo));
         EncapsulatedSortedSet reverse = new EncapsulatedSortedSet(nearSet, membrane, loaderA);
         Object far0 = reverse.first();
-        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader());
+        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader().getParent());
     }
 }

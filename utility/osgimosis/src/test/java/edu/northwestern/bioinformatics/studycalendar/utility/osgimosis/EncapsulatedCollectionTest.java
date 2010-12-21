@@ -84,7 +84,7 @@ public class EncapsulatedCollectionTest extends EncapsulatedCollectionTestCase {
         assertEquals(3, encapsulated.size());
         Object newFarObj = farCollection.get(2);
         assertTrue("New item not proxied", newFarObj.getClass().getName().contains("Enhancer"));
-        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader());
+        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader().getParent());
         assertSame("New item not recoverable", nearVespucci, getEncapsulatedItem(2));
 
         assertSame("New item not recoverable from membrane", nearVespucci, membrane.farToNear(newFarObj));

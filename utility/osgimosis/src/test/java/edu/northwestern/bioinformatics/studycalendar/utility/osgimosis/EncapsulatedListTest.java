@@ -37,7 +37,7 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
 
         Object newFarObj = farList.get(1);
         assertTrue("New item not proxied", newFarObj.getClass().getName().contains("Enhancer"));
-        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader());
+        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader().getParent());
         assertSame("First new item not recoverable", nearVespucci, encapsulated.get(1));
         assertSame("Second new item not recoverable", nearPolo, encapsulated.get(2));
 
@@ -52,7 +52,7 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
         assertEquals(3, encapsulated.size());
         Object newFarObj = farList.get(1);
         assertTrue("New item not proxied", newFarObj.getClass().getName().contains("Enhancer"));
-        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader());
+        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader().getParent());
         assertSame("New item not recoverable", nearVespucci, encapsulated.get(1));
 
         assertSame("New item not recoverable from membrane", nearVespucci, membrane.farToNear(newFarObj));
@@ -100,7 +100,7 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
 
         assertEquals("Not expected", "Alexander", value.getName());
         assertTrue("New item not proxied", newFarObj.getClass().getName().contains("Enhancer"));
-        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader());
+        assertEquals("New item in wrong CL", loaderA, newFarObj.getClass().getClassLoader().getParent());
         assertSame("New item not recoverable", nearVespucci, encapsulated.get(1));
 
         assertSame("New item not recoverable from membrane", nearVespucci, membrane.farToNear(newFarObj));
@@ -132,7 +132,7 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
         ListIterator<Person> listIterator = encapsulated.listIterator();
         listIterator.next();
         listIterator.set(nearVespucci);
-        assertEquals("New far object is in wrong CL", loaderA, farList.get(0).getClass().getClassLoader());
+        assertEquals("New far object is in wrong CL", loaderA, farList.get(0).getClass().getClassLoader().getParent());
     }
     
     public void testIndexLitIterator() throws Exception {
@@ -145,6 +145,6 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
         List<Person> nearList = Arrays.<Person>asList(nearPolo);
         EncapsulatedList reverse = new EncapsulatedList(nearList, membrane, loaderA);
         Object far0 = reverse.get(0);
-        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader());
+        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader().getParent());
     }
 }
