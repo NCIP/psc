@@ -135,3 +135,16 @@ def yourkit_agentpath
 
   fail "Please specify the path to the YourKit agent using YOURKIT_AGENT=/usr/local/whatever"
 end
+
+def yourkit_javaopt
+  opts = %w(
+    port=10072
+    disablestacktelemetry
+    disableexceptiontelemetry
+    builtinprobes=none
+    delay=10000
+    sessionname=buildr-server-psc
+  ).reject{|t| t =~ /builtinprobes/ && yourkit_agentpath =~ /8\.0/ }
+
+  "-agentpath:#{yourkit_agentpath}=#{opts.join(',')}"
+end
