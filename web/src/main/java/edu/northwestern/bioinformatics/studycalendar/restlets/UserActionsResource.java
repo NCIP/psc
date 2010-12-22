@@ -77,7 +77,7 @@ public class UserActionsResource extends AbstractPscResource {
             UserAction action = new UserAction();
             try {
                 action.setContext(wrapper.getString("context"));
-                action.setActionType(wrapper.getString("actionType"));
+                action.setActionType(wrapper.getString("action_type"));
                 action.setDescription(wrapper.getString("description"));
                 action.setUser(getCurrentUser().getCsmUser());
             } catch (JSONException e) {
@@ -86,7 +86,7 @@ public class UserActionsResource extends AbstractPscResource {
             return action;
         }
 
-        private String[] REQUIRED_KEYS = {"description", "context", "actionType"};
+        private String[] REQUIRED_KEYS = {"description", "context", "action_type"};
         public String validate() {
             for (String key : REQUIRED_KEYS) {
                 try {

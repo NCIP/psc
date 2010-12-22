@@ -1859,7 +1859,7 @@
   {
     description: "Delayed 45 activities for Jo Carlson by 6 days",
     context: "{PSC}/api/v1/subjects/0000001/schedules",
-    actionType: "Delay"
+    action_type: "Delay"
   }
 </html:pre>
                   </doc>

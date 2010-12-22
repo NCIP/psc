@@ -2,7 +2,7 @@ describe "/user-actions" do
     def user_action(action_type, description, context, show_null_attributes = false)
       attrs = {}
       attrs['context'] = context
-      attrs['actionType'] = action_type
+      attrs['action_type'] = action_type
       attrs['description'] = description
 
       attrs.reject!{|a,b| b.nil?} unless show_null_attributes
@@ -70,7 +70,7 @@ describe "/user-actions" do
         action = user_action(nil, "Delayed 45 activities", "http://fake/psc/api/v1/subjects")
         post "/user-actions", action, :as => :alice, 'Content-Type' => 'application/json'
         response.status_code.should == 400
-        response.entity.should include("Missing attribute: actionType")
+        response.entity.should include("Missing attribute: action_type")
       end
 
       it "should respond with a 400 when there is no contexts type" do
