@@ -2,6 +2,9 @@ ENV['JAVA_OPTS'] ||= "-Xmx512M -XX:MaxPermSize=96M -Dcom.sun.management.jmxremot
 if env_true?('YOURKIT')
   ENV['JAVA_OPTS'] += " #{yourkit_javaopt}"
 end
+if env_true?('REMOTE_DEBUG')
+   ENV['JAVA_OPTS'] += " #{remote_debug_javaopt}"
+end
 puts "Using JAVA_OPTS=#{ENV['JAVA_OPTS'].inspect}"
 
 require "buildr"

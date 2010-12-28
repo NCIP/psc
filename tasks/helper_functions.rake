@@ -148,3 +148,7 @@ def yourkit_javaopt
 
   "-agentpath:#{yourkit_agentpath}=#{opts.join(',')}"
 end
+
+def remote_debug_javaopt
+  "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+end
