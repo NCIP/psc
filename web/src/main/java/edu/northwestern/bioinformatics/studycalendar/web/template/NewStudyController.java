@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
@@ -24,6 +25,7 @@ public class NewStudyController
     implements PscAuthorizedHandler
 {
     private StudyService studyService;
+    private Configuration configuration;
 
     @Override
     public Collection<ResourceAuthorization> authorizations(
@@ -42,9 +44,15 @@ public class NewStudyController
         NewStudyCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        Study study = command.create();
-        return getControllerTools().redirectToCalendarTemplate(
-            study.getId(), null, study.getDevelopmentAmendment().getId());
+        if (!configuration.get(Configuration.ENABLE_CREATING_TEMPLATE)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                "UI template creation is disabled.  There should be no links to this page visible.");
+            return null;
+        } else {
+            Study study = command.create();
+            return getControllerTools().redirectToCalendarTemplate(
+                study.getId(), null, study.getDevelopmentAmendment().getId());
+        }
     }
 
     ////// CONFIGURATION
@@ -52,5 +60,10 @@ public class NewStudyController
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }
