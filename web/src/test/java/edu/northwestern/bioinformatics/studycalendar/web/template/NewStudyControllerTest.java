@@ -2,29 +2,29 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CREATOR;
-import static org.easymock.classextension.EasyMock.*;
-
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CREATOR;
+import static org.easymock.classextension.EasyMock.expect;
+
 /**
  * @author Rhett Sutphin
  */
 public class NewStudyControllerTest extends ControllerTestCase {
     private static final int ID = 81;
+    private static final int AMENDMENT_ID = 4;
 
     private NewStudyController controller;
     private StudyService studyService;
     private NewStudyCommand command;
-    private static final int AMENDMENT_ID = 4;
     private Study study;
 
     @Override
@@ -51,6 +51,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
         assertRolesAllowed(actualAuthorizations, STUDY_CREATOR);
     }
 
+    @SuppressWarnings( { "unchecked" })
     public void testHandle() throws Exception {
         expect(command.create()).andReturn(study);
 
@@ -73,5 +74,4 @@ public class NewStudyControllerTest extends ControllerTestCase {
         controller.handleRequest(request, response);
         verifyMocks();
     }
-
 }
