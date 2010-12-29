@@ -108,6 +108,7 @@
                     <list>
                         <ref local="changeChildResolverListener" />
                         <ref local="assignmentManagerResolverListener"/>
+                        <ref local="userActionUserResolverListener"/>
                     </list>
                 </entry>
                 <entry key="post-update">
@@ -126,6 +127,11 @@
 
     <bean id="assignmentManagerResolverListener"
           class="edu.northwestern.bioinformatics.studycalendar.dao.AssignmentManagerResolverListener">
+        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+    </bean>
+
+    <bean id="userActionUserResolverListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionUserResolverListener">
         <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
     </bean>
 
