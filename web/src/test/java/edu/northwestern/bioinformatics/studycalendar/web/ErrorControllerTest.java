@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import static org.easymock.classextension.EasyMock.expect;
 
 /**
- * @author rsutphin
+ * @author Rhett Sutphin
  */
 public class ErrorControllerTest extends ControllerTestCase {
     private ErrorController controller;
@@ -19,6 +19,7 @@ public class ErrorControllerTest extends ControllerTestCase {
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         mailSender = registerMockFor(MailSender.class);

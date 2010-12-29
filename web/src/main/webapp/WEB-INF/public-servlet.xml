@@ -3,40 +3,29 @@
 
 <beans>
     <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
-        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+        <property name="location" value="/WEB-INF/special-views.xml"/>
     </bean>
     
    <bean id="loginViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass">
-            <value>org.springframework.web.servlet.view.InternalResourceView</value>
-        </property>
-        <property name="prefix">
-            <value>/WEB-INF/views/</value>
-        </property>
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.InternalResourceView"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
     </bean>
     
     <bean id="publicHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
     <bean name="/login" id="loginController"
-          class="edu.northwestern.bioinformatics.studycalendar.web.LoginController" autowire="byName">
-        <!--<property name="viewName"><value>login</value></property>-->
-    </bean>
-
-
-    <!--<bean name="/login" id="loginController"-->
-        <!--class="edu.northwestern.bioinformatics.studycalendar.web.LoginController" autowire="byType"/>    -->
+          class="edu.northwestern.bioinformatics.studycalendar.web.LoginController" autowire="byName"/>
 
     <!-- Retained to preserve URL compatibility in case anyone bookmarked this page on vera -->
     <bean name="/welcome" id="welcomeController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName"><value>redirectToRoot</value></property>
+        <property name="viewName" value="redirectToRoot"/>
     </bean>
 
     <bean name="/error" id="errorController"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byName"/>
 
     <!-- Reenable when needed for testing
     <bean name="/throw" id="throwController"
@@ -45,13 +34,11 @@
 
     <bean name="/accessDenied" id="accessDeniedController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName"><value>accessDenied</value></property>
+        <property name="viewName" value="accessDenied"/>
     </bean>
-
 
     <bean name="/configuration.js" id="configurationJsController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName" value="configuration.js"/>
     </bean>
-
 </beans>

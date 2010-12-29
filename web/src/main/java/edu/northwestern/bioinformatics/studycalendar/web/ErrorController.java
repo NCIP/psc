@@ -23,6 +23,7 @@ public class ErrorController extends AbstractController {
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
 
+    @Override
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
