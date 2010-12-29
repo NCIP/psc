@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -9,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
@@ -24,6 +26,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
 
     private NewStudyController controller;
     private StudyService studyService;
+    private Configuration configuration;
     private NewStudyCommand command;
     private Study study;
 
@@ -33,6 +36,8 @@ public class NewStudyControllerTest extends ControllerTestCase {
         request.setMethod("GET");
         studyService = registerMockFor(StudyService.class);
         command = registerMockFor(NewStudyCommand.class);
+        configuration = registerMockFor(Configuration.class);
+        expect(configuration.get(Configuration.ENABLE_CREATING_TEMPLATE)).andStubReturn(true);
 
         controller = new NewStudyController() {
             @Override
@@ -42,6 +47,8 @@ public class NewStudyControllerTest extends ControllerTestCase {
         };
         controller.setStudyService(studyService);
         controller.setControllerTools(controllerTools);
+        controller.setConfiguration(configuration);
+
         study = setId(ID, new Study());
         study.setDevelopmentAmendment(setId(AMENDMENT_ID, new Amendment("dev")));
     }
@@ -73,5 +80,18 @@ public class NewStudyControllerTest extends ControllerTestCase {
         replayMocks();
         controller.handleRequest(request, response);
         verifyMocks();
+    }
+
+    public void testBadRequestIfTemplateCreationIsDisabled() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_CREATING_TEMPLATE)).andReturn(false);
+
+        replayMocks();
+        assertNull("Response should have no MV", controller.handleRequest(request, response));
+        verifyMocks();
+
+        assertEquals("Wrong error sent", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        assertEquals("Wrong error message",
+            "UI template creation is disabled.  There should be no links to this page visible.",
+            response.getErrorMessage());
     }
 }
