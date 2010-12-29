@@ -5,8 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +21,7 @@ import java.util.Date;
 public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivityDao> {
     private PlannedActivityDao plannedActivityDao;
     private ScheduledCalendarDao scheduledCalendarDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -25,6 +30,8 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
             = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
         plannedActivityDao
             = (PlannedActivityDao) getApplicationContext().getBean("plannedActivityDao");
+        scheduledActivityDao
+            = (ScheduledActivityDao) getApplicationContext().getBean("scheduledActivityDao");
     }
 
     @Override
@@ -51,7 +58,23 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEquals("Wrong first label", "clean-only", loaded.getLabels().first());
         assertEquals("Wrong second label", "soc", loaded.getLabels().last());
     }
-    
+
+    public void testGetEventsByIdealDate() throws Exception {
+        String year = "2006";
+        String month = "11";
+        String day = "01";
+
+        Date date = DateTools.createDate(
+        Integer.parseInt(year),
+        Integer.parseInt(month) - 1, // The Calendar month constants start with 0
+        Integer.parseInt(day));
+
+        ScheduledCalendar calendar = scheduledCalendarDao.getById(-21);
+        Collection<ScheduledActivity> activities = scheduledActivityDao.getEventsByDate(calendar, date, date);
+
+        assertEquals("Wrong amount of activities ", 2, activities.size());
+    }
+
     public void testGetScheduledActivitiesFromPlannedActivity() throws Exception {
         Collection<ScheduledActivity> matches = getDao().getEventsFromPlannedActivity(
             plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21));

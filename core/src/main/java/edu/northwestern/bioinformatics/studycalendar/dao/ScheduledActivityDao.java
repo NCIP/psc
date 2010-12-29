@@ -6,8 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -25,6 +24,24 @@ public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<Sc
     */
     @SuppressWarnings({ "unchecked" })
     public Collection<ScheduledActivity> getEventsByDate(ScheduledCalendar calendar, Date start, Date end) {
+        Calendar startCal = Calendar.getInstance();
+        Calendar endCal = Calendar.getInstance();
+        if (start != null) {
+            startCal.setTime(start);
+            startCal.set(Calendar.HOUR_OF_DAY, 0);
+            startCal.set(Calendar.MINUTE, 0);
+            startCal.set(Calendar.SECOND, 0);
+            start = startCal.getTime();
+        }
+
+        if (end != null) {
+            endCal.setTime(end);
+            endCal.set(Calendar.HOUR_OF_DAY, 23);
+            endCal.set(Calendar.MINUTE, 59);
+            endCal.set(Calendar.SECOND, 59);
+            end = endCal.getTime();
+        }
+
         StringBuilder builder = new StringBuilder("from ScheduledActivity e where e.scheduledStudySegment.scheduledCalendar = ?");
         List<Object> params = new ArrayList<Object>(3);
         params.add(calendar);
@@ -38,31 +55,6 @@ public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<Sc
         }
         return getHibernateTemplate().find(builder.toString(), params.toArray());
     }
-
-    /**
-    * Finds all the scheduled activities for a given calendar by the start date and end date given.
-    *
-    * @param  calendar the calendar to retrieve the scheduled activities from
-    * @param  start the start date of the time span search
-    * @param  end the end date of the time span search
-    * @return      a list of scheduled activities for the criteria specified
-    */
-    @SuppressWarnings({ "unchecked" })
-    public Collection<ScheduledActivity> getEventsByIdealDate(ScheduledCalendar calendar, Date start, Date end) {
-        StringBuilder builder = new StringBuilder("from ScheduledActivity e where e.scheduledStudySegment.scheduledCalendar = ?");
-        List<Object> params = new ArrayList<Object>(3);
-        params.add(calendar);
-        if (start != null) {
-            builder.append(" and e.idealDate >= ?");
-            params.add(start);
-        }
-        if (end != null) {
-            builder.append(" and e.idealDate <= ?");
-            params.add(end);
-        }
-        return getHibernateTemplate().find(builder.toString(), params.toArray());
-    }
-
 
     /**
     * Finds all the scheduled activities for the given calendar and planned activity
