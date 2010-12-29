@@ -630,7 +630,7 @@
         <property name="controllerTools" ref="controllerTools"/>
     </bean>
 
-    <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
+    <bean id="sectionTemplate" class="edu.northwestern.bioinformatics.studycalendar.web.chrome.PscSection"
           abstract="true">
         <property name="urlResolver" ref="urlResolver"/>
     </bean>
@@ -667,10 +667,11 @@
                                 <property name="linkName" value="studyListController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                            <bean class="edu.northwestern.bioinformatics.studycalendar.web.chrome.NewTemplateTask">
                                 <property name="displayName" value="New template"/>
                                 <property name="linkName" value="newStudyController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
+                                <property name="configuration" ref="configuration"/>
                             </bean>
                         </list>
                     </property>
