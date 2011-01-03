@@ -128,7 +128,8 @@ describe "/users/{username}/roles/subject-coordinator/schedules" do
         end
 
         it "[study_segments] contains subject name" do
-          response.json["study_segments"][0]["subject"].should == "Alan Boyarski"
+          @subjects = response.json["study_segments"].sort_by { |s| s["subject"] }
+          @subjects[0]["subject"].should == "Alan Boyarski"
         end
 
       end
