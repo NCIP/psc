@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
@@ -145,6 +146,7 @@ public class PscGuard extends Guard {
             } else {
                 setCurrentAuthenticationToken(request, auth);
                 setAcegiSecurityContext(request, auth);
+                updateAuditInfo(auth);
                 return auth.isAuthenticated();
             }
         } catch (AuthenticationException ae) {
@@ -157,6 +159,13 @@ public class PscGuard extends Guard {
         SecurityContextHolder.setContext(new SecurityContextImpl());
         SecurityContextHolder.getContext().setAuthentication(auth);
         request.getAttributes().put(DIRECT_AUTH_ATTRIBUTE_KEY, true);
+    }
+
+    private void updateAuditInfo(Authentication authentication) {
+        DataAuditInfo info = (DataAuditInfo) gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal();
+        if (info != null) {
+            info.setUsername(authentication.getName());
+        }
     }
 
     @Override

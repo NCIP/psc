@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
@@ -17,6 +18,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.setSecurityContext;
@@ -176,6 +178,24 @@ public class PscGuardTest extends RestletTestCase {
         assertEquals("Wrong user", USERNAME, actualAcegiName);
         assertNull("Security context not cleared afterward", 
             applicationSecurityManager.getUserName());
+    }
+
+    public void testSuccessfulBasicAuthenticationSetsAuditInfoUserName() throws Exception {
+        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo(null, "10.10.10.10",
+                new Date(), ROOT_URI));
+        expectBasicAuthChallengeResponse();
+        expectCreateUsernamePasswordRequest();
+
+        expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTHENTICATION))
+            .andReturn(authenticated);
+        DataAuditInfo info = (DataAuditInfo) DataAuditInfo.getLocal();
+        assertNull("Null user in local audit info",info.getUsername());
+        doHandle();
+
+        assertNextInvoked();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertNotNull(info.getUsername());
+        assertEquals("UserName does not match", USERNAME, info.getUsername());
     }
 
     public void testExistingSecurityContextNotClearedAfterExecution() throws Exception {
