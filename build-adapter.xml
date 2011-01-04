@@ -27,8 +27,12 @@
 
     <target name="install:jruby" unless="jruby.exists" description="Downloads jruby">
         <mkdir dir="${basedir}/temp/download"/>
-        <get src="${jruby.dist.url}" dest="${jruby.dist.local}"/>
-        <unzip dest="${download}" src="${jruby.dist.local}" />
+        <retry retrycount="5">
+          <sequential>
+            <get src="${jruby.dist.url}" dest="${jruby.dist.local}"/>
+            <unzip dest="${download}" src="${jruby.dist.local}" />
+          </sequential>
+        </retry>
         <echo message="Downloaded JRuby sucessfully"/>
         <exec executable="chmod" os="${unixfamily}" failonerror="true">
             <arg value="u+x"/>
@@ -68,7 +72,9 @@
         <attribute name="name"/>
         <sequential>
             <echo level="verbose">install_gem name=@{name} version=${gems.@{name}.version}</echo>
-            <jruby line="-S gem install @{name} -v ${gems.@{name}.version} --no-rdoc --no-ri"/>
+            <retry retrycount="5">
+              <jruby line="-S gem install @{name} -v ${gems.@{name}.version} --no-rdoc --no-ri"/>
+            </retry>
         </sequential>
     </macrodef>
 
