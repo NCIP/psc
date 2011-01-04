@@ -422,7 +422,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
         }
         String message = "Arm " + requiredStudySegment.getName() + " not part of template for study "
-                + study.getGridId();
+                + study.getLongTitle();
         throw getInvalidRegistrationException(message);
     }
 
