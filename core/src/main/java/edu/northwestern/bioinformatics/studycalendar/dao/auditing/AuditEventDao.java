@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
@@ -24,7 +25,7 @@ public class AuditEventDao implements InitializingBean {
     private JdbcTemplate jdbcTemplate;
     private String databaseType;
 
-    public void saveEvent(DataAuditEvent event) {
+    public void saveEvent(AuditEvent event) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate.getDataSource());
         insert.withTableName("audit_events");
         Map<String, Object> parameters =  new HashMap<String, Object>();
@@ -41,6 +42,7 @@ public class AuditEventDao implements InitializingBean {
          */
         parameters.put("version", 0);
         parameters.put("object_id", reference.getId());
+        parameters.put("user_action_id", event.getUserActionId());
 
         if (databaseType.contains("Oracle")){
             int eventId = jdbcTemplate.queryForInt("SELECT SEQ_AUDIT_EVENTS_ID.nextval FROM dual");

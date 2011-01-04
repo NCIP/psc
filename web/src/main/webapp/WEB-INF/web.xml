@@ -162,6 +162,15 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>UserActionHeaderFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.UserActionHeaderFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>UserActionHeaderFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
         <init-param>
@@ -185,7 +194,6 @@
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/setup/*</url-pattern>
     </filter-mapping>
-
     <filter>
         <filter-name>UserInRequestFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.UserInRequestFilter</filter-class>

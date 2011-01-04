@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
@@ -19,9 +20,32 @@ import javax.persistence.Transient;
 public class AuditEvent extends DataAuditEvent{
     private static final EntityMode ENTITY_MODE = EntityMode.POJO;
     private static final String HIBERNATE_BACK_REF_STRING = "Backref";
+    private volatile static ThreadLocal<UserAction> userAction = new ThreadLocal<UserAction>();
+    private String userActionId;
 
     public AuditEvent(Object entity, Operation operation, DataAuditInfo info) {
         super(entity, operation, info);
+    }
+
+    public AuditEvent(Object entity, Operation operation, DataAuditInfo info, UserAction userAction) {
+        super(entity, operation, info);
+        this.userActionId = userAction == null ? null : userAction.getGridId();
+    }
+
+    public static UserAction getUserAction() {
+        return userAction.get();
+    }
+
+    public static void setUserAction(final UserAction ua) {
+        userAction.set(ua);
+    }
+
+    public String getUserActionId() {
+        return userActionId;
+    }
+
+    public void setUserActionId(String userActionId) {
+        this.userActionId = userActionId;
     }
 
     @Transient

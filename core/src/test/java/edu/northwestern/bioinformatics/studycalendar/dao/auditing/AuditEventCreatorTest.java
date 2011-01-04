@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
@@ -69,6 +71,28 @@ public class AuditEventCreatorTest extends StudyCalendarTestCase {
             assertEquals("Can not audit; no local audit info available", ase.getMessage());
         }
         verifyMocks();
+    }
+
+    public void testCreateAuditEventWhenUserAction() throws Exception {
+        UserAction ua = new UserAction();
+        ua.setGridId("userActionId");
+        AuditEvent.setUserAction(ua);
+        replayMocks();
+        AuditEvent event = auditEventCreator.createAuditEvent(study, Operation.CREATE);
+        verifyMocks();
+
+        assertNotNull("Event is not created", event);
+        assertEquals("Wrong userAction id", "userActionId", event.getUserActionId());
+    }
+
+    public void testCreateAuditEventWhenNoUserAction() throws Exception {
+        AuditEvent.setUserAction(null);
+        replayMocks();
+        AuditEvent event = auditEventCreator.createAuditEvent(study, Operation.CREATE);
+        verifyMocks();
+
+        assertNotNull("Event is not created", event);
+        assertNull("UserAction id is attached to audit event", event.getUserActionId());
     }
 
     protected AuditEventDao registerDaoMockFor(Class<AuditEventDao> forClass) {

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
 import gov.nih.nci.cabig.ctms.audit.exception.AuditSystemException;
@@ -51,13 +50,17 @@ public class AuditEventCreator {
                 }
                 log.trace("Logging {} on {}#{} by {}", new Object[] { operation, entity.getClass().getName(), idS, info });
             }
-            AuditEvent event = new AuditEvent(entity, operation, DataAuditInfo.copy(info));
+            if (AuditEvent.getUserAction() != null) {
+               log.debug("Attaching user action id {} to the audit event {} on {}",
+                       new Object[] { AuditEvent.getUserAction(), operation, entity.getClass().getName()});
+            }
+            AuditEvent event = new AuditEvent(entity, operation, DataAuditInfo.copy(info), AuditEvent.getUserAction());
             return event;
         }
         return null;
     }
 
-    public void saveAuditEvent(DataAuditEvent event) {
+    public void saveAuditEvent(AuditEvent event) {
         auditEventDao.saveEvent(event);
     }
 

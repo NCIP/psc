@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
@@ -21,14 +21,14 @@ public class AuditEventDaoTest extends DaoTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testSaveNewEvent() throws Exception {
         {
-            DataAuditEvent event = new DataAuditEvent(edu.northwestern.bioinformatics.studycalendar.domain.StudySegment.class, Operation.CREATE, (DataAuditInfo)gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal());
+            AuditEvent event = new AuditEvent(edu.northwestern.bioinformatics.studycalendar.domain.StudySegment.class, Operation.CREATE, (DataAuditInfo)gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal());
             event.getReference().setId(13);
             dao.saveEvent(event);
         }
 
         interruptSession();
 
-        List<DataAuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
+        List<AuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
         assertNotNull(events);
         assertEquals("No of events are wrong", 1, events.size());
     }
@@ -36,7 +36,7 @@ public class AuditEventDaoTest extends DaoTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testSaveEventWithValues() throws Exception {
          {
-             DataAuditEvent event = new DataAuditEvent(edu.northwestern.bioinformatics.studycalendar.domain.StudySegment.class, Operation.CREATE, (DataAuditInfo)gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal());
+             AuditEvent event = new AuditEvent(edu.northwestern.bioinformatics.studycalendar.domain.StudySegment.class, Operation.CREATE, (DataAuditInfo)gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo.getLocal());
              event.getReference().setId(13);
              event.addValue(new DataAuditEventValue("name", null, "testStudy"));
              event.addValue(new DataAuditEventValue("assignedIdentifier", null, "assignId"));
@@ -46,7 +46,7 @@ public class AuditEventDaoTest extends DaoTestCase {
 
         interruptSession();
 
-        List<DataAuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
+        List<AuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
         assertNotNull(events);
         assertEquals("No of events are wrong", 1, events.size());
 
