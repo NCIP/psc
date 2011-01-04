@@ -20,14 +20,12 @@
     </bean>
 
     <bean name="responseHeaderFilter" class="edu.northwestern.bioinformatics.studycalendar.restlets.ResponseHeaderRestletFilter" autowire="byName">
-         <property name="next" ref="guard"/>
+         <property name="next" ref="authenticator"/>
     </bean>
 
-    <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
+    <bean name="authenticator" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticator">
         <property name="except" value="docs.*"/>
         <property name="next" ref="router"/>
-        <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
-        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
     <bean name="router" class="org.restlet.ext.spring.SpringBeanRouter">

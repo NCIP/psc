@@ -1,40 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Request;
-import org.restlet.data.ChallengeResponse;
+import org.restlet.Response;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.security.Guard;
 import org.restlet.util.Series;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  */
 public class PscAuthenticatorHelper extends AuthenticatorHelper implements InitializingBean {
     public PscAuthenticatorHelper() {
-        super(PscGuard.PSC_TOKEN, false, true);
+        super(PscAuthenticator.HTTP_PSC_TOKEN, false, true);
     }
 
     @Override
-    public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
-        if (cr.getCredentials() == null) return Guard.AUTHENTICATION_MISSING;
-
-        if (!(guard instanceof PscGuard)) {
-            throw new IllegalArgumentException(getClass().getSimpleName() + " only works with " + PscGuard.class.getSimpleName());
+    public void formatRawRequest(
+        ChallengeWriter cw, ChallengeRequest challenge,
+        Response response, Series<Parameter> httpHeaders
+    ) throws IOException {
+        if (challenge.getRealm() != null) {
+            cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
         }
-        PscGuard pscGuard = (PscGuard) guard;
-
-        return pscGuard.checkToken(request, cr.getCredentials())
-            ? Guard.AUTHENTICATION_VALID
-            : Guard.AUTHENTICATION_INVALID;
-    }
-
-    @Override
-    public void formatRawResponse(ChallengeWriter cw, ChallengeResponse challenge, Request request, Series<Parameter> httpHeaders) {
-        cw.append(challenge.getRawValue());
     }
 
     ////// LIFECYCLE

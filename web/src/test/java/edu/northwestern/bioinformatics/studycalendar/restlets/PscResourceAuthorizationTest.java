@@ -80,7 +80,7 @@ public class PscResourceAuthorizationTest
         }
         PscUser user = new PscUser(csmUser, memberships);
 
-        PscGuard.setCurrentAuthenticationToken(request,
+        PscAuthenticator.setCurrentAuthenticationToken(request,
             new TestingAuthenticationToken(user, null, user.getAuthorities()));
         return user;
     }

@@ -103,7 +103,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     }
 
     public void testCurrentUserCanBeLoadedWhenThereIsAnAuthentication() throws Exception {
-        assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
+        assertNotNull("Test setup failure", PscAuthenticator.getCurrentAuthenticationToken(request));
 
         replayMocks();
         assertSame(getCurrentUser(), getResource().getCurrentUser());
@@ -111,7 +111,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     }
 
     public void testCurrentUserIsNullWhenThereIsNoAuthentication() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request, null);
+        PscAuthenticator.setCurrentAuthenticationToken(request, null);
 
         replayMocks();
         assertNull(getResource().getCurrentUser());
@@ -119,7 +119,8 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     }
 
     public void testCurrentUserThrowsExceptionForUnexpectedPrincipalType() throws Exception {
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("fred", "frob"));
+        PscAuthenticator.setCurrentAuthenticationToken(
+            request, new UsernamePasswordAuthenticationToken("fred", "frob"));
 
         replayMocks();
         try {

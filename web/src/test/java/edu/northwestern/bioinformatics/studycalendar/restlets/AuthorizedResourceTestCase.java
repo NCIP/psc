@@ -27,15 +27,15 @@ public abstract class AuthorizedResourceTestCase<R extends ServerResource & Auth
 
     protected void setCurrentUser(PscUser u) {
         if (u == null) {
-            PscGuard.setCurrentAuthenticationToken(request, null);
+            PscAuthenticator.setCurrentAuthenticationToken(request, null);
         } else {
-            PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(
-                u, "dc", u.getAuthorities()));
+            PscAuthenticator.setCurrentAuthenticationToken(request,
+                new UsernamePasswordAuthenticationToken(u, "dc", u.getAuthorities()));
         }
     }
 
     protected PscUser getCurrentUser() {
-        return (PscUser) PscGuard.getCurrentAuthenticationToken(request).getPrincipal();
+        return (PscUser) PscAuthenticator.getCurrentAuthenticationToken(request).getPrincipal();
     }
 
     @Override
@@ -68,5 +68,4 @@ public abstract class AuthorizedResourceTestCase<R extends ServerResource & Auth
             assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", Arrays.asList(roles).contains(role));
         }
     }
-
 }

@@ -86,7 +86,7 @@ public class AbstractPscResource extends ServerResource implements AuthorizedRes
     }
 
     protected PscUser getCurrentUser() {
-        Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
+        Authentication token = PscAuthenticator.getCurrentAuthenticationToken(getRequest());
         if (token == null) {
             return null;
         } else if (token.getPrincipal() instanceof PscUser) {
@@ -111,7 +111,7 @@ public class AbstractPscResource extends ServerResource implements AuthorizedRes
 
     protected boolean isAuthorized() {
         log.debug("Authorizing {}", getClass().getSimpleName());
-        Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
+        Authentication token = PscAuthenticator.getCurrentAuthenticationToken(getRequest());
         if (token == null) {
             // this should not be possible
             throw new StudyCalendarSystemException("Cannot authorize an unauthenticated request");
