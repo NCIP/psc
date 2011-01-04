@@ -14,7 +14,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
-                <ref bean="AuthenticationLogInfoFilter"/>
+                <ref bean="authenticationLogInfoFilter"/>
                 <ref bean="exceptionTranslationFilter"/>
                 <ref bean="filterInvocationInterceptor"/>
             </list>
@@ -98,7 +98,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <bean id="logInfoFilter"
           class="edu.northwestern.bioinformatics.studycalendar.tools.HttpRequestLogInfoFilter"/>
 
-    <bean id="AuthenticationLogInfoFilter"
+    <bean id="authenticationLogInfoFilter"
           class="edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationLogInfoFilter"/>
 
     <bean id="accessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
