@@ -13,6 +13,32 @@ psc.subject.RealScheduleControls = (function ($) {
     executePartialScheduleUpdate(params);
   }
 
+  function performShowAction(evt, data) {
+    var parentElm = $(this).parent("li")
+    var parentId = parentElm.attr('id')
+    var activityType = parentId.split("-")[0];
+    var activityClass = "li."+activityType
+
+    var arrayOfActivities = jQuery(activityClass);
+    arrayOfActivities.show()
+    $(this).css("color", "grey")
+    var hideControl = parentElm.children(".hideControl")
+    hideControl.css("color", "blue")
+  }
+
+  function performHideAction(evt, data) {
+    var parentElm = $(this).parent("li")
+    var parentId = parentElm.attr('id')
+    var activityType = parentId.split("-")[0];
+    var activityClass = "li."+activityType
+
+    var arrayOfActivities = jQuery(activityClass);
+    arrayOfActivities.hide()
+    $(this).css("color", "grey")
+    var showControl = parentElm.children(".showControl")
+    showControl.css("color", "blue")
+  }
+
   function executePartialScheduleUpdate(updates) {
     $('#schedule-controls .indicator').css('visibility', 'visible');
     $.ajax({
@@ -195,6 +221,8 @@ psc.subject.RealScheduleControls = (function ($) {
       $('#report-options').click(makeReportMoreOptionsRequest)
       $('#delay-submit').click(performDelay);
       $('#mark-submit').click(performCheckedModifications);
+      $('.showControl').click(performShowAction);
+      $('.hideControl').click(performHideAction);
       $('a.mark-select').click(checkScheduledActivitiesByClass).
         click(updateActivityCountMessage);
       $('input.event').live('click', updateActivityCountMessage);
