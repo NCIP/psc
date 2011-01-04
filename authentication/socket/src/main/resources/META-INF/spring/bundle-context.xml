@@ -13,6 +13,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <ref bean="httpSessionContextIntegrationFilter"/>
                 <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
+                <ref bean="apiAuthenticationFilter"/>
                 <ref bean="authenticationSystemSocket"/>
                 <ref bean="authenticationLogInfoFilter"/>
                 <ref bean="exceptionTranslationFilter"/>
@@ -93,6 +94,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 /pages/**=IS_AUTHENTICATED_FULLY
             </value>
         </property>
+    </bean>
+
+    <bean id="apiAuthenticationFilter"
+          class="edu.northwestern.bioinformatics.studycalendar.security.internal.ApiAuthenticationFilter">
+        <property name="authenticationSystemConfiguration" ref="authenticationSystemConfiguration"/>
     </bean>
 
     <bean id="logInfoFilter"

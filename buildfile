@@ -270,7 +270,7 @@ define "psc" do
         "org.acegisecurity.vote" <<
         "org.springframework.cache.ehcache"
       compile.with project('plugin-api').and_dependencies, SPRING_OSGI,
-        project('domain').and_dependencies, EHCACHE
+        project('domain').and_dependencies, EHCACHE, JAKARTA_COMMONS.codec
       test.with UNIT_TESTING,
         project.parent.project('local-plugin'),
         project('plugin-api').test_dependencies,
