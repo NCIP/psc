@@ -70,7 +70,10 @@
                 <html:td>xml</html:td>
             </html:tr>
         </html:table>
-
+        <html:p class="main">
+            Common headers: For associating any API request to the user action for undo, custom PSC header 'X-PSC-User-Action' can be added to the request headers.
+            For example, X-PSC-User-Action: {PSC}/api/v1/user-actions/80460809-2e90-4ea5-ac29-ca23639bf460 (Which is the user action URI)
+        </html:p>
         <html:p class="main">
             Resources marked <html:em class="pending">Pending</html:em> are planned
             for a future release of PSC but are not yet implemented.
