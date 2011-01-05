@@ -21,9 +21,9 @@ psc.subject.RealScheduleControls = (function ($) {
 
     var arrayOfActivities = jQuery(activityClass);
     arrayOfActivities.show()
-    $(this).css("color", "grey")
+    $(this).removeClass('enableControl').addClass('disableControl')
     var hideControl = parentElm.children(".hideControl")
-    hideControl.css("color", "blue")
+    hideControl.removeClass('disableControl').addClass('enableControl')
   }
 
   function performHideAction(evt, data) {
@@ -34,9 +34,9 @@ psc.subject.RealScheduleControls = (function ($) {
 
     var arrayOfActivities = jQuery(activityClass);
     arrayOfActivities.hide()
-    $(this).css("color", "grey")
+    $(this).removeClass('enableControl').addClass('disableControl')
     var showControl = parentElm.children(".showControl")
-    showControl.css("color", "blue")
+    showControl.removeClass('disableControl').addClass('enableControl')
   }
 
   function executePartialScheduleUpdate(updates) {
