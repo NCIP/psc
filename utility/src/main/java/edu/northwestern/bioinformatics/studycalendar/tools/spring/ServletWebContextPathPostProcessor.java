@@ -28,10 +28,8 @@ public class ServletWebContextPathPostProcessor implements BeanFactoryPostProces
 
     @SuppressWarnings({ "unchecked" })
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        webContextPathAwareBeans = (Map<String, WebContextPathAware>) BeanFactoryUtils.
-            beansOfTypeIncludingAncestors(beanFactory, WebContextPathAware.class);
-        applicationPathAwareBeans = (Map<String, ApplicationPathAware>) BeanFactoryUtils.
-            beansOfTypeIncludingAncestors(beanFactory, ApplicationPathAware.class);
+        webContextPathAwareBeans = (Map<String, WebContextPathAware>) beanFactory.getBeansOfType(WebContextPathAware.class);
+        applicationPathAwareBeans = (Map<String, ApplicationPathAware>) beanFactory.getBeansOfType(ApplicationPathAware.class);
     }
 
     public void registerRequest(HttpServletRequest request) {

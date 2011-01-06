@@ -174,15 +174,15 @@ SPRING = [
   "org.springframework:spring:jar:#{SPRING_VERSION}",
 ]
 
-SPRING_WEB = [
-  "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
-  "org.springframework:spring-webflow:jar:1.0.5",
-  "org.springframework:spring-binding:jar:1.0.5",
-  "javax.activation:com.springsource.javax.activation:jar:1.1.1",
-  "javax.mail:com.springsource.javax.mail:jar:1.4.1",
-  "org.apache.oro:com.springsource.org.apache.oro:jar:2.0.8",
-  "org.ognl:com.springsource.org.ognl:jar:2.6.9" # For webflow
-]
+SPRING_WEB = struct(
+  :webmvc     => "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
+  :webflow    => "org.springframework:spring-webflow:jar:1.0.5",
+  :binding    => "org.springframework:spring-binding:jar:1.0.5",
+  :activation => "javax.activation:com.springsource.javax.activation:jar:1.1.1",
+  :mail       => "javax.mail:com.springsource.javax.mail:jar:1.4.1",
+  :oro        => "org.apache.oro:com.springsource.org.apache.oro:jar:2.0.8",
+  :ognl       => "org.ognl:com.springsource.org.ognl:jar:2.6.9" # For webflow
+)
 
 CGLIB = "net.sourceforge.cglib:com.springsource.net.sf.cglib:jar:2.1.3"
 

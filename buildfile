@@ -100,7 +100,7 @@ define "psc" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
 
-    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections,
+    compile.with SLF4J.api, SPRING, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
 

@@ -46,6 +46,11 @@ public class ServletWebContextPathPostProcessorTest extends TestCase {
         assertEquals("Context path not set", CONTEXT_PATH, item.getContextPath());
     }
 
+    /*
+     * It turned out that this was not desirable.  The only hierarchy of bean factories in PSC
+     * is from individual dispatchers to the main application context.  The main application
+     * context gets initialized separately so that only those dispatchers that use context path
+     * injection need to define the interceptor for it.
     public void testAncestorsContextPathsSet() throws Exception {
         processor.postProcessBeanFactory(target);
         processor.registerRequest(request);
@@ -53,6 +58,7 @@ public class ServletWebContextPathPostProcessorTest extends TestCase {
         TestContextPathAwareItem item = (TestContextPathAwareItem) target.getBean("parentAware");
         assertEquals("Context path not set for parent", CONTEXT_PATH, item.getContextPath());
     }
+    */
 
     public void testContextPathOnlySetOnce() throws Exception {
         MockHttpServletRequest request2 = new MockHttpServletRequest();
