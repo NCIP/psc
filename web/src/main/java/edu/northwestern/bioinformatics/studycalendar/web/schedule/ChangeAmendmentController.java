@@ -1,12 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -26,10 +30,13 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-public class ChangeAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler {
+public class ChangeAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler, ApplicationPathAware {
     private AmendmentDao amendmentDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private DeltaService deltaService;
+    private ApplicationSecurityManager applicationSecurityManager;
+    private UserActionDao userActionDao;
+    private String applicationPath;
 
     public ChangeAmendmentController() {
         setCommandClass(ChangeAmendmentCommand.class);
@@ -70,10 +77,43 @@ public class ChangeAmendmentController extends PscSimpleFormController implement
         return refdata;
     }
 
-    protected ModelAndView onSubmit(Object oCommand) throws Exception {
+    protected ModelAndView onSubmit(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, java.lang.Object oCommand, org.springframework.validation.BindException errors)  throws Exception {
         ChangeAmendmentCommand command = (ChangeAmendmentCommand) oCommand;
+        associateWithUserAction(command);
         command.apply();
         return getControllerTools().redirectToSchedule(command.getAssignment().getId());
+    }
+
+    private void associateWithUserAction(ChangeAmendmentCommand command) {
+        StudySubjectAssignment assignment =  command.getAssignment();
+        StringBuilder sb = new StringBuilder(applicationPath);
+        sb.append("/api/v1/subjects/");
+        Subject subject = assignment.getSubject();
+        if (subject.getPersonId() != null) {
+            sb.append(subject.getPersonId());
+        } else {
+            sb.append(subject.getGridId());
+        }
+        sb.append("/schedules");
+
+        UserAction userAction = new UserAction();
+        userAction.setContext(sb.toString());
+        userAction.setActionType("amendment");
+        StringBuilder des = new StringBuilder("Amendment ");
+        for (Map.Entry<Amendment, Boolean> entry : command.getAmendments().entrySet()) {
+            if (entry.getValue()) {
+                des.append("[").append(entry.getKey().getDisplayName()).append("]");
+            }
+        }
+        des.append(" applied to ").append(subject.getFullName()).append(" for ").append(assignment.getName());
+        userAction.setDescription(des.toString());
+        PscUser user = applicationSecurityManager.getUser();
+        if (user != null) {
+            userAction.setUser(user.getCsmUser());
+        }
+
+        userActionDao.save(userAction);
+        AuditEvent.setUserAction(userAction);
     }
 
     ////// CONFIGURATION
@@ -91,6 +131,21 @@ public class ChangeAmendmentController extends PscSimpleFormController implement
     @Required
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    @Required
+    public void setApplicationPath(String applicationPath) {
+        this.applicationPath = applicationPath;
+    }
+
+    @Required
+    public void setUserActionDao(UserActionDao userActionDao) {
+        this.userActionDao = userActionDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private static class Crumb extends DefaultCrumb {
