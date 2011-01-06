@@ -23,6 +23,14 @@ public class UserAction extends AbstractMutableDomainObject {
     private boolean undone;
     private User resolvedUser;
 
+    public UserAction(String description, String context, String actionType, boolean undone, User resolvedUser) {
+        this.description = description;
+        this.context = context;
+        this.actionType = actionType;
+        this.undone = undone;
+        setUser(resolvedUser);
+    }
+
     public String getDescription() {
         return description;
     }
@@ -92,5 +100,32 @@ public class UserAction extends AbstractMutableDomainObject {
 
     public void setUndone(boolean undone) {
         this.undone = undone;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final UserAction that = (UserAction) o;
+
+        if (description != null ? !description.equals(that.getDescription()) : that.getDescription() != null)
+            return false;
+        if (csmUserId != null ? !csmUserId.equals(that.getCsmUserId()) : that.getCsmUserId() != null)
+            return false;
+        if (context != null ? !context.equals(that.getContext()) : that.getContext() != null) return false;
+        if (actionType != null ? !actionType.equals(that.getActionType()) : that.getActionType() != null) return false;
+        if (undone != that.isUndone()) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (description != null ? description.hashCode() : 0);
+        result = 31 * result + (csmUserId != null ? csmUserId.hashCode() : 0);
+        result = 31 * result + (context != null ? context.hashCode() : 0);
+        result = 31 * result + (actionType != null ? actionType.hashCode() : 0);
+        result = 31 * result + (undone ? 1 : 0);
+        return result;
     }
 }
