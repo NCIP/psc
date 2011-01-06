@@ -776,7 +776,7 @@ define "psc" do
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
-
+	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -849,6 +849,7 @@ define "psc" do
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
+	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -920,6 +921,7 @@ define "psc" do
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
+	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
