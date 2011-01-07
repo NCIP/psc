@@ -2,6 +2,7 @@ psc.namespace("subject");
 
 psc.subject.RealScheduleControls = (function ($) {
   var batchResource;
+  var selectAndModifyTabIsOpen = false;
 
   function performDelay(evt, data) {
     var params = psc.subject.RealScheduleControls.computeDelayParameters();
@@ -73,12 +74,17 @@ psc.subject.RealScheduleControls = (function ($) {
       $('#mark-activities-count').
         text('There are currently no activities checked.');
     } else if (count === 1) {
+      if (selectAndModifyTabIsOpen !== true) {
+        jQuery("#schedule-controls").accordion('activate', 4);
+        selectAndModifyTabIsOpen = true;
+      }
       $('#mark-activities-count').
         text('There is currently 1 activity checked.');
     } else {
       $('#mark-activities-count').
         text('There are currently ' + count + ' activities checked.');
     }
+    jQuery('#apply-modified-activities-div').effect("highlight", {}, 2000);
   }
 
   function isShiftingMarkMode() {

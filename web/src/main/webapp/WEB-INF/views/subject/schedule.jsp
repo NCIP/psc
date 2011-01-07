@@ -40,7 +40,7 @@
     <tags:javascriptLink name="subject/schedule-list"/>
     <tags:javascriptLink name="subject/schedule-init"/>
 
-    <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:javascriptLink name="jquery/jquery-ui-1.7.3.custom.min"/>
     <tags:javascriptLink name="jquery/jquery.enumerable"/>
     <tags:javascriptLink name="jquery/jquery.cookie"/>
 
@@ -447,7 +447,7 @@
                         Why? <input type="text" id="mark-reason"/>
                     </label>
                 </p>
-                <div>
+                <div id="apply-modified-activities-div">
                     <tags:activityIndicator id="markUpdate-indicator"/>
                     <input type="submit" value="Apply" id="mark-submit"/>
                     <span id="mark-activities-count"></span>
