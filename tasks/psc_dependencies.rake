@@ -205,7 +205,8 @@ HIBERNATE = struct(
   :jgroups => "org.jgroups:com.springsource.org.jgroups:jar:2.5.1"
 )
 
-HIBERNATE_ANNOTATIONS = artifact("org.hibernate:edu.northwestern.bioinformatics.hibernate.annotations:jar:3.4.0.GA").from(static_lib('edu.northwestern.bioinformatics.hibernate.annotations-3.4.0.GA.jar'))
+HIBERNATE_ANNOTATIONS = artifact("org.hibernate:edu.northwestern.bioinformatics.osgi.org.hibernate.annotations:jar:3.4.0.GA-PSC001").
+  from(static_lib('edu.northwestern.bioinformatics.osgi.org.hibernate.annotations-3.4.0.GA-PSC001.jar'))
 
 EHCACHE = struct(
   :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
