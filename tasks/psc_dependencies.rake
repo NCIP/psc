@@ -205,8 +205,9 @@ HIBERNATE = struct(
   :jgroups => "org.jgroups:com.springsource.org.jgroups:jar:2.5.1"
 )
 
-HIBERNATE_ANNOTATIONS = artifact("org.hibernate:edu.northwestern.bioinformatics.osgi.org.hibernate.annotations:jar:3.4.0.GA-PSC001").
-  from(static_lib('edu.northwestern.bioinformatics.osgi.org.hibernate.annotations-3.4.0.GA-PSC001.jar'))
+HIBERNATE_ANNOTATIONS = artifact(
+  "org.hibernate:edu.northwestern.bioinformatics.osgi.org.hibernate.annotations:jar:3.4.0.GA-PSC001",
+  static_lib('edu.northwestern.bioinformatics.osgi.org.hibernate.annotations-3.4.0.GA-PSC001.jar'))
 
 EHCACHE = struct(
   :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
@@ -269,17 +270,18 @@ CAGRID_1 = [
 CAGRID = struct(
   :all => Dir[static_lib("psc-cagrid-all*.jar")].sort.collect { |jar|
       version = File.basename(jar).split('_')[1].gsub(/.jar/, '')
-      artifact("org.globus:edu.northwestern.bioinformatics.osgi.gov.nih.nci.cagrid.all:jar:#{version}").from(jar)
+      artifact("org.globus:edu.northwestern.bioinformatics.osgi.gov.nih.nci.cagrid.all:jar:#{version}", jar)
     }.last,
   :globus_adapter =>
-    artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC001").
-      from(static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC001.jar"))
+    artifact(
+      "gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC001",
+      static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC001.jar"))
 )
 
 GLOBUS = struct(
   :core => Dir[static_lib("psc-globus-all*.jar")].sort.collect { |jar|
       version = File.basename(jar).split('_')[1].gsub(/.jar/, '')
-      artifact("org.globus:edu.northwestern.bioinformatics.osgi.org.globus.all:jar:#{version}").from(jar)
+      artifact("org.globus:edu.northwestern.bioinformatics.osgi.org.globus.all:jar:#{version}", jar)
     }.last,
   :discovery  => JAKARTA_COMMONS.discovery,
   :httpclient => JAKARTA_COMMONS.httpclient,
@@ -341,8 +343,11 @@ COPPA = struct(
 
   # artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-jaxb-adapter:jar:0.0.0").
   #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
-  :globus_adapter => artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:3.0.0.PSC000").
-    from(static_lib('coppa/coppa-globus-adapter-3.0.0.PSC000.jar')) # version changes separately from the others since it's manually created
+
+  # version changes separately from the others since it's manually created
+  :globus_adapter => artifact(
+    "gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:3.0.0.PSC000",
+    static_lib('coppa/coppa-globus-adapter-3.0.0.PSC000.jar'))
 )
 
 CIH_VERSION = "1.2.2.PSC000"
