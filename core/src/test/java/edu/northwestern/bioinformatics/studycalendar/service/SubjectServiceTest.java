@@ -408,13 +408,33 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong activity", expectedActivity.getName(), actualEvent.getActivity().getName());
     }
 
-    public void testFindRecurringHoliday() throws Exception {
-        Calendar cal = getInstance();
-        List<Date> listOfDays = new ArrayList<Date>();
-        assertTrue(listOfDays.size()==0);
-        int dayOfTheWeek = DAY_OF_WEEK;
-        listOfDays = service.findRecurringHoliday(cal, dayOfTheWeek);
-        assertTrue(listOfDays.size()>3 && listOfDays.size()<6);
+    public void testFindDaysOfWeekInMonth() throws Exception {
+        List<Date> actual = service.findDaysOfWeekInMonth(2007, Calendar.MAY, Calendar.WEDNESDAY);
+        assertEquals("There were 5 Wednesdays in May 2007: " + actual, 5, actual.size());
+        assertDayOfDate("Wrong 1st Wed.", 2007, Calendar.MAY,  2, actual.get(0));
+        assertDayOfDate("Wrong 2nd Wed.", 2007, Calendar.MAY,  9, actual.get(1));
+        assertDayOfDate("Wrong 3rd Wed.", 2007, Calendar.MAY, 16, actual.get(2));
+        assertDayOfDate("Wrong 4th Wed.", 2007, Calendar.MAY, 23, actual.get(3));
+        assertDayOfDate("Wrong 5th Wed.", 2007, Calendar.MAY, 30, actual.get(4));
+    }
+
+    public void testFindDaysOfWeekInMonthWithFirstDayMatch() throws Exception {
+        List<Date> actual = service.findDaysOfWeekInMonth(1981, Calendar.OCTOBER, Calendar.THURSDAY);
+        assertEquals("There were 5 Thursdays in October 1981: " + actual, 5, actual.size());
+        assertDayOfDate("Wrong 1st Th.", 1981, Calendar.OCTOBER,  1, actual.get(0));
+        assertDayOfDate("Wrong 2nd Th.", 1981, Calendar.OCTOBER,  8, actual.get(1));
+        assertDayOfDate("Wrong 3rd Th.", 1981, Calendar.OCTOBER, 15, actual.get(2));
+        assertDayOfDate("Wrong 4th Th.", 1981, Calendar.OCTOBER, 22, actual.get(3));
+        assertDayOfDate("Wrong 5th Th.", 1981, Calendar.OCTOBER, 29, actual.get(4));
+    }
+
+    public void testFindDaysOfWeekInMonthWithLastDayMatch() throws Exception {
+        List<Date> actual = service.findDaysOfWeekInMonth(1993, Calendar.FEBRUARY, Calendar.SUNDAY);
+        assertEquals("There were 4 Sundays in February 1993: " + actual, 4, actual.size());
+        assertDayOfDate("Wrong 1st Su.", 1993, Calendar.FEBRUARY,  7, actual.get(0));
+        assertDayOfDate("Wrong 2nd Su.", 1993, Calendar.FEBRUARY, 14, actual.get(1));
+        assertDayOfDate("Wrong 3rd Su.", 1993, Calendar.FEBRUARY, 21, actual.get(2));
+        assertDayOfDate("Wrong 4th Su.", 1993, Calendar.FEBRUARY, 28, actual.get(3));
     }
 
     public void testShiftDayByOne() throws Exception {

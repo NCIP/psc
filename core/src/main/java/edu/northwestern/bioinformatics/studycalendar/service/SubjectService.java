@@ -337,9 +337,7 @@ public class SubjectService {
                 Integer numberOfTheWeek = relativeRecurringHoliday.getWeekNumber();
                 Integer month = relativeRecurringHoliday.getMonth();
                 int dayOfTheWeekInt = relativeRecurringHoliday.getDayOfTheWeekInteger();
-                Calendar c = Calendar.getInstance();
-                c.set(year, month, 1);
-                List<Date> dates = findRecurringHoliday(c, dayOfTheWeekInt);
+                List<Date> dates = findDaysOfWeekInMonth(year, month, dayOfTheWeekInt);
                 //-1, since we start from position 0 in the list
                 Date specificDay = dates.get(numberOfTheWeek-1);
 
@@ -360,19 +358,26 @@ public class SubjectService {
         avoidBlackoutDates(event, site);
     }
 
+    /**
+     * Finds all the dates which represent the particular day of the week (Monday, Tuesday, etc.)
+     * in the specified month.
+     */
     // package level for testing
-    //looking for a specific day = dayOfTheWeek (like Monday, or Tuesday)
-    List<Date> findRecurringHoliday(Calendar cal, int dayOfTheWeek) {
-        List<Date> weekendList = new ArrayList<Date>();
-        for (int i = cal.getActualMinimum(Calendar.DAY_OF_MONTH);
-             i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i ++) {
-            int dayOfTheWeekCal = cal.get(Calendar.DAY_OF_WEEK) ;
-            if (dayOfTheWeekCal == dayOfTheWeek) {
-                weekendList.add(cal.getTime());
+    List<Date> findDaysOfWeekInMonth(int year, int month, int dayOfTheWeek) {
+        List<Date> matches = new ArrayList<Date>();
+        Calendar search = Calendar.getInstance();
+        search.set(year, month, 1);
+        while (
+            search.get(Calendar.MONTH) == month &&
+            search.get(Calendar.DAY_OF_MONTH) <= search.getActualMaximum(Calendar.DAY_OF_MONTH)
+            ) {
+            System.out.println(search.getTime());
+            if (search.get(Calendar.DAY_OF_WEEK) == dayOfTheWeek) {
+                matches.add(search.getTime());
             }
-            cal.add(Calendar.DAY_OF_MONTH, 1);
+            search.add(Calendar.DAY_OF_MONTH, 1);
         }
-        return weekendList;
+        return matches;
     }
 
     // package level for testing
