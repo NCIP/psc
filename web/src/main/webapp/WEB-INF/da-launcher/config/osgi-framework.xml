@@ -16,7 +16,7 @@
 
 	<!-- Defines Framework specific properties that will be passed to the Framework when starting it. (e.g., 'felix.log.level', 'osgi.context.bootdelegation', etc.) -->
 	<framework-properties>
-		<property name="felix.log.level" value="0"/>
+		<property name="felix.log.level" value="2"/>
 		<property name="org.knopflerfish.consoletelnet.port">7224</property>
 		<property name="osgi.shell.telnet.port">7223</property>
 
