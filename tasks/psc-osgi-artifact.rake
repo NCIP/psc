@@ -16,7 +16,8 @@ def psc_osgi_artifact(spec, bnd_props = { }, &src_mod)
     if block_given?
       yield src
     end
-    task = Osgi::BundledArtifact.define_task(repositories.locate(dst_spec))
+    task = Osgi::BundledArtifact.define_task(
+      Osgi::BundledArtifact.bundled_file(dst_spec))
     task.send :apply_spec, dst_spec
     task.init(src, bnd_props)
     task.enhance [src]
@@ -33,15 +34,25 @@ module Osgi
     def init(src_artifact, bnd_props)
       @src_artifact = src_artifact
       @bnd_props = ArtifactBndProperties.new(self).merge!(bnd_props)
-      self.from(bnd_task.name)
+      self.setup_bnd_task
     end
 
     def bundled_file
-      "#{basedir}/osgi/bundled-lib/#{group_path}/#{id}/#{version}/#{Artifact.hash_to_file_name(self.to_spec_hash)}"
+      self.class.bundled_file(self.to_spec_hash)
+    end
+
+    def self.bundled_file(spec_hash)
+      File.join(
+        basedir, 'osgi', 'bundled-lib',
+        spec_hash[:group].split('.'),
+        spec_hash[:id],
+        spec_hash[:version],
+        Artifact.hash_to_file_name(spec_hash)
+        )
     end
 
     def bnd_file
-      @bnd_file_task ||= Rake::FileTask.define_task("#{basedir}/osgi/bnd-tmp/#{Artifact.hash_to_file_name(src_artifact.to_spec_hash.merge(:type => 'bnd'))}") do |task|
+      @bnd_file_task ||= Rake::FileTask.define_task("#{self.class.basedir}/osgi/bnd-tmp/#{Artifact.hash_to_file_name(src_artifact.to_spec_hash.merge(:type => 'bnd'))}") do |task|
         trace "Generating bnd instructions in #{task}"
         mkdir_p File.dirname(task.name)
         File.open(task.name, 'w') do |f|
@@ -52,35 +63,39 @@ module Osgi
 
     protected
 
-    def basedir
+    def self.basedir
       File.expand_path("..", File.dirname(__FILE__))
     end
 
-    def bnd_task
-      # this deliberately does not depend on bnd_file.  This is so that
-      # the bnd files don't have to be kept alongside the jars to
-      # prevent them from being constantly rebuilt.
-      Rake::FileTask.define_task(bundled_file => [src_artifact]) do |task|
-        bnd_file.invoke
+    def setup_bnd_task
+      # If the bundled file is already present, don't rebundle it
+      # even if the src artifact is not on the system.
+      unless File.exist?(bundled_file)
+        # this deliberately does not depend on bnd_file.  This is so that
+        # the bnd files don't have to be kept alongside the jars to
+        # prevent them from being constantly rebuilt.
+        self.enhance([src_artifact]) do |task|
+          bnd_file.invoke
 
-        mkdir_p File.dirname(bundled_file)
-        Buildr::ant("bnd") do |ant|
-          bndargs = {
-            :jars => @src_artifact.to_s,
-            :output => task.name,
-            :definitions => File.dirname(bnd_file.name)
-          }
-          trace "Invoking bndwrap with #{bndargs.inspect}"
+          mkdir_p File.dirname(task.name)
+          Buildr::ant("bnd") do |ant|
+            bndargs = {
+              :jars => @src_artifact.to_s,
+              :output => task.name,
+              :definitions => File.dirname(bnd_file.name)
+            }
+            trace "Invoking bndwrap with #{bndargs.inspect}"
 
-          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
-          info "Wrapping #{File.basename src_artifact.to_s} into #{File.basename bundled_file}"
-          ant.bndwrap bndargs
-        end
+            ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
+            info "Wrapping #{File.basename src_artifact.to_s} into #{File.basename task.name}"
+            ant.bndwrap bndargs
+          end
 
-        unless Buildr.application.options.trace
-          rm_rf File.dirname(bnd_file.name)
-        else
-          trace "Leaving behind #{bnd_file} for inspection"
+          unless Buildr.application.options.trace
+            rm_rf File.dirname(bnd_file.name)
+          else
+            trace "Leaving behind #{bnd_file} for inspection"
+          end
         end
       end
     end
