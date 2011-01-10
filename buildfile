@@ -1372,7 +1372,7 @@ task :server => 'psc:web:local_jetty'
 
 namespace :ci do
   desc "Continuous unit test build"
-  task :unit => [:clean, :'psc:database:clean_hsqldb', :'psc:verify_bda_gems'] do
+  task :unit => [:clean, :'psc:database:clean_hsqldb', 'fingerprint', :'psc:verify_bda_gems'] do
     task('psc:database:migrate').invoke unless hsqldb?
     task(:test).invoke
     if emma?
@@ -1405,7 +1405,7 @@ namespace :ci do
   end
 
   desc "Continuous integration test build"
-  task :integration => ['fake_unit_tests_already_run', 'psc:restful-api-test:setup'] do
+  task :integration => ['fake_unit_tests_already_run', 'fingerprint', 'psc:restful-api-test:setup'] do
     task('integration').invoke
   end
 end
