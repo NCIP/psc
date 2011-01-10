@@ -15,29 +15,47 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function performShowAction(evt, data) {
-    var parentElm = $(this).parent("li")
-    var parentId = parentElm.attr('id')
+    var parentElm = $(this).parent("li");
+    var parentId = parentElm.attr('id');
     var activityType = parentId.split("-")[0];
-    var activityClass = "li."+activityType
+    var activityClass = "li."+activityType;
+
+    $.each(jQuery('.day'), function (index, dayElm) {
+      var arrayOfLi = $(dayElm).find('li[class~='+activityType+']');
+      if (arrayOfLi.size() > 0) {
+        dayElm.show();
+      }
+    });
 
     var arrayOfActivities = jQuery(activityClass);
-    arrayOfActivities.show()
-    $(this).removeClass('enableControl').addClass('disableControl')
-    var hideControl = parentElm.children(".hideControl")
-    hideControl.removeClass('disableControl').addClass('enableControl')
+    arrayOfActivities.show();
+
+    $(this).removeClass('enableControl').addClass('disableControl');
+    var hideControl = parentElm.children(".hideControl");
+    hideControl.removeClass('disableControl').addClass('enableControl');
   }
 
   function performHideAction(evt, data) {
-    var parentElm = $(this).parent("li")
-    var parentId = parentElm.attr('id')
+    var parentElm = $(this).parent("li");
+    var parentId = parentElm.attr('id');
     var activityType = parentId.split("-")[0];
-    var activityClass = "li."+activityType
+    var activityClass = "li."+activityType;
 
     var arrayOfActivities = jQuery(activityClass);
-    arrayOfActivities.hide()
-    $(this).removeClass('enableControl').addClass('disableControl')
-    var showControl = parentElm.children(".showControl")
-    showControl.removeClass('disableControl').addClass('enableControl')
+    arrayOfActivities.hide();
+
+    var dateElements = jQuery('.day');
+    $.each(jQuery('.day'), function (index, dayElm) {
+      var arrayOfLis = $(dayElm).find('li:visible');
+      if (arrayOfLis.size() == 0) {
+        dayElm.hide();
+      }
+    });
+
+
+    $(this).removeClass('enableControl').addClass('disableControl');
+    var showControl = parentElm.children(".showControl");
+    showControl.removeClass('disableControl').addClass('enableControl');
   }
 
   function executePartialScheduleUpdate(updates) {
