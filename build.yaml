@@ -1,8 +1,8 @@
 gems:
 # - buildr ~>1.4.1 # re-enable when grid services packaging works with 1.4
 - facets ~>2.4.0
-- shenandoah =0.0.0
 - haml ~>2.2.0
+- shenandoah =0.0.0
 - json_pure
 - rest-client
 - buildr-iidea 0.0.8
