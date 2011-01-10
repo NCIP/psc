@@ -684,11 +684,6 @@ define "psc" do
   define "grid" do
     project.no_iml
 
-    ##creating work folders for mimicking the tomcat directory structure.
-    rm_rf _('target/work-tomcat')
-    mkdir_p _('target/work-tomcat/webapps/wsrf')
-    mkdir_p _('target/work-tomcat/common/lib')
-
     task :check_globus do |task|
       raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
     end
@@ -703,6 +698,11 @@ define "psc" do
 
     task :check_wsrf do |task|
       raise "#{wsrf_dir} not found. Cannot deploy grid service" unless File.directory? wsrf_dir
+    end
+
+    task :work_directories do
+      mkdir_p _('target/work-tomcat/webapps/wsrf')
+      mkdir_p _('target/work-tomcat/common/lib')
     end
 
     task :deploy_globus do |task|
@@ -738,7 +738,7 @@ define "psc" do
     task :deploy_with_globus => [:deploy_globus , :deploy]
 
     ## packaging the war file by deploying the grid services on the work tomcat folder.
-    package(:war, :file => _('target/'+wsrf_dir_name+'.war')).clean.include(:from=>_('target/work-tomcat/webapps/wsrf')).enhance do
+    package(:war, :file => _('target/'+wsrf_dir_name+'.war')).clean.include(:from=>_('target/work-tomcat/webapps/wsrf')).enhance [:'psc:grid:work_directories'] do
       ENV['CATALINA_HOME']=_('target/work-tomcat').to_s
       ENV['WSRF_DIR_NAME']='wsrf'
       task(:deploy_with_globus).invoke
@@ -763,7 +763,7 @@ define "psc" do
         dep == artifact(eponym("dbunit", "2.1"))
       end
 
-      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_grid_tomcat'] do |task|
+      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to caaers.
         ##Not Tested therefore commented temporarily
         ant('deploy-adverse-event-consumer-service') do |ant|
