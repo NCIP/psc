@@ -1,10 +1,10 @@
 gems:
-# - buildr ~>1.4.1 # re-enable when grid services packaging works with 1.4
+- buildr ~>1.4.4
 - facets ~>2.4.0
 - haml ~>2.2.0
 - shenandoah =0.0.0
 - json_pure
 - rest-client
 - buildr-iidea 0.0.8
-jruby: 1.4.0 # Oddly, this does not require that jruby 1.4.0 be installed -- just that _some_ version be installed
+jruby: 1.5.6 # Oddly, this does not require that jruby 1.5.6 be installed -- just that _some_ version be installed
 ant: 1.7.0
