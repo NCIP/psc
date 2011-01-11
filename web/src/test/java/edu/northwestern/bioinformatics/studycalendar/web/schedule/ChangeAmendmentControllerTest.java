@@ -56,6 +56,7 @@ public class ChangeAmendmentControllerTest  extends ControllerTestCase {
         ss.approveAmendment(a2, DateTools.createDate(2003, AUGUST, 3));
 
         Subject subject = createSubject("1111", "Perry", "Duglas", createDate(1980, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
+        subject.setGridId("1111");
         assignment = setId(12, createAssignment(ss, subject));
         assignment.setCurrentAmendment(a0);
         Population pop = setId(11, createPopulation("T", "Test"));
