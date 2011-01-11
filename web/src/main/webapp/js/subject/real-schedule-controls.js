@@ -21,6 +21,9 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function performShowAction(evt, data) {
+    var focusDate = psc.subject.ScheduleData.focusDate();
+    var dateRange = psc.subject.ScheduleList.visibleDayRange();
+
     var parentElm = $(this).parent("li");
     var parentId = parentElm.attr('id');
     var activityType = parentId.split("-")[0];
@@ -36,12 +39,21 @@ psc.subject.RealScheduleControls = (function ($) {
     var arrayOfActivities = jQuery(activityClass);
     arrayOfActivities.show();
 
+    $('#schedule').trigger('focus-date-changed', {
+        date: focusDate,
+        source: "show",
+        range: dateRange
+    });
+
     $(this).removeClass('enableControl').addClass('disableControl');
     var hideControl = parentElm.children(".hideControl");
     hideControl.removeClass('disableControl').addClass('enableControl');
   }
 
   function performHideAction(evt, data) {
+    var focusDate = psc.subject.ScheduleData.focusDate();
+    var dateRange = psc.subject.ScheduleList.visibleDayRange();
+
     var parentElm = $(this).parent("li");
     var parentId = parentElm.attr('id');
     var activityType = parentId.split("-")[0];
@@ -50,7 +62,6 @@ psc.subject.RealScheduleControls = (function ($) {
     var arrayOfActivities = jQuery(activityClass);
     arrayOfActivities.hide();
 
-    var dateElements = jQuery('.day');
     $.each(jQuery('.day'), function (index, dayElm) {
       var arrayOfLis = $(dayElm).find('li:visible');
       if (arrayOfLis.size() == 0) {
@@ -58,6 +69,11 @@ psc.subject.RealScheduleControls = (function ($) {
       }
     });
 
+    $('#schedule').trigger('focus-date-changed', {
+        date: focusDate,
+        source: "hide",
+        range: dateRange
+      });
 
     $(this).removeClass('enableControl').addClass('disableControl');
     var showControl = parentElm.children(".showControl");

@@ -50,7 +50,7 @@ psc.namespace("subject");
         psc.subject.ScheduleList.FocusHandler.init();
       }
 
-      buildDayPixelRanges();
+      psc.subject.ScheduleList.buildDayPixelRanges();
       $('#schedule-error').hide();
       $('.loading').fadeOut().hide();
     }
@@ -62,23 +62,6 @@ psc.namespace("subject");
       $('.loading').fadeOut();
     }
 
-    /* Creates an index of the positions of each day block to make it easier to search for what's visible */
-    function buildDayPixelRanges() {
-      var currentOffset = $('#schedule').scrollTop();
-      this.dayPixelRanges = $('#scheduled-activities > div.day').collect(function () {
-        var header = $(this).find("h3");
-        var blockTop = $(this).position().top;
-        return {
-          date: $(this).data('date'),
-          absolutePixelRange: {
-            // count as "visible" if any part of the date header is visible
-            start: blockTop + header.position().top + header.height() + currentOffset,
-            stop: blockTop + $(this).height() + currentOffset
-          }
-        };
-      });
-    }
-
     return {
       init: function () {
         $('#schedule').bind('schedule-load-start', function () {
@@ -86,6 +69,50 @@ psc.namespace("subject");
         });
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
+      },
+
+      /* Creates an index of the positions of each day block to make it easier to search for what's visible */
+      buildDayPixelRanges: function() {
+        var currentOffset = $('#schedule').scrollTop();
+        this.dayPixelRanges = $('#scheduled-activities > div.day').collect(function () {
+          var header = $(this).find("h3");
+          var blockTop = $(this).position().top;
+          return {
+            date: $(this).data('date'),
+            absolutePixelRange: {
+              // count as "visible" if any part of the date header is visible
+              start: blockTop + header.position().top + header.height() + currentOffset,
+              stop: blockTop + $(this).height() + currentOffset
+            }
+          };
+        });
+      },
+
+      visibleDayRange: function() {
+        var min, max;
+        var scheduleBlockHeight = $('#schedule').height();
+        var scheduleScroll = $('#schedule').scrollTop();
+        $(this.dayPixelRanges).each(function (i, dayInfo) {
+          if (!min && (dayInfo.absolutePixelRange.start - scheduleScroll > 0)) {
+            min = dayInfo.date;
+          } else if ((dayInfo.absolutePixelRange.stop - scheduleScroll) > scheduleBlockHeight) {
+            max = dayInfo.date;
+          }
+
+          if (min && max) {
+            return false;
+          }
+        });
+
+        if (!max) {
+          max = $('#scheduled-activities > .day:last-child').data('date');
+        }
+
+        if (min && max) {
+          return new psc.tools.Range(min, max);
+        } else {
+          return null;
+        }
       },
 
       FocusHandler: (function () {
@@ -164,36 +191,9 @@ psc.namespace("subject");
           }
         }
 
-        function visibleDayRange() {
-          var min, max;
-          var scheduleBlockHeight = $('#schedule').height();
-          var scheduleScroll = $('#schedule').scrollTop();
-          $(this.dayPixelRanges).each(function (i, dayInfo) {
-            if (!min && (dayInfo.absolutePixelRange.start - scheduleScroll > 0)) {
-              min = dayInfo.date;
-            } else if ((dayInfo.absolutePixelRange.stop - scheduleScroll) > scheduleBlockHeight) {
-              max = dayInfo.date;
-            }
-
-            if (min && max) {
-              return false;
-            }
-          });
-
-          if (!max) {
-            max = $('#scheduled-activities > .day:last-child').data('date');
-          }
-
-          if (min && max) {
-            return new psc.tools.Range(min, max);
-          } else {
-            return null;
-          }
-        }
-
         function fireFocusChanged(evt) {
           if (!programaticallyScrolling) {
-            var span = visibleDayRange();
+            var span = psc.subject.ScheduleList.visibleDayRange();
             psc.subject.ScheduleData.focusDate(span.start, SOURCE_NAME, span);
           }
         }
