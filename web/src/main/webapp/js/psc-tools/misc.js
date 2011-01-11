@@ -101,7 +101,7 @@ psc.tools.Strings = (function () {
 psc.tools.Uris = (function () {
   return {
     INTERNAL_URI_BASE_PATH: window.INTERNAL_URI_BASE_PATH || null,
-    
+
     relative: function (uri) {
       if (this.INTERNAL_URI_BASE_PATH) {
         var pfx = this.INTERNAL_URI_BASE_PATH;
@@ -119,6 +119,14 @@ psc.tools.Uris = (function () {
 
     escapePathElement: function(element){
       return element.replace(/\//g, "%04");
+    },
+
+    applicationPath: function () {
+      return  window.location.protocol + "//" + window.location.host;
+    },
+
+    deployed: function (uri) {
+       return this.applicationPath() + this.relative(uri);
     }
   };
 }());

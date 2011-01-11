@@ -3,31 +3,59 @@ psc.namespace("subject");
 psc.subject.RealScheduleNextSegment = (function () {
 
   function scheduleNextSegment() {
-    var selectedElt = getSelectorValue()
-    var studySegmentId = selectedElt.attr('studySegment')
-    var studyId = selectedElt.attr('study')
-    var assignmnentId = selectedElt.attr('assignment')
-    var startDay = selectedElt.attr('startday')
-    var immediateOrPerProtocol = getModeValue().replace("_", "-").toLowerCase()
+    var selectedElt = getSelectorValue();
+    var studySegmentId = selectedElt.attr('studySegment');
+    var studyId = selectedElt.attr('study');
+    var assignmentId = selectedElt.attr('assignment');
+    var startDay = selectedElt.attr('startday');
+    var immediateOrPerProtocol = getModeValue().replace("_", "-").toLowerCase();
     var startDate = psc.tools.Dates.displayDateToApiDate($F('start-date-input'));
     var params = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+'" start-date="'+startDate+
-                 '" mode="'+immediateOrPerProtocol+'" start-day="'+startDay+'"/>'
+                 '" mode="'+immediateOrPerProtocol+'" start-day="'+startDay+'"/>';
     var url = psc.tools.Uris.relative('/api/v1/studies/'+psc.tools.Uris.escapePathElement(studyId)+
-                                      '/schedules/'+psc.tools.Uris.escapePathElement(assignmnentId))
-    makeRequestForNextSegment(params, url)
+                                      '/schedules/'+psc.tools.Uris.escapePathElement(assignmentId));
+    var segmentName = selectedElt.attr('segmentName');
+    var subject = psc.subject.ScheduleData.getSubject();
+    var desc = "segment " +segmentName+ " is scheduled from " +startDate+ " as "
+            +immediateOrPerProtocol+ " mode for " + subject;
+    var action = {
+        description: desc,
+        context: psc.subject.ScheduleData.getSubjectApi(),
+        action_type: "segment"
+    } ;
+    makeRequestForNextSegmentWithUserAction(params, url, action);
   }
 
-  function makeRequestForNextSegment(parameters, resourceUrl) {
-    $('next-studySegment-indicator').reveal()
+  function makeRequestForNextSegmentWithUserAction(params, url, action) {
+    jQuery('#schedule-controls .indicator').css('visibility', 'visible');
+    var userActionUrl = psc.tools.Uris.relative('/api/v1/user-actions');
+    jQuery.ajax({
+      url: userActionUrl,
+      type: 'POST',
+      data: Object.toJSON(action),
+      contentType: 'application/json',
+      complete: function (xhr, status) {
+        if (status === 'success') {
+          if (xhr && xhr.getResponseHeader('Location')) {
+              var userAction = xhr.getResponseHeader('Location');
+              makeRequestForNextSegment(params, url, userAction)
+          }
+        }
+      }
+    });
+  }
+
+  function makeRequestForNextSegment(parameters, resourceUrl, userAction) {
     SC.asyncRequest(resourceUrl, Object.extend({
-                method: 'POST',
-                contentType: 'text/xml',
-                postBody: parameters,
-                onComplete: function(){
-                    $('next-studySegment-indicator').conceal()
-                    psc.subject.ScheduleData.refresh()
-                }
-            }))
+      method: 'POST',
+      contentType: 'text/xml',
+      postBody: parameters,
+      requestHeaders: ['X-PSC-User-Action', userAction],
+      onComplete: function(){
+        $('next-studySegment-indicator').conceal()
+        psc.subject.ScheduleData.refresh()
+      }
+     }));
   }
 
   function getModeValue() {

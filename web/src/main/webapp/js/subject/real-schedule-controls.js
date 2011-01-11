@@ -3,15 +3,21 @@ psc.namespace("subject");
 psc.subject.RealScheduleControls = (function ($) {
   var batchResource;
   var selectAndModifyTabIsOpen = false;
+  var userActionUrl = psc.tools.Uris.relative('/api/v1/user-actions');
 
   function performDelay(evt, data) {
     var params = psc.subject.RealScheduleControls.computeDelayParameters();
-    executePartialScheduleUpdate(params);
+    var count = 0;
+    for each(var id in params)
+      count = count + 1;
+    var action = psc.subject.RealScheduleControls.createDelayUserAction(count);
+    executePartialScheduleUpdateWithUserAction(params, action);
   }
 
   function performCheckedModifications(evt, data) {
     var params = psc.subject.RealScheduleControls.computeMarkParameters();
-    executePartialScheduleUpdate(params);
+    var action = psc.subject.RealScheduleControls.createMarkUserAction();
+    executePartialScheduleUpdateWithUserAction(params, action);
   }
 
   function performShowAction(evt, data) {
@@ -58,13 +64,33 @@ psc.subject.RealScheduleControls = (function ($) {
     showControl.removeClass('disableControl').addClass('enableControl');
   }
 
-  function executePartialScheduleUpdate(updates) {
+  function executePartialScheduleUpdateWithUserAction(updates, action) {
     $('#schedule-controls .indicator').css('visibility', 'visible');
+    $.ajax({
+      url: userActionUrl,
+      type: 'POST',
+      data: Object.toJSON(action),
+      contentType: 'application/json',
+        complete: function (xhr, status) {
+          if (status === 'success') {
+            if (xhr && xhr.getResponseHeader('Location')) {
+              var userAction = xhr.getResponseHeader('Location');
+              executePartialScheduleUpdate(updates, userAction)
+            }
+          }
+        }
+    });
+  }
+
+  function executePartialScheduleUpdate(updates, userAction) {
     $.ajax({
       url: batchResource,
       type: 'POST',
       data: Object.toJSON(updates),
       contentType: 'application/json',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader("X-PSC-User-Action", userAction);
+      },
       complete: function() {
         $('#schedule-controls .indicator').css('visibility', 'hidden');
         psc.subject.ScheduleData.refresh();
@@ -140,7 +166,7 @@ psc.subject.RealScheduleControls = (function ($) {
     'scheduled': function (sa) {
       return 'scheduled';
     },
-    
+
     'canceled-or-na': function (sa) {
       if ($.inArray(sa.current_state.name, ['NA', 'conditional']) >= 0) {
         return 'NA';
@@ -148,39 +174,66 @@ psc.subject.RealScheduleControls = (function ($) {
         return 'canceled';
       }
     },
-    
+
     'occurred': function (sa) {
       return 'occurred';
     },
-    
+
     'missed': function (sa) {
       return 'missed';
     }
   }
 
-   function dismissNotification() {
-       var notificationId = $(this).attr('notification');
-       var assignmentId = $(this).attr('assignment');
-       var subjectId = $(this).attr('subject');
-       var params = {
-           dismissed: true
-       };
-       var url = psc.tools.Uris.relative('/api/v1/subjects/'+psc.tools.Uris.escapePathElement(subjectId)+
-                                      '/assignments/'+psc.tools.Uris.escapePathElement(assignmentId)+'/notifications/'
-                                       +psc.tools.Uris.escapePathElement(notificationId))
-       var list = $(this).parents('li:first')
-       $.ajax({
-         url: url,
-         type: 'PUT',
-         data: Object.toJSON(params),
-         contentType: 'application/json',
-         complete: function() {
-            updateNotificationList(list)
-         }
-       });
-   }
+  function dismissNotification() {
+    var notificationId = $(this).attr('notification');
+    var assignmentId = $(this).attr('assignment');
+    var subjectId = $(this).attr('subject');
+    var assignmentName = $(this).attr('assignment-name');
+    var params = {
+      dismissed: true
+    };
+    var url = psc.tools.Uris.relative('/api/v1/subjects/'+psc.tools.Uris.escapePathElement(subjectId)+
+                          '/assignments/'+psc.tools.Uris.escapePathElement(assignmentId)+'/notifications/'
+                          +psc.tools.Uris.escapePathElement(notificationId))
+    var list = $(this).parents('li:first')
+    var context = psc.subject.ScheduleData.getSubjectApi();
+    var subject = psc.subject.ScheduleData.getSubject();
+    var desc = "notification dismiss for " + subject + " for " +assignmentName;
+    var action = null;
+    action = {
+      description: desc,
+      context: context,
+      action_type: "dismiss"
+    };
 
-   function updateNotificationList(li) {
+    $.ajax({
+      url: userActionUrl,
+      type: 'POST',
+      data: Object.toJSON(action),
+      contentType: 'application/json',
+      complete: function (xhr, status) {
+        if (status === 'success') {
+          if (xhr && xhr.getResponseHeader('Location')) {
+            var userAction = xhr.getResponseHeader('Location');
+            $.ajax({
+              url: url,
+              type: 'PUT',
+              data: Object.toJSON(params),
+              contentType: 'application/json',
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-PSC-User-Action", userAction);
+              },
+              complete: function() {
+                updateNotificationList(list)
+              }
+            });
+          }
+        }
+      }
+    });
+  }
+
+  function updateNotificationList(li) {
        li.slideUp()
        li.removeClass("remove");
        if ($('li.'+li.attr('study')+'.remove:not(.removed)').length == 0) {
@@ -231,6 +284,13 @@ psc.subject.RealScheduleControls = (function ($) {
       return startDate;
   }
 
+  function getDelayOrAdvance(val) {
+      if (val == 1) {
+        return "delay";
+      } else {
+        return "advance";
+      }
+  }
   function getReportEndDate() {
       var endDate = $('#actual-date-stop').val() ?
             psc.tools.Dates.displayDateToApiDate($('#actual-date-stop').val()) :
@@ -295,10 +355,10 @@ psc.subject.RealScheduleControls = (function ($) {
       });
       return params;
     },
-    
+
     // public for testing
     computeMarkParameters: function () {
-      var delayAmount = 
+      var delayAmount =
         $('#mark-delay-amount').val() * $('#mark-delay-or-advance').val();
       var params = null;
       var saIds = $('input.event:checked').
@@ -311,8 +371,8 @@ psc.subject.RealScheduleControls = (function ($) {
               if (!params) params = {};
               params[this.id] = {
                 state: newState,
-                date: isShiftingMarkMode() ? 
-                  shiftedDate(this.current_state.date, delayAmount) : 
+                date: isShiftingMarkMode() ?
+                  shiftedDate(this.current_state.date, delayAmount) :
                   this.current_state.date,
                 reason: $('#mark-reason').val()
               }
@@ -320,6 +380,51 @@ psc.subject.RealScheduleControls = (function ($) {
           }
         });
       });
+      return params;
+    },
+
+    createDelayUserAction: function (count) {
+      var params = null;
+      var delayAmount = $('#delay-amount').val();
+      var delayOrAdvance = $('#delay-or-advance').val();
+      var subject = psc.subject.ScheduleData.getSubject();
+      var actionType = getDelayOrAdvance(delayOrAdvance);
+      var desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " activities for " + subject + " by " + delayAmount + " days.";
+      var context = psc.subject.ScheduleData.getSubjectApi();
+
+      params = {
+        description: desc,
+        context: context,
+        action_type: actionType
+      };
+      return params;
+    },
+
+    createMarkUserAction: function() {
+      var delayAmount = $('#mark-delay-amount').val();
+      var params = null;
+      var delayOrAdvance = $('#mark-delay-or-advance').val();
+      var count = $('input.event:checked').length;
+      var newState = $('#mark-new-mode').val();
+      var subject = psc.subject.ScheduleData.getSubject();
+      var context = psc.subject.ScheduleData.getSubjectApi();
+      var desc;
+      if (newState == 'move-date-only') {
+          newState = getDelayOrAdvance(delayOrAdvance);
+          desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " activities for " + subject +
+                  " by " + delayAmount + " days."
+      } else if (newState == 'scheduled') {
+          desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " " + newState + " activities for "
+                  + subject + " by " + delayAmount + " days."
+      } else {
+          desc = count + " activities mark as " + newState.replace(/-/g, " ") + " for " + subject;
+      }
+
+      params = {
+        description: desc,
+        context: context,
+        action_type: newState
+      };
       return params;
     }
   }

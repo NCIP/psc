@@ -11,7 +11,7 @@
             <c:forEach items="${schedule.visibleAssignments}" var="assignment">
                 <c:forEach items="${assignment.studySite.study.plannedCalendar.epochs}" var="epoch">
                     <c:forEach items="${epoch.studySegments}" var="studySegment">
-                        <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}" startday="${studySegment.dayRange.startDay}" >${assignment.name}:${studySegment.qualifiedName}</option>
+                        <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}" startday="${studySegment.dayRange.startDay}" segmentName="${studySegment.qualifiedName}">${assignment.name}:${studySegment.qualifiedName}</option>
                     </c:forEach>
                 </c:forEach>
             </c:forEach>

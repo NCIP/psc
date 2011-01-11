@@ -3,7 +3,7 @@ psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {
-    var schedule, subjectCoordinator = null, focusDate = new Date();
+    var schedule, subjectCoordinator = null, focusDate = new Date(), subjectApi, subject;
 
     
     function triggeredDateComparableFn(triggerData) {
@@ -109,6 +109,22 @@ psc.namespace("subject");
 
       getSubjectCoordinator: function() {
         return subjectCoordinator;
+      },
+
+      setSubjectApi : function(subjectUri) {
+        subjectApi = subjectUri;
+      },
+
+      getSubjectApi : function() {
+        return subjectApi;
+      },
+
+      setSubject : function(subj) {
+        subject = subj;
+      },
+
+      getSubject : function() {
+        return subject;
       },
 
       errorMessage: function(XMLHttpRequest, textStatus, errorThrown) {

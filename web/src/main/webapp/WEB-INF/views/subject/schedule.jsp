@@ -81,6 +81,8 @@
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
+                psc.subject.ScheduleData.setSubjectApi(psc.tools.Uris.deployed("/api/v1/subjects/${subject.gridId}/schedules"));
+                psc.subject.ScheduleData.setSubject('${subject.fullName}');
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
@@ -316,7 +318,7 @@
                                     </c:choose>
                                     <c:if test="${canUpdateSchedule}">
                                         <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
-                                            notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                            notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}" assignment-name="${assignment.name}">Dismiss</a>
                                     </c:if>
                                 </li>
                             </c:forEach>
