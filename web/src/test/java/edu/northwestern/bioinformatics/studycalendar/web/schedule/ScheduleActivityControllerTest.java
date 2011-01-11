@@ -4,18 +4,20 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
@@ -33,11 +35,15 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     private ScheduledActivity event;
     private ScheduleActivityCommand command;
     private ApplicationSecurityManager mockApplicationSecurityManager;
+    private String applicationPath = "psc/application";
+    private UserActionDao userActionDao;
+    private PscUser pscUser =   AuthorizationObjectFactory.createPscUser("user", 12L);
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        userActionDao = registerDaoMockFor(UserActionDao.class);
         scheduleService = registerMockFor(ScheduleService.class);
         mockApplicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
         command = registerMockFor(ScheduleActivityCommand.class,
@@ -53,7 +59,8 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setControllerTools(controllerTools);
         controller.setApplicationSecurityManager(mockApplicationSecurityManager);
-
+        controller.setApplicationPath(applicationPath);
+        controller.setUserActionDao(userActionDao);
         request.setMethod("GET");
     }
     
@@ -125,17 +132,31 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     }
 
     public void testChangeStateOnSubmit() throws Exception {
-        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("firstName", "lastName");
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("Perry", "Duglas");
+        subject.setGridId("1111");
         StudySite studySite = new StudySite();
         Study study = new Study();
         study.setAssignedIdentifier("test-study");
         studySite.setStudy(study);
 
-        command.setEvent(new ScheduledActivity());
+        command.setEvent(createScheduledActivity("testActivity", 2003, 03, 14,
+                new Scheduled("testing", DateUtils.createDate(2003, Calendar.MARCH, 14))));
+        command.setNewMode(ScheduledActivityMode.OCCURRED);
+        command.setNewDate(DateUtils.createDate(2003, Calendar.MARCH, 15));
         command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
         command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
         command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(Fixtures.createAssignment(studySite, subject));
         request.setMethod("POST");
+
+        UserAction userAction = new UserAction();
+        String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
+        userAction.setContext(context);
+        userAction.setActionType("occurred");
+        userAction.setUser(pscUser.getCsmUser());
+        String des = "testActivity mark as occurred on 2003-03-15 for Perry Duglas for test-study";
+        userAction.setDescription(des);
+        expect(mockApplicationSecurityManager.getUser()).andReturn(pscUser);
+        userActionDao.save(userAction);
         command.apply();
 
         replayMocks();

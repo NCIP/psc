@@ -3,13 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -22,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,11 +35,14 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleActivityController extends PscSimpleFormController implements PscAuthorizedHandler {
+public class ScheduleActivityController extends PscSimpleFormController implements PscAuthorizedHandler, ApplicationPathAware {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private UserActionDao userActionDao;
+    private String applicationPath;
+    protected static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public ScheduleActivityController() {
         setBindOnNewForm(true);
@@ -76,11 +82,43 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ScheduleActivityCommand command = (ScheduleActivityCommand) oCommand;
+        associateWithUserAction(command);
         command.apply();
         Map<String, Object> model = new HashMap<String, Object>();
         ScheduledStudySegment studySegment = command.getEvent().getScheduledStudySegment();
         model.put("subject", studySegment.getScheduledCalendar().getAssignment().getSubject().getId());
         return new ModelAndView("redirectToSchedule", model);
+    }
+
+    private void associateWithUserAction(ScheduleActivityCommand command) {
+        ScheduledActivity sa = command.getEvent();
+        StudySubjectAssignment assignment = sa.getScheduledStudySegment().getScheduledCalendar().getAssignment();
+
+        StringBuilder sb = new StringBuilder(applicationPath);
+        Subject subject =  assignment.getSubject();
+        sb.append("/api/v1/subjects/").append(subject.getGridId()).append("/schedules");
+        ScheduledActivityMode newState = command.getNewMode();
+
+        UserAction userAction = new UserAction();
+        userAction.setContext(sb.toString());
+        userAction.setActionType(newState.getName());
+        String newDate = DATE_FORMAT.format(command.getNewDate());
+
+        StringBuilder des = new StringBuilder(sa.getActivity().getName());
+        if (sa.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED) && newState.equals(ScheduledActivityMode.SCHEDULED)) {
+            des.append(" rescheduled from ").append(sa.getActualDate()).append(" to ").append(newDate);
+        } else {
+            des.append(" mark as ").append(newState.getName()).append(" on ").append(newDate);
+        }
+        des.append(" for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
+        userAction.setDescription(des.toString());
+        PscUser user = applicationSecurityManager.getUser();
+        if (user != null) {
+            userAction.setUser(user.getCsmUser());
+        }
+
+        userActionDao.save(userAction);
+        AuditEvent.setUserAction(userAction);
     }
 
     private boolean readOnlyMode() {
@@ -104,6 +142,14 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
 
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    public void setUserActionDao(UserActionDao userActionDao) {
+        this.userActionDao = userActionDao;
+    }
+
+    public void setApplicationPath(String applicationPath) {
+        this.applicationPath = applicationPath;
     }
 
     private class Crumb extends DefaultCrumb {
