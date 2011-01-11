@@ -91,12 +91,7 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
         StringBuilder sb = new StringBuilder(applicationPath);
         sb.append("/api/v1/subjects/");
         Subject subject = assignment.getSubject();
-        if (subject.getPersonId() != null) {
-            sb.append(subject.getPersonId());
-        } else {
-            sb.append(subject.getGridId());
-        }
-        sb.append("/schedules");
+        sb.append(subject.getGridId()).append("/schedules");
 
         UserAction userAction = new UserAction();
         userAction.setContext(sb.toString());

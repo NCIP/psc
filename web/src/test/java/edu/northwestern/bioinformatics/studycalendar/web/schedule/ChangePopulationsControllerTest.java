@@ -36,6 +36,7 @@ public class ChangePopulationsControllerTest extends ControllerTestCase {
         subjectService = registerMockFor(SubjectService.class);
         userActionDao = registerDaoMockFor(UserActionDao.class);
         Subject subject = createSubject("1111", "Perry", "Duglas", createDate(1980, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
+        subject.setGridId("1111");
         assignment = setId(12, createAssignment(createBasicTemplate("Joe's Study")
                 , createSite("NU"), subject));
         Population pop = setId(11, createPopulation("T", "Test"));
