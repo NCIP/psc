@@ -27,10 +27,9 @@
     <bean name="/error" id="errorController"
           class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byName"/>
 
-    <!-- Reenable when needed for testing
+    <!-- Reenable when needed for testing -->
     <bean name="/throw" id="throwController"
           class="edu.northwestern.bioinformatics.studycalendar.web.ExceptionThrowingController" autowire="byType"/>
-    -->
 
     <bean name="/accessDenied" id="accessDeniedController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">

@@ -38,11 +38,10 @@
             #links {
                 position: absolute; top: 0; right: 0;
                 padding: 6px 10px 0 20px;
+                white-space: nowrap;
             }
 
-            #links a { color: #339; font-weight: bold; }
-
-            #links a:hover { color: #1972C7; }
+            #links a { font-weight: bold; }
         </style>
         <script type="text/javascript">
             document.observe("dom:loaded", function() {
@@ -57,7 +56,7 @@
     <body>
     <div id="links">
         <a href="<c:url value="/"/>" id="home">Home</a>
-        <a href="<c:url value="/auth/logout"/>" id="logout">Log out</a>
+        | <a href="<c:url value="/auth/logout"/>" id="logout">Log out</a>
     </div>
     <c:set var="showDetail" value="${configuration.map.showFullExceptions}"/>
     <h1>${statusName}</h1>
