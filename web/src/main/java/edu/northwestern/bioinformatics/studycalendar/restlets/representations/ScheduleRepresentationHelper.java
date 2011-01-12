@@ -1,13 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
@@ -37,12 +30,22 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
     private List<ScheduledStudySegment> segments;
     private SortedMap<Date,List<ScheduledActivity>> activities;
     private MultipleAssignmentScheduleView schedule;
+    private Subject subject;
 
-    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService ) {
+    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService) {
         relatedAssignments = assignments;
         this.templateService = templateService;
         schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
     }
+
+    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService, Subject subject ) {
+        relatedAssignments = assignments;
+        this.templateService = templateService;
+        schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
+        this.subject = subject;
+    }
+
+
 
     public ScheduleRepresentationHelper(SortedMap<Date,List<ScheduledActivity>> activities,  List<ScheduledStudySegment> segments, TemplateService templateService ) {
         this.activities = activities;
@@ -53,6 +56,10 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
     @Override
     public void generate(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
+            if (subject != null) {
+                generator.writeFieldName("subject");
+                createJSONSubject(generator, subject);
+            }
             generator.writeFieldName("days");
             generator.writeStartObject();
                 if (schedule != null) {
@@ -267,6 +274,18 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
 
 
             generator.writeEndObject();
+        generator.writeEndObject();
+    }
+
+    public void createJSONSubject(JsonGenerator generator, Subject subject) throws IOException {
+        generator.writeStartObject();
+        JacksonTools.nullSafeWriteStringField(generator, "first_name", subject.getFirstName());
+        JacksonTools.nullSafeWriteStringField(generator, "last_name", subject.getLastName());
+        JacksonTools.nullSafeWriteStringField(generator, "full_name", subject.getFullName());
+        JacksonTools.nullSafeWriteStringField(generator, "last_first", subject.getLastFirst());
+        if (subject.getDateOfBirth() != null)
+            JacksonTools.nullSafeWriteStringField(generator, "birth_date", getApiDateFormat().format(subject.getDateOfBirth()));
+        JacksonTools.nullSafeWriteStringField(generator, "gender", subject.getGender().getDisplayName());
         generator.writeEndObject();
     }
 

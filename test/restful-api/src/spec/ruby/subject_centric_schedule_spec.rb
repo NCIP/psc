@@ -102,6 +102,36 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       describe "the structure" do
+        describe "[subject]" do
+          before do
+            @subject = response.json["subject"]
+          end
+
+          it "has the first name" do
+            @subject['first_name'].should == "Alan"
+          end
+
+          it "has the last name" do
+            @subject['last_name'].should == "Boyarski"
+          end
+
+          it "has the full name" do
+            @subject['full_name'].should == "Alan Boyarski"
+          end
+
+          it "has the last first name" do
+            @subject['last_first'].should == "Boyarski, Alan"
+          end
+
+          it "has the date of birth" do
+            @subject['birth_date'].should == "1983-03-23"
+          end
+
+          it "has the gender" do
+            @subject['gender'].should == "Male"
+          end
+        end
+
         describe "[days]" do
           before do
             @days = response.json["days"]

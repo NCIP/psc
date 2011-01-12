@@ -1,20 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
@@ -23,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -63,6 +50,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     private Epoch epoch;
     private PlannedCalendar calendar;
     private ScheduledStudySegment scheduledSegment;
+    private Subject subject;
 
     private ScheduleRepresentationHelper scheduleRepresentationHelper;
     private TemplateService templateService;
@@ -79,7 +67,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         templateService = registerMockFor(TemplateService.class);
         Study study = createSingleEpochStudy("S", "Treatment");
         Site site = createSite("site");
-        Subject subject = createSubject("First", "Last");
+        subject = createSubject("First", "Last");
 
         calendar = new PlannedCalendar();
         epoch = Epoch.create("Treatment", "A", "B", "C");
@@ -503,6 +491,25 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         generator.writeEndObject();
         JSONObject actual = outputAsObject();
         assertEquals("Missing labels", "label1 label2", actual.getJSONObject("activities").get("labels"));
+    }
+
+    public void testSubjectInfoInJson() throws Exception {
+        subject.setDateOfBirth(DateUtils.createDate(1978, Calendar.MARCH, 15));
+        subject.setGender(Gender.FEMALE);
+        generator.writeStartObject();
+        generator.writeFieldName("subject");
+        replayMocks();
+            scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertTrue("Missing key", actual.has("subject"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("first_name"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("last_name"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("full_name"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("last_first"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("birth_date"));
+        assertTrue("Missing properties", actual.getJSONObject("subject").has("gender"));
     }
 
     private JSONObject outputAsObject() throws IOException {
