@@ -154,6 +154,10 @@
         <jruby line="-S buildr clean"/>
     </target>
 
+    <target name="local_repo:clear_unreliable" depends="install">
+        <jruby line="-S buildr local_repo:clear_unreliable"/>
+    </target>
+
     <target name="clean-download">
         <delete dir="${download}" />
     </target>
