@@ -206,6 +206,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<target name="clean">
 		<delete dir="${dist.dir}" />
 		<delete dir="${temp.dir}" />
+		<ant inheritAll="false" inheritRefs="false" antfile="${psc-webapp.build.file}" target="local_repo:clear_unreliable" dir="${psc-webapp.base.dir}">
+			<property name="dist.dir" value="${psc-webapp.dist.dir}" />
+			<property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+		</ant>
 	</target>
 
 	<target name="init" description="Sets up build are and initalizes variables">
