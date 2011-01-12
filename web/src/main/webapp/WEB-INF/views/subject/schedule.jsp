@@ -74,15 +74,17 @@
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView" scope="request"/>
             <jsp:useBean id="currentUser" type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser" scope="request"/>
+            <c:set var="scheduleResource" value="/api/v1/subjects/${subject.gridId}/schedules" />
+
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
-                    return psc.tools.Uris.relative("/api/v1/subjects/${subject.gridId}/schedules.json?"+new Date().getTime());
+                    return psc.tools.Uris.relative('${scheduleResource}'+".json?"+new Date().getTime());
                 });
-
+                psc.subject.ScheduleData.contextAPI(function () {
+                    return psc.tools.Uris.deployed('${scheduleResource}');
+                });
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
-                psc.subject.ScheduleData.setSubjectApi(psc.tools.Uris.deployed("/api/v1/subjects/${subject.gridId}/schedules"));
-                psc.subject.ScheduleData.setSubject('${subject.fullName}');
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">

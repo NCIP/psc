@@ -15,19 +15,18 @@ psc.subject.RealScheduleNextSegment = (function () {
     var url = psc.tools.Uris.relative('/api/v1/studies/'+psc.tools.Uris.escapePathElement(studyId)+
                                       '/schedules/'+psc.tools.Uris.escapePathElement(assignmentId));
     var segmentName = selectedElt.attr('segmentName');
-    var subject = psc.subject.ScheduleData.getSubject();
+    var subject = psc.subject.ScheduleData.subjectName();
     var desc = "segment " +segmentName+ " is scheduled from " +startDate+ " as "
             +immediateOrPerProtocol+ " mode for " + subject;
     var action = {
         description: desc,
-        context: psc.subject.ScheduleData.getSubjectApi(),
+        context: (psc.subject.ScheduleData.contextAPI())(),
         action_type: "segment"
     } ;
     makeRequestForNextSegmentWithUserAction(params, url, action);
   }
 
   function makeRequestForNextSegmentWithUserAction(params, url, action) {
-    jQuery('#schedule-controls .indicator').css('visibility', 'visible');
     var userActionUrl = psc.tools.Uris.relative('/api/v1/user-actions');
     jQuery.ajax({
       url: userActionUrl,
@@ -46,16 +45,17 @@ psc.subject.RealScheduleNextSegment = (function () {
   }
 
   function makeRequestForNextSegment(parameters, resourceUrl, userAction) {
+    $('next-studySegment-indicator').reveal();
     SC.asyncRequest(resourceUrl, Object.extend({
       method: 'POST',
       contentType: 'text/xml',
       postBody: parameters,
       requestHeaders: ['X-PSC-User-Action', userAction],
       onComplete: function(){
-        $('next-studySegment-indicator').conceal()
-        psc.subject.ScheduleData.refresh()
+        $('next-studySegment-indicator').conceal();
+        psc.subject.ScheduleData.refresh();
       }
-     }));
+    }));
   }
 
   function getModeValue() {

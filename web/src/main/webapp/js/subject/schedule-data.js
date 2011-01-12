@@ -3,7 +3,7 @@ psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {
-    var schedule, subjectCoordinator = null, focusDate = new Date(), subjectApi, subject;
+    var schedule, subjectCoordinator = null, focusDate = new Date();
 
     
     function triggeredDateComparableFn(triggerData) {
@@ -19,7 +19,7 @@ psc.namespace("subject");
     }, triggeredDateComparableFn);
     
     var uriGenerator = null;
-    
+    var contextAPI = null;
     function error(XMLHttpRequest, textStatus, errorThrown) {
       if (textStatus === "notmodified") {
         triggerScheduleReady();
@@ -65,6 +65,10 @@ psc.namespace("subject");
       current: function () {
         return schedule; 
       },
+
+      subjectName: function () {
+          return schedule['subject']['full_name'];
+      },
       
       focusDate: function (newFocusDate, source, range) {
         if (arguments.length > 0) {
@@ -103,28 +107,25 @@ psc.namespace("subject");
         }
       },
 
+      contextAPI: function (context) {
+        if (arguments.length > 0) {
+          contextAPI = context;
+        } else {
+          if (contextAPI) {
+            return contextAPI;
+          }
+          else {
+            throw "psc.subject.ScheduleData.contextAPI not set."
+          }
+        }
+      },
+
       setSubjectCoordinator: function(subjCoord) {
         subjectCoordinator = subjCoord;
       },
 
       getSubjectCoordinator: function() {
         return subjectCoordinator;
-      },
-
-      setSubjectApi : function(subjectUri) {
-        subjectApi = subjectUri;
-      },
-
-      getSubjectApi : function() {
-        return subjectApi;
-      },
-
-      setSubject : function(subj) {
-        subject = subj;
-      },
-
-      getSubject : function() {
-        return subject;
       },
 
       errorMessage: function(XMLHttpRequest, textStatus, errorThrown) {
