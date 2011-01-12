@@ -4,7 +4,7 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
 
-<display:table name="activitiesPerSource" class="query-results" style="layout:fixed" id="row" sort="external" defaultsort="1" requestURI="activities">
+<display:table name="activitiesPerSource" class="query-results" style="layout:fixed" id="row" sort="external" defaultsort="0" requestURI="activities">
     <c:if test="${showtable}">
         <display:setProperty name="basic.empty.showtable" value="true"/>
     </c:if>
