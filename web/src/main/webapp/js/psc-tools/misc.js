@@ -122,7 +122,10 @@ psc.tools.Uris = (function () {
     },
 
     applicationPath: function () {
-      return  window.location.protocol + "//" + window.location.host;
+      var LOCATION = window.location;
+      if (LOCATION != null) {
+        return  LOCATION.protocol + "//" + LOCATION.hostname + ":" + LOCATION.port;
+      }
     },
 
     deployed: function (uri) {
