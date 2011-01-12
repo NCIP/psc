@@ -58,12 +58,11 @@ public class ActivityController extends PscAbstractController implements PscAuth
 
     private Map<String, Object> processRequest( Map<String, Object> model, String sourceId, Integer index, SortOrderEnum sortOrderEnum, String sortItem) throws Exception{
         List<Activity> activities = new ArrayList<Activity>();
-        if (sourceId == null) {
+        if (sourceId == null || sourceId.equals("selectAll")) {
             activities = activityDao.getAll();
-        } else if(!sourceId.equals("select") || !sourceId.equals("selectAll")) {
+        } else if(!sourceId.equals("select")) {
             activities = activityDao.getBySourceId(new Integer(sourceId));
         }
-
         Integer numberOfPages = getNumberOfPagesFromList(activities);
         activities = sortListBasedOnRequest(activities, sortOrderEnum, sortItem);
         Integer indexSecondBorder = index + pageIncrementor;
