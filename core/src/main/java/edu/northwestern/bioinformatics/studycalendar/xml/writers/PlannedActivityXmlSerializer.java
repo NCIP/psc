@@ -108,9 +108,17 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
 
         StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
         PlannedActivity plannedActivity = (PlannedActivity) planTreeNode;
-        if (!activityReferenceXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
-            errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
-                    + ". expected:%s. \n", plannedActivity.getActivity()));
+
+        if (element.element(XsdElement.ACTIVITY.xmlName()) != null) {
+            if (!activityXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
+                errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
+                        + ". expected:%s. \n", plannedActivity.getActivity()));
+            }
+        } else {
+            if (!activityReferenceXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY_REFERENCE.xmlName()))) {
+                errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
+                        + ". expected:%s. \n", plannedActivity.getActivity()));
+            }
         }
 
         for(PlannedActivityLabel label: plannedActivity.getPlannedActivityLabels()) {

@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -150,6 +151,28 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element actual = serializer.createElement(plannedActivity);
         assertNotNull(serializer.getPlannedActivityWithMatchingGridId(plannedActivities, actual));
+    }
+
+    public void testValidateElementUsesActivityReferenceSerializerWithActivityReferenceElement() throws Exception {
+        Element paElt = XsdElement.PLANNED_ACTIVITY.create();
+        Element arElt = XsdElement.ACTIVITY_REFERENCE.create();
+        paElt.add(arElt);
+        PlannedActivity plannedActivity = createPlannedActivity();
+        expect(activityReferenceSerializer.validateElement(plannedActivity.getActivity(), arElt)).andReturn(null);
+        replayMocks();
+        serializer.validateElement(plannedActivity, paElt);
+        verifyMocks();
+    }
+
+    public void testValidateElementUsesActivitySerializerWithActivityElement() throws Exception {
+        Element paElt = XsdElement.PLANNED_ACTIVITY.create();
+        Element aElt = XsdElement.ACTIVITY.create();
+        paElt.add(aElt);
+        PlannedActivity plannedActivity = createPlannedActivity();
+        expect(activitySerializer.validateElement(plannedActivity.getActivity(), aElt)).andReturn(null);
+        replayMocks();
+        serializer.validateElement(plannedActivity, paElt);
+        verifyMocks();
     }
 
     private PlannedActivity createPlannedActivity() {
