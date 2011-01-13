@@ -4,15 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -21,8 +16,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This service provides methods for:
@@ -38,6 +31,8 @@ import java.util.List;
 public class TemplateService {
     private DeltaDao deltaDao;
     private DaoFinder daoFinder;
+
+    private static final TemplateTraversalHelper templateTraversalHelper = TemplateTraversalHelper.getInstance();
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -83,22 +78,7 @@ public class TemplateService {
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public <T extends Child> Collection<T> findChildren(Parent node, Class<T> childClass) {
-        List<T> children = new LinkedList<T>();
-        findChildren(node, childClass, children);
-        return children;
-    }
-
-    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    private <T extends Child> void findChildren(Parent node, Class<T> childClass, Collection<T> target) {
-        if (childClass.isAssignableFrom(node.childClass())) {
-            target.addAll(node.getChildren());
-        } else {
-            for (Object o : node.getChildren()) {
-                if (o instanceof Parent) {
-                    findChildren((Parent) o, childClass, target);
-                }
-            }
-        }
+        return templateTraversalHelper.findChildren(node, childClass);
     }
 
     // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug

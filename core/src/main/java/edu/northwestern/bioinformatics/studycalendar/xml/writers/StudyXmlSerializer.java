@@ -1,27 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
 
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
+    private ActivitySourceXmlSerializer activitySourceXmlSerializer;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -56,8 +54,48 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             elt.add(developmentAmendmentElement);
         }
 
+        Collection<Source> sources = new ArrayList();
+        Source s = new Source();
+        s.setName("Bla");
+        sources.add(s);
+        Element sourceElement = activitySourceXmlSerializer.createElement(sources);
+        elt.add(sourceElement);
+
         return elt;
     }
+
+//    protected Collection<Activity> getActivities(Parent p) {
+//    }
+//    protected Collection<Source> buildTransientSources
+
+//        Collection<Amendment> amendments = study.getAmendmentsList();
+//        amendments.add(study.getDevelopmentAmendment());
+//        for (Amendment a : amendments) {
+//            for (Delta d : a.getDeltas()) {
+//                 Changeable node = d.getNode();
+//                 if (node instanceof Parent) {
+//                     Collection<PlannedActivity> activities =
+//                         findChildren((Parent) node, PlannedActivity.class);
+//                 }
+//            }
+//        }
+//        Map<Source, Collection<Activity>> activitiesBySource = collectActivitiesBySource(study);
+//        sourceXmlSerializer.createElement(sources);
+
+
+//    private Map<Source, Collection<Activity>> collectActivitiesBySource(Study study) {
+//        Map<Source, Collection<Activity>> result = new HashMap<Source, Collection<Activity>>();
+//        for (PlannedActivity pa : findChildren(study, PlannedActivity.class)) {
+//            Activity a = pa.getActivity();
+//            if (!result.containsKey(a.getSource())) {
+//                result.put(a.getSource(), new HashSet<Activity>());
+//            }
+//            result.get(a.getSource()).add(pa.getActivity());
+//        }
+//        return result;
+//    }
+//
+
 
     @SuppressWarnings({"unchecked"})
     public Study readElement(Element element){
@@ -176,5 +214,9 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     @Required
     public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
         this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
+    }
+
+    public void setActivitySourceXmlSerializer(ActivitySourceXmlSerializer serializer) {
+        this.activitySourceXmlSerializer = serializer;
     }
 }

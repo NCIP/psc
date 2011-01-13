@@ -4,29 +4,37 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import static org.dom4j.DocumentHelper.*;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.dom4j.DocumentHelper;
-import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static java.util.Arrays.asList;
+import static org.dom4j.DocumentHelper.createElement;
+import static org.dom4j.DocumentHelper.createQName;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.notNull;
 
 public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyXmlSerializer serializer;
     private Study study;
     private Element element;
     private PlannedCalendar calendar;
+    private ActivitySourceXmlSerializer activitySourceSerializer;
     private PlannedCalendarXmlSerializer plannedCalendarSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentXmlSerializer developmentAmendmentSerializer;
@@ -35,17 +43,21 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element eFirstAmendment;
     private Element eDevelopmentAmendment;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
 
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
     private Element eCalendar;
     private Amendment secondAmendment;
     private Element eSecondAmendment;
+
+    private Collection<Source> sources;
+    private Element eSources;
 
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
+        activitySourceSerializer = registerMockFor(ActivitySourceXmlSerializer.class);
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
         developmentAmendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
@@ -64,6 +76,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
             }
         };
 
+        serializer.setActivitySourceXmlSerializer(activitySourceSerializer);
+
         calendar = setGridId("grid1", new PlannedCalendar());
         firstAmendment = createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);
 
@@ -73,12 +87,15 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         developmentAmendment = createAmendment("[Development]", createDate(2008, Calendar.FEBRUARY, 13), true);
         developmentAmendment.setReleasedDate(null);
 
+        sources = asList(createNamedInstance("nu-activities", Source.class));
+
         study = createStudy();
 
         eCalendar = createCalendarElement(calendar);
         eFirstAmendment = createAmendmentElement(firstAmendment);
         eSecondAmendment = createAmendmentElement(secondAmendment);
         eDevelopmentAmendment = createDevelopmentAmendmentElement(developmentAmendment);
+        eSources = createSourcesElement(sources);
     }
 
     public void testReadElementWhereElementIsNew() {
@@ -191,7 +208,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong assigned identifier", "Study A", actual.attribute("assigned-identifier").getValue());
         assertEquals("Wrong last modified date", dateTimeFormat.format(study.getLastModifiedDate()), actual.attribute("last-modified-date").getValue());
 
-        assertEquals("Should have planned calendar child and development-amendment", 3, actual.nodeCount());
+        assertEquals("Should have planned calendar child and development-amendment", 4, actual.nodeCount());
         assertNotNull("Planned calendar should exist", actual.element("planned-calendar"));
         assertNotNull("Amendment should exist", actual.element("amendment"));
         assertNotNull("Development Amendment should exist", actual.element("development-amendment"));
@@ -234,6 +251,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.getText());
     }
 
+    public void testCreateElementWithSources() throws Exception {
+        expectChildrenSerializers();
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        assertNotNull("Sources should exist", actual.element("sources"));
+    }
+
     public void testCreateDocumentString() throws Exception {
 
         StringBuffer expected = new StringBuffer();
@@ -250,6 +275,9 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
                 , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory()), dateTimeFormat.format(firstAmendment.getReleasedDate())));
         expected.append(MessageFormat.format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>",
             developmentAmendment.getName(), formatter.format(developmentAmendment.getDate()), String.valueOf(developmentAmendment.isMandatory())));
+        expected.append("<sources>");
+        expected.append(MessageFormat.format("<source name=\"{0}\"/>", sources.iterator().next().getName()));
+        expected.append("</sources>");
 
         expected.append("</study>");
 
@@ -271,6 +299,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         expect(amendmentSerializer.createElement(firstAmendment)).andReturn(eFirstAmendment);
         expect(developmentAmendmentSerializer.createElement(developmentAmendment)).andReturn(eDevelopmentAmendment);
+        expect(activitySourceSerializer.createElement((Collection) notNull())).andReturn(eSources);
 
     }
 
@@ -331,6 +360,11 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element createCalendarElement(PlannedCalendar calendar) {
         PlannedCalendarXmlSerializer s = new PlannedCalendarXmlSerializer();
         return s.createElement(calendar);
+    }
+
+    private Element createSourcesElement(Collection<Source> sources) {
+        ActivitySourceXmlSerializer s = new ActivitySourceXmlSerializer();
+        return s.createElement(sources);
     }
 
     ////// Create PSC object helpers

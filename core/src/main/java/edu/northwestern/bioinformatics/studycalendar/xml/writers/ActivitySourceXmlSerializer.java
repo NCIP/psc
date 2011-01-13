@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,5 +57,15 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
             source.addActivity(activity);
         }
         return source;
+    }
+
+    public Element createElement(Collection<Source> rs) {
+        Element element = createCollectionRootElement();
+
+        for (Source r : rs) {
+            element.add(createElement(r, true));
+        }
+
+        return element;
     }
 }
