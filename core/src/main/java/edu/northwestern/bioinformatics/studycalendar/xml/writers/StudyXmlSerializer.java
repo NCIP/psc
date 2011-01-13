@@ -3,6 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -54,48 +58,61 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             elt.add(developmentAmendmentElement);
         }
 
-        Collection<Source> sources = new ArrayList();
-        Source s = new Source();
-        s.setName("Bla");
-        sources.add(s);
+        Collection<Activity> all = getActivities(getParentPlanTreeNodes(study));
+        Collection<Source> sources = groupActivitiesBySource(all);
         Element sourceElement = activitySourceXmlSerializer.createElement(sources);
         elt.add(sourceElement);
 
         return elt;
     }
 
-//    protected Collection<Activity> getActivities(Parent p) {
-//    }
-//    protected Collection<Source> buildTransientSources
+    protected Collection<Source> groupActivitiesBySource(Collection<Activity> all) {
+        List<Source> result = new ArrayList<Source>();
+        for (Activity a : all) {
+            if (!result.contains(a.getSource())) {
+                result.add(a.getSource().transientClone());
+            }
+            Source s = result.get(result.indexOf(a.getSource()));
+            s.addActivity(a.transientClone());
+        }
+        return result;
+    }
 
-//        Collection<Amendment> amendments = study.getAmendmentsList();
-//        amendments.add(study.getDevelopmentAmendment());
-//        for (Amendment a : amendments) {
-//            for (Delta d : a.getDeltas()) {
-//                 Changeable node = d.getNode();
-//                 if (node instanceof Parent) {
-//                     Collection<PlannedActivity> activities =
-//                         findChildren((Parent) node, PlannedActivity.class);
-//                 }
-//            }
-//        }
-//        Map<Source, Collection<Activity>> activitiesBySource = collectActivitiesBySource(study);
-//        sourceXmlSerializer.createElement(sources);
+    protected Collection<Activity> getActivities(Collection<Parent> parents) {
+        Collection<Activity> result = new HashSet<Activity>();
+        for (Parent p : parents) {
+            for (PlannedActivity a : TemplateTraversalHelper.getInstance().findChildren(p, PlannedActivity.class)) {
+                result.add(a.getActivity());
+            }
+        }
+        return result;
+    }
 
+    protected Collection<Parent> getParentPlanTreeNodes(Study study) {
+        Collection<Parent> result = new ArrayList<Parent>();
+        result.add(study.getPlannedCalendar());
+        Collection<Amendment> amendments = new ArrayList<Amendment>();
+        amendments.add(study.getDevelopmentAmendment());
+        amendments.addAll(study.getAmendmentsList());
+        return getParentTreeNodesFromDeltas(amendments);
+    }
 
-//    private Map<Source, Collection<Activity>> collectActivitiesBySource(Study study) {
-//        Map<Source, Collection<Activity>> result = new HashMap<Source, Collection<Activity>>();
-//        for (PlannedActivity pa : findChildren(study, PlannedActivity.class)) {
-//            Activity a = pa.getActivity();
-//            if (!result.containsKey(a.getSource())) {
-//                result.put(a.getSource(), new HashSet<Activity>());
-//            }
-//            result.get(a.getSource()).add(pa.getActivity());
-//        }
-//        return result;
-//    }
-//
-
+    protected Collection<Parent> getParentTreeNodesFromDeltas(Collection<Amendment> amendments) {
+        Collection<Parent> result = new ArrayList<Parent>();
+        for (Amendment a : amendments) {
+            for (Delta d : a.getDeltas()) {
+                for (Object c : d.getChanges()) {
+                    if (c instanceof ChildrenChange) {
+                        Changeable node = ((ChildrenChange) c).getChild();
+                        if (node instanceof Parent) {
+                            result.add((Parent) node);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
     @SuppressWarnings({"unchecked"})
     public Study readElement(Element element){

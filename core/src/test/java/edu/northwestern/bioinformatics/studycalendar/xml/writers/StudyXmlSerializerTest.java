@@ -3,11 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -15,11 +15,11 @@ import org.dom4j.QName;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -293,8 +293,90 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertXMLEqual(expected.toString(), actual);
     }
 
+    public void testGroupActivitiesBySource() throws Exception {
+        Source nu = createNamedInstance("nu-activities", Source.class);
+        Source na = createNamedInstance("na-activities", Source.class);
+
+        Activity cbc = createActivity("cbc");
+        Activity bbc = createActivity("bbc");
+        Activity nbc = createActivity("nbc");
+
+        cbc.setSource(nu);
+        bbc.setSource(na);
+        nbc.setSource(na);
+
+        Collection<Source> actual = serializer.groupActivitiesBySource(asList(cbc, bbc, nbc));
+
+        assertEquals("Wrong size", 2, actual.size());
+        assertContains(actual, nu);
+        assertContains(actual, na);
+
+        List<Source> sorted = new ArrayList<Source>(actual);
+        Collections.sort(sorted, NamedComparator.INSTANCE);
+
+        Source actualNa = sorted.get(0);
+        Source actualNu = sorted.get(1);
+
+        assertTrue("Should be transient", actualNa.isMemoryOnly());
+        assertTrue("Should be transient", actualNu.isMemoryOnly());
+
+        assertEquals("Wrong size", 1, actualNu.getActivities().size());
+        assertContains(actualNu.getActivities(), cbc);
+
+        assertEquals("Wrong size", 2, actualNa.getActivities().size());
+        assertContains(actualNa.getActivities(), bbc);
+        assertContains(actualNa.getActivities(), nbc);
+
+        assertTrue("Should be transient", actualNu.getActivities().get(0).isMemoryOnly());
+        assertTrue("Should be transient", actualNa.getActivities().get(0).isMemoryOnly());
+        assertTrue("Should be transient", actualNa.getActivities().get(1).isMemoryOnly());
+    }
+
+    public void testGetActivities() throws Exception {
+        Period p1, p2;
+        StudySegment seg = createSegment(
+            p1 = createPeriod("A", 1, 1, 1),
+            p2 = createPeriod("B", 1, 1, 1)
+        );
+
+        p1.addPlannedActivity(createPlannedActivity("bowling", 1));
+        p2.addPlannedActivity(createPlannedActivity("soccer", 1));
+
+        Collection<Activity> actual = serializer.getActivities((Collection)asList(seg));
+
+        ArrayList<Activity> sorted = new ArrayList<Activity>(actual);
+        Collections.sort(sorted, NamedComparator.INSTANCE);
+        assertEquals("Wrong element", "bowling", sorted.get(0).getName());
+        assertEquals("Wrong element", "soccer", sorted.get(1).getName());
+    }
+
+    public void testGetParentTreeNodesFromDeltas() throws Exception {
+        StudySegment seg; PlannedCalendar pCal ;
+
+        Amendment a1 = new Amendment();
+        a1.addDelta(
+            Delta.createDeltaFor(
+                new Study(),
+                Add.create(pCal = new PlannedCalendar())
+            )
+        );
+
+        Amendment a2 = new Amendment();
+        a2.addDelta(
+            Delta.createDeltaFor(
+                new PlannedCalendar(),
+                Add.create(seg = new StudySegment())
+            )
+        );
+
+        Collection<Parent> actual = serializer.getParentTreeNodesFromDeltas(asList(a1, a2));
+        assertEquals("Wrong size", 2, actual.size());
+        assertContains(actual,  pCal);
+        assertContains(actual,  seg);
+    }
+
     ////// Expect helper methods
-    
+
     private void expectChildrenSerializers() {
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         expect(amendmentSerializer.createElement(firstAmendment)).andReturn(eFirstAmendment);
@@ -365,6 +447,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element createSourcesElement(Collection<Source> sources) {
         ActivitySourceXmlSerializer s = new ActivitySourceXmlSerializer();
         return s.createElement(sources);
+    }
+
+    private StudySegment createSegment(Period... periods) {
+        StudySegment result = new StudySegment();
+        for (Period p : periods) {
+            result.addPeriod(p);
+        }
+        return result;
     }
 
     ////// Create PSC object helpers
