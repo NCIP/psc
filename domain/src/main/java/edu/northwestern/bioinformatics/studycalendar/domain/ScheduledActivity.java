@@ -88,12 +88,25 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             int weightDiff = this.getPlannedActivity().compareWeightTo(other.getPlannedActivity());
             if (weightDiff != 0) return weightDiff;
         }
-        int activityDiff = getActivity().compareTo(other.getActivity());
-        if (activityDiff != 0) {
-            return activityDiff;
+
+        {
+            int activityDiff = getActivity().compareTo(other.getActivity());
+            if (activityDiff != 0) return activityDiff;
         }
+
+        if (getCurrentState() != null && other.getCurrentState() != null) {
+            int stateDiff = getCurrentState().getMode().compareTo(other.getCurrentState().getMode());
+            if (stateDiff != 0) return stateDiff;
+        }
+
+        {
+            int assignmentDiff = ComparisonTools.nullSafeCompare(
+                        getStudySubjectAssignmentId(this), getStudySubjectAssignmentId(other));
+            if (assignmentDiff != 0) return assignmentDiff;
+        }
+
         return ComparisonTools.nullSafeCompare(
-            getStudySubjectAssignmentId(this), getStudySubjectAssignmentId(other));
+            getId(), other.getId());
     }
 
     // this is not something I want to have as part of the public API for this class,
