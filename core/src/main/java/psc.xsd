@@ -60,6 +60,7 @@
             <xsd:element ref="psc:long-title" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:secondary-identifier" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:sources" minOccurs="0" maxOccurs="1"/>
             <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>

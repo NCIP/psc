@@ -15,12 +15,9 @@ import java.util.Collection;
 * @author John Dzak
 */
 public class TemplateTraversalHelperTest extends TestCase {
-    TemplateTraversalHelper.TemplateTraversal helper;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        helper = new TemplateTraversalHelper.TemplateTraversal(null);
     }
 
     public void testGetParentTreeNodesFromDeltas() throws Exception {
@@ -41,7 +38,7 @@ public class TemplateTraversalHelperTest extends TestCase {
             )
         );
 
-        Collection<Parent> actual = helper.findRootParentNodes(a);
+        Collection<Parent> actual = TemplateTraversalHelper.findRootParentNodes(a);
         assertEquals("Wrong size", 2, actual.size());
         assertTrue("Missing planned calendar", actual.contains(pCal));
         assertTrue("Missing planned segment", actual.contains(seg));

@@ -78,6 +78,7 @@ describe "/studies" do
 
     describe "POST" do
       before do
+        @studyDao = application_context['studyDao']
         @nu328_xml = psc_xml("study-snapshot", 'assigned-identifier' => "NU328") { |ss|
           ss.tag!('planned-calendar') { |pc|
             pc.epoch('name' => 'Treatment')
@@ -127,39 +128,45 @@ describe "/studies" do
         old = PscTest.template('study-snapshot-using-inline-activity-definitions')
         post '/studies', old, :as => :juno
         response.status_code.should == 201 #created
-        created = application_context['studyDao'].getByAssignedIdentifier('1140')
+        created = @studyDao.getByAssignedIdentifier('1140')
 
-        planned_activities = created.amendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
-        planned_activities.should have(1).records
+        planned_activities = created.developmentAmendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
+        planned_activities.should have(2).records
 
         a0 = planned_activities[0].activity
-        a0.code.should == "969"
-        a0.name.should == "CT: Abdomen"
+        a0.code.should == "My New Activity Code"
+        a0.name.should == "My New Bone Marrow Aspirate"
         a0.type.name.should == "Disease Measure"
-        a0.source.name.should == "Northwestern University"
+        a0.source.name.should == "My New Source"
+
+        a1 = planned_activities[1].activity
+        a1.code.should == "969"
+        a1.name.should == "CT: Abdomen"
+        a1.type.name.should == "Disease Measure"
+        a1.source.name.should == "Northwestern University"
       end
 
-#      it "accepts a template using the new separated activity definitions" do
-#        new = PscTest.template('study-snapshot-using-separated-activity-definitions')
-#        put '/studies/1140/template', new, :as => :juno
-#        response.status_code.should == 201 #created
-#        created = @studyDao.getByAssignedIdentifier('1140')
-#
-#        planned_activities = created.amendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
-#        planned_activities.should have(2).records
-#
-#        a0 = planned_activities[0].activity
-#        a0.code.should == "My New Activity Code"
-#        a0.name.should == "My New Bone Marrow Aspirate"
-#        a0.type.name.should == "Disease Measure"
-#        a0.source.name.should == "My New Source"
-#
-#        a1 = planned_activities[1].activity
-#        a1.code.should == "969"
-#        a1.name.should == "CT: Abdomen"
-#        a1.type.name.should == "Disease Measure"
-#        a1.source.name.should == "Northwestern University"
-#      end
+      it "accepts a template using the new separated activity definitions" do
+        new = PscTest.template('study-snapshot-using-separated-activity-definitions')
+        post '/studies', new, :as => :juno
+        response.status_code.should == 201 #created
+        created = @studyDao.getByAssignedIdentifier('1140')
+
+        planned_activities = created.developmentAmendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
+        planned_activities.should have(2).records
+
+        a0 = planned_activities[0].activity
+        a0.code.should == "My New Activity Code"
+        a0.name.should == "My New Bone Marrow Aspirate"
+        a0.type.name.should == "Disease Measure"
+        a0.source.name.should == "My New Source"
+
+        a1 = planned_activities[1].activity
+        a1.code.should == "969"
+        a1.name.should == "CT: Abdomen"
+        a1.type.name.should == "Disease Measure"
+        a1.source.name.should == "Northwestern University"
+      end
     end
   end
 

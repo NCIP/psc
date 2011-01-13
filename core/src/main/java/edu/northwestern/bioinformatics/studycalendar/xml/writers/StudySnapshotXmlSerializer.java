@@ -1,25 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.LONG_TITLE;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.List;
-import java.util.Set;
+import java.text.MessageFormat;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.LONG_TITLE;
 
 /**
  * @author Rhett Sutphin
  */
 public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
+    private ActivitySourceXmlSerializer activitySourceXmlSerializer;
+
     @Override
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY_SNAPSHOT.create();
@@ -43,6 +44,11 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         }
 
         elt.add(createPlannedCalendarSerializer(study).createElement(study.getPlannedCalendar()));
+
+        Collection<Activity> activities = findAllActivities(study);
+        Collection<Source> sources = groupActivitiesBySource(activities);
+        Element sourceElement = activitySourceXmlSerializer.createElement(sources);
+        elt.add(sourceElement);
 
         return elt;
     }
@@ -89,7 +95,51 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
                 (PlannedCalendar) createPlannedCalendarSerializer(study).readElement(pcElt));
         }
 
+        Element eSource = element.element("sources");
+        if (eSource != null) {
+            Collection<Source> sources = activitySourceXmlSerializer.readCollectionElement(eSource);
+
+            Collection<Activity> activityRefs = findAllActivities(study);
+            for (Activity ref : activityRefs) {
+                if (ref.getSource() == null) {
+                    throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
+                }
+
+                Source foundSource = ref.getSource().findSourceWhichHasSameName(sources);
+                Activity foundActivityDef = ref.findActivityInCollectionWhichHasSameCode(foundSource.getActivities());
+
+                if (foundActivityDef == null) {
+                    throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
+                }
+                ref.updateActivity(foundActivityDef);
+                ref.getProperties().clear();
+                for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
+                    ref.addProperty(p.clone());
+                }
+            }
+        }
+
         return study;
+    }
+
+    private Collection<Activity> findAllActivities(Study study) {
+        Collection<Activity> result = new HashSet<Activity>();
+        for (PlannedActivity a : TemplateTraversalHelper.findChildren(study.getPlannedCalendar(), PlannedActivity.class)) {
+            result.add(a.getActivity());
+        }
+        return result;
+    }
+
+    protected Collection<Source> groupActivitiesBySource(Collection<Activity> all) {
+        List<Source> result = new ArrayList<Source>();
+        for (Activity a : all) {
+            if (!result.contains(a.getSource())) {
+                result.add(a.getSource().transientClone());
+            }
+            Source s = result.get(result.indexOf(a.getSource()));
+            s.addActivity(a.transientClone());
+        }
+        return result;
     }
 
     private PlannedCalendarXmlSerializer createPlannedCalendarSerializer(Study parent) {
@@ -108,5 +158,10 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
     @Required
     public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
         this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
+    }
+
+    @Required
+    public void setActivitySourceXmlSerializer(ActivitySourceXmlSerializer activitySourceXmlSerializer) {
+        this.activitySourceXmlSerializer = activitySourceXmlSerializer;
     }
 }

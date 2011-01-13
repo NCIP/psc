@@ -119,6 +119,16 @@ public class ActivityService {
         return uriMap;
     }
 
+    public void resolveAndSaveActivity(PlannedActivity planned) {
+        Activity a = planned.getActivity();
+        Activity resolved = activityDao.getByCodeAndSourceName(a.getCode(), a.getSource().getName());
+        if (resolved == null) {
+            saveActivity(a);
+            resolved = a;
+        }
+        planned.setActivity(resolved);
+    }
+
     //Creates new activity
     public void saveActivity(Activity activity) {
         resolveAndSaveSource(activity);

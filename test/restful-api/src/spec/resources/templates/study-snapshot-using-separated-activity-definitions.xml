@@ -6,13 +6,21 @@
       <study-segment name="Follow up">
         <period repetitions="1" start-day="1" duration-quantity="1" duration-unit="day">
           <planned-activity day="1">
-            <activity name="My New Bone Marrow Aspirate" code="My New Activity Code" description="" type="Disease Measure" source="My New Source"/>
+            <activity-reference code="My New Activity Code" source="My New Source"/>
           </planned-activity>
           <planned-activity day="1">
-            <activity name="CT: Abdomen" code="969" type="Disease Measure" source="Northwestern University"/>
+            <activity-reference code="969" source="Northwestern University"/>
           </planned-activity>
         </period>
       </study-segment>
     </epoch>
   </planned-calendar>
+  <sources>
+    <source name="Northwestern University">
+      <activity name="CT: Abdomen" code="969" type="Disease Measure" source="Northwestern University"/>
+    </source>
+    <source name="My New Source">
+      <activity name="My New Bone Marrow Aspirate" code="My New Activity Code" description="" type="Disease Measure" source="My New Source"/>
+    </source>
+  </sources>
 </study-snapshot>

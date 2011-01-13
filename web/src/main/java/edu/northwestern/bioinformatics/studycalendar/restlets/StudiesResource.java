@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
@@ -14,8 +16,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
@@ -23,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper.findChildren;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.PRIVILEGE;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.Q;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
@@ -36,6 +40,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
 
     private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
+    private ActivityService activityService;
 
     @Override
     public void doInit() {
@@ -98,6 +103,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
                     throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                         "There is already a study with the identifier " + read.getAssignedIdentifier());
                 }
+                beforeSave(read);
                 studyService.createInDesignStudyFromExamplePlanTree(read);
             } catch (IOException e) {
                 log.warn("POST failed with IOException", e);
@@ -114,6 +120,16 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         }
 
         return null;
+    }
+
+    private void beforeSave(Study s) {
+        Collection<PlannedActivity> pActivities= findChildren(s.getPlannedCalendar(), PlannedActivity.class);
+        log.debug("inside beforeSave " + pActivities.size());
+        for (PlannedActivity pa : pActivities) {
+            log.debug("inside beforeSave + 1 " + pa.getActivity().getCode());
+            activityService.resolveAndSaveActivity(pa);
+        }
+
     }
 
     @Override
@@ -141,5 +157,10 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    @Required
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 }
