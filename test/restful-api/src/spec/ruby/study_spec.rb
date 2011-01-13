@@ -240,8 +240,8 @@ describe "/studies/{study-identifier}/template" do
     end
 
 
-    it "accepts a template using the old inline activity declaration (child of planed-activity)" do
-      old = PscTest.template('template-using-inline-activity-declarations')
+    it "accepts a template using the old inline activity definitions (child of planed-activity)" do
+      old = PscTest.template('template-using-inline-activity-definitions')
       put '/studies/1140/template', old, :as => :juno
       response.status_code.should == 201 #created
       created = @studyDao.getByAssignedIdentifier('1140')
@@ -262,8 +262,8 @@ describe "/studies/{study-identifier}/template" do
       a1.source.name.should == "Northwestern University"
     end
 
-    it "accepts a template using the new separated activity declarations" do
-      new = PscTest.template('template-using-separated-activity-declarations')
+    it "accepts a template using the new separated activity definitions" do
+      new = PscTest.template('template-using-separated-activity-definitions')
       put '/studies/1140/template', new, :as => :juno
       response.status_code.should == 201 #created
       created = @studyDao.getByAssignedIdentifier('1140')
