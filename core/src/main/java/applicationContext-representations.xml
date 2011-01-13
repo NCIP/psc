@@ -74,7 +74,7 @@
     <bean id="plannedActivityXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityXmlSerializer"/>
 
-  <bean id="acivitiyReferenceXmlSerializer" autowire="byName"
+  <bean id="activityReferenceXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityReferenceXmlSerializer"/>
 
   <bean id="activityXmlSerializer" autowire="byName"
