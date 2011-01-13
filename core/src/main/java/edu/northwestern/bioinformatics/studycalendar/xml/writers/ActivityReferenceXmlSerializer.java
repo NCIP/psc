@@ -14,6 +14,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class ActivityReferenceXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     @Override
     public Element createElement(Activity a) {
+        if (a.getCode() == null) { throw new StudyCalendarValidationException("Activity code is required for serialization"); }
+        if (a.getSource() == null) { throw new StudyCalendarValidationException("Activity source is required for serialization"); }
+
         Element aElt = XsdElement.ACTIVITY_REFERENCE.create();
         XsdAttribute.ACTIVITY_CODE.addTo(aElt, a.getCode());
         XsdAttribute.ACTIVITY_SOURCE.addTo(aElt, a.getSource().getNaturalKey());

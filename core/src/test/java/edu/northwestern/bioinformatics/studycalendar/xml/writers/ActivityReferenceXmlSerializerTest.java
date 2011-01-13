@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivityType;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSource;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.ACTIVITY_CODE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.ACTIVITY_SOURCE;
@@ -47,6 +48,30 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
                 ACTIVITY_CODE.from(actualElement));
         assertEquals("Wrong source", expectedActivity.getSource().getName(),
                 ACTIVITY_SOURCE.from(actualElement));
+    }
+
+    public void testCreateElementFailsWhenActivityCodeIsMissing() {
+        Activity invalid = new Activity();
+        invalid.setSource(createNamedInstance("NU", Source.class));
+        try {
+            serializer.createElement(invalid);
+            fail("Should throw validation exception");
+        } catch (Throwable e) {
+            assertEquals("Wrong exception message", String.format("Activity code is required for serialization"),
+                e.getMessage());
+        }
+    }
+
+    public void testCreateElementFailsWhenActivitySourceIsMissing() {
+        Activity invalid = new Activity();
+        invalid.setCode("AC");
+        try {
+            serializer.createElement(invalid);
+            fail("Should throw validation exception");
+        } catch (Throwable e) {
+            assertEquals("Wrong exception message", String.format("Activity source is required for serialization"),
+                e.getMessage());
+        }
     }
 
     public void testReadElement() throws Exception {
