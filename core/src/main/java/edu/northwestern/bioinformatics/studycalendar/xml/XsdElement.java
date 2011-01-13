@@ -60,7 +60,7 @@ public enum XsdElement {
     USER_ROLES("roles"),
     USER_ROLE("role"),
     ROLE_SITES,
-    ROLE_STUDIES;
+    ROLE_STUDIES, ACTIVITY_REF;
 
     private String elementName;
 

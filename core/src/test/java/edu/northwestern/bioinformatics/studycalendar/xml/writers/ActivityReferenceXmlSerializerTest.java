@@ -21,11 +21,11 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
         super.setUp();
 
         activity = Fixtures.createActivity(
-            "Barney",
-            "B",
+            "Harry",
+            "H",
             createSource(SOURCE_NAME),
-            createActivityType("Fun"),
-            "Barney Blue Horse"
+            createActivityType("Circular"),
+            "Harry Horse"
         );
 
         serializer = new ActivityReferenceXmlSerializer();
@@ -34,17 +34,41 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
 
     public void testCreateElement() throws Exception {
         Element actual = serializer.createElement(activity);
-        assertBasicActivityElement(activity, actual);
+        assertBasicActivityRefElement(activity, actual);
         assertEquals("Missing source reference", SOURCE_NAME,
                 ACTIVITY_SOURCE.from(actual));
     }
 
-    private static void assertBasicActivityElement(Activity expectedActivity, Element actualElement) {
-        assertEquals("Wrong element name", XsdElement.ACTIVITY.xmlName(), actualElement.getName());
+    private static void assertBasicActivityRefElement(Activity expectedActivity, Element actualElement) {
+        assertEquals("Wrong element name", XsdElement.ACTIVITY_REF.xmlName(), actualElement.getName());
         assertEquals("Should have no children", 0, actualElement.elements().size());
+        assertEquals("Should have two attributes", 2, actualElement.attributeCount());
         assertEquals("Wrong code", expectedActivity.getCode(),
                 ACTIVITY_CODE.from(actualElement));
         assertEquals("Wrong source", expectedActivity.getSource().getName(),
                 ACTIVITY_SOURCE.from(actualElement));
     }
+
+//    public void testReadElement() throws Exception {
+//        Element param = XsdElement.ACTIVITY.create();
+//        ACTIVITY_CODE.addTo(param, "P");
+//        ACTIVITY_SOURCE.addTo(param, "Ether");
+//        replayMocks();
+//        Activity read = serializer.readElement(param);
+//        verifyMocks();
+//
+//        assertNotNull(read);
+//        assertNull(read.getId());
+//        assertNull(read.getGridId());
+//        assertEquals("Prime", read.getName());
+//        assertEquals("P", read.getCode());
+//        assertEquals("Single", read.getDescription());
+//        assertEquals(at, read.getType());
+//
+//        Source readSource = read.getSource();
+//        assertNotNull(readSource);
+//        assertNull(readSource.getId());
+//        assertNull(readSource.getGridId());
+//        assertEquals("Ether", readSource.getNaturalKey());
+//    }
 }
