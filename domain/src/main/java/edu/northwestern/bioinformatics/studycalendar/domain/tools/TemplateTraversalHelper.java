@@ -82,23 +82,6 @@ public class TemplateTraversalHelper {
             }
             return result;
         }
-//
-//        protected Collection<Parent> getRootPlanTreeNodesFromDeltas(Collection<Amendment> amendments) {
-//            Collection<Parent> result = new ArrayList<Parent>();
-//            for (Amendment a : amendments) {
-//                for (Delta d : a.getDeltas()) {
-//                    for (Object c : d.getChanges()) {
-//                        if (c instanceof ChildrenChange) {
-//                            Changeable node = ((ChildrenChange) c).getChild();
-//                            if (node instanceof Parent) {
-//                                result.add((Parent) node);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            return result;
-//        }
     }
 
 }
