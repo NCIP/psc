@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -43,6 +44,22 @@ public class ActivityReferenceXmlSerializer extends AbstractStudyCalendarXmlSeri
     }
 
     public boolean validateElement(Activity activity, Element element) {
-        return true;
+        boolean valid = true;
+        if (element == null && activity == null) {
+            return true;
+        } else if ((element != null && activity == null) || (activity != null && element == null)) {
+            return false;
+        } else if (!StringUtils.equals(activity.getCode(), XsdAttribute.ACTIVITY_CODE.from(element))) {
+            valid = false;
+        }
+
+        if ((activity.getSource() == null && XsdAttribute.ACTIVITY_SOURCE.from(element) != null)
+                || (activity.getSource() != null && XsdAttribute.ACTIVITY_SOURCE.from(element) == null)
+                || (!StringUtils.equals(activity.getSource().getName(), XsdAttribute.ACTIVITY_SOURCE.from(element)))) {
+            valid = false;
+        }
+
+
+        return valid;
     }
 }

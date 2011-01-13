@@ -50,10 +50,7 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
     }
 
     public void testReadElement() throws Exception {
-        Element param = XsdElement.ACTIVITY_REFERENCE.create();
-        ACTIVITY_CODE.addTo(param, "P");
-        ACTIVITY_SOURCE.addTo(param, "Ether");
-
+        Element param = createActivityReferenceElement("P", "Ether");
         Activity read = serializer.readElement(param);
 
         assertNotNull(read);
@@ -74,7 +71,6 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
     public void testReadElementFailsWhenActivityCodeIsMissing() {
         Element invalid = XsdElement.ACTIVITY_REFERENCE.create();
         ACTIVITY_SOURCE.addTo(invalid, "Ether");
-
         try {
             serializer.readElement(invalid);
             fail("Should throw validation exception");
@@ -87,7 +83,6 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
     public void testReadElementFailsWhenSourceIsMissing() {
         Element invalid = XsdElement.ACTIVITY_REFERENCE.create();
         ACTIVITY_CODE.addTo(invalid, "P");
-
         try {
             serializer.readElement(invalid);
             fail("Should throw validation exception");
@@ -95,5 +90,37 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
             assertEquals("Wrong exception message", String.format("Source is required for ", XsdElement.ACTIVITY_REFERENCE),
                 e.getMessage());
         }
+    }
+
+    public void testValidateElement() {
+        Activity a = createActivityReference("Dino", "Pangaea");
+        Element aElt = createActivityReferenceElement("Dino", "Pangaea");
+        assertTrue("Should be valid", serializer.validateElement(a, aElt));
+    }
+
+    public void testValidateElementFailsWithDifferentActivityCode() {
+        Activity a = createActivityReference("Dino", "Pangaea");
+        Element aElt = createActivityReferenceElement("Marvin", "Pangaea");
+        assertFalse("Should be invalid", serializer.validateElement(a, aElt));
+    }
+
+    public void testValidateElementFailsWithDifferentSource() {
+        Activity a = createActivityReference("Dino", "Pangaea");
+        Element aElt = createActivityReferenceElement("Dino", "Mars");
+        assertFalse("Should be invalid", serializer.validateElement(a, aElt));
+    }
+
+    private Activity createActivityReference(String code, String source) {
+        Activity a = new Activity();
+        a.setCode(code);
+        a.setSource(Fixtures.createNamedInstance(source, Source.class));
+        return a;
+    }
+
+    private Element createActivityReferenceElement(String code, String source) {
+        Element elt = XsdElement.ACTIVITY_REFERENCE.create();
+        ACTIVITY_CODE.addTo(elt, code);
+        ACTIVITY_SOURCE.addTo(elt, source);
+        return elt;
     }
 }
