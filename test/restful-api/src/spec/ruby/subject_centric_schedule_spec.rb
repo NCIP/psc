@@ -238,6 +238,66 @@ describe "/subjects/{subject-identifier}/schedules" do
           end
         end
       end
+
+      describe "with overlapping activities (#1311)" do
+        before do
+          # This needs to have exactly the same params as the initial
+          # reg to ECOG 170 in the main before block
+          application_context['subjectService'].scheduleStudySegment(
+            @studySubjectAssignment2, @studySegment2, PscTest.createDate(2008, 12, 28),
+            Psc::Domain::NextStudySegmentMode::IMMEDIATE)
+
+          get "/subjects/ID001/schedules.json", :as => :erin
+
+          # The day with the "Physical Test" activity
+          @day = response.json["days"]["2008-12-30"]
+        end
+
+        it "includes the duplicated activities from each segment" do
+          @day['activities'].size.should == 2
+        end
+
+        describe "an activity from the original segment" do
+          before do
+            @activity = @day['activities'][1]
+          end
+
+          it "is the expected activity" do
+            @activity["activity"]["name"].should == "Physical Test"
+          end
+
+          it "has the correct segment" do
+            @activity["study_segment"].should == "Followup (1)"
+          end
+
+          it "includes the proper state" do
+            @activity["current_state"]["name"].should == "canceled"
+          end
+        end
+
+        describe "an activity from the replacement segment" do
+          before do
+            @activity = @day['activities'][0]
+          end
+
+          it "is the expected activity" do
+            @activity["activity"]["name"].should == "Physical Test"
+          end
+
+          it "has the correct segment" do
+            @activity["study_segment"].should == "Followup (2)"
+          end
+
+          it "includes the proper state" do
+            @activity["current_state"]["name"].should == "scheduled"
+          end
+        end
+
+        it "includes both segments" do
+          response.json["study_segments"].collect { |ss| ss["name"] }.sort.should ==
+            ["Followup (1)", "Followup (2)", "Treatment"]
+        end
+      end
     end
 
     describe "ics" do

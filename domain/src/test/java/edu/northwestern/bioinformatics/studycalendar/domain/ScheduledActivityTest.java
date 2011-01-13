@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
@@ -31,7 +32,9 @@ public class ScheduledActivityTest extends TestCase {
         scheduledActivity = new ScheduledActivity();
         sa0 = new ScheduledActivity(); sa1 = new ScheduledActivity();
         sa0.setActivity(activityA);
+        sa0.changeState(new Scheduled(null, DateTools.createDate(2008, Calendar.MARCH, 17)));
         sa1.setActivity(activityB);
+        sa1.changeState(new Scheduled(null, DateTools.createDate(2008, Calendar.MARCH, 17)));
     }
 
     public void testGetActualDateCurrentDate() throws Exception {
@@ -272,6 +275,18 @@ public class ScheduledActivityTest extends TestCase {
         assertNegative(sa0.compareTo(sa1));
     }
 
+    public void testNaturalOrderConsidersState() throws Exception {
+        PlannedActivity pa = plannedActivityFromStudy("X");
+        sa0.setPlannedActivity(pa);
+        sa1.setPlannedActivity(pa);
+        sa1.setActivity(sa0.getActivity());
+        sa0.changeState(new Canceled(null, sa0.getCurrentState().getDate()));
+        sa1.changeState(new Missed(null, sa1.getCurrentState().getDate()));
+
+        assertNegative(sa0.compareTo(sa1));
+        assertPositive(sa1.compareTo(sa0));
+    }
+
     public void testNaturalOrderSortsByAssignmentIdWhenOtherwiseEqual() throws Exception {
         PlannedActivity pa = plannedActivityFromStudy("X");
         sa0.setPlannedActivity(pa);
@@ -285,6 +300,22 @@ public class ScheduledActivityTest extends TestCase {
 
         assertPositive(sa0.compareTo(sa0prime));
         assertNegative(sa0prime.compareTo(sa0));
+    }
+
+    public void testNaturalOrderDiscriminatesBetweenTwoIdenticalActivitiesFromTheSameAssignment() throws Exception {
+        PlannedActivity pa = plannedActivityFromStudy("X");
+        sa0.setPlannedActivity(pa);
+
+        ScheduledActivity sa0prime = new ScheduledActivity();
+        sa0prime.setActivity(sa0.getActivity());
+        sa0prime.setPlannedActivity(pa);
+
+        setId(7, putActivityInAssignment(sa0));
+        setId(1, sa0prime);
+        sa0prime.setScheduledStudySegment(sa0.getScheduledStudySegment());
+
+        assertNegative(sa0.compareTo(sa0prime));
+        assertPositive(sa0prime.compareTo(sa0));
     }
 
     public void testGetAssignmentReturnsAssignmentWhenAttached() throws Exception {
