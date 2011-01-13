@@ -48,7 +48,7 @@ public class PeriodDeltaXmlValidationTest extends AbstractXmlValidationTestCase 
 
         ((Epoch) add1.getChild()).getStudySegments().get(0).getPeriods().last().getPlannedActivities().get(0).setActivity(activity3);
 
-        assertTrue(periodDeltaXmlSerializer.validate(amendment, ePeriod).contains("activities  are different for PlannedActivity"));
+        assertTrue(periodDeltaXmlSerializer.validate(amendment, ePeriod).contains("activity references are different for PlannedActivity"));
 
 
     }

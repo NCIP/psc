@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
-    private ActivityReferenceXmlSerializer activityReferenceXmlSerializer;
+    private ActivityReferenceXmlSerializer activityReferenceXmlSerializer = new ActivityReferenceXmlSerializer();
     private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
     public static final String PLANNED_ACTIVITY = "planned-activity";
 

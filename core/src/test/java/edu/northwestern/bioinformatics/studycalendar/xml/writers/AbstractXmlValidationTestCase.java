@@ -1,39 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAddChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAddChange;
 
 /**
  * @author Saurabh Agrawal
@@ -106,7 +86,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         source.setName("NU Sample Activities");
 
         activity1 = Fixtures.createActivity("CBC", "CBC", source, Fixtures.createActivityType("DISEASE_MEASURE"));
-        activity2 = Fixtures.createActivity("CBC", "CBC", null, Fixtures.createActivityType("LAB_TEST"));
+        activity2 = Fixtures.createActivity("CBC", "CBC", source, Fixtures.createActivityType("LAB_TEST"));
         activity3 = Fixtures.createActivity("Azacitidine", "100001", source, Fixtures.createActivityType("INTERVENTION"));
         activity3.setDescription("");
 

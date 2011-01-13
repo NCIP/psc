@@ -48,7 +48,7 @@ public class StudySegmentDeltaXmlValidationTest extends AbstractXmlValidationTes
 
         ((Epoch) add1.getChild()).getStudySegments().get(0).getPeriods().last().getPlannedActivities().get(0).setActivity(activity3);
 
-        assertTrue(studySegmentDeltaXmlSerializer.validate(amendment, eStudySegment).contains("activities  are different for PlannedActivity"));
+        assertTrue(studySegmentDeltaXmlSerializer.validate(amendment, eStudySegment).contains("activity references are different for PlannedActivity"));
 
 
     }

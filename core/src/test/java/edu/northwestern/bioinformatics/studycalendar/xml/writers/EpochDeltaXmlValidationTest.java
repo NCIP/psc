@@ -57,7 +57,7 @@ public class EpochDeltaXmlValidationTest extends AbstractXmlValidationTestCase {
 
         ((Epoch) add1.getChild()).getStudySegments().get(0).getPeriods().last().getPlannedActivities().get(0).setActivity(activity3);
 
-        assertTrue(epochDeltaXmlSerializer.validate(amendment, eDelta).contains("activities  are different for PlannedActivity"));
+        assertTrue(epochDeltaXmlSerializer.validate(amendment, eDelta).contains("activity references are different for PlannedActivity"));
 
 
     }
