@@ -3,9 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
@@ -58,12 +55,22 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             elt.add(developmentAmendmentElement);
         }
 
-        Collection<Activity> all = getActivities(getParentPlanTreeNodes(study));
-        Collection<Source> sources = groupActivitiesBySource(all);
+        Collection<Activity> activities = findAllActivities(study);
+        Collection<Source> sources = groupActivitiesBySource(activities);
         Element sourceElement = activitySourceXmlSerializer.createElement(sources);
         elt.add(sourceElement);
 
         return elt;
+    }
+
+    private Collection<Activity> findAllActivities(Study study) {
+        Collection<Activity> result = new HashSet<Activity>();
+        for (Parent p : TemplateTraversalHelper.findRootParentNodes(study)) {
+            for (PlannedActivity a : TemplateTraversalHelper.getInstance().findChildren(p, PlannedActivity.class)) {
+                result.add(a.getActivity());
+            }
+        }
+        return result;
     }
 
     protected Collection<Source> groupActivitiesBySource(Collection<Activity> all) {
@@ -74,42 +81,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             }
             Source s = result.get(result.indexOf(a.getSource()));
             s.addActivity(a.transientClone());
-        }
-        return result;
-    }
-
-    protected Collection<Activity> getActivities(Collection<Parent> parents) {
-        Collection<Activity> result = new HashSet<Activity>();
-        for (Parent p : parents) {
-            for (PlannedActivity a : TemplateTraversalHelper.getInstance().findChildren(p, PlannedActivity.class)) {
-                result.add(a.getActivity());
-            }
-        }
-        return result;
-    }
-
-    protected Collection<Parent> getParentPlanTreeNodes(Study study) {
-        Collection<Parent> result = new ArrayList<Parent>();
-        result.add(study.getPlannedCalendar());
-        Collection<Amendment> amendments = new ArrayList<Amendment>();
-        amendments.add(study.getDevelopmentAmendment());
-        amendments.addAll(study.getAmendmentsList());
-        return getParentTreeNodesFromDeltas(amendments);
-    }
-
-    protected Collection<Parent> getParentTreeNodesFromDeltas(Collection<Amendment> amendments) {
-        Collection<Parent> result = new ArrayList<Parent>();
-        for (Amendment a : amendments) {
-            for (Delta d : a.getDeltas()) {
-                for (Object c : d.getChanges()) {
-                    if (c instanceof ChildrenChange) {
-                        Changeable node = ((ChildrenChange) c).getChild();
-                        if (node instanceof Parent) {
-                            result.add((Parent) node);
-                        }
-                    }
-                }
-            }
         }
         return result;
     }

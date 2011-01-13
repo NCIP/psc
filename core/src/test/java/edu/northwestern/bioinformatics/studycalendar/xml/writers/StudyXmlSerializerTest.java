@@ -4,9 +4,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.DocumentHelper;
@@ -19,7 +17,6 @@ import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -330,49 +327,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertTrue("Should be transient", actualNu.getActivities().get(0).isMemoryOnly());
         assertTrue("Should be transient", actualNa.getActivities().get(0).isMemoryOnly());
         assertTrue("Should be transient", actualNa.getActivities().get(1).isMemoryOnly());
-    }
-
-    public void testGetActivities() throws Exception {
-        Period p1, p2;
-        StudySegment seg = createSegment(
-            p1 = createPeriod("A", 1, 1, 1),
-            p2 = createPeriod("B", 1, 1, 1)
-        );
-
-        p1.addPlannedActivity(createPlannedActivity("bowling", 1));
-        p2.addPlannedActivity(createPlannedActivity("soccer", 1));
-
-        Collection<Activity> actual = serializer.getActivities((Collection)asList(seg));
-
-        ArrayList<Activity> sorted = new ArrayList<Activity>(actual);
-        Collections.sort(sorted, NamedComparator.INSTANCE);
-        assertEquals("Wrong element", "bowling", sorted.get(0).getName());
-        assertEquals("Wrong element", "soccer", sorted.get(1).getName());
-    }
-
-    public void testGetParentTreeNodesFromDeltas() throws Exception {
-        StudySegment seg; PlannedCalendar pCal ;
-
-        Amendment a1 = new Amendment();
-        a1.addDelta(
-            Delta.createDeltaFor(
-                new Study(),
-                Add.create(pCal = new PlannedCalendar())
-            )
-        );
-
-        Amendment a2 = new Amendment();
-        a2.addDelta(
-            Delta.createDeltaFor(
-                new PlannedCalendar(),
-                Add.create(seg = new StudySegment())
-            )
-        );
-
-        Collection<Parent> actual = serializer.getParentTreeNodesFromDeltas(asList(a1, a2));
-        assertEquals("Wrong size", 2, actual.size());
-        assertContains(actual,  pCal);
-        assertContains(actual,  seg);
     }
 
     ////// Expect helper methods
