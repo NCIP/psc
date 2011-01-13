@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
@@ -20,6 +21,12 @@ public class ActivityDaoTest extends DaoTestCase {
         super.setUp();
         icd9 = ((SourceDao) getApplicationContext().getBean("sourceDao")).getById(-200);
         icd11 = ((SourceDao) getApplicationContext().getBean("sourceDao")).getById(-201);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        getJdbcTemplate().execute("delete from activity_properties;");
+        super.tearDown();
     }
 
     public void testGetById() throws Exception {
@@ -64,6 +71,30 @@ public class ActivityDaoTest extends DaoTestCase {
             assertEquals("Wrong name", "Give drug", loaded.getName());
             assertEquals("Wrong name for activity type", Fixtures.createNamedInstance("PROCEDURE", ActivityType.class).getName(),
                     loaded.getType().getName());
+        }
+    }
+
+    public void testSaveNewActivityWithProperties() throws Exception {
+        Integer savedId;
+        {
+            Activity a = new Activity();
+            a.setName("Give drug");
+            a.setType(activityTypeDao.getByName("PROCEDURE"));
+            a.setCode("AA");
+            ActivityProperty p = new ActivityProperty();
+            p.setName("0.id");
+            p.setNamespace("URI");
+
+            a.addProperty(p);
+            dao.save(a);
+            savedId = a.getId();
+            assertNotNull("The saved activity didn't get an id", savedId);
+        }
+        interruptSession();
+        {
+            Activity loaded = dao.getById(savedId);
+            assertEquals("Wrong number of properties", 1, loaded.getProperties().size());
+            assertEquals("Wrong property", "0.id", loaded.getProperties().get(0).getName());
         }
     }
 

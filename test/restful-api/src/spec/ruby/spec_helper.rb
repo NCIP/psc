@@ -50,6 +50,10 @@ module PscTest
     Java::OrgSlf4j::LoggerFactory.getLogger("RESTful API Specs").info(message.to_s)
   end
 
+  def self.template(file_name)
+    File.open(File.dirname(__FILE__) + "/../resources/templates/#{file_name}.xml").read
+  end
+
   class HibernateOpenSession
     def initialize
       mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new

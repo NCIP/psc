@@ -8,6 +8,8 @@ describe "/studies/{study-identifier}/template" do
     @studies.each do|s|
       application_context['studyService'].createInDesignStudyFromExamplePlanTree(s)
     end
+
+    @studyDao = application_context['studyDao']
   end
 
   describe "GET" do
@@ -22,6 +24,28 @@ describe "/studies/{study-identifier}/template" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
+    end
+
+    it "finds all activities" do
+      nu581 = PscTest::Fixtures.createSingleEpochStudy("NU581", "Treatment1", ["E", "F"].to_java(:String))
+      planned_activity = PscTest::Fixtures.createPlannedActivity(
+          application_context['activityDao'].getByCodeAndSourceName('1', "Northwestern University"), 1)
+      period = PscTest::Fixtures.createPeriod(1, 1, 1)
+      period.addPlannedActivity(planned_activity)
+      nu581.planned_calendar.epochs[0].study_segments[0].add_period(period)
+      application_context['studyService'].createInDesignStudyFromExamplePlanTree(nu581)
+
+      get "/studies/NU581/template", :as => :barbara
+
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      response.content_type.should == 'text/xml'
+      response.xml_elements('//planned-activity/activity-reference').should have(1).elements
+      response.xml_attributes("activity-reference", "code").should include("1")
+      response.xml_attributes("activity-reference", "source").should include("Northwestern University")
+
+      response.xml_elements('//sources/source/activity').should have(1).elements
+      response.xml_attributes("activity", "name").should include("13-Cis Retinoic Acid")
     end
 
     describe "with released amendments" do
@@ -213,6 +237,51 @@ describe "/studies/{study-identifier}/template" do
 
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU484")
+    end
+
+
+    it "accepts a template using the old inline activity declaration (child of planed-activity)" do
+      old = PscTest.template('template-using-inline-activity-declarations')
+      put '/studies/1140/template', old, :as => :juno
+      response.status_code.should == 201 #created
+      created = @studyDao.getByAssignedIdentifier('1140')
+
+      planned_activities = created.amendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
+      planned_activities.should have(2).records
+
+      a0 = planned_activities[0].activity
+      a0.code.should == "My New Activity Code"
+      a0.name.should == "My New Bone Marrow Aspirate"
+      a0.type.name.should == "Disease Measure"
+      a0.source.name.should == "My New Source"
+
+      a1 = planned_activities[1].activity
+      a1.code.should == "969"
+      a1.name.should == "CT: Abdomen"
+      a1.type.name.should == "Disease Measure"
+      a1.source.name.should == "Northwestern University"
+    end
+
+    it "accepts a template using the new separated activity declarations" do
+      new = PscTest.template('template-using-separated-activity-declarations')
+      put '/studies/1140/template', new, :as => :juno
+      response.status_code.should == 201 #created
+      created = @studyDao.getByAssignedIdentifier('1140')
+
+      planned_activities = created.amendment.deltas[0].changes[0].child.getStudySegments[0].periods.first.plannedActivities
+      planned_activities.should have(2).records
+
+      a0 = planned_activities[0].activity
+      a0.code.should == "My New Activity Code"
+      a0.name.should == "My New Bone Marrow Aspirate"
+      a0.type.name.should == "Disease Measure"
+      a0.source.name.should == "My New Source"
+
+      a1 = planned_activities[1].activity
+      a1.code.should == "969"
+      a1.name.should == "CT: Abdomen"
+      a1.type.name.should == "Disease Measure"
+      a1.source.name.should == "Northwestern University"
     end
   end
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -140,5 +141,16 @@ public class Source extends AbstractMutableDomainObject
 
             }
         }
+    }
+
+    public Source findSourceWhichHasSameName(Collection<Source> sources) {
+        if (getName() == null) { return null; }
+
+        for (Source s : sources) {
+            if (getName().equals(s.getName())) {
+                return s;
+            }
+        }
+        return null;
     }
 }

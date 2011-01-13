@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
 import javax.persistence.*;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Jalpa Patel
@@ -16,16 +18,17 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name = "sequence", value = "seq_activity_properties_id")
                 }
 )
-public class ActivityProperty extends AbstractMutableDomainObject {
+public class ActivityProperty extends AbstractMutableDomainObject implements Cloneable {
     private String namespace;
     private String name;
     private String value;
     private Activity activity;
+    private boolean memoryOnly;
 
     //BEAN PROPERTIES
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activity_id")
+    @JoinColumn(name = "activity_id", nullable = false)
     public Activity getActivity() {
         return activity;
     }
@@ -58,6 +61,19 @@ public class ActivityProperty extends AbstractMutableDomainObject {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public ActivityProperty clone() {
+        try {
+            ActivityProperty clone = (ActivityProperty) super.clone();
+            clone.setNamespace(this.namespace);
+            clone.setName(this.name);
+            clone.setValue(this.value);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Error when cloning ActivityProperty", e);
+        }
     }
 
     public Differences deepEquals(Object o) {

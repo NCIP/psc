@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
@@ -132,6 +133,30 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (developmentAmendmentElement != null) {
             Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
             study.setDevelopmentAmendment(developmentAmendment);
+        }
+
+        Element eSource = element.element("sources");
+        if (eSource != null) {
+            Collection<Source> sources = activitySourceXmlSerializer.readCollectionElement(eSource);
+
+            Collection<Activity> activityRefs = findAllActivities(study);
+            for (Activity ref : activityRefs) {
+                if (ref.getSource() == null) {
+                    throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
+                }
+
+                Source foundSource = ref.getSource().findSourceWhichHasSameName(sources);
+                Activity foundActivityDef = ref.findActivityInCollectionWhichHasSameCode(foundSource.getActivities());
+
+                if (foundActivityDef == null) {
+                    throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
+                }
+                ref.updateActivity(foundActivityDef);
+                ref.getProperties().clear();
+                for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
+                    ref.addProperty(p.clone());
+                }
+            }
         }
 
         return study;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="1140" last-modified-date="2011-01-07T15:01:28.399Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="20ec2bf3-aa24-451d-a7d1-2ac6fa295adb"/>
+  <amendment name="[Original]" date="2011-01-07" mandatory="true" released-date="2011-01-07T15:01:28.399Z" updated-date="2011-01-07T14:58:07.125Z">
+    <planned-calendar-delta id="9f349c01-e5af-4e6d-8b95-1ca682347061" node-id="20ec2bf3-aa24-451d-a7d1-2ac6fa295adb">
+      <add id="08d26ef6-a790-4423-98bc-4621b38c28d6" index="0">
+        <epoch id="74591706-7a33-41ad-bd5e-0f5c011e6870" name="Follow up">
+          <study-segment id="a6a23eaa-4fe1-42f6-bc36-e81ebb2164e8" name="Follow up">
+            <period id="aa1bd8ca-913f-409c-85cd-81dcb849b3b6" repetitions="1" start-day="1" duration-quantity="1" duration-unit="day">
+              <planned-activity id="8fcb991b-1a25-4f8f-bf81-12d79ea21293" day="1">
+                <activity name="My New Bone Marrow Aspirate" code="My New Activity Code" description="" type="Disease Measure" source="My New Source"/>
+              </planned-activity>
+              <planned-activity id="9828ef0e-1161-49ee-b620-38fe668a0abe" day="1">
+                <activity name="CT: Abdomen" code="969" type="Disease Measure" source="Northwestern University"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </amendment>
+</study>
