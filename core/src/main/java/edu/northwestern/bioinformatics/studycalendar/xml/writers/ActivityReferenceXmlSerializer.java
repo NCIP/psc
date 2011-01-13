@@ -41,4 +41,8 @@ public class ActivityReferenceXmlSerializer extends AbstractStudyCalendarXmlSeri
 
         return activity;
     }
+
+    public boolean validateElement(Activity activity, Element element) {
+        return true;
+    }
 }

@@ -6,24 +6,26 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import static org.easymock.EasyMock.expect;
+
 public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedActivityXmlSerializer serializer;
     private Element element;
     private PlannedActivity plannedActivity;
     private ActivityXmlSerializer activitySerializer;
+    private ActivityReferenceXmlSerializer activityReferenceSerializer;
     private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
-    private Element eActivity,eLabel;
+    private Element eActivity,eActivityRef,eLabel;
     private List<PlannedActivity> plannedActivities;
     private SortedSet<PlannedActivityLabel> plannedActivityLabels = new TreeSet<PlannedActivityLabel>();
     private List labelList = new ArrayList();
@@ -33,6 +35,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         activitySerializer = registerMockFor(ActivityXmlSerializer.class);
+        activityReferenceSerializer = registerMockFor(ActivityReferenceXmlSerializer.class);
         plannedActivityLabelXmlSerializer = registerMockFor(PlannedActivityLabelXmlSerializer.class);
 
         Population population = Fixtures.createPopulation("MP", "My Populaiton");
@@ -41,11 +44,13 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         plannedActivityLabels.add(Fixtures.createPlannedActivityLabel("testlabel"));
         plannedActivity.setPlannedActivityLabels(plannedActivityLabels);
         eActivity = DocumentHelper.createElement("activity");
+        eActivityRef = DocumentHelper.createElement("activity-reference");
         eLabel = DocumentHelper.createElement("label");
         labelList.add(eLabel);
 
         serializer = new PlannedActivityXmlSerializer();
         serializer.setActivityXmlSerializer(activitySerializer);
+        serializer.setActivityReferenceXmlSerializer(activityReferenceSerializer);
         serializer.setPlannedActivityLabelXmlSerializer(plannedActivityLabelXmlSerializer);
         plannedActivities = new ArrayList<PlannedActivity>();
     }
@@ -53,7 +58,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testCreateElementPlannedActivity() {
         plannedActivity.setWeight(8);
         expect(plannedActivityLabelXmlSerializer.createElement(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivityLabel("testlabel"))).andReturn(eLabel);
-        expect(activitySerializer.createElement(plannedActivity.getActivity())).andReturn(eActivity);
+        expect(activityReferenceSerializer.createElement(plannedActivity.getActivity())).andReturn(eActivityRef);
         replayMocks();
 
         Element actual = serializer.createElement(plannedActivity);
@@ -95,8 +100,8 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testValidateElement() throws Exception {
-        activitySerializer = new ActivityXmlSerializer();
-        serializer.setActivityXmlSerializer(activitySerializer);
+        activityReferenceSerializer = new ActivityReferenceXmlSerializer();
+        serializer.setActivityReferenceXmlSerializer(activityReferenceSerializer);
         PlannedActivity plannedActivity = createPlannedActivity();
 
         Element actual = serializer.createElement(plannedActivity);
@@ -139,8 +144,8 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testGetPlannedActivityWithMatchingAttributes() throws Exception {
-        activitySerializer = new ActivityXmlSerializer();
-        serializer.setActivityXmlSerializer(activitySerializer);
+        activityReferenceSerializer = new ActivityReferenceXmlSerializer();
+        serializer.setActivityReferenceXmlSerializer(activityReferenceSerializer);
         PlannedActivity plannedActivity = createPlannedActivity();
 
         Element actual = serializer.createElement(plannedActivity);

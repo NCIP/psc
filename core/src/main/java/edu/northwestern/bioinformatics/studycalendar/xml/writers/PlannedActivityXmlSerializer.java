@@ -16,6 +16,7 @@ import java.util.List;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
+    private ActivityReferenceXmlSerializer activityReferenceXmlSerializer;
     private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
@@ -86,7 +87,7 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
             element.addAttribute(POPULATION, ((PlannedActivity) node).getPopulation().getAbbreviation());
         }
 
-        Element eActivity = activityXmlSerializer.createElement(((PlannedActivity) node).getActivity());
+        Element eActivity = activityReferenceXmlSerializer.createElement(((PlannedActivity) node).getActivity());
         element.add(eActivity);
     }
 
@@ -98,12 +99,16 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         this.plannedActivityLabelXmlSerializer = plannedActivityLabelXmlSerializer;
     }
 
+    public void setActivityReferenceXmlSerializer(ActivityReferenceXmlSerializer activityReferenceXmlSerializer) {
+        this.activityReferenceXmlSerializer = activityReferenceXmlSerializer;
+    }
+
     @Override
     public String validateElement(MutableDomainObject planTreeNode, Element element) {
 
         StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
         PlannedActivity plannedActivity = (PlannedActivity) planTreeNode;
-        if (!activityXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
+        if (!activityReferenceXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
             errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
                     + ". expected:%s. \n", plannedActivity.getActivity()));
         }
