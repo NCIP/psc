@@ -124,7 +124,7 @@ psc.tools.Uris = (function () {
     applicationPath: function () {
       var LOCATION = window.location;
       if (LOCATION != null) {
-        return  LOCATION.protocol + "//" + LOCATION.hostname + ":" + LOCATION.port;
+        return  LOCATION.protocol + "//" + LOCATION.host;
       }
     },
 
