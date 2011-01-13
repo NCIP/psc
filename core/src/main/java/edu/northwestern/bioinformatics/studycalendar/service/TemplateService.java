@@ -32,8 +32,6 @@ public class TemplateService {
     private DeltaDao deltaDao;
     private DaoFinder daoFinder;
 
-    private static final TemplateTraversalHelper templateTraversalHelper = TemplateTraversalHelper.getInstance();
-
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <P extends Parent> P findParent(Child<P> node) {
@@ -78,7 +76,7 @@ public class TemplateService {
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public <T extends Child> Collection<T> findChildren(Parent node, Class<T> childClass) {
-        return templateTraversalHelper.findChildren(node, childClass);
+        return TemplateTraversalHelper.findChildren(node, childClass);
     }
 
     // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug

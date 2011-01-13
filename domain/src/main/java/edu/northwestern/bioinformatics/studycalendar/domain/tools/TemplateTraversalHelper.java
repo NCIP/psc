@@ -14,21 +14,15 @@ import java.util.*;
 * @author John Dzak
 */
 public class TemplateTraversalHelper {
-    private static final TemplateTraversalHelper instance = new TemplateTraversalHelper();
-
-    public static TemplateTraversalHelper getInstance() {
-        return instance;
-    }
-
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public <T extends Child> Collection<T> findChildren(Parent node, Class<T> childClass) {
+    public static <T extends Child> Collection<T> findChildren(Parent node, Class<T> childClass) {
         List<T> children = new LinkedList<T>();
         findChildren(node, childClass, children);
         return children;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    private <T extends Child> void findChildren(Parent node, Class<T> childClass, Collection<T> target) {
+    private static <T extends Child> void findChildren(Parent node, Class<T> childClass, Collection<T> target) {
         if (childClass.isAssignableFrom(node.childClass())) {
             target.addAll(node.getChildren());
         } else {

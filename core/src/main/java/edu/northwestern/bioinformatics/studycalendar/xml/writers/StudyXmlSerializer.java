@@ -67,7 +67,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     private Collection<Activity> findAllActivities(Study study) {
         Collection<Activity> result = new HashSet<Activity>();
         for (Parent p : TemplateTraversalHelper.findRootParentNodes(study)) {
-            for (PlannedActivity a : TemplateTraversalHelper.getInstance().findChildren(p, PlannedActivity.class)) {
+            for (PlannedActivity a : TemplateTraversalHelper.findChildren(p, PlannedActivity.class)) {
                 result.add(a.getActivity());
             }
         }
