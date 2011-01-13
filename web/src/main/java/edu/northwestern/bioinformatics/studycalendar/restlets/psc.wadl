@@ -70,14 +70,12 @@
                 <html:td>xml</html:td>
             </html:tr>
         </html:table>
-        <html:p class="main">
-            Common headers: For associating any API request to the user action for undo, custom PSC header 'X-PSC-User-Action' can be added to the request headers.
-            For example, X-PSC-User-Action: {PSC}/api/v1/user-actions/80460809-2e90-4ea5-ac29-ca23639bf460 (Which is the user action URI)
-        </html:p>
+
         <html:p class="main">
             Resources marked <html:em class="pending">Pending</html:em> are planned
             for a future release of PSC but are not yet implemented.
         </html:p>
+
         <html:p class="main">
             Resources marked <html:em class="pending">Deprecated</html:em> are planned
             to remove in a future release of PSC.
@@ -1841,6 +1839,44 @@
                   An action performed by a user in a certain context
                   which can be used to reference undoable changes.
               </html:p>
+              <html:p>
+                  PSC exposes a generic undo facility for changes made via the API.  This is
+                  intended to be exposed to interactive users of PSC (or an application backed by
+                  PSC).  Since what a UI may expose as a single click or keystroke might be, at
+                  the API level, be more than one request, PSC has a mechanism for grouping related
+                  requests under the header of a "user action."
+              </html:p>
+              <html:p>
+                  Associating one or more requests with a single user action has two steps:
+              </html:p>
+              <html:ol>
+                  <html:li>
+                      Create a user action by POSTing to this resource.  If successful, this will
+                      return to you a URI for the new user action in the Location header.
+                  </html:li>
+                  <html:li>
+                      Reference that user action URI in each subsequent API call that is part of the
+                      same logical action using the "X-PSC-User-Action" header.
+                  </html:li>
+              </html:ol>
+              <html:p>
+                  For instance, if you receive the following as part of the response to this POST:
+              </html:p>
+              <html:p>
+                  <html:code>Location: https://psc.inst.edu/api/v1/user-actions/1523</html:code>
+              </html:p>
+              <html:p>
+                  You would include in the following in each subsequent request which is part of
+                  that user action:
+              </html:p>
+              <html:p>
+                  <html:code>X-PSC-User-Action: https://psc.inst.edu/api/v1/user-actions/1523</html:code>
+              </html:p>
+              <html:p>
+                  Caveat: while you can associate user actions with any context and any API call,
+                  PSC currently only supports undoing actions which fall under the combined subject
+                  schedule context (as in the example below).
+              </html:p>
           </doc>
 
           <method name="POST">
@@ -1861,14 +1897,16 @@
 <html:pre class="example">
   {
     description: "Delayed 45 activities for Jo Carlson by 6 days",
-    context: "{PSC}/api/v1/subjects/0000001/schedules",
+    context: "${baseUri}/api/v1/subjects/0000001/schedules",
     action_type: "Delay"
   }
 </html:pre>
                   </doc>
               </request>
               <response>
-                  <representation mediaType="application/json"/>
+                  <doc>
+
+                  </doc>
               </response>
           </method>
       </resource>
