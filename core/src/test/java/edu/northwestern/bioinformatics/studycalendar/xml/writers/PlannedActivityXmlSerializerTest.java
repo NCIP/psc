@@ -83,8 +83,36 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("population")).andReturn("MP");
         expect(element.elementIterator("label")).andReturn(labelList.iterator());
         expect(plannedActivityLabelXmlSerializer.readElement((Element)labelList.iterator().next())).andReturn(new PlannedActivityLabel());
-        expect(element.element("activity")).andReturn(eActivity);
+        expect(element.element("activity")).andReturn(eActivity).times(2);
         expect(activitySerializer.readElement(eActivity)).andReturn(new Activity());
+
+        replayMocks();
+
+        PlannedActivity actual = (PlannedActivity) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong grid id", "grid0", actual.getGridId());
+        assertEquals("Wrong day", 2, (int) actual.getDay());
+        assertEquals("Wrong details", "scan details", actual.getDetails());
+        assertEquals("Wrong condition", "no mice", actual.getCondition());
+        assertEquals("Wrong population", "MP", actual.getPopulation().getAbbreviation());
+        assertNotNull("Activity should exist", actual.getActivity());
+        assertNotNull("Labels should exist", actual.getPlannedActivityLabels());
+    }
+
+    public void testReadElementStudyPlannedActivityWithActivityReference() {
+        expect(element.getName()).andReturn("planned-activity");
+        expect(element.attributeValue("id")).andReturn("grid0");
+        expect(element.attributeValue("day")).andReturn("2");
+        expect(element.attributeValue("details")).andReturn("scan details");
+        expect(element.attributeValue("condition")).andReturn("no mice");
+        expect(element.attributeValue("weight")).andReturn(null);
+        expect(element.attributeValue("population")).andReturn("MP");
+        expect(element.elementIterator("label")).andReturn(labelList.iterator());
+        expect(plannedActivityLabelXmlSerializer.readElement((Element)labelList.iterator().next())).andReturn(new PlannedActivityLabel());
+        expect(element.element("activity")).andReturn(null);
+        expect(element.element("activity-reference")).andReturn(eActivityRef).times(2);
+        expect(activityReferenceSerializer.readElement(eActivityRef)).andReturn(new Activity());
 
         replayMocks();
 

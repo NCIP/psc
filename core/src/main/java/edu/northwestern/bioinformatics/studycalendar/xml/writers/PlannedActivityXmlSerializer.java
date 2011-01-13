@@ -64,7 +64,12 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
             }
         }
 
-        Activity activity = activityXmlSerializer.readElement(element.element(XsdElement.ACTIVITY.xmlName()));
+        Activity activity = null;
+        if (element.element(XsdElement.ACTIVITY.xmlName()) != null) {
+            activity = activityXmlSerializer.readElement(element.element(XsdElement.ACTIVITY.xmlName()));
+        } else if (element.element(XsdElement.ACTIVITY_REFERENCE.xmlName()) != null) {
+            activity = activityReferenceXmlSerializer.readElement(element.element(XsdElement.ACTIVITY_REFERENCE.xmlName()));
+        }
         ((PlannedActivity) node).setActivity(activity);
     }
 
