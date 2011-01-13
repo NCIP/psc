@@ -450,39 +450,26 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertEquals("dates are not equals", df.format(timestampTo), df.format(date));
     }
 
-    public void testResetTheEvent() throws Exception {
-        StudySubjectAssignment assignment = new StudySubjectAssignment();
-        ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
-        assignment.setScheduledCalendar(scheduledCalendar);
-        ScheduledStudySegment existingStudySegment = new ScheduledStudySegment();
-        existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 1));
-        scheduledCalendar.addStudySegment(existingStudySegment);
+    public void testAvoidingBlackoutDateDelaysSAByOneDayWithReason() throws Exception {
+        ScheduledActivity sa = createScheduledActivity("CBC", 2010, Calendar.APRIL, 30);
+        service.shiftToAvoidBlackoutDate(sa, createSite("DC"), "Arbor Day");
+        assertEquals("Wrong new state", ScheduledActivityMode.SCHEDULED, sa.getCurrentState().getMode());
+        assertDayOfDate("Wrong new date", 2010, Calendar.MAY, 1, sa.getCurrentState().getDate());
+        assertEquals("Wrong reason", "Rescheduled: Arbor Day", sa.getCurrentState().getReason());
+    }
 
-        StudySite studySite = new StudySite();
-        studySite.setSite(new Site());
-        assignment.setStudySite(studySite);
-        List<ScheduledActivity> events = scheduledCalendar.getScheduledStudySegments().get(0).getActivities();
-        ScheduledActivity event = events.get(0);
-        Calendar holiday = getInstance();
-        holiday.set(2005, AUGUST, 1);
-        String description = "Closed";
-        Date dateBeforeReset = event.getActualDate();
-        assertNotEquals("descriptions are equals", event.getCurrentState().getReason(), description);
-        service.shiftToAvoidBlackoutDate(holiday.getTime(), event,
-                scheduledCalendar.getAssignment().getStudySite().getSite(),
-                description);
-        Date dateAfterReset = event.getActualDate();
+    public void testAvoidingBlackoutDateDelaysPreservesHistory() throws Exception {
+        ScheduledActivity sa = createScheduledActivity("CBC", 2010, Calendar.APRIL, 30);
+        service.shiftToAvoidBlackoutDate(sa, createSite("DC"), "Arbor Day");
+        assertEquals("Wrong number of historical states", 1, sa.getPreviousStates().size());
+        assertDayOfDate("Old date not preserved",
+            2010, Calendar.APRIL, 30, sa.getPreviousStates().get(0).getDate());
+    }
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-        assertNotEquals("dates are equals", df.format(dateAfterReset), df.format(dateBeforeReset));
-
-        java.sql.Timestamp timestampTo = new java.sql.Timestamp(dateAfterReset.getTime());
-        long oneDay = 1 * 24 * 60 * 60 * 1000;
-        timestampTo.setTime(timestampTo.getTime() - oneDay);
-        assertEquals("dates are not equals", df.format(timestampTo), df.format(dateBeforeReset));        
-        assertEquals("descriptions are not equals", event.getCurrentState().getReason(),
-                SubjectService.RESCHEDULED + description);
+    public void testShiftConditionalActivityPreservesConditionalness() throws Exception {
+        ScheduledActivity sa = createConditionalEvent("CBC", 2010, Calendar.APRIL, 30);
+        service.shiftToAvoidBlackoutDate(sa, createSite("DC"), "Arbor Day");
+        assertEquals(ScheduledActivityMode.CONDITIONAL, sa.getCurrentState().getMode());
     }
 
     public void testAvoidWeekendsAndHolidays() throws Exception {
