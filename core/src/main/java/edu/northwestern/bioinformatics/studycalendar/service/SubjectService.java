@@ -24,7 +24,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
@@ -323,13 +322,13 @@ public class SubjectService {
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
+                    shiftToAvoidBlackoutDate(event, site, blackoutDate.getDescription());
                 }
             } else if(blackoutDate instanceof WeekdayBlackout) {
                 WeekdayBlackout dayOfTheWeek = (WeekdayBlackout) blackoutDate;
                 int intValueOfTheDay = dayOfTheWeek.getDayOfTheWeekInteger();
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
-                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
+                    shiftToAvoidBlackoutDate(event, site, blackoutDate.getDescription());
                 }
             } else if (blackoutDate instanceof RelativeRecurringBlackout) {
                 RelativeRecurringBlackout relativeRecurringHoliday =
@@ -344,17 +343,18 @@ public class SubjectService {
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(specificDay);
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
+                    shiftToAvoidBlackoutDate(event, site, blackoutDate.getDescription());
                 }
             }
         }
     }
 
     // package level for testing
-    void shiftToAvoidBlackoutDate(Date date, ScheduledActivity event, Site site, String reason) {
-        date = shiftDayByOne(date);
-        Scheduled s = new Scheduled(RESCHEDULED + reason, date);
-        event.changeState(s);
+    void shiftToAvoidBlackoutDate(ScheduledActivity event, Site site, String reason) {
+        ScheduledActivityState newState = event.getCurrentState().getMode().
+            createStateInstance(
+                shiftDayByOne(event.getActualDate()), String.format("Rescheduled: %s", reason));
+        event.changeState(newState);
         avoidBlackoutDates(event, site);
     }
 
