@@ -25,7 +25,7 @@ public class ActivityDaoTest extends DaoTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        getJdbcTemplate().execute("delete from activity_properties;");
+        getJdbcTemplate().execute("delete from activity_properties");
         super.tearDown();
     }
 
