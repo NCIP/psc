@@ -3,6 +3,9 @@
 
 require 'fileutils'
 require 'jruby'
+%w(http_helper static_data_helper template_helper request_logger_formatter).each { |f|
+  require File.expand_path("../#{f}.rb", __FILE__)
+}
 
 # Manually configure logback since it isn't finding the configuration file on its own
 begin
@@ -128,3 +131,4 @@ Spec::Runner.configure do |config|
 end
 
 application_context['databaseInitializer'].beforeAll
+HttpHelper.wait_until_available

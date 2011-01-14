@@ -4,6 +4,7 @@ require 'rexml/document'
 require 'json/pure'
 require 'cgi'
 require 'icalendar'
+require 'timeout'
 
 module HttpHelper
   attr_reader :response
@@ -43,6 +44,7 @@ module HttpHelper
   def psc_url
     "http://localhost:#{ENV['JETTY_PORT'] || 7200}/psc"
   end
+  module_function(:psc_url)
 
   # TODO: parameterize
   def full_uri(relative, params=nil)
@@ -58,6 +60,21 @@ module HttpHelper
     root_attributes['xmlns'] = 'http://bioinformatics.northwestern.edu/ns/psc'
     Builder::XmlMarkup.new(:indent => 2).tag!(root_name, root_attributes, &block)
   end
+
+  STARTUP_WAIT_TIME = 60 # seconds
+
+  def wait_until_available
+    begin
+      Timeout::timeout(STARTUP_WAIT_TIME) do
+        until psc_available?
+          sleep 5
+        end
+      end
+    rescue Timeout::Error => e
+      fail "Integration tests waited #{STARTUP_WAIT_TIME} seconds for PSC to start"
+    end
+  end
+  module_function(:wait_until_available)
 
   private
 
@@ -83,6 +100,21 @@ module HttpHelper
       @response = Response.new(e.io)
     end
   end
+
+  def psc_available?
+    url = URI.parse(psc_url)
+    begin
+      session = Net::HTTP.new(url.host, url.port)
+      session.start do |http|
+        status = http.get(url.request_uri).code
+        # anything indicating a functioning server
+        return status =~ /[1234]\d\d/
+      end
+    rescue => e
+      false
+    end
+  end
+  module_function(:psc_available?)
 
   class Response
     attr_accessor :entity
