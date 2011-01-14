@@ -1897,7 +1897,7 @@
 <html:pre class="example">
   {
     description: "Delayed 45 activities for Jo Carlson by 6 days",
-    context: "${baseUri}/api/v1/subjects/0000001/schedules",
+    context: "${baseUri}/subjects/0000001/schedules",
     action_type: "Delay"
   }
 </html:pre>
