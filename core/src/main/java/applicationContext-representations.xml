@@ -141,4 +141,8 @@
     <bean id="planTreeNodeXmlSerializerFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlanTreeNodeXmlSerializerFactory"/>
 
+    <!-- Xml Serializer Helpers -->
+    <bean id="studyXmlSerializerHelper" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerHelper"/>
+
 </beans>

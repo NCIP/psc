@@ -1,19 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
@@ -22,6 +21,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
+    private StudyXmlSerializerHelper studyXmlSerializerHelper;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -56,34 +56,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             elt.add(developmentAmendmentElement);
         }
 
-        Collection<Activity> activities = findAllActivities(study);
-        Collection<Source> sources = groupActivitiesBySource(activities);
-        Element sourceElement = activitySourceXmlSerializer.createElement(sources);
-        elt.add(sourceElement);
+        Element eSources = studyXmlSerializerHelper.generateSourcesElementWithActivities(study);
+        elt.add(eSources);
 
         return elt;
-    }
-
-    private Collection<Activity> findAllActivities(Study study) {
-        Collection<Activity> result = new HashSet<Activity>();
-        for (Parent p : TemplateTraversalHelper.findRootParentNodes(study)) {
-            for (PlannedActivity a : TemplateTraversalHelper.findChildren(p, PlannedActivity.class)) {
-                result.add(a.getActivity());
-            }
-        }
-        return result;
-    }
-
-    protected Collection<Source> groupActivitiesBySource(Collection<Activity> all) {
-        List<Source> result = new ArrayList<Source>();
-        for (Activity a : all) {
-            if (!result.contains(a.getSource())) {
-                result.add(a.getSource().transientClone());
-            }
-            Source s = result.get(result.indexOf(a.getSource()));
-            s.addActivity(a.transientClone());
-        }
-        return result;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -135,29 +111,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             study.setDevelopmentAmendment(developmentAmendment);
         }
 
-        Element eSource = element.element("sources");
-        if (eSource != null) {
-            Collection<Source> sources = activitySourceXmlSerializer.readCollectionElement(eSource);
-
-            Collection<Activity> activityRefs = findAllActivities(study);
-            for (Activity ref : activityRefs) {
-                if (ref.getSource() == null) {
-                    throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
-                }
-
-                Source foundSource = ref.getSource().findSourceWhichHasSameName(sources);
-                Activity foundActivityDef = ref.findActivityInCollectionWhichHasSameCode(foundSource.getActivities());
-
-                if (foundActivityDef == null) {
-                    throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
-                }
-                ref.updateActivity(foundActivityDef);
-                ref.getProperties().clear();
-                for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
-                    ref.addProperty(p.clone());
-                }
-            }
-        }
+        studyXmlSerializerHelper.replaceActivityReferencesWithCorrespondingDefinitions(study, element);
 
         return study;
     }
@@ -186,13 +140,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             if (XsdAttribute.AMENDMENT_PREVIOUS_AMENDMENT_KEY.from(amend) == null) return amend;
         }
         return null;
-    }
-
-    public String readAssignedIdentifier(InputStream in) {
-        Document doc = deserializeDocument(in);
-        Element elt = doc.getRootElement();
-        validateElement(elt);
-        return XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(elt);
     }
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
@@ -229,7 +176,13 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
     }
 
+    @Required
     public void setActivitySourceXmlSerializer(ActivitySourceXmlSerializer serializer) {
         this.activitySourceXmlSerializer = serializer;
+    }
+
+    @Required
+    public void setStudyXmlSerializerHelper(StudyXmlSerializerHelper studyXmlSerializerHelper) {
+        this.studyXmlSerializerHelper = studyXmlSerializerHelper;
     }
 }

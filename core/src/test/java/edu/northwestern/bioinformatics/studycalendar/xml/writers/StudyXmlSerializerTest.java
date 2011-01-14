@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -13,7 +12,8 @@ import org.dom4j.QName;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collection;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
@@ -48,6 +48,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     private Collection<Source> sources;
     private Element eSources;
+    private StudyXmlSerializerHelper studyXmlSerializerHelper;
 
 
     protected void setUp() throws Exception {
@@ -58,6 +59,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
         developmentAmendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
+        studyXmlSerializerHelper = registerMockFor(StudyXmlSerializerHelper.class);
 
         serializer = new StudyXmlSerializer() {
             protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
@@ -72,6 +74,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return developmentAmendmentSerializer;
             }
         };
+
+        serializer.setStudyXmlSerializerHelper(studyXmlSerializerHelper);
 
         serializer.setActivitySourceXmlSerializer(activitySourceSerializer);
 
@@ -290,52 +294,13 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertXMLEqual(expected.toString(), actual);
     }
 
-    public void testGroupActivitiesBySource() throws Exception {
-        Source nu = createNamedInstance("nu-activities", Source.class);
-        Source na = createNamedInstance("na-activities", Source.class);
-
-        Activity cbc = createActivity("cbc");
-        Activity bbc = createActivity("bbc");
-        Activity nbc = createActivity("nbc");
-
-        cbc.setSource(nu);
-        bbc.setSource(na);
-        nbc.setSource(na);
-
-        Collection<Source> actual = serializer.groupActivitiesBySource(asList(cbc, bbc, nbc));
-
-        assertEquals("Wrong size", 2, actual.size());
-        assertContains(actual, nu);
-        assertContains(actual, na);
-
-        List<Source> sorted = new ArrayList<Source>(actual);
-        Collections.sort(sorted, NamedComparator.INSTANCE);
-
-        Source actualNa = sorted.get(0);
-        Source actualNu = sorted.get(1);
-
-        assertTrue("Should be transient", actualNa.isMemoryOnly());
-        assertTrue("Should be transient", actualNu.isMemoryOnly());
-
-        assertEquals("Wrong size", 1, actualNu.getActivities().size());
-        assertContains(actualNu.getActivities(), cbc);
-
-        assertEquals("Wrong size", 2, actualNa.getActivities().size());
-        assertContains(actualNa.getActivities(), bbc);
-        assertContains(actualNa.getActivities(), nbc);
-
-        assertTrue("Should be transient", actualNu.getActivities().get(0).isMemoryOnly());
-        assertTrue("Should be transient", actualNa.getActivities().get(0).isMemoryOnly());
-        assertTrue("Should be transient", actualNa.getActivities().get(1).isMemoryOnly());
-    }
-
     ////// Expect helper methods
 
     private void expectChildrenSerializers() {
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         expect(amendmentSerializer.createElement(firstAmendment)).andReturn(eFirstAmendment);
         expect(developmentAmendmentSerializer.createElement(developmentAmendment)).andReturn(eDevelopmentAmendment);
-        expect(activitySourceSerializer.createElement((Collection) notNull())).andReturn(eSources);
+        expect(studyXmlSerializerHelper.generateSourcesElementWithActivities((Study) notNull())).andReturn(eSources);
 
     }
 
@@ -356,6 +321,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
+        studyXmlSerializerHelper.replaceActivityReferencesWithCorrespondingDefinitions((Study) notNull(), (Element) notNull());
     }
 
     private StudySecondaryIdentifierXmlSerializer expectSecondaryIdentifierSerializer() {
