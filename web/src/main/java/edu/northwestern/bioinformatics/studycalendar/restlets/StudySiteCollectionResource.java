@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -101,6 +102,9 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
             V value;
             try {
                 value = xmlSerializer.readDocument(entity.getStream());
+            } catch (StudyCalendarValidationException scve) {
+                log.warn("PUT failed with StudyCalendarValidationException");
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException");
                 throw new ResourceException(e);
