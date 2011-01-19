@@ -17,9 +17,18 @@ psc.subject.RealScheduleControls = (function ($) {
 
   function performCheckedModifications(evt, data) {
     var params = psc.subject.RealScheduleControls.computeMarkParameters();
-    var action = psc.subject.RealScheduleControls.createMarkUserAction();
-    executeScheduleUpdateWithUserAction
-            (params, action, batchResource, executePartialScheduleUpdate, data);
+    var isParamsEmpty = _(params).isEmpty();
+    if (params != null && !isParamsEmpty) {
+      var action = psc.subject.RealScheduleControls.createMarkUserAction();
+      executeScheduleUpdateWithUserAction
+              (params, action, batchResource, executePartialScheduleUpdate, data);
+    }
+    if (params == null) {
+      alert("There selected activities are not suitable to be modified due to the state." +
+        "\nOnly scheduled and conditional types will be changed");
+    } else if (isParamsEmpty) {
+      alert("There were no properties modified to change the activity");
+    }
   }
 
   function performShowAction(evt, data) {
@@ -365,29 +374,34 @@ psc.subject.RealScheduleControls = (function ($) {
 
     // public for testing
     computeMarkParameters: function () {
-      var delayAmount =
-        $('#mark-delay-amount').val() * $('#mark-delay-or-advance').val();
+      var delayAmount = $('#mark-delay-amount').val() * $('#mark-delay-or-advance').val();
+      var markNewMode =  $('#mark-new-mode').val()
+      var markReason= $('#mark-reason').val()
       var params = null;
-      var saIds = $('input.event:checked').
-        collect(function () { return this.value; });
-      $.each(psc.subject.ScheduleData.current()['days'], function (day, value) {
-        $.each(value['activities'], function () {
-          if ($.inArray(this.id, saIds) >= 0) {
-            var newState = NEW_STATE_FNS[$('#mark-new-mode').val()](this);
-            if (newState) {
-              if (!params) params = {};
-              params[this.id] = {
-                state: newState,
-                date: isShiftingMarkMode() ?
-                  shiftedDate(this.current_state.date, delayAmount) :
-                  this.current_state.date,
-                reason: $('#mark-reason').val()
+      if (delayAmount == 0 && markNewMode == 'move-date-only' && markReason =="") {
+        return params={};
+      } else {
+        var saIds = $('input.event:checked').
+          collect(function () { return this.value; });
+        $.each(psc.subject.ScheduleData.current()['days'], function (day, value) {
+          $.each(value['activities'], function () {
+            if ($.inArray(this.id, saIds) >= 0) {
+              var newState = NEW_STATE_FNS[$('#mark-new-mode').val()](this);
+              if (newState) {
+                if (!params) params = {};
+                params[this.id] = {
+                  state: newState,
+                  date: isShiftingMarkMode() ?
+                    shiftedDate(this.current_state.date, delayAmount) :
+                    this.current_state.date,
+                  reason: $('#mark-reason').val()
+                }
               }
             }
-          }
+          });
         });
-      });
-      return params;
+        return params;
+      }
     },
 
     createDelayUserAction: function (count) {
