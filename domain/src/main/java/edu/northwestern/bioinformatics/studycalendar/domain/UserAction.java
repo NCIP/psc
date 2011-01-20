@@ -2,26 +2,27 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_actions")
 @GenericGenerator(name = "id-generator", strategy = "native",
         parameters = {@Parameter(name = "sequence", value = "seq_user_actions_id")}
 )
-public class UserAction extends AbstractMutableDomainObject {
+public class UserAction extends AbstractMutableDomainObject implements Comparable<UserAction> {
     private String description;
     private Integer csmUserId;
     private String context;
     private String actionType;
     private boolean undone;
     private User resolvedUser;
+    private Date time;
 
     public UserAction(String description, String context, String actionType, boolean undone, User resolvedUser) {
         this.description = description;
@@ -102,6 +103,15 @@ public class UserAction extends AbstractMutableDomainObject {
         this.undone = undone;
     }
 
+    @Transient
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -127,5 +137,10 @@ public class UserAction extends AbstractMutableDomainObject {
         result = 31 * result + (actionType != null ? actionType.hashCode() : 0);
         result = 31 * result + (undone ? 1 : 0);
         return result;
+    }
+
+    public int compareTo(UserAction o) {
+        return ComparisonTools.nullSafeCompare(
+                this.getTime(), o.getTime());
     }
 }

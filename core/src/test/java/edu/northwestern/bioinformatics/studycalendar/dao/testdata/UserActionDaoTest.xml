@@ -8,4 +8,60 @@
     csm_user_id="-999"
     grid_id="Alabaster"
     />
+
+    <USER_ACTIONS
+        id="-101"
+        description="Scheduled Delayed"
+        undone="0"
+        context="http://foo/bar"
+        action_type="scheduled"
+        csm_user_id="-999"
+        grid_id="grid1"
+    />
+
+    <USER_ACTIONS
+        id="-102"
+        description="Scheduled Delayed"
+        undone="0"
+        context="http://foo/bar/another"
+        action_type="scheduled"
+        csm_user_id="-999"
+        grid_id="grid2"
+    />
+
+    <AUDIT_EVENTS
+        id="-101"
+        ip_address="255.255.255.255"
+        user_name="testUser"
+        time="2010-08-17 23:24:58.361"
+        class_name="edu.northwestern.bioinformatics.studycalendar.domain.Activity"
+        operation="CREATE"
+        url="/psc/pages/activities/addNewActivity"
+        version="0"
+        object_id="-11"
+        user_action_id="grid1" />
+
+    <AUDIT_EVENTS
+        id="-102"
+        ip_address="255.255.255.255"
+        user_name="testUser"
+        time="2010-08-17 23:27:58.361"
+        class_name="edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity"
+        operation="UPDATE"
+        url="/psc/pages/activities/addNewActivity"
+        version="0"
+        object_id="-13"
+        user_action_id="grid1" />
+
+    <AUDIT_EVENTS
+        id="-103"
+        ip_address="255.255.255.255"
+        user_name="testUser"
+        time="2010-08-17 21:27:58.361"
+        class_name="edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity"
+        operation="UPDATE"
+        url="/psc/pages/activities/addNewActivity"
+        version="0"
+        object_id="-15"
+        user_action_id="Alabaster" />
 </dataset>

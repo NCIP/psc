@@ -230,5 +230,7 @@
     <bean id="auditEventDao" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
-    <bean id="userActionDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao"/>
+    <bean id="userActionDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
 </beans>

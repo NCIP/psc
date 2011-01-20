@@ -1,12 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.security.authorization.domainobjects.User;
+import java.text.SimpleDateFormat;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNegative;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
 
 /**
  * @author Jalpa Patel
  */
 public class UserActionTest  extends DomainTestCase {
     private User csmUser;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -30,5 +35,15 @@ public class UserActionTest  extends DomainTestCase {
         UserAction userAction1 = new UserAction("description", "context", "actionType", true, csmUser);
         UserAction userAction2 = new UserAction("description", "context", "actionType", true, csmUser);
         assertEquals(userAction1.hashCode(), userAction2.hashCode());
+    }
+
+    public void testChronologicalOrder() throws Exception {
+        UserAction ua1 = new UserAction("description", "context", "actionType", true, csmUser);
+        ua1.setTime(sdf.parse("2010-08-17 10:40:58.361"));
+        UserAction ua2 = new UserAction("description", "context", "actionType", true, csmUser);
+        ua2.setTime(sdf.parse("2010-08-17 10:41:58.361"));
+
+        assertPositive(ua2.compareTo(ua1));
+        assertNegative(ua1.compareTo(ua2));
     }
 }
