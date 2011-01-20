@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.ACTIVITY_VALIDATOR_INSTANCE;
 
 public class ActivityXMLValidatorTest extends StudyCalendarTestCase {
     private InputStream valid, invalid;
@@ -16,8 +18,11 @@ public class ActivityXMLValidatorTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data/ActivityXMLReaderTest.xml");
-        invalid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data/ActivityXMLReaderTest-Invalid.xml");
+        File dataDir = getModuleRelativeDirectory("core",
+            "src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data");
+
+        valid = new FileInputStream(new File(dataDir, "ActivityXMLReaderTest.xml"));
+        invalid = new FileInputStream(new File(dataDir, "ActivityXMLReaderTest-Invalid.xml"));
     }
 
     public void testValidate() {
