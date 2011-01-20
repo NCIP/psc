@@ -403,7 +403,7 @@
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="per-protocol"/>
-                    <xsd:enumeration value="immediately"/>
+                    <xsd:enumeration value="immediate"/>
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
