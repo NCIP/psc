@@ -87,14 +87,14 @@ public class TemplateImportService {
     public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
         Study newStudy = loadStudyFromXml(stream);
         beforeSave(newStudy, existingStudy);
-        Study study = saveStudy(newStudy, existingStudy);
-        return study;
+        return saveStudy(newStudy, existingStudy);
     }
 
     private Study loadStudyFromXml(InputStream stream) {
         return studyXmlSerializer.readDocument(stream);
     }
 
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
     private Study beforeSave(Study newStudy, Study oldStudy) {
         TemplateInternalReferenceIndex loadedIndex;
         List<Amendment> amendments = new ArrayList<Amendment>(newStudy.getAmendmentsListInReverseOrder());
@@ -162,7 +162,7 @@ public class TemplateImportService {
 
         List<Key> existingGridIdKeys = new ArrayList<Key>();
         for (Key key : loadedIndex.getIndex().keySet()) {
-            Boolean existing = gridIdentifierResolver.resolveGridId(key.kind, key.id);
+            Boolean existing = gridIdentifierResolver.resolveGridId(key.getKind(), key.getId());
             if (existing) {
                existingGridIdKeys.add(key);
             }
@@ -174,12 +174,12 @@ public class TemplateImportService {
             if (oldStudy != null) {
                 // Check grid id conflicts for existing study
                 if (entry.getReferringDeltas().isEmpty() && entry.getReferringChanges().isEmpty()) {
-                   conflicts.append(String.format(" [ grid id %s ] ", key.id));
+                   conflicts.append(String.format(" [ grid id %s ] ", key.getId()));
                 }
             } else {
                 // Assign new grid ids for conflicted grid ids for new study
                 String newGridId = localGridIdentifierCreator.getGridIdentifier();
-                log.debug("replacing conflicted grid identifier {} with new grid identifier {}", key.id, newGridId);
+                log.debug("replacing conflicted grid identifier {} with new grid identifier {}", key.getId(), newGridId);
                 if (entry.getOriginal() != null)
                     ((MutableDomainObject)entry.getOriginal()).setGridId(newGridId);
                 for (Delta delta : entry.getReferringDeltas()) {
@@ -251,6 +251,7 @@ public class TemplateImportService {
         return newStudy;
     }
 
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
     private TemplateInternalReferenceIndex buildTemplateInternalReferenceIndex(List<Amendment> amendments) {
         TemplateInternalReferenceIndex index = new TemplateInternalReferenceIndex();
         for (Amendment amendment : amendments) {
@@ -339,6 +340,7 @@ public class TemplateImportService {
         }
     }
 
+    @SuppressWarnings( { "unchecked", "RawUseOfParameterizedType" })
     private void resolveDeltaNodesAndChangeChildren(Amendment amendment, Study study) {
         Map<String, Child> referencedChildren = new HashMap<String, Child>();
         for (Delta delta : amendment.getDeltas()) {

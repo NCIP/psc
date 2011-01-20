@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * @author Jalpa Patel
  */
@@ -30,10 +28,12 @@ public class TemplateInternalReferenceIndex {
         return index.get(key);
     }
 
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
     public void addPlanTreeNode(PlanTreeNode node) {
         addObject(node);
     }
 
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
     public void addDelta(Delta delta) {
         addObject(delta);
         if (delta.getNode().getGridId() != null) {
@@ -65,6 +65,7 @@ public class TemplateInternalReferenceIndex {
         return index;
     }
 
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
     public static class Entry {
         private Key key;
         private Object original;
@@ -88,8 +89,8 @@ public class TemplateInternalReferenceIndex {
         }
 
         public void addDeltaReference(Delta delta) {
-		    getReferringDeltas().add(delta);
-	    }
+            getReferringDeltas().add(delta);
+        }
 
         public List<Delta> getReferringDeltas() {
             return referringDeltas;
@@ -105,12 +106,20 @@ public class TemplateInternalReferenceIndex {
     }
 
     public static class Key {
-        public Class<? extends MutableDomainObject> kind;
-        public String id;
+        private Class<? extends MutableDomainObject> kind;
+        private String id;
 
         public Key(Class<? extends MutableDomainObject> kind, String id) {
             this.kind = kind;
             this.id = id;
+        }
+
+        public Class<? extends MutableDomainObject> getKind() {
+            return kind;
+        }
+
+        public String getId() {
+            return id;
         }
 
         @Override
