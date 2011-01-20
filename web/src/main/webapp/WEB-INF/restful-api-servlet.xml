@@ -239,6 +239,11 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
     </bean>
 
+    <bean name="/subjects/{subject-identifier}/schedules/undoable-actions"
+          id="undoableActionsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UndoableActionsResource">
+    </bean>
+
     <bean name="/subjects/{subject-identifier}/assignments/{assignment-identifier}/notifications"
           id="notificationsResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.NotificationsResource"
