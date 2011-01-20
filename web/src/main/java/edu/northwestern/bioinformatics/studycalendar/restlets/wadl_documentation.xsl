@@ -530,6 +530,7 @@
                 <xsl:apply-templates select="wadl:fault"/>
             </ul>
         </xsl:if>
+        <xsl:apply-templates select="wadl:doc"/>
     </xsl:template>
 
     <xsl:template match="wadl:representation|wadl:fault">

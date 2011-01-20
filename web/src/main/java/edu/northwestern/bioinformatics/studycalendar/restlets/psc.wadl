@@ -953,6 +953,46 @@
                     </response>
                </method>
             </resource>
+            <resource path="undoable-actions">
+                <doc>
+                    <html:p>The list of actions a user may undo for single subject</html:p>
+                </doc>
+                <method name="GET">
+                    <doc>
+                        <html:p>
+                            Retrieve current undoable action list for subject.
+                        </html:p>
+                        <html:div class="roles">
+                            Authorized to:
+                            <html:ul>
+                                <html:li>Study Subject Calendar Manager</html:li>
+                                <html:li>Study Team Administrator</html:li>
+                                <html:li>Data Reader</html:li>
+                            </html:ul>
+                        </html:div>
+                    </doc>
+                    <response>
+                        <representation mediaType="application/json" />
+                        <doc>
+<html:pre class="example">
+{
+  context: "${baseUri}/subjects/0000001/schedules",
+  undoable_actions: [
+    {
+      description: "Delayed 45 activities for Jo Carlson by 6 days",
+      context: "${baseUri}/subjects/0000001/schedules"
+      URI: "${baseUri}/user-actions/80460809-2e90-4ea5-ac29-ca23639bf460"
+      time: "2010-12-10 12:34:56.789" // UTC
+      action_type: "Delay"
+    },
+    // ...
+  ]
+}
+</html:pre>
+                        </doc>
+                    </response>
+               </method>
+            </resource>
             <resource path="assignments/{assignment-identifier}/notifications">
                 <doc>
                     <html:p>The list of current notifications for the study subject assignment for subject.</html:p>
