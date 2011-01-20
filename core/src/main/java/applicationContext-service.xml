@@ -72,6 +72,13 @@
          <property name="studySegmentDao" ref="studySegmentDao"/>
     </bean>
 
+    <bean id="userActionService"
+          class="edu.northwestern.bioinformatics.studycalendar.service.UserActionService">
+        <property name="auditEventDao" ref="auditEventDao"/>
+        <property name="userActionDao" ref="userActionDao"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+    </bean>
+
     <!-- the applicationContextPath property is set in the web module -->
     <bean id="workflowMessageFactory"
           class="edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory"/>

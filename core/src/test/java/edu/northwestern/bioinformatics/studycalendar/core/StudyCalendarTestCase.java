@@ -80,6 +80,18 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         return registerMockFor(forClass, methods.toArray(new Method[methods.size()]));
     }
 
+    protected <T> T registerDaoMockForNonStudyCalendarDao(Class<T> forClass) {
+        List<Method> methods = new LinkedList<Method>(Arrays.asList(forClass.getMethods()));
+        for (Iterator<Method> iterator = methods.iterator(); iterator.hasNext();) {
+            Method method = iterator.next();
+            if ("domainClass".equals(method.getName())) {
+                iterator.remove();
+            }
+        }
+        return registerMockFor(forClass, methods.toArray(new Method[methods.size()]));
+    }
+
+
     protected void replayMocks() {
         for (Object mock : mocks) EasyMock.replay(mock);
     }
