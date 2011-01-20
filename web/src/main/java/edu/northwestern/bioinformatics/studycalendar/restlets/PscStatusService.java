@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlParsingException;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
@@ -22,6 +23,8 @@ public class PscStatusService extends StatusService {
 
     @Override
     public Status getStatus(Throwable throwable, Request request, Response response) {
+        throwable = translate(throwable);
+
         if (throwable instanceof ResourceException) {
             ResourceException re = (ResourceException) throwable;
             if (re.getStatus().isClientError()) {
@@ -50,6 +53,20 @@ public class PscStatusService extends StatusService {
         } else {
             log.error("Uncaught exception in resource handling", throwable);
             return Status.SERVER_ERROR_INTERNAL;
+        }
+    }
+
+    /**
+     * For the most part, individual resources should handle throwing their own ResourceExceptions.
+     * However, for cross-cutting concerns (e.g., deserialization problems) it's reasonable to add
+     * another entry here.
+     */
+    private Throwable translate(Throwable throwable) {
+        if (throwable instanceof StudyCalendarXmlParsingException) {
+            return new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, throwable.getMessage(), throwable);
+        } else {
+            return throwable;
         }
     }
 

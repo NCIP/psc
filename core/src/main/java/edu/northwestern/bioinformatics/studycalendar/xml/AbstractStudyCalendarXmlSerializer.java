@@ -91,7 +91,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
             SAXReader saxReader = new SAXReader();
             document = saxReader.read(in);
         } catch (DocumentException de) {
-            throw new StudyCalendarSystemException("Could not read the XML for deserialization", de);
+            throw new StudyCalendarXmlParsingException(de);
         }
         return document;
     }

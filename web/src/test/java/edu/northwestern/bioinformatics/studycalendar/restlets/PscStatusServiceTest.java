@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlParsingException;
+import org.dom4j.DocumentException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -20,7 +22,7 @@ public class PscStatusServiceTest extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mockLog = registerMockFor(Logger.class);
+        mockLog = registerNiceMockFor(Logger.class);
 
         service = new PscStatusService();
         service.setLogger(mockLog);
@@ -78,11 +80,29 @@ public class PscStatusServiceTest extends RestletTestCase {
     }
 
     public void testGetStatusReturnsProvidedStatusForResourceExceptions() throws Exception {
-        /* expect */ mockLog.info((String) notNull());
         Status actual =
             doGetStatus(new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Never mind"));
         assertEquals(403, actual.getCode());
         assertEquals("Never mind", actual.getDescription());
+    }
+
+    public void testGetStatusLogsXmlParseExceptionsAsInfo() throws Exception {
+        /* expect */ mockLog.info(
+            "Bad Request (400) - Could not parse the provided XML: Missing an angle bracket somewhere.");
+
+        doGetStatus(new StudyCalendarXmlParsingException(
+            new DocumentException("Missing an angle bracket somewhere.")));
+    }
+
+    public void testGetStatusTreatsXmlParseExceptionsAsBadRequests() throws Exception {
+        Status actual =
+            doGetStatus(new StudyCalendarXmlParsingException(
+                new DocumentException("Missing an angle bracket somewhere.")));
+
+        assertEquals("Wrong code", 400, actual.getCode());
+        assertEquals("Wrong description",
+            "Could not parse the provided XML: Missing an angle bracket somewhere.",
+            actual.getDescription());
     }
 
     public void testGetStatusLogsOtherExceptionsAsErrors() throws Exception {
