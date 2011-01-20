@@ -1,21 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
-import gov.nih.nci.cabig.ctms.audit.domain.DataReference;
+import gov.nih.nci.cabig.ctms.audit.domain.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.join;
 
 /**
  * @author Jalpa Patel
@@ -66,6 +64,26 @@ public class AuditEventDao implements InitializingBean {
         setDatabaseType(determineDatabaseType());
     }
 
+    @SuppressWarnings("unchecked")
+    public List<AuditEvent> getAuditEventsByUserActionId(String userActionId) {
+        String[] query =  new String[] {
+                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "from Audit_Events where user_action_id = ?"
+        };
+        List<AuditEvent> events =  jdbcTemplate.query(join(query, ' '), new Object[] {userActionId}, new AuditEventRowMappper());
+        Collections.sort(events);
+        return events;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<AuditEvent> getAuditEventsWithLaterTimeStamp(String className, int objectId, Date time) {
+        String[] query =  new String[] {
+                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "from Audit_Events where class_name = ? and object_id = ? and time > ?"
+        };
+        return jdbcTemplate.query(join(query, ' '), new Object[] {className, objectId, time}, new AuditEventRowMappper());
+    }
+
     private String determineDatabaseType() {
         String databaseType = (String) jdbcTemplate.execute(new ConnectionCallback() {
             public Object doInConnection(Connection connection) throws SQLException, DataAccessException {
@@ -81,5 +99,27 @@ public class AuditEventDao implements InitializingBean {
 
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public class AuditEventRowMappper implements RowMapper {
+        public Object mapRow(ResultSet rs, int i) throws SQLException {
+            AuditEventRecordResultSetExtractor extractor = new AuditEventRecordResultSetExtractor();
+            return extractor.extractData(rs);
+        }
+    }
+
+    public class AuditEventRecordResultSetExtractor implements ResultSetExtractor {
+        public Object extractData(ResultSet rs) throws SQLException {
+            DataReference reference = new DataReference(rs.getString("class_name"), rs.getInt("object_id"));
+            AuditEvent event = new AuditEvent();
+            event.setReference(reference);
+            event.setOperation(Operation.valueOf(rs.getString("operation")));
+            event.getInfo().setUsername(rs.getString("user_name"));
+            event.getInfo().setIp(rs.getString("ip_address"));
+            event.getInfo().setTime(rs.getTimestamp("time"));
+            event.getInfo().setUrl(rs.getString("url"));
+            event.setUserActionId(rs.getString("user_action_id"));
+            return event;
+        }
     }
 }

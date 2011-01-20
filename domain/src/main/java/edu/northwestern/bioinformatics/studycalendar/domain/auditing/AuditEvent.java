@@ -1,10 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEvent;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
-import gov.nih.nci.cabig.ctms.audit.domain.Operation;
+import gov.nih.nci.cabig.ctms.audit.domain.*;
 import gov.nih.nci.cabig.ctms.audit.util.AuditUtil;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.EntityMode;
@@ -17,18 +14,23 @@ import javax.persistence.Transient;
 /**
  * @author Jalpa Patel
  */
-public class AuditEvent extends DataAuditEvent{
+public class AuditEvent extends DataAuditEvent implements Comparable<AuditEvent> {
     private static final EntityMode ENTITY_MODE = EntityMode.POJO;
     private static final String HIBERNATE_BACK_REF_STRING = "Backref";
     private volatile static ThreadLocal<UserAction> userAction = new ThreadLocal<UserAction>();
     private String userActionId;
+    private Operation operation;
+
+    public AuditEvent() {}
 
     public AuditEvent(Object entity, Operation operation, DataAuditInfo info) {
         super(entity, operation, info);
+        this.operation = operation;
     }
 
     public AuditEvent(Object entity, Operation operation, DataAuditInfo info, UserAction userAction) {
         super(entity, operation, info);
+        this.operation = operation;
         this.userActionId = userAction == null ? null : userAction.getGridId();
     }
 
@@ -46,6 +48,14 @@ public class AuditEvent extends DataAuditEvent{
 
     public void setUserActionId(String userActionId) {
         this.userActionId = userActionId;
+    }
+
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(Operation operation) {
+        this.operation = operation;
     }
 
     @Transient
@@ -110,5 +120,10 @@ public class AuditEvent extends DataAuditEvent{
         } else {
             return propertyValue.toString();
         }
+    }
+
+    public int compareTo(AuditEvent o) {
+        return ComparisonTools.nullSafeCompare(
+                o.getInfo().getTime(),this.getInfo().getTime());
     }
 }

@@ -7,9 +7,13 @@ import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
 
 import org.hibernate.type.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNegative;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
 
 /**
  * @author Jalpa Patel
@@ -19,6 +23,7 @@ public class AuditEventTest extends DomainTestCase {
     private final String STUDY_URL = "/psc/pages/newStudy";
     private final String NAME = "name";
     private final String ID = "id";
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -80,6 +85,16 @@ public class AuditEventTest extends DomainTestCase {
     public void testAppendEventValueIfPreviousAndCurrentStateAreEquals() throws Exception {
         ae0.appendEventValues(new StringType(), NAME, "testName", "testName");
         assertEquals("Event value should not be added when previous and current state are equal", 0, ae0.getValues().size());
+    }
+
+    public void testReverseChronologicalOrder() throws Exception {
+        AuditEvent ae1 = new AuditEvent(new Study(), Operation.UPDATE,
+                new DataAuditInfo("User", "10.10.10.10", sdf.parse("2010-08-17 10:40:58.361"), STUDY_URL));
+        AuditEvent ae2 = new AuditEvent(new Study(), Operation.UPDATE,
+                new DataAuditInfo("User", "10.10.10.10", sdf.parse("2010-08-17 10:41:58.361"), STUDY_URL));
+
+        assertPositive(ae1.compareTo(ae2));
+        assertNegative(ae2.compareTo(ae1));
     }
 
     //Test Helper methods
