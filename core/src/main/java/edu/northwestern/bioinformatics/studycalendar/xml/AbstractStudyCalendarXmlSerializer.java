@@ -79,7 +79,13 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         return readElement(document.getRootElement());
     }
 
-    public Document deserializeDocument(InputStream in) {
+    public abstract Element createElement(R object);
+
+    public abstract R readElement(Element element);
+
+    //// Helper Methods
+
+    protected Document deserializeDocument(InputStream in) {
         Document document;
         try {
             SAXReader saxReader = new SAXReader();
@@ -90,11 +96,6 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         return document;
     }
 
-    public abstract Element createElement(R object);
-
-    public abstract R readElement(Element element);
-
-    //// Helper Methods
     protected Element element(String elementName) {
         // Using QName is the only way to attach the namespace to the element
         QName qNode = DocumentHelper.createQName(elementName, DEFAULT_NAMESPACE);
