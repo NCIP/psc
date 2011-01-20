@@ -1,25 +1,52 @@
 package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.service.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-
-import java.io.InputStream;
-import java.util.*;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoTools;
+import edu.northwestern.bioinformatics.studycalendar.dao.LocalGridIdentifierCreator;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudyDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.Entry;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.Key;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
-import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jalpa Patel
@@ -65,9 +92,7 @@ public class TemplateImportService {
     }
 
     private Study loadStudyFromXml(InputStream stream) {
-        Document document = studyXmlSerializer.deserializeDocument(stream);
-        Element element = document.getRootElement();
-        return studyXmlSerializer.readElement(element, new Study());
+        return studyXmlSerializer.readDocument(stream);
     }
 
     private Study beforeSave(Study newStudy, Study oldStudy) {

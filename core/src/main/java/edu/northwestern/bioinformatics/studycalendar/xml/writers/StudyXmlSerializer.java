@@ -62,18 +62,14 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return elt;
     }
 
+    @Override
     @SuppressWarnings({"unchecked"})
-    public Study readElement(Element element){
-        throw new UnsupportedOperationException("Need to pass the base study");
-    }
-
-
-    @SuppressWarnings({"unchecked"})
-    public Study readElement(Element element, Study study) {
+    public Study readElement(Element element) {
         validateElement(element);
 
         String key = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(element);
 
+        Study study = new Study();
         study.setAssignedIdentifier(key);
         String provider =  STUDY_PROVIDER.from(element);
         if (provider != null && provider.length() > 0) {
