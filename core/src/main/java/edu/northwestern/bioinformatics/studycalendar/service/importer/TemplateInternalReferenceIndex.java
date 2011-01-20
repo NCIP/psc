@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -105,10 +105,10 @@ public class TemplateInternalReferenceIndex {
     }
 
     public static class Key {
-        public Class<?> kind;
+        public Class<? extends MutableDomainObject> kind;
         public String id;
 
-        public Key(Class<?> kind, String id) {
+        public Key(Class<? extends MutableDomainObject> kind, String id) {
             this.kind = kind;
             this.id = id;
         }

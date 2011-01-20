@@ -7,31 +7,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.List;
-
 /**
  * @author Jalpa Patel
  */
-public class GridIdentifierResolver<T extends MutableDomainObject>{
+public class GridIdentifierResolver {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private DaoFinder daoFinder;
 
-    public Boolean resolveGridId(Class<T> klass, String gridId) {
+    public <T extends MutableDomainObject> Boolean resolveGridId(Class<T> klass, String gridId) {
         StudyCalendarMutableDomainObjectDao<T> dao
             = (StudyCalendarMutableDomainObjectDao<T>) daoFinder.findDao(klass);
-        List<T> nodes = dao.getAll();
-        for (T node: nodes) {
-            if (gridId != null && gridId.equals(node.getGridId())) {
-                log.debug("Node {} with grid identifier {} already exists in system", klass, gridId);
-                return true;
-            }
+        T existing = dao.getByGridId(gridId);
+        if (existing == null) {
+            log.debug("Node {} with grid identifier {} doesn't exists in system", klass, gridId);
+            return false;
+        } else {
+            log.debug("Node {} with grid identifier {} already exists in system", klass, gridId);
+            return true;
         }
-        log.debug("Node {} with grid identifier {} doesn't exists in system", klass, gridId);
-        return false;
-    }
-
-    public DaoFinder getDaoFinder() {
-        return daoFinder;
     }
 
     @Required
