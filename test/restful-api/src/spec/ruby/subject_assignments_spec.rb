@@ -100,96 +100,6 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
       response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
     end
 
-    it "allows creation of a new subject with gender M" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "M")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Male"
-    end
-
-    it "allows creation of a new subject with gender MALE" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "MALE")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Male"
-    end
-
-    it "allows creation of a new subject with gender male" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "male")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Male"
-    end
-
-    it "allows creation of a new subject with gender M" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "F")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Female"
-    end
-
-    it "allows creation of a new subject with gender MALE" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "FEMALE")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Female"
-    end
-
-    it "allows creation of a new subject with gender male" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "female")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      response.status_code.should == 201
-      response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-      application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == "Female"
-    end
-
     it "fails creation of a new subject with wrong gender" do
       @subject_registration_xml = psc_xml(
         "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
@@ -205,6 +115,32 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
       response.entity.should include("The specified gender 'female too' is invalid: Please check the spelling")
     end
 
+    [%w(Male Male),
+     %w(MALE Male),
+     %w(M Male),
+     %w(mAle Male),
+     %w(Female Female),
+     %w(F Female),
+     %w(FEMALE Female),
+     %w(unknown Unknown),
+     %w(Unknown Unknown), ['NOT REPORTED', 'Not Reported']
+     ].each do |valid_gender, canonical_gender|
+      it "allows the creation of a new subject with gender '#{valid_gender}' " do
+        # create XML using valid_gender, do POST, check that it was successful
+        @subject_registration_xml = psc_xml(
+              "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
+              'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
+        ) { |subject|
+          subject.tag!('subject',
+              'first-name' => "Test", 'last-name' => "GenderM",
+              'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> valid_gender)
+        }
+        post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+        response.status_code.should == 201
+        response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
+        application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == canonical_gender
+      end
+    end
   end
 
 end

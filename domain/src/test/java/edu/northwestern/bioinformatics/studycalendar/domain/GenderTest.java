@@ -49,6 +49,7 @@ public class GenderTest extends TestCase {
         assertSame(Gender.MALE,Gender.getByCode("M"));
         assertSame(Gender.MALE,Gender.getByCode("male"));
         assertSame(Gender.MALE, Gender.getByCode("MALE"));
+        assertSame(Gender.MALE, Gender.getByCode("MaLe"));
     }
 
     public void testGetByVariationsOfFemale() throws Exception {
@@ -56,6 +57,7 @@ public class GenderTest extends TestCase {
         assertSame(Gender.FEMALE,Gender.getByCode("F"));
         assertSame(Gender.FEMALE,Gender.getByCode("female"));
         assertSame(Gender.FEMALE,Gender.getByCode("FEMALE"));
+        assertSame(Gender.FEMALE,Gender.getByCode("FeMaLe"));
     }
 
     public void testWrongGender() throws Exception {

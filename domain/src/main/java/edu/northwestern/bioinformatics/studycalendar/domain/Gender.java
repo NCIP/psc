@@ -15,10 +15,10 @@ import java.util.TreeMap;
  */
 public enum Gender implements CodedEnum<String> {
 
-    NOT_REPORTED("Not Reported", new String[]{}),
-    UNKNOWN("Unknown", new String[]{}),
-    FEMALE("Female", new String[]{"FEMALE", "F", "female"}),
-    MALE("Male", new String[]{"MALE", "M", "male"});
+    NOT_REPORTED("Not Reported", new String[]{"not reported"}),
+    UNKNOWN("Unknown", new String[]{"unknown"}),
+    FEMALE("Female", new String[]{"f", "female"}),
+    MALE("Male", new String[]{"m", "male"});
 
     private String displayName;
     private String[] variations;
@@ -71,7 +71,7 @@ public enum Gender implements CodedEnum<String> {
         for (String key : keyVariations.keySet()) {
             String[] variations = keyVariations.get(key);
             for (String variation : variations) {
-                if (variation.equals(code)) {
+                if (variation.equals(code.toLowerCase())) {
                     return key;
                 }
             }
