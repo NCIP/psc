@@ -56,6 +56,14 @@ public class StudyCalendarRuntimeExceptionTest extends TestCase {
         assertNull(actual.getMessage());
     }
 
+    public void testCauseOnlySubclassWorks() throws Exception {
+        Exception cause = new Exception("cause");
+        PscTestExceptionWithOnlyCauseConstructor actual =
+            new PscTestExceptionWithOnlyCauseConstructor(cause);
+        assertEquals("I always know the message for this one", actual.getMessage());
+        assertSame("Wrong cause", cause, actual.getCause());
+    }
+
     private static class PscTestException extends StudyCalendarRuntimeException {
         public PscTestException(String message, Object... messageParameters) {
             super(message, messageParameters);
@@ -67,6 +75,12 @@ public class StudyCalendarRuntimeExceptionTest extends TestCase {
             String message, Throwable cause, Object... messageParameters
         ) {
             super(message, cause, messageParameters);
+        }
+    }
+
+    private static class PscTestExceptionWithOnlyCauseConstructor extends StudyCalendarRuntimeException {
+        private PscTestExceptionWithOnlyCauseConstructor(Throwable cause) {
+            super("I always know the message for this one", cause);
         }
     }
 }

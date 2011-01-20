@@ -30,7 +30,7 @@ public abstract class StudyCalendarRuntimeException extends RuntimeException {
             } else {
                 System.arraycopy(messageParameters, 0, without, 0, without.length);
             }
-            if (without[0] instanceof Object[]) {
+            if (without.length > 0 && without[0] instanceof Object[]) {
                 return (Object[]) without[0];
             } else {
                 return without;
