@@ -96,7 +96,12 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         HttpServletRequest request, String paramName, GridIdentifiableDao<T> dao
     ) throws ServletRequestBindingException {
         DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
-        editor.setAsText(ServletRequestUtils.getStringParameter(request, paramName));
+        String param = ServletRequestUtils.getStringParameter(request, paramName);
+        try{
+            editor.setAsText(param);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
         return (T) editor.getValue();
     }
 
