@@ -126,7 +126,9 @@
                 <div class="row ${commons:parity(count)}">
                     <div class="label">Links</div>
                     <c:forEach items="${uriMap}" var="uri" varStatus="keyStatus">
-                         <div class="value"><a href="<c:url value="${uri.value}"/>">${uri.key}</a></div>
+                         <div class="value">
+                             <tags:externalLink url="${uri.value}" appShortName="activity">${uri.key}</tags:externalLink>
+                         </div>
                     </c:forEach>
                 </div>
             <c:set var="count" value="${count + 1}"/>
