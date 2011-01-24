@@ -35,10 +35,21 @@ public class NextScheduledStudySegmentXmlSerializerTest extends StudyCalendarTes
         assertEquals("Wrong study segment", segment, actual.getStudySegment());
     }
 
+    public void testReadElementIgnoresStartDay() {
+        Element elt = createTestElement();
+        elt.addAttribute("start-day", "5");
+
+        replayMocks();
+
+        NextScheduledStudySegment actual = serializer.readElement(elt);
+        verifyMocks();
+
+        assertNotNull("Failed reading study segment", actual);
+    }
+
     ////// Helper methods
     private Element createTestElement() {
         Element elt = new BaseElement("next-scheduled-study-segment");
-        elt.addAttribute("start-day", "5");
         elt.addAttribute("start-date", "2008-01-01");
         elt.addAttribute("study-segment-id", "segment-grid0");
         elt.addAttribute("mode", "per-protocol");

@@ -7,11 +7,10 @@ psc.subject.RealScheduleNextSegment = (function () {
     var studySegmentId = selectedElt.attr('studySegment');
     var studyId = selectedElt.attr('study');
     var assignmentId = selectedElt.attr('assignment');
-    var startDay = selectedElt.attr('startday');
     var immediateOrPerProtocol = getModeValue().replace("_", "-").toLowerCase();
     var startDate = psc.tools.Dates.displayDateToApiDate($F('start-date-input'));
     var params = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+'" start-date="'+startDate+
-                 '" mode="'+immediateOrPerProtocol+'" start-day="'+startDay+'"/>';
+                 '" mode="'+immediateOrPerProtocol+'"/>';
     var url = psc.tools.Uris.relative('/api/v1/studies/'+psc.tools.Uris.escapePathElement(studyId)+
                                       '/schedules/'+psc.tools.Uris.escapePathElement(assignmentId));
     var segmentName = selectedElt.attr('segmentName');

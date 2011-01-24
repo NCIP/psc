@@ -66,7 +66,7 @@ describe "/subjects/{subject-identifier}/schedules/{assignment-identifier}" do
   describe "POST" do
     before do
       #xml request to add the study-segment next schedule
-      @next_assignment1_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27",
+      @next_assignment1_xml = psc_xml("next-scheduled-study-segment", 'start-date' => "2008-12-27",
       'study-segment-id' => "segment2", 'mode' => "immediate")
       @hibernate.interrupt_session
     end
@@ -93,7 +93,7 @@ describe "/subjects/{subject-identifier}/schedules/{assignment-identifier}" do
       @study2.amendment = @amendment2
       application_context['studyService'].save(@study2)
 
-      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27",
+      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-date' => "2008-12-27",
       'study-segment-id' => "s1", 'mode' => "immediate")
       post "/studies/NU480/schedules/assignment1", @next_assignment2_xml, :as => :juno
       response.status_code.should == 400
@@ -101,7 +101,7 @@ describe "/subjects/{subject-identifier}/schedules/{assignment-identifier}" do
     end
 
     it "gives 400 if studySegment with gridId doesn't exists in system" do
-      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27",
+      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-date' => "2008-12-27",
       'study-segment-id' => "unknownSegment", 'mode' => "immediate")
       post "/studies/NU480/schedules/assignment1", @next_assignment2_xml, :as => :juno
       response.status_code.should == 400
