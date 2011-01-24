@@ -222,6 +222,7 @@
         <property name="activityTypeDao" ref="activityTypeDao"/>
         <property name="pscUserService" ref="pscUserService"/>
         <property name="controllerTools" ref="controllerTools"/>
+        <property name="configuration" ref="configuration"/>
     </bean>
 
     <bean name="/dashboard/dismiss-notification"

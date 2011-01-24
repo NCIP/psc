@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -28,6 +29,7 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
     private StudyDao studyDao;
     private PscUserService pscUserService;
     private ActivityTypeDao activityTypeDao;
+    private Configuration configuration;
 
     @Override
     public Collection<ResourceAuthorization> authorizations(
@@ -54,6 +56,8 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
     ) throws Exception {
         ModelAndView mv = new ModelAndView("dashboard/display", errors.getModel());
         mv.addObject("activityTypes", activityTypeDao.getAll());
+        mv.addObject("initialUpcomingDays",
+            configuration.get(Configuration.DASHBOARD_DEFAULT_UPCOMING_WINDOW));
         return mv;
     }
 
@@ -77,5 +81,10 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
     @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

@@ -13,6 +13,7 @@
              type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser"/>
 <jsp:useBean id="configuration" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
+<jsp:useBean id="initialUpcomingDays" scope="request" type="java.lang.Integer"/>
 
 <html>
 <head>
@@ -153,7 +154,7 @@
 <laf:box title="Upcoming activities" id="upcoming">
     <laf:division>
         <p><label>
-            Show activities for the next <input id="upcoming-days" size="3" value="7"/> days.
+            Show activities for the next <input id="upcoming-days" size="3" value="${initialUpcomingDays}"/> days.
         </label></p>
         <p>
             <c:choose>

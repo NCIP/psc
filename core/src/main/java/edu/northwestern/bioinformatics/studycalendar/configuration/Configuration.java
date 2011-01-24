@@ -73,7 +73,9 @@ public class Configuration extends DatabaseBackedConfiguration {
 
     public static final ConfigurationProperty<String>
         DISPLAY_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
-    
+    public static final ConfigurationProperty<Integer>
+        DASHBOARD_DEFAULT_UPCOMING_WINDOW = PROPERTIES.add(new DefaultConfigurationProperty.Int("dashboardDefaultUpcomingWindow"));
+
     ////// PSC-SPECIFIC LOGIC
 
     public boolean getExternalAppsConfigured() {
