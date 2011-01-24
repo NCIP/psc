@@ -397,7 +397,6 @@
 
     <xsd:complexType name="NextScheduledStudySegment">
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
-        <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
         <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>
         <xsd:attribute name="mode" use="required">
             <xsd:simpleType>

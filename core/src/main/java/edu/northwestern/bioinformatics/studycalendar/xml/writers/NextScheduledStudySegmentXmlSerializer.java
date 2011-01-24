@@ -26,13 +26,6 @@ public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalenda
         if (!XsdElement.NEXT_SCHEDULED_STUDY_SEGMENT.xmlName().equals(elt.getName())) {
             throw new StudyCalendarValidationException("The element must be a <next-scheduled-study-segment> element");
         }
-        
-        Integer startDay;
-        try {
-            startDay = Integer.valueOf(NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY.from(elt));
-        } catch(NumberFormatException nfe) {
-            throw new StudyCalendarValidationException("The next scheduled study segment start day must be an integer value");
-        }
 
         Date startDate = NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE.fromDate(elt);
         String segmentId = NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID.from(elt);
@@ -49,7 +42,6 @@ public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalenda
         }
 
         NextScheduledStudySegment scheduled = new NextScheduledStudySegment();
-        scheduled.setStartDay(startDay);
         scheduled.setStartDate(startDate);
         scheduled.setStudySegment(segment);
         scheduled.setMode(mode);

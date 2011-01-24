@@ -98,7 +98,6 @@ public enum XsdAttribute {
     UPDATED_DATE("updated-date"),
 
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE("start-date"),
-    NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY("start-day"),
     NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID("study-segment-id"),
     NEXT_STUDY_SEGMENT_SCHEDULE_MODE("mode"),
 

@@ -30,7 +30,6 @@ public class NextScheduledStudySegmentXmlSerializerTest extends StudyCalendarTes
         NextScheduledStudySegment actual = serializer.readElement(createTestElement());
         verifyMocks();
 
-        assertEquals("Wrong start day", 5, (int) actual.getStartDay());
         assertSameDay("Wrong start date", createDate(2008, Calendar.JANUARY, 1), actual.getStartDate());
         assertSame("Wrong next study segment mode", NextStudySegmentMode.PER_PROTOCOL, actual.getMode());
         assertEquals("Wrong study segment", segment, actual.getStudySegment());

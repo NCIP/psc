@@ -279,7 +279,6 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     
     private NextScheduledStudySegment createNextScheduledStudySegment() {
         NextScheduledStudySegment scheduledSegment = new NextScheduledStudySegment();
-        scheduledSegment.setStartDay(2);
         scheduledSegment.setStartDate(DateTools.createDate(2010, Calendar.APRIL, 24));
         scheduledSegment.setStudySegment(setGridId("segment-grid0", new StudySegment()));
         scheduledSegment.setMode(NextStudySegmentMode.PER_PROTOCOL);

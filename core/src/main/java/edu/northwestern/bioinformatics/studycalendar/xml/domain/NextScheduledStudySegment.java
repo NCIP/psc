@@ -10,7 +10,6 @@ import java.util.Date;
  */
 public class NextScheduledStudySegment {
     Date startDate;
-    Integer startDay;
     StudySegment studySegment;
     NextStudySegmentMode mode;
 
@@ -20,14 +19,6 @@ public class NextScheduledStudySegment {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
-    }
-
-    public Integer getStartDay() {
-        return startDay;
-    }
-
-    public void setStartDay(Integer startDay) {
-        this.startDay = startDay;
     }
 
     public StudySegment getStudySegment() {
