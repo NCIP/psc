@@ -7,6 +7,7 @@
 <html>
 <head>
     <tags:stylesheetLink name="admin"/>
+    <title>Global configuration</title>
 </head>
 <body>
 <laf:box title="Configure application">

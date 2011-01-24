@@ -1,6 +1,9 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<jsp:useBean id="configuration" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
+
 <laf:header>
     <jsp:attribute name="logoText">${configuration.map.logoAltText}</jsp:attribute>
     <jsp:attribute name="logoImageUrl"><c:url value="${configuration.map.logoImageUrl}"/></jsp:attribute>
@@ -15,7 +18,6 @@
             <c:set var="ctmsUrl" value="${configuration.map.ctmsUrl}"/>
             <c:if test="${not empty ctmsUrl}">
                 return to <tags:externalLink url="${ctmsUrl}" appShortName="ctms">${ctmsName}</tags:externalLink> |
-                <%--return to <a href="<c:url value="${ctmsUrl}"/>">${ctmsName}</a> |--%>
             </c:if>
         </c:if>
     </jsp:attribute>

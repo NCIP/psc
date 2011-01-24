@@ -11,6 +11,9 @@
 <tags:escapedUrl var="collectionResource" value="api~v1~subjects~${subject.gridId}~schedules~activities"/>
 
 <jsp:useBean id="schedulePreview" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="configuration"
+             type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"
+             scope="request"/>
 
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 

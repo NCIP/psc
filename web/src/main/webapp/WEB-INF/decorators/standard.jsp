@@ -3,6 +3,12 @@
 <%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
+
+<jsp:useBean id="configuration" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
+<jsp:useBean id="buildInfo" scope="request"
+             type="gov.nih.nci.cabig.ctms.tools.BuildInfo"/>
+
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

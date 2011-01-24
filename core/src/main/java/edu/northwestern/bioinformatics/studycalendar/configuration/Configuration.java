@@ -19,46 +19,45 @@ import java.util.Map;
  */
 public class Configuration extends DatabaseBackedConfiguration {
     public static final DefaultConfigurationProperties PROPERTIES
-            = new DefaultConfigurationProperties(new ClassPathResource("details.properties", Configuration.class));
+        = new DefaultConfigurationProperties(new ClassPathResource("details.properties", Configuration.class));
 
     public static final ConfigurationProperty<String>
-            DEPLOYMENT_NAME = PROPERTIES.add(new DefaultConfigurationProperty.Text("deploymentName"));
+        DEPLOYMENT_NAME = PROPERTIES.add(new DefaultConfigurationProperty.Text("deploymentName"));
     public static final ConfigurationProperty<String>
-            MAIL_REPLY_TO = PROPERTIES.add(new DefaultConfigurationProperty.Text("replyTo"));
+        MAIL_REPLY_TO = PROPERTIES.add(new DefaultConfigurationProperty.Text("replyTo"));
     public static final ConfigurationProperty<List<String>>
-            MAIL_EXCEPTIONS_TO = PROPERTIES.add(new DefaultConfigurationProperty.Csv("mailExceptionsTo"));
+        MAIL_EXCEPTIONS_TO = PROPERTIES.add(new DefaultConfigurationProperty.Csv("mailExceptionsTo"));
     public static final ConfigurationProperty<String>
-            SMTP_HOST = PROPERTIES.add(new DefaultConfigurationProperty.Text("smtpHost"));
+        SMTP_HOST = PROPERTIES.add(new DefaultConfigurationProperty.Text("smtpHost"));
     public static final ConfigurationProperty<Integer>
-            SMTP_PORT = PROPERTIES.add(new DefaultConfigurationProperty.Int("smtpPort"));
+        SMTP_PORT = PROPERTIES.add(new DefaultConfigurationProperty.Int("smtpPort"));
     public static final ConfigurationProperty<Boolean>
-            SHOW_DEBUG_INFORMATION = PROPERTIES.add(new DefaultConfigurationProperty.Bool("showDebugInformation"));
+        SHOW_DEBUG_INFORMATION = PROPERTIES.add(new DefaultConfigurationProperty.Bool("showDebugInformation"));
 
     public static final ConfigurationProperty<Template>
-            CAAERS_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("caAERSBaseUrl"));
+        CAAERS_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("caAERSBaseUrl"));
     public static final ConfigurationProperty<Template>
-            SMOKE_SERVICE_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("smokeServiceBaseUrl"));
+        SMOKE_SERVICE_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("smokeServiceBaseUrl"));
     public static final ConfigurationProperty<Template>
-            LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
-
-    public static final ConfigurationProperty<Template>
-            PATIENT_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("patientPageUrl"));
-    public static final ConfigurationProperty<String>
-            CTMS_NAME = PROPERTIES.add(new DefaultConfigurationProperty.Text("ctmsName"));
-    public static final ConfigurationProperty<String>
-            BASE_CTMS_URL = PROPERTIES.add(new DefaultConfigurationProperty.Text("ctmsUrl"));
-    public static final ConfigurationProperty<String>
-            LOGO_IMAGE_URL = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoImageUrl"));
-    public static final ConfigurationProperty<String>
-                LOGO_DIMENSIONS_WIDTH = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsWidth"));
-    public static final ConfigurationProperty<String>
-                LOGO_DIMENSIONS_HEIGHT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsHeight"));
-
+        LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
 
     public static final ConfigurationProperty<String>
-            LOGO_ALT_TEXT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoAltText"));
+        CTMS_NAME = PROPERTIES.add(new DefaultConfigurationProperty.Text("ctmsName"));
     public static final ConfigurationProperty<Template>
-            STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
+        PATIENT_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("patientPageUrl"));
+    public static final ConfigurationProperty<String>
+        BASE_CTMS_URL = PROPERTIES.add(new DefaultConfigurationProperty.Text("ctmsUrl"));
+    public static final ConfigurationProperty<Template>
+        STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
+
+    public static final ConfigurationProperty<String>
+        LOGO_IMAGE_URL = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoImageUrl"));
+    public static final ConfigurationProperty<String>
+        LOGO_DIMENSIONS_WIDTH = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsWidth"));
+    public static final ConfigurationProperty<String>
+        LOGO_DIMENSIONS_HEIGHT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoDimensionsHeight"));
+    public static final ConfigurationProperty<String>
+        LOGO_ALT_TEXT = PROPERTIES.add(new DefaultConfigurationProperty.Text("logoAltText"));
 
     // use target?
     public static final ConfigurationProperty<Boolean>
@@ -68,14 +67,15 @@ public class Configuration extends DatabaseBackedConfiguration {
         APP_LINKS_IN_NEW_WINDOWS = PROPERTIES.add(new DefaultConfigurationProperty.Bool("applicationLinksInNewWindows"));
 
     public static final ConfigurationProperty<Boolean>
-            ENABLE_ASSIGNING_SUBJECT = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableAssigningSubject"));
+        ENABLE_ASSIGNING_SUBJECT = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableAssigningSubject"));
     public static final ConfigurationProperty<Boolean>
-            ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableCreatingTemplate"));
+        ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableCreatingTemplate"));
 
     public static final ConfigurationProperty<String>
-            DISPLAY_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
+        DISPLAY_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
     
     ////// PSC-SPECIFIC LOGIC
+
     public boolean getExternalAppsConfigured() {
         return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null || get(PATIENT_PAGE_URL) != null;
     }
@@ -93,6 +93,7 @@ public class Configuration extends DatabaseBackedConfiguration {
         return PROPERTIES;
     }
 
+    @Override
     protected Class<? extends ConfigurationEntry> getConfigurationEntryClass() {
         return PscConfigurationEntry.class;
     }
