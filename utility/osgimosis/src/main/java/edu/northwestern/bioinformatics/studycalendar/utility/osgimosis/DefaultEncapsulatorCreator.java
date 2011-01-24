@@ -109,6 +109,9 @@ public class DefaultEncapsulatorCreator {
 
     private boolean proxyConstructable(Class<?> clazz) {
         if (proxyConstructorParams == null || proxyConstructorParams.get(clazz.getName()) == null) {
+            if (Modifier.isPrivate(clazz.getModifiers())) {
+                return false;
+            }
             try {
                 Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
                 return !Modifier.isPrivate(defaultConstructor.getModifiers());

@@ -109,6 +109,15 @@ public class MembraneTest extends OsgimosisTestCase {
         assertTrue("Should match interface", Person.class.isAssignableFrom(nearClass));
     }
     
+    public void testBridgedObjectDoesNotExtendClassIfPrivate() throws Exception {
+        Class<?> farClass = loaderA.loadClass(DefaultPerson.class.getName());
+        Object farInstance = farClass.getMethod("privatePerson").invoke(null);
+
+        Class<?> nearClass = membrane.farToNear(farInstance).getClass();
+        assertTrue("Should match non-private superclass",
+            DefaultPerson.class.isAssignableFrom(nearClass));
+    }
+
     public void testBridgedObjectIsOfConcreteTypeWhenConstructorParametersAreProvided() throws Exception {
         Class<?> farClass = loaderA.loadClass(NonDefaultPerson.class.getName());
         Object farInstance = farClass.getConstructor(String.class).newInstance("Expected");

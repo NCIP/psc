@@ -14,6 +14,11 @@ public class DefaultPerson implements Person {
         setKind(kind);
     }
 
+    @SuppressWarnings( { "UnusedDeclaration" }) // used by reflection only
+    public static Person privatePerson() {
+        return new PrivatePerson();
+    }
+
     public String getName() {
         return name;
     }
@@ -62,5 +67,9 @@ public class DefaultPerson implements Person {
     @Override
     public String toString() {
         return new StringBuilder().append(getName()).append(" the ").append(getKind()).toString();
+    }
+
+    private static class PrivatePerson extends DefaultPerson {
+        public PrivatePerson() { }
     }
 }
