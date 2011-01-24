@@ -7,7 +7,7 @@
 <%@attribute name="subjectAssignment"  type="edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment" %>
 <c:set var="href">
     <c:choose>
-        <c:when test="${not empty url}">${url}</c:when>
+        <c:when test="${not empty url}"><c:url value="${url}"/></c:when>
         <c:when test="${not empty subjectAssignment}"><tags:urlFromTemplate subjectAssignment="${subjectAssignment}" property="${urlTemplateProperty}"/></c:when>
         <c:when test="${not empty urlTemplateProperty}"><tags:urlFromTemplate property="${urlTemplateProperty}"/></c:when>
         <c:otherwise>
@@ -15,7 +15,7 @@
         </c:otherwise>
     </c:choose>
 </c:set>
-<a href="<c:url value="${href}"/>"
+<a href="${href}"
     <c:if test="${not empty cssClass}">class="${cssClass}"</c:if>
     <c:if test="${configuration.map.applicationLinksInAnotherWindow}">target="${configuration.map.applicationLinksInNewWindows ? '_blank' : appShortName}"</c:if>
     ><jsp:doBody/></a>
