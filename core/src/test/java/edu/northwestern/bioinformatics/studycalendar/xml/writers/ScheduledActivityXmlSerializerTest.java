@@ -3,9 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
@@ -41,9 +40,9 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
 
         PlannedActivity plannedActivity = setGridId("planned-activity-grid0", new PlannedActivity());
 
-        prevState0 = new Scheduled();
-        prevState1 = new Canceled();
-        state = new Scheduled();
+        prevState0 = ScheduledActivityMode.SCHEDULED.createStateInstance();
+        prevState1 = ScheduledActivityMode.CANCELED.createStateInstance();
+        state = ScheduledActivityMode.SCHEDULED.createStateInstance();
 
         activity = setGridId("activity-grid0", new ScheduledActivity());
         activity.setIdealDate(DateUtils.createDate(2008, Calendar.JANUARY, 15));

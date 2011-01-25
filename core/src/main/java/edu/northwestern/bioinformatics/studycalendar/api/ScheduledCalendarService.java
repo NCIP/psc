@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.api;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 
 import java.util.Collection;
 import java.util.Date;
@@ -61,9 +61,6 @@ public interface ScheduledCalendarService {
      * @param event
      * @param newState
      * @return The same event, updated into the new state
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled
      */
     ScheduledActivity changeEventState(ScheduledActivity event, ScheduledActivityState newState);
 

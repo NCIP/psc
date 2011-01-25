@@ -38,7 +38,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
@@ -105,8 +104,8 @@ public class StudyService {
                 if (upcomingScheduledActivity != null) {
                     ScheduledActivity reconsentEvent = new ScheduledActivity();
                     reconsentEvent.setIdealDate(upcomingScheduledActivity.getActualDate());
-                    reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledActivity
-                        .getActualDate()));
+                    reconsentEvent.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(
+                        upcomingScheduledActivity.getActualDate(), "Created From Reconsent"));
                     reconsentEvent.setDetails(details);
                     reconsentEvent.setActivity(reconsent);
                     reconsentEvent.setSourceAmendment(study.getAmendment());

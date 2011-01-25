@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
@@ -84,27 +85,27 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
 
     ////// Helper Methods
     private ScheduledActivityState missed() {
-        return setBaseAttributes(new Missed());
+        return setBaseAttributes(ScheduledActivityMode.MISSED.createStateInstance());
     }
 
     private ScheduledActivityState scheduled() {
-        return setDateAttributes(new Scheduled());
+        return setDateAttributes(ScheduledActivityMode.SCHEDULED.createStateInstance());
     }
 
     private ScheduledActivityState occurred() {
-        return setDateAttributes(new Occurred());
+        return setDateAttributes(ScheduledActivityMode.OCCURRED.createStateInstance());
     }
 
     private ScheduledActivityState canceled() {
-        return setBaseAttributes(new Canceled());
+        return setBaseAttributes(ScheduledActivityMode.CANCELED.createStateInstance());
     }
 
     private ScheduledActivityState conditional() {
-        return setDateAttributes(new Conditional());
+        return setDateAttributes(ScheduledActivityMode.CONDITIONAL.createStateInstance());
     }
 
     private ScheduledActivityState notApplicable() {
-        return setBaseAttributes(new NotApplicable());
+        return setBaseAttributes(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance());
     }
 
 

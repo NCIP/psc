@@ -2,11 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import junit.framework.TestCase;
 import org.restlet.representation.Representation;
@@ -35,7 +35,7 @@ public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
 
         Site site = Fixtures.createSite("Site for whatever study");
         Study study = createNamedInstance("Whatever Study", Study.class);
-        ScheduledActivityState saState = new Scheduled();
+        ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
 
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);

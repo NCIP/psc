@@ -11,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegmen
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.easymock.classextension.EasyMock;
 
@@ -119,7 +118,7 @@ public class SubjectServicePopulationTest extends StudyCalendarTestCase {
 
     public void testUpdatePopulationsRemoveNotOutstanding() throws Exception {
         ScheduledActivity soleActivity = scheduledSegment().getActivities().get(0);
-        soleActivity.changeState(new Occurred("Just testing", new Date()));
+        soleActivity.changeState(ScheduledActivityMode.OCCURRED.createStateInstance(new Date(), "Just testing"));
 
         replayMocks();
         service.updatePopulations(ladyPatient, Collections.<Population>emptySet());

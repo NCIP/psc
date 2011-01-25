@@ -1,12 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
 
@@ -47,23 +40,23 @@ public class ScheduledActivityModeTest extends TestCase {
     }
 
     public void testCreateStateInstance() throws Exception {
-        assertCreatedInstance(SCHEDULED, Scheduled.class);
-        assertCreatedInstance(CONDITIONAL, Conditional.class);
-        assertCreatedInstance(NOT_APPLICABLE, NotApplicable.class);
-        assertCreatedInstance(OCCURRED, Occurred.class);
-        assertCreatedInstance(CANCELED, Canceled.class);
-        assertCreatedInstance(MISSED, Missed.class);
+        assertCreatedInstance(SCHEDULED);
+        assertCreatedInstance(CONDITIONAL);
+        assertCreatedInstance(NOT_APPLICABLE);
+        assertCreatedInstance(OCCURRED);
+        assertCreatedInstance(CANCELED);
+        assertCreatedInstance(MISSED);
     }
 
-    private void assertCreatedInstance(ScheduledActivityMode<?> mode, Class<?> expectedClass) {
-        assertTrue("Wrong class created for " + mode,
-            expectedClass.isAssignableFrom(mode.createStateInstance().getClass()));
+    private void assertCreatedInstance(ScheduledActivityMode mode) {
+        assertEquals("Wrong state created for " + mode,
+            mode, mode.createStateInstance().getMode());
     }
 
     public void testCreateStateWithDateAndReason() throws Exception {
         ScheduledActivityState created =
             CONDITIONAL.createStateInstance(DateTools.createDate(2009, Calendar.APRIL, 6), "Fancy");
-        assertTrue("Wrong type", created instanceof Conditional);
+        assertEquals("Wrong mode", CONDITIONAL, created.getMode());
         assertDayOfDate("Wrong date", 2009, Calendar.APRIL, 6, created.getDate());
         assertEquals("Wrong reason", "Fancy", created.getReason());
     }
@@ -71,6 +64,6 @@ public class ScheduledActivityModeTest extends TestCase {
     public void testCreateStateWithDatePartsAndReason() throws Exception {
         ScheduledActivityState created =
             NOT_APPLICABLE.createStateInstance(2009, Calendar.APRIL, 6, "Fancier");
-        assertTrue("Wrong type", created instanceof NotApplicable);
+        assertEquals("Wrong type", NOT_APPLICABLE, created.getMode());
     }
 }

@@ -44,12 +44,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.configuration.PscConfigurationEntry</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.auditing.LoginAudit</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent</value>

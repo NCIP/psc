@@ -3,8 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
@@ -34,7 +33,7 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
         Site site = createSite("Mayo");
         Study study = createNamedInstance("Whatever Study", Study.class);
-        ScheduledActivityState saState = new Scheduled();
+        ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
 
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);

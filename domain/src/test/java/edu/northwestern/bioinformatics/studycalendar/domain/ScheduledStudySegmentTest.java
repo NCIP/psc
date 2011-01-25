@@ -1,13 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.tools.Range;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -15,6 +9,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
 
 /**
  * @author Rhett Sutphin
@@ -126,33 +123,33 @@ public class ScheduledStudySegmentTest extends TestCase {
     }
 
     public void testIsNotCompleteIfAnyEventInScheduledState() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 9, new Occurred()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, ScheduledActivityMode.CANCELED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 9, ScheduledActivityMode.OCCURRED.createStateInstance()));
         scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 18));
 
         assertFalse(scheduledStudySegment.isComplete());
     }
 
     public void testIsCompleteIfAllEventsAreCanceled() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Canceled()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, ScheduledActivityMode.CANCELED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, ScheduledActivityMode.CANCELED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, ScheduledActivityMode.CANCELED.createStateInstance()));
 
         assertTrue(scheduledStudySegment.isComplete());
     }
 
     public void testIsCompleteIfAllEventsAreOccurred() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Occurred()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, ScheduledActivityMode.OCCURRED.createStateInstance()));
 
         assertTrue(scheduledStudySegment.isComplete());
     }
 
     public void testIsCompleteIfNoEventsAreScheduled() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
-        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, ScheduledActivityMode.CANCELED.createStateInstance()));
+        scheduledStudySegment.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, ScheduledActivityMode.OCCURRED.createStateInstance()));
 
         assertTrue(scheduledStudySegment.isComplete());
     }
@@ -179,13 +176,13 @@ public class ScheduledStudySegmentTest extends TestCase {
     public void testUnscheduleAllOutstandingEvents() throws Exception {
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 2,
-            new Occurred(null, DateTools.createDate(2005, Calendar.AUGUST, 4))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateTools.createDate(2005, Calendar.AUGUST, 4), null)));
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 3,
-            new Canceled()));
+            ScheduledActivityMode.CANCELED.createStateInstance()));
         scheduledStudySegment.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 4,
-            new Conditional()));
+            ScheduledActivityMode.CONDITIONAL.createStateInstance()));
         scheduledStudySegment.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 5,
-            new NotApplicable()));
+            ScheduledActivityMode.NOT_APPLICABLE.createStateInstance()));
 
         scheduledStudySegment.unscheduleOutstandingEvents("Testing");
 

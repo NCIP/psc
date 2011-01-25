@@ -1,12 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
 
@@ -32,23 +25,23 @@ public class ScheduledActivityTest extends TestCase {
         scheduledActivity = new ScheduledActivity();
         sa0 = new ScheduledActivity(); sa1 = new ScheduledActivity();
         sa0.setActivity(activityA);
-        sa0.changeState(new Scheduled(null, DateTools.createDate(2008, Calendar.MARCH, 17)));
+        sa0.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17), null));
         sa1.setActivity(activityB);
-        sa1.changeState(new Scheduled(null, DateTools.createDate(2008, Calendar.MARCH, 17)));
+        sa1.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17), null));
     }
 
     public void testGetActualDateCurrentDate() throws Exception {
         Date expected = DateTools.createDate(2006, Calendar.AUGUST, 3);
         scheduledActivity.setIdealDate(DateTools.createDate(2006, Calendar.AUGUST, 1));
-        scheduledActivity.changeState(new Scheduled(null, expected));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(expected, null));
         assertEquals(expected, scheduledActivity.getActualDate());
     }
 
     public void testGetActualDateIsPreviousDateIfCurrentNotSet() throws Exception {
         Date expected = DateTools.createDate(2006, Calendar.AUGUST, 3);
         scheduledActivity.setIdealDate(DateTools.createDate(2006, Calendar.AUGUST, 1));
-        scheduledActivity.changeState(new Scheduled(null, expected));
-        scheduledActivity.changeState(new Canceled(null, new Date()));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(expected, null));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(new Date(), null));
         // this shouldn't happen in new data, but there could still be some out there
         scheduledActivity.getCurrentState().setDate(null);
         assertEquals(expected, scheduledActivity.getActualDate());
@@ -74,16 +67,16 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testChangeStateWithNoEvents() throws Exception {
-        scheduledActivity.changeState(new Canceled("A",DateTools.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "A"));
         assertEquals("Wrong number of states in history", 1, scheduledActivity.getAllStates().size());
-        assertTrue("Wrong curent state", scheduledActivity.getCurrentState() instanceof Canceled);
-        assertEquals("Wrong curent state", "A", scheduledActivity.getCurrentState().getReason());
+        assertEquals("Wrong current state", ScheduledActivityMode.CANCELED, scheduledActivity.getCurrentState().getMode());
+        assertEquals("Wrong current state", "A", scheduledActivity.getCurrentState().getReason());
         assertEquals(0, scheduledActivity.getPreviousStates().size());
     }
 
     public void testChangeStateWithCurrentEventOnly() throws Exception {
-        scheduledActivity.changeState(new Canceled("A",DateTools.createDate(2006, Calendar.AUGUST, 3)));
-        scheduledActivity.changeState(new Canceled("B",DateTools.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "A"));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "B"));
         assertEquals("Wrong number of states in history", 2, scheduledActivity.getAllStates().size());
         assertEquals("Wrong current state", "B", scheduledActivity.getCurrentState().getReason());
         assertEquals("Wrong number of previous states", 1, scheduledActivity.getPreviousStates().size());
@@ -91,9 +84,9 @@ public class ScheduledActivityTest extends TestCase {
     }
     
     public void testChangeStateWithExistingHistory() throws Exception {
-        scheduledActivity.changeState(new Canceled("A",DateTools.createDate(2006, Calendar.AUGUST, 3)));
-        scheduledActivity.changeState(new Canceled("B",DateTools.createDate(2006, Calendar.AUGUST, 3)));
-        scheduledActivity.changeState(new Canceled("C",DateTools.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "A"));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "B"));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "C"));
         assertEquals("Wrong number of states in history", 3, scheduledActivity.getAllStates().size());
         assertEquals("Wrong current state", "C", scheduledActivity.getCurrentState().getReason());
         assertEquals("Wrong number of previous states", 2, scheduledActivity.getPreviousStates().size());
@@ -107,16 +100,16 @@ public class ScheduledActivityTest extends TestCase {
 
     public void testGetAllWithCurrentOnly() throws Exception {
         scheduledActivity.setPreviousStates(null); // paranoia
-        scheduledActivity.changeState(new Canceled("A",DateTools.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "A"));
         List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(1, all.size());
         assertEquals("A", all.get(0).getReason());
     }
     
     public void testGetAllWithHistory() throws Exception {
-        scheduledActivity.changeState(new Canceled("A",DateTools.createDate(2006, Calendar.AUGUST, 3)));
-        scheduledActivity.changeState(new Canceled("B",DateTools.createDate(2006, Calendar.AUGUST, 3)));
-        scheduledActivity.changeState(new Canceled("C",DateTools.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "A"));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "B"));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2006, Calendar.AUGUST, 3), "C"));
 
         List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(3, all.size());
@@ -126,13 +119,13 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testChangeStateCanceledToOccurredWithOffStudy() throws Exception {
-        scheduledActivity.changeState(new Scheduled("New", DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2007, Calendar.SEPTEMBER, 2), "New"));
         ScheduledCalendar calendar = new ScheduledCalendar();
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         calendar.setAssignment(assignment);
         calendar.addStudySegment(new ScheduledStudySegment());
         calendar.getScheduledStudySegments().get(0).addEvent(scheduledActivity);
-        scheduledActivity.changeState(new Canceled("Canceled",DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2007, Calendar.SEPTEMBER, 2), "Canceled"));
         assignment.setEndDate(DateTools.createDate(2007, Calendar.SEPTEMBER, 1));
         
         //scheduledActivity.changeState(new Occurred());
@@ -141,9 +134,9 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testScheduleConditional() throws Exception {
-        scheduledActivity.changeState(new Conditional("New", DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
-        scheduledActivity.changeState(new Scheduled("Scheduled", DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
-        scheduledActivity.changeState(new Occurred("Occurred", DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
+        scheduledActivity.changeState(ScheduledActivityMode.CONDITIONAL.createStateInstance(DateTools.createDate(2007, Calendar.SEPTEMBER, 2), "New"));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2007, Calendar.SEPTEMBER, 2), "Scheduled"));
+        scheduledActivity.changeState(ScheduledActivityMode.OCCURRED.createStateInstance(DateTools.createDate(2007, Calendar.SEPTEMBER, 2), "Occurred"));
 
         assertEquals("Conditional flag not set", true, scheduledActivity.isConditionalEvent());
         assertEquals("Wrong previous state size", 2, scheduledActivity.getPreviousStates().size());
@@ -151,20 +144,20 @@ public class ScheduledActivityTest extends TestCase {
 
     public void testIsConditionalPos() throws Exception {
         Date date = DateTools.createDate(2006, Calendar.AUGUST, 3);
-        scheduledActivity.changeState(new Conditional("Conditional", date));
-        scheduledActivity.changeState(new Scheduled("Conditional", date));
+        scheduledActivity.changeState(ScheduledActivityMode.CONDITIONAL.createStateInstance(date, "Conditional"));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(date, "Conditional"));
         assertTrue("Event should be conditional", scheduledActivity.isConditionalEvent());
     }
 
     public void testIsConditionalNeg() throws Exception {
         Date date = DateTools.createDate(2006, Calendar.AUGUST, 3);
-        scheduledActivity.changeState(new Scheduled("Conditional", date));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(date, "Conditional"));
         assertFalse("Event should not be conditional", scheduledActivity.isConditionalEvent());
     }
 
     public void testUnscheduleScheduledActivity() throws Exception {
         Date scheduledOn = DateTools.createDate(2005, Calendar.MAY, 5);
-        scheduledActivity.changeState(new Scheduled(null, scheduledOn));
+        scheduledActivity.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(scheduledOn, null));
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -179,7 +172,7 @@ public class ScheduledActivityTest extends TestCase {
 
     public void testUnscheduleConditionalActivity() throws Exception {
         Date conditionalFor = DateTools.createDate(2005, Calendar.MAY, 9);
-        scheduledActivity.changeState(new Conditional(null, conditionalFor));
+        scheduledActivity.changeState(ScheduledActivityMode.CONDITIONAL.createStateInstance(conditionalFor, null));
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -193,7 +186,7 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testUnscheduleCanceledEvent() throws Exception {
-        scheduledActivity.changeState(new Canceled());
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance());
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -203,7 +196,7 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testUnscheduleOccurredEvent() throws Exception {
-        scheduledActivity.changeState(new Occurred());
+        scheduledActivity.changeState(ScheduledActivityMode.OCCURRED.createStateInstance());
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -213,7 +206,7 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testUnscheduleNotApplicableEvent() throws Exception {
-        scheduledActivity.changeState(new NotApplicable());
+        scheduledActivity.changeState(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance());
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -223,12 +216,12 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testIsOutstandingWhenOutstanding() throws Exception {
-        scheduledActivity.changeState(new Conditional());
+        scheduledActivity.changeState(ScheduledActivityMode.CONDITIONAL.createStateInstance());
         assertTrue(scheduledActivity.isOutstanding());
     }
 
     public void testIsOutstandingWhenCompleted() throws Exception {
-        scheduledActivity.changeState(new Canceled());
+        scheduledActivity.changeState(ScheduledActivityMode.CANCELED.createStateInstance());
         assertFalse(scheduledActivity.isOutstanding());
     }
 
@@ -268,8 +261,8 @@ public class ScheduledActivityTest extends TestCase {
         sa0.setPlannedActivity(pa);
         sa1.setPlannedActivity(pa);
         sa1.setActivity(sa0.getActivity());
-        sa0.changeState(new Canceled(null, sa0.getCurrentState().getDate()));
-        sa1.changeState(new Missed(null, sa1.getCurrentState().getDate()));
+        sa0.changeState(ScheduledActivityMode.CANCELED.createStateInstance(sa0.getCurrentState().getDate(), null));
+        sa1.changeState(ScheduledActivityMode.MISSED.createStateInstance(sa1.getCurrentState().getDate(), null));
 
         assertNegative(sa0.compareTo(sa1));
         assertPositive(sa1.compareTo(sa0));

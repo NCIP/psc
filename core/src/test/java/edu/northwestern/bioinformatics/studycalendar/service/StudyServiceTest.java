@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
@@ -12,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -23,7 +23,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -127,14 +126,14 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("AAA", 2005, Calendar.JULY, 1));
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("BBB", 2005, Calendar.JULY, 2,
-                new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 3))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateUtils.createDate(2005, Calendar.JULY, 3), null)));
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("CCC", 2005, Calendar.JULY, 4));
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("DDD", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
         studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("EEE", 2005, Calendar.AUGUST, 1,
-                new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateUtils.createDate(2005, Calendar.AUGUST, 2), null)));
         studySegment1.addEvent(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivityWithStudy("FFF", 2005, Calendar.AUGUST, 3));
         studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("GGG", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);
@@ -164,14 +163,14 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("AAA", 2005, Calendar.JULY, 1,
-                new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateUtils.createDate(2005, Calendar.JULY, 2), null)));
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("BBB", 2005, Calendar.JULY, 3));
         studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("CCC", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
         studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("DDD", 2005, Calendar.AUGUST, 1,
-                new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateUtils.createDate(2005, Calendar.AUGUST, 2), null)));
         studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("EEE", 2005, Calendar.AUGUST, 3));
         studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("FFF", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);

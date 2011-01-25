@@ -7,8 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractScheduledActivityStateXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
 import org.json.JSONObject;
@@ -141,7 +140,7 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
     public void testPostValidXml() throws Exception {
         StringBuilder xml = new StringBuilder();
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
+        ScheduledActivityState scheduledActivityState = ScheduledActivityMode.CANCELED.createStateInstance(new Date(), "cancel");
 
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         xml.append(MessageFormat.format("<scheduled-activity-state  state=\"{0}\" date=\"2008-01-15\" reason=\"{1}\" >",
@@ -164,7 +163,7 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
     public void testPostInvalidXml() throws Exception {
         StringBuffer expected = new StringBuffer();
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
+        ScheduledActivityState scheduledActivityState = ScheduledActivityMode.CANCELED.createStateInstance(new Date(), "cancel");
 
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append(MessageFormat.format("<scheduled-activity-state  state=\"invalud-state\" date=\"2008-01-15\" reason=\"{1}\" >",

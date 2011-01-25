@@ -1,21 +1,34 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -78,7 +91,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForConditionalScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new Conditional("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
+            ScheduledActivityMode.CONDITIONAL.createStateInstance(DateTools.createDate(2004, Calendar.APRIL, 30), "DC"));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);
@@ -90,7 +103,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseConditionForConditionalScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC 1", 2004, Calendar.APRIL, 30,
-            new Conditional("DC 2", DateTools.createDate(2004, Calendar.APRIL, 30)));
+            ScheduledActivityMode.CONDITIONAL.createStateInstance(DateTools.createDate(2004, Calendar.APRIL, 30), "DC 2"));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, 0, amendment);
@@ -102,7 +115,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForOccurredScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new Occurred("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateTools.createDate(2004, Calendar.APRIL, 30), "DC"));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);
@@ -113,7 +126,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForCanceledScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new Canceled("DC",DateTools.createDate(2004, Calendar.APRIL, 24)));
+            ScheduledActivityMode.CANCELED.createStateInstance(DateTools.createDate(2004, Calendar.APRIL, 24), "DC"));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);
@@ -124,7 +137,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForNotApplicableScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new NotApplicable("DC",DateTools.createDate(2004, Calendar.APRIL, 24)));
+            ScheduledActivityMode.NOT_APPLICABLE.createStateInstance(DateTools.createDate(2004, Calendar.APRIL, 24), "DC"));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);

@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.CURRENT_SCHEDULED_ACTIVITY_STATE;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.CURRENT_SCHEDULED_ACTIVITY_STATE;
 
 /**
  * @author John Dzak
@@ -25,20 +27,21 @@ public class CurrentScheduledActivityStateXmlSerializer  extends AbstractSchedul
 
         Date date = SCHEDULED_ACTIVITY_STATE_DATE.fromDate(element);
 
+         // TODO: fix this abstraction failure
         if (state == null || StringUtils.isEmpty(state)) {
             return null;
         } else if (state.equals(CONDITIONAL)) {
-            scheduledActivityState = new Conditional();
+            scheduledActivityState = ScheduledActivityMode.CONDITIONAL.createStateInstance();
         } else if (state.equals(OCCURRED)) {
-            scheduledActivityState = new Occurred();
+            scheduledActivityState = ScheduledActivityMode.OCCURRED.createStateInstance();
         } else if (state.equals(SCHEDULED)) {
-            scheduledActivityState = new Scheduled();
+            scheduledActivityState = ScheduledActivityMode.SCHEDULED.createStateInstance();
         } else if (state.equals(MISSED)) {
-            scheduledActivityState = new Missed();
+            scheduledActivityState = ScheduledActivityMode.MISSED.createStateInstance();
         } else if (state.equals(NOT_APPLICABLE)) {
-            scheduledActivityState = new NotApplicable();
+            scheduledActivityState = ScheduledActivityMode.NOT_APPLICABLE.createStateInstance();
         } else if (state.equals(CANCELED)) {
-            scheduledActivityState = new Canceled();
+            scheduledActivityState = ScheduledActivityMode.CANCELED.createStateInstance();
         } else {
             return scheduledActivityState;
         }

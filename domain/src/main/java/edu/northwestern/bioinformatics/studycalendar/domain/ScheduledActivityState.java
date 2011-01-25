@@ -1,7 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
+package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,11 +8,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,24 +20,28 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-@Entity // This isn't really an entity, but the @OneToMany from ScheduledActivity doesn't work otherwise
+@Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_scheduled_activity_stat_id")
     }
 )
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "scheduled_activity_states")
-@DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class ScheduledActivityState extends AbstractMutableDomainObject implements Cloneable, Serializable {
+public class ScheduledActivityState extends AbstractMutableDomainObject implements Cloneable, Serializable {
+    private ScheduledActivityMode mode;
     private String reason;
     private Date date;
 
     protected ScheduledActivityState() { }
 
-    protected ScheduledActivityState(String reason, Date date) {
+    public ScheduledActivityState(ScheduledActivityMode mode) {
+        this.mode = mode;
+    }
+
+    public ScheduledActivityState(ScheduledActivityMode mode, Date date, String reason) {
         this.reason = reason;
         this.date = date;
+        this.mode = mode;
     }
 
     ////// LOGIC
@@ -57,22 +56,29 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
     }
 
     @Transient
-    protected void appendSummaryMiddle(StringBuilder sb) {
-        sb.append(' ');
-        appendPreposition(sb);
-        sb.append(' ');
+    private void appendSummaryMiddle(StringBuilder sb) {
+        sb.append(' ').append(getMode().getPreposition()).append(' ');
         // TODO: centrally configure date format
         if (getDate() != null) sb.append(new SimpleDateFormat("M/d/yyyy").format(getDate()));
     }
 
-    protected abstract void appendPreposition(StringBuilder sb);
-
     ////// BEAN PROPERTIES
 
     @Type(type = "scheduledActivityMode")
-    @Column(name = "mode_id", insertable = false, updatable = false)
-    public abstract ScheduledActivityMode getMode();
-    void setMode(ScheduledActivityMode mode) { /* for hibernate; value ignored */ }
+    @Column(name = "mode_id")
+    public ScheduledActivityMode getMode() {
+        return mode;
+    }
+
+    /**
+     * Warning: this setter is expected to be used in very particular circumstances.  If you
+     * need to change the mode of a ScheduledActivity in regular practice, always use
+     * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity#changeState}
+     * to ensure that the history is preserved.
+     */
+    public void setMode(ScheduledActivityMode mode) {
+        this.mode = mode;
+    }
 
     public String getReason() {
         return reason;
@@ -81,6 +87,7 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
     public void setReason(String reason) {
         this.reason = reason;
     }
+
     @Column(name = "actual_date")
     @Temporal(TemporalType.DATE)
     public Date getDate() {

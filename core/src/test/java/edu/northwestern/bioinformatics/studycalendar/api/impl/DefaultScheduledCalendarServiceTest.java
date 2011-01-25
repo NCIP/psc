@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -23,8 +24,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
@@ -117,7 +116,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         loadedStudy.addSite(loadedSite);
         loadedStudySegment = setGridId(STUDY_SEGMENT_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0));
         loadedEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID,
-            Fixtures.createScheduledActivity("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
+            Fixtures.createScheduledActivity("Zeppo", 2003, 12, 1, ScheduledActivityMode.SCHEDULED.createStateInstance(DateUtils.createDate(2003, 12, 4), "Now")));
 
         loadedSubject = setGridId(PARTICIPANT_BIG_ID, createSubject("Edward", "Armor-o"));
 
@@ -396,7 +395,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     ////// TESTS FOR changeEventState
 
     public void testChange() throws Exception {
-        Canceled newState = new Canceled();
+        ScheduledActivityState newState = ScheduledActivityMode.CANCELED.createStateInstance();
         expect(scheduledActivityDao.getByGridId(parameterEvent)).andReturn(loadedEvent);
         scheduledActivityDao.save(loadedEvent);
 

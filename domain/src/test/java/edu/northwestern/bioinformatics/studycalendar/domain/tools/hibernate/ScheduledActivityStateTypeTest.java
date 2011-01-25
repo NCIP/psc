@@ -2,15 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static org.easymock.classextension.EasyMock.expect;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +11,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -31,6 +27,7 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
     private ResultSet rs;
     private PreparedStatement st;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         rs = registerMockFor(ResultSet.class);
@@ -38,12 +35,14 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
     }
 
     public void testDeepCopy() throws Exception {
-        Scheduled state = new Scheduled("Because", DateTools.createDate(2004, Calendar.JANUARY, 4));
+        ScheduledActivityState state = ScheduledActivityMode.SCHEDULED.
+            createStateInstance(DateTools.createDate(2004, Calendar.JANUARY, 4), "Because");
         Object copy = type.deepCopy(state);
         assertNotSame(state, copy);
 
-        assertTrue(copy instanceof Scheduled);
-        Scheduled copyState = (Scheduled) copy;
+        assertTrue(copy instanceof ScheduledActivityState);
+        ScheduledActivityState copyState = (ScheduledActivityState) copy;
+        assertEquals(state.getMode(), copyState.getMode());
         assertEquals(state.getDate(), copyState.getDate());
         assertEquals(state.getReason(), copyState.getReason());
     }
@@ -51,31 +50,31 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
     public void testNullSafeGetScheduled() throws Exception {
         expectGetStateFields(SCHEDULED, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(Scheduled.class, REASON, DATE, state);
+        assertScheduledActivityState(SCHEDULED, REASON, DATE, state);
     }
 
     public void testNullSafeGetOccurred() throws Exception {
         expectGetStateFields(OCCURRED, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(Occurred.class, REASON, DATE, state);
+        assertScheduledActivityState(OCCURRED, REASON, DATE, state);
     }
 
     public void testNullSafeGetCanceled() throws Exception {
         expectGetStateFields(CANCELED, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(Canceled.class, REASON, DATE, state);
+        assertScheduledActivityState(CANCELED, REASON, DATE, state);
     }
 
     public void testNullSafeGetConditional() throws Exception {
         expectGetStateFields(CONDITIONAL, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(Conditional.class, REASON, DATE, state);
+        assertScheduledActivityState(CONDITIONAL, REASON, DATE, state);
     }
 
     public void testNullSafeGetNotAvailable() throws Exception {
         expectGetStateFields(NOT_APPLICABLE, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(NotApplicable.class, REASON, DATE, state);
+        assertScheduledActivityState(NOT_APPLICABLE, REASON, DATE, state);
     }
     // TODO (requires changes to ControlledVocabularyObjectType)
 //    public void testNullSafeGetNull() throws Exception {
@@ -96,8 +95,8 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
         expect(rs.getInt(COLUMN_NAMES[0])).andReturn(expectedMode.getId());
     }
 
-    private void assertScheduledActivityState(Class<? extends ScheduledActivityState> expectedType, String expectedReason, Date expectedDate, ScheduledActivityState actual) {
-        assertEquals("Wrong type", expectedType, actual.getClass());
+    private void assertScheduledActivityState(ScheduledActivityMode expectedMode, String expectedReason, Date expectedDate, ScheduledActivityState actual) {
+        assertEquals("Wrong type", expectedMode, actual.getMode());
         assertEquals("Wrong reason", expectedReason, actual.getReason());
         if (expectedDate != null) {
             assertEquals("Wrong date", expectedDate, actual.getDate());
@@ -106,27 +105,27 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
 
     public void testNullSafeSetScheduled() throws Exception {
         expectSetStateFields(SCHEDULED, 4, true);
-        doNullSafeSet(new Scheduled(REASON, DATE), 4);
+        doNullSafeSet(ScheduledActivityMode.SCHEDULED.createStateInstance(DATE, REASON), 4);
     }
 
     public void testNullSafeSetOccurred() throws Exception {
         expectSetStateFields(OCCURRED, 2, true);
-        doNullSafeSet(new Occurred(REASON, DATE), 2);
+        doNullSafeSet(ScheduledActivityMode.OCCURRED.createStateInstance(DATE, REASON), 2);
     }
 
     public void testNullSafeSetCanceled() throws Exception {
         expectSetStateFields(CANCELED, 7, true);
-        doNullSafeSet(new Canceled(REASON, DATE), 7);
+        doNullSafeSet(ScheduledActivityMode.CANCELED.createStateInstance(DATE, REASON), 7);
     }
 
     public void testNullSafeSetConditional() throws Exception {
         expectSetStateFields(CONDITIONAL, 5, true);
-        doNullSafeSet(new Conditional(REASON, DATE), 5);
+        doNullSafeSet(ScheduledActivityMode.CONDITIONAL.createStateInstance(DATE, REASON), 5);
     }
 
     public void testNullSafeSetNotAvailable() throws Exception {
         expectSetStateFields(NOT_APPLICABLE, 6, true);
-        doNullSafeSet(new NotApplicable(REASON, DATE), 6);
+        doNullSafeSet(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance(DATE, REASON), 6);
     }
 
     private void doNullSafeSet(ScheduledActivityState expectedState, int index) throws SQLException {

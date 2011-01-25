@@ -1,27 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertSameDay;
 import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
+import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertSameDay;
 
 /**
  * @author Rhett Sutphin
@@ -62,7 +61,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong rep number", 3, (int) event.getRepetitionNumber());
 
         ScheduledActivityState currentState = event.getCurrentState();
-        assertTrue(currentState instanceof Occurred);
+        assertEquals(ScheduledActivityMode.OCCURRED, currentState.getMode());
         assertDayOfDate("Wrong current state date", 2006, Calendar.OCTOBER, 25, currentState.getDate());
         assertEquals("Wrong current state mode", ScheduledActivityMode.OCCURRED, currentState.getMode());
         assertEquals("Wrong current state reason", "Success", currentState.getReason());
@@ -78,7 +77,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
     public void testChangeStateAndSave() throws Exception {
         {
             ScheduledCalendar cal = getDao().getById(-20);
-            cal.getScheduledStudySegments().get(0).getActivities().get(0).changeState(new Canceled("For great victory",DateUtils.createDate(2006, Calendar.OCTOBER, 25)));
+            cal.getScheduledStudySegments().get(0).getActivities().get(0).changeState(ScheduledActivityMode.CANCELED.createStateInstance(DateUtils.createDate(2006, Calendar.OCTOBER, 25), "For great victory"));
             getDao().save(cal);
         }
 
@@ -132,7 +131,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             ScheduledActivity event = new ScheduledActivity();
             event.setIdealDate(expectedIdealDate);
             event.setPlannedActivity(studySegment3.getPeriods().iterator().next().getPlannedActivities().get(0));
-            event.changeState(new Occurred(expectedReason, expectedActualDate));
+            event.changeState(ScheduledActivityMode.OCCURRED.createStateInstance(expectedActualDate, expectedReason));
             event.setActivity(expectedActivity);
             event.setSourceAmendment(expectedAmendment);
             lastScheduledStudySegment.addEvent(event);
@@ -158,7 +157,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong planned event", -7, (int) loadedEvent.getPlannedActivity().getId());
 
         ScheduledActivityState currentState = loadedEvent.getCurrentState();
-        assertTrue(currentState instanceof Occurred);
+        assertEquals(ScheduledActivityMode.OCCURRED, currentState.getMode());
         assertSameDay("Wrong current state date", expectedActualDate, currentState.getDate());
         assertEquals("Wrong current state mode", expectedMode, currentState.getMode());
         assertEquals("Wrong current state reason", expectedReason, currentState.getReason());

@@ -1,13 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Hibernate;
@@ -26,7 +20,7 @@ import java.util.Date;
 
 /**
  * Hibernate {@link org.hibernate.usertype.UserType} that loads
- * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState}
+ * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState}
  * values for the
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity#getCurrentState}
  * property polymorphically.
@@ -125,23 +119,8 @@ public class ScheduledActivityStateType implements CompositeUserType {
         MODE_TYPE.nullSafeSet(st, mode, index + MODE_INDEX, session);
     }
 
-    // TODO: why isn't this using SchedEventMode.createStateInstance?
     private ScheduledActivityState createStateObject(ScheduledActivityMode mode) {
-        if (ScheduledActivityMode.SCHEDULED == mode) {
-            return new Scheduled();
-        } else if (ScheduledActivityMode.OCCURRED == mode) {
-            return new Occurred();
-        } else if (ScheduledActivityMode.CANCELED == mode) {
-            return new Canceled();
-        } else if (ScheduledActivityMode.MISSED == mode) {
-            return new Missed();
-        } else if (ScheduledActivityMode.CONDITIONAL == mode) {
-            return new Conditional();
-        } else if (ScheduledActivityMode.NOT_APPLICABLE == mode) {
-            return new NotApplicable();
-        } else {
-            return null;
-        }
+        return mode == null ? null : mode.createStateInstance();
     }
 
     public Object replace(Object original, Object target, SessionImplementor session, Object owner) throws HibernateException {

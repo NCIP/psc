@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -22,9 +23,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import org.apache.commons.lang.StringUtils;
@@ -412,9 +410,9 @@ public class SubjectService {
 
         for(ScheduledActivity event: upcomingScheduledActivities) {
             if (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()) {
-                event.changeState(new Canceled("Off Study",event.getCurrentState().getDate()));
+                event.changeState(ScheduledActivityMode.CANCELED.createStateInstance(event.getCurrentState().getDate(), "Off Study"));
             } else if (ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode()) {
-                event.changeState(new NotApplicable("Off Study",event.getCurrentState().getDate()));
+                event.changeState(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance(event.getCurrentState().getDate(), "Off Study"));
             }
         }
 

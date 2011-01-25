@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -26,9 +27,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
@@ -333,9 +331,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         ScheduledStudySegment existingStudySegment = new ScheduledStudySegment();
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 1));
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 2,
-            new Occurred(null, DateUtils.createDate(2005, AUGUST, 4))));
+            ScheduledActivityMode.OCCURRED.createStateInstance(DateUtils.createDate(2005, AUGUST, 4), null)));
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 3,
-            new Canceled(null,DateUtils.createDate(2005, AUGUST, 4))));
+            ScheduledActivityMode.CANCELED.createStateInstance(DateUtils.createDate(2005, AUGUST, 4), null)));
 
         calendar.addStudySegment(existingStudySegment);
 
@@ -371,16 +369,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         ScheduledActivity wasScheduledActivity = existingStudySegment.getActivities().get(0);
         assertEquals("No new state in scheduled", 2, wasScheduledActivity.getAllStates().size());
-        assertEquals("Scheduled event not canceled", Canceled.class, wasScheduledActivity.getCurrentState().getClass());
+        assertEquals("Scheduled event not canceled", ScheduledActivityMode.CANCELED, wasScheduledActivity.getCurrentState().getMode());
         assertEquals("Wrong reason for cancelation", "Immediate transition to Epoch: A", wasScheduledActivity.getCurrentState().getReason());
 
         ScheduledActivity wasOccurredEvent = existingStudySegment.getActivities().get(1);
         assertEquals("Occurred event changed", 2, wasOccurredEvent.getAllStates().size());
-        assertEquals("Occurred event changed", Occurred.class, wasOccurredEvent.getCurrentState().getClass());
+        assertEquals("Occurred event changed", ScheduledActivityMode.OCCURRED, wasOccurredEvent.getCurrentState().getMode());
 
         ScheduledActivity wasCanceledEvent = existingStudySegment.getActivities().get(2);
         assertEquals("Canceled event changed", 2, wasCanceledEvent.getAllStates().size());
-        assertEquals("Canceled event changed", Canceled.class, wasCanceledEvent.getCurrentState().getClass());
+        assertEquals("Canceled event changed", ScheduledActivityMode.CANCELED, wasCanceledEvent.getCurrentState().getMode());
     }
 
     private void assertNewlyScheduledActivity(
@@ -389,8 +387,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     ) {
         assertEquals("Wrong associated planned event", expectedPlannedActivityId, (int) actualEvent.getPlannedActivity().getId());
         assertDayOfDate("Wrong ideal date", expectedYear, expectedMonth, expectedDayOfMonth, actualEvent.getIdealDate());
-        assertTrue("Wrong current state mode", actualEvent.getCurrentState() instanceof Scheduled);
-        Scheduled currentState = (Scheduled) actualEvent.getCurrentState();
+        ScheduledActivityState currentState = actualEvent.getCurrentState();
+        assertEquals("Wrong current state mode", ScheduledActivityMode.SCHEDULED, currentState.getMode());
         assertEquals("Current and ideal date not same", actualEvent.getIdealDate(), currentState.getDate());
         assertEquals("Wrong reason", "Initialized from template", currentState.getReason());
     }
@@ -550,16 +548,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setStartDate(startDate);
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(createScheduledActivityWithStudy("ABC", 2007, SEPTEMBER, 2, new Occurred()));
-        studySegment0.addEvent(createScheduledActivityWithStudy("DEF", 2007, SEPTEMBER, 4, new Canceled()));
-        studySegment0.addEvent(createScheduledActivityWithStudy("GHI", 2007, SEPTEMBER, 6, new Occurred()));
-        studySegment0.addEvent(createScheduledActivityWithStudy("JKL", 2007, SEPTEMBER, 8, new Scheduled()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("ABC", 2007, SEPTEMBER, 2, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("DEF", 2007, SEPTEMBER, 4, ScheduledActivityMode.CANCELED.createStateInstance()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("GHI", 2007, SEPTEMBER, 6, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("JKL", 2007, SEPTEMBER, 8, ScheduledActivityMode.SCHEDULED.createStateInstance()));
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(createScheduledActivityWithStudy("MNO", 2007, OCTOBER, 2, new Occurred()));
-        studySegment1.addEvent(createScheduledActivityWithStudy("PQR", 2007, OCTOBER, 4, new Scheduled()));
-        studySegment1.addEvent(createScheduledActivityWithStudy("STU", 2007, OCTOBER, 6, new Scheduled()));
-        studySegment1.addEvent(createScheduledActivityWithStudy("VWX", 2007, OCTOBER, 8, new Scheduled()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("MNO", 2007, OCTOBER, 2, ScheduledActivityMode.OCCURRED.createStateInstance()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("PQR", 2007, OCTOBER, 4, ScheduledActivityMode.SCHEDULED.createStateInstance()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("STU", 2007, OCTOBER, 6, ScheduledActivityMode.SCHEDULED.createStateInstance()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("VWX", 2007, OCTOBER, 8, ScheduledActivityMode.SCHEDULED.createStateInstance()));
         studySegment1.addEvent(createConditionalEventWithStudy("YZA", 2007, OCTOBER, 10));
 
         ScheduledCalendar calendar = new ScheduledCalendar();

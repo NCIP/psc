@@ -4,9 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -330,7 +327,7 @@ public class Fixtures {
         event.setRepetitionNumber(0);
         event.setLabels(planned.getLabels());
         event.setIdealDate(DateTools.createDate(year, month, day - 2));
-        event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
+        event.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(year, month, day), null));
         return event;
     }
 
@@ -365,7 +362,7 @@ public class Fixtures {
         Activity activity = createActivity(activityName);
         reconcentEvent.setActivity(activity);
         reconcentEvent.setIdealDate(DateTools.createDate(year, month, day - 2));
-        reconcentEvent.changeState(new Scheduled("Created From Reconsent",DateTools.createDate(year, month, day - 2)));
+        reconcentEvent.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(year, month, day - 2), "Created From Reconsent"));
         return reconcentEvent;
     }
 
@@ -373,7 +370,7 @@ public class Fixtures {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
         baseEvent.setPeriod(createTemplateWithPeriod());
-        return createScheduledActivity(baseEvent, year, month, day, new Conditional());
+        return createScheduledActivity(baseEvent, year, month, day, ScheduledActivityMode.CONDITIONAL.createStateInstance());
     }
 
     public static Period createTemplateWithPeriod() {
@@ -391,7 +388,7 @@ public class Fixtures {
     public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
-        return createScheduledActivity(baseEvent, year, month, day, new Conditional());
+        return createScheduledActivity(baseEvent, year, month, day, ScheduledActivityMode.CONDITIONAL.createStateInstance());
     }
 
     public static ScheduledActivity addLabels(ScheduledActivity sa, String... labels) {

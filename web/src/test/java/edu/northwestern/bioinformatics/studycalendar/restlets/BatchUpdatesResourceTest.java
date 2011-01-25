@@ -4,12 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserB
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -277,7 +277,7 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
     }
 
     private void assertStateContents(
-        ScheduledActivityMode<?> mode, int year, int month, int day, String reason, ScheduledActivityState actual
+        ScheduledActivityMode mode, int year, int month, int day, String reason, ScheduledActivityState actual
     ) {
         assertEquals("Wrong mode", mode, actual.getMode());
         assertDayOfDate("Wrong date", year, month, day, actual.getDate());

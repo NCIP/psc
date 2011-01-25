@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -140,7 +139,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         studySite.setStudy(study);
 
         command.setEvent(createScheduledActivity("testActivity", 2003, 03, 14,
-                new Scheduled("testing", DateUtils.createDate(2003, Calendar.MARCH, 14))));
+            ScheduledActivityMode.SCHEDULED.createStateInstance(DateUtils.createDate(2003, Calendar.MARCH, 14), "testing")));
         command.setNewMode(ScheduledActivityMode.OCCURRED);
         command.setNewDate(DateUtils.createDate(2003, Calendar.MARCH, 15));
         command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
