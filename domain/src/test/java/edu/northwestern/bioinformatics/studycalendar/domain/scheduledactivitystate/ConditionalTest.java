@@ -16,9 +16,4 @@ public class ConditionalTest extends TestCase {
         assertEquals("Conditional for 11/2/2004",
             new Conditional(null, DateTools.createDate(2004, Calendar.NOVEMBER, 2)).getTextSummary());
     }
-
-    public void testConditionalAvailableStates() throws Exception {
-        Conditional event = new Conditional("Reason", DateTools.createDate(2004, Calendar.SEPTEMBER, 22));
-        assertEquals("Wrong number of available states", 3, event.getAvailableStates(true).size());
-    }
 }

@@ -18,14 +18,4 @@ public class OccurredTest extends TestCase {
         assertEquals("Occurred on 11/2/2004",
             new Occurred(null, DateTools.createDate(2004, Calendar.NOVEMBER, 2)).getTextSummary());
     }
-
-    public void testConditionalOccurredAvailableStates() throws Exception {
-        Occurred event = new Occurred("Reason",  DateTools.createDate(2004, Calendar.NOVEMBER, 2));
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates(true).size());
-    }
-
-   public void testRegularOccurredAvailableStates() throws Exception {
-        Occurred event = new Occurred("Reason",  DateTools.createDate(2004, Calendar.NOVEMBER, 2));
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates(false).size());
-    }
 }

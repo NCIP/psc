@@ -199,21 +199,6 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     }
 
     @Transient
-    public boolean isConditionalState() {
-        return ScheduledActivityMode.CONDITIONAL == getCurrentState().getMode();
-    }
-
-    @Transient
-    public boolean isScheduledState() {
-        return ScheduledActivityMode.SCHEDULED == getCurrentState().getMode();
-    }
-
-    @Transient
-    public boolean isValidNewState(Class<? extends ScheduledActivityState> newStateClass) {
-        return getCurrentState().getAvailableStates(isConditionalEvent()).contains(newStateClass);
-    }
-
-    @Transient
     public boolean isConditionalEvent() {
         for (ScheduledActivityState state : getAllStates()) {
             if (state.getMode() == ScheduledActivityMode.CONDITIONAL) return true;

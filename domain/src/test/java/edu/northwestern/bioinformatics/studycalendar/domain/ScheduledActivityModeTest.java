@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
@@ -9,25 +8,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
-import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
 
 public class ScheduledActivityModeTest extends TestCase {
-    public void testScheduledGetAvailableModesPos() throws Exception {
-        Scheduled scheduledState = new Scheduled("Scheduled", DateTools.createDate(2007, Calendar.SEPTEMBER, 1));
-        List<ScheduledActivityMode> modes = getAvailableModes(scheduledState, true);
-        assertEquals("Wrong size of available modes", 6, modes.size());
-    }
-
-    public void testScheduledGetAvailableModesNeg() throws Exception {
-        Scheduled scheduledState = new Scheduled("Scheduled", DateTools.createDate(2007, Calendar.SEPTEMBER, 1));
-        List<ScheduledActivityMode> modes = getAvailableModes(scheduledState, false);
-        assertEquals("Wrong size of available modes", 4, modes.size());
-    }
-
     public void testGetUnscheduleMode() throws Exception {
         assertEquals(CANCELED, SCHEDULED.getUnscheduleMode());
         assertEquals(NOT_APPLICABLE, CONDITIONAL.getUnscheduleMode());

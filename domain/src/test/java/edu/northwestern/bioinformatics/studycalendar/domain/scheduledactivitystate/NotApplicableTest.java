@@ -14,9 +14,4 @@ public class NotApplicableTest extends TestCase {
     public void testSummaryWithoutReason() throws Exception {
         assertEquals("NA on 8/22/2004", new NotApplicable(null, DateTools.createDate(2004, Calendar.AUGUST, 22)).getTextSummary());
     }
-
-    public void testAvailableStates() throws Exception {
-        NotApplicable event = new NotApplicable("Reason",DateTools.createDate(2004, Calendar.AUGUST, 22));
-        assertEquals("Wrong number of available states", 3, event.getAvailableStates(true).size());
-    }
 }

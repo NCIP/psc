@@ -11,10 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Typedef enum representing the discriminator column for subclasses of
@@ -82,15 +80,6 @@ public class ScheduledActivityMode<T extends ScheduledActivityState> extends Abs
 
     public static Collection<ScheduledActivityMode> values() {
         return values(ScheduledActivityMode.class);
-    }
-
-    public static List<ScheduledActivityMode> getAvailableModes(ScheduledActivityState state, boolean conditional) {
-        List<ScheduledActivityMode> modes = new ArrayList<ScheduledActivityMode>();
-        List<Class<? extends ScheduledActivityState>> availableStates = state.getAvailableStates(conditional);
-        for(ScheduledActivityMode mode: values()) {
-            if (availableStates.contains(mode.clazz)) modes.add(mode);
-        }
-        return modes;
     }
 
     public boolean isOutstanding() {

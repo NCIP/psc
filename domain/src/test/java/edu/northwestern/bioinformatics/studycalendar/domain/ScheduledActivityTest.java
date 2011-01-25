@@ -162,18 +162,6 @@ public class ScheduledActivityTest extends TestCase {
         assertFalse("Event should not be conditional", scheduledActivity.isConditionalEvent());
     }
 
-    public void testIsValidStateChangePos() throws Exception {
-        Date date = DateTools.createDate(2006, Calendar.AUGUST, 3);
-        scheduledActivity.changeState(new Conditional("Conditional", date));
-        assertTrue("Should be valid new state", scheduledActivity.isValidNewState(Scheduled.class));
-    }
-
-    public void testIsValidStateChangeNeg() throws Exception {
-        Date date = DateTools.createDate(2006, Calendar.AUGUST, 3);
-        scheduledActivity.changeState(new Conditional("Conditional", date));
-        assertFalse("Should not be valid new state", scheduledActivity.isValidNewState(Canceled.class));
-    }
-
     public void testUnscheduleScheduledActivity() throws Exception {
         Date scheduledOn = DateTools.createDate(2005, Calendar.MAY, 5);
         scheduledActivity.changeState(new Scheduled(null, scheduledOn));

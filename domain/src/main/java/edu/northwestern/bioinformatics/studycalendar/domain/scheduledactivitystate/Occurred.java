@@ -2,16 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivityst
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -29,14 +23,6 @@ public class Occurred extends ScheduledActivityState {
         sb.append("on");
     }
 
-
-    @Transient
-    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledActivityState>> availableStates = new ArrayList();
-        availableStates.add(Occurred.class);
-        availableStates.add(Scheduled.class);
-        return availableStates;
-    }
 
     @Transient // use superclass annotation
     public ScheduledActivityMode getMode() { return ScheduledActivityMode.OCCURRED; }

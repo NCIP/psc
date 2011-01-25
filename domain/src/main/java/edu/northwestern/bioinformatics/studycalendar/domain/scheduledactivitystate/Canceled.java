@@ -1,15 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -25,14 +20,6 @@ public class Canceled extends ScheduledActivityState {
 
     protected void appendPreposition(StringBuilder sb) {
         sb.append("for");
-    }
-
-    @Transient
-    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledActivityState>> availableStates = new ArrayList();
-        availableStates.add(Scheduled.class);
-        availableStates.add(Canceled.class);
-        return availableStates;
     }
 
     ////// BEAN PROPERTIES

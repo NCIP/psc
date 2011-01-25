@@ -16,14 +16,4 @@ public class CanceledTest extends TestCase {
     public void testSummaryWithoutReason() throws Exception {
         assertEquals("Canceled for 8/22/2004", new Canceled(null, DateTools.createDate(2004, Calendar.AUGUST, 22)).getTextSummary());
     }
-
-    public void testConditionalCanceledAvailableStates() throws Exception {
-        Canceled event = new Canceled("Reason", DateTools.createDate(2004, Calendar.AUGUST, 22));
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates(true).size());
-    }
-
-    public void testRegularCanceledAvailableStates() throws Exception {
-        Canceled event = new Canceled("Reason", DateTools.createDate(2004, Calendar.AUGUST, 22));
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates(false).size());
-    }
 }

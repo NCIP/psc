@@ -8,12 +8,19 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -38,8 +45,6 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
         this.date = date;
     }
 
-
-
     ////// LOGIC
 
     @Transient
@@ -61,20 +66,6 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
     }
 
     protected abstract void appendPreposition(StringBuilder sb);
-
-
-    @Transient
-    public List<Class<? extends ScheduledActivityState>> getAvailableConditionalStates(boolean conditional) {
-        List<Class<? extends ScheduledActivityState>> list = new ArrayList<Class<? extends ScheduledActivityState>>();
-        if (conditional) {
-            list.add(Conditional.class);
-            list.add(NotApplicable.class);
-        }
-        return list;
-    }
-
-    @Transient
-    public abstract List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional);
 
     ////// BEAN PROPERTIES
 
@@ -109,7 +100,6 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
             throw new StudyCalendarError("It is cloneable", e);
         }
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;
