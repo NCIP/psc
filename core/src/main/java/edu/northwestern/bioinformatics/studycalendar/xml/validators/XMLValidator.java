@@ -63,7 +63,7 @@ public abstract class XMLValidator {
     }
 
     public static class BasicXMLValidator extends XMLValidator {
-        private BasicXMLValidator(Schema schema) {
+        protected BasicXMLValidator(Schema schema) {
             super(schema);
         }
 
@@ -81,8 +81,8 @@ public abstract class XMLValidator {
         }
     }
 
-    private static class SpringXMLValidator extends XMLValidator implements Validator {
-        private SpringXMLValidator(Schema schema) {
+    public static class SpringXMLValidator extends XMLValidator implements Validator {
+        protected SpringXMLValidator(Schema schema) {
             super(schema);
         }
 

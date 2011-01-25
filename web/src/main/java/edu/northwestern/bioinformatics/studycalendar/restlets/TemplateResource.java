@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator;
+import org.apache.commons.io.IOUtils;
 import org.restlet.Request;
 import org.restlet.data.Disposition;
 import org.restlet.data.Method;
@@ -18,7 +19,6 @@ import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -72,14 +72,12 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     public Representation put(Representation entity, Variant variant) throws ResourceException {
         Study out;
         try {
-            InputStream in = entity.getStream();
-
-            String error = getTemplateSchemaValidator().validate(in);
+            String in = entity.getText();
+            String error = getTemplateSchemaValidator().validate(IOUtils.toInputStream(in));
             if (isNotBlank(error)) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, error);
             }
-
-            Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), in);
+            Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), IOUtils.toInputStream(in));
             out = studyService.getCompleteTemplateHistory(imported);
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);

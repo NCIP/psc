@@ -127,7 +127,10 @@
     <xsd:complexType name="PlannedActivity">
         <xsd:sequence>
             <xsd:element name="label" type="psc:Label" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="activity" type="psc:Activity"/>
+            <xsd:choice>
+              <xsd:element name="activity" type="psc:Activity"/>
+              <xsd:element name="activity-reference" type="psc:ActivityReference"/>
+            </xsd:choice>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="optional"/>
         <xsd:attribute name="day" type="xsd:integer" use="required"/>
@@ -255,6 +258,11 @@
         <xsd:attribute name="type" type="xsd:string"/>
         <xsd:attribute name="code" type="xsd:string" use="required"/>
         <xsd:attribute name="source" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ActivityReference">
+        <xsd:attribute name="code" type="xsd:string" use="required"/>
+        <xsd:attribute name="source" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:element name="property" type="psc:Property"/>
