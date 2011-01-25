@@ -1,23 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
-import org.springframework.validation.Validator;
-import org.springframework.validation.Errors;
-import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.xml.sax.SAXException;
 
-import javax.xml.validation.SchemaFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class XMLValidator implements Validator {
+public abstract class XMLValidator {
     private static Logger log = LoggerFactory.getLogger(XMLValidator.class);
 
-    public static final XMLValidator ACTIVITY_VALIDATOR_INSTANCE = new XMLValidator(Schema.activities);
-    public static final XMLValidator TEMPLATE_VALIDATOR_INSTANCE = new XMLValidator(Schema.template);
+    public static final SpringXMLValidator SPRING_ACTIVITY_VALIDATOR_INSTANCE = new SpringXMLValidator(Schema.activities);
+    public static final SpringXMLValidator SPRING_TEMPLATE_VALIDATOR_INSTANCE = new SpringXMLValidator(Schema.template);
+
+    public static final BasicXMLValidator BASIC_TEMPLATE_VALIDATOR_INSTANCE = new BasicXMLValidator(Schema.template);
 
     private Schema schema;
 
@@ -25,11 +28,7 @@ public class XMLValidator implements Validator {
         this.schema = schema;
     }
 
-    public boolean supports(Class aClass) {
-        return InputStream.class.isAssignableFrom(aClass);
-    }
-
-    public void validate(Object o, Errors errors) {
+    protected void doValidate(Object o) throws SAXException, IOException {
         InputStream input = (InputStream) o;
 
         // 1. Specify you want a factory for XSD
@@ -38,32 +37,21 @@ public class XMLValidator implements Validator {
         // 2. Load the specific schema you want.
         File uncompiledSchema = schema.file();
 
-        try {
-            log.debug("Validating against {}", uncompiledSchema.getAbsolutePath());
-            
-            // 3. Compile the schema.
-            javax.xml.validation.Schema schema = factory.newSchema(this.schema.url());
+        log.debug("Validating against {}", uncompiledSchema.getAbsolutePath());
 
-            // 4. Get a validator from the schema.
-            javax.xml.validation.Validator validator = schema.newValidator();
-            log.debug("Validating with {}", validator.getClass().getName());
+        // 3. Compile the schema.
+        javax.xml.validation.Schema schema = factory.newSchema(this.schema.url());
 
-            // 5. Parse the document you want to check.
-            Source source = new StreamSource(input);
+        // 4. Get a validator from the schema.
+        javax.xml.validation.Validator validator = schema.newValidator();
+        log.debug("Validating with {}", validator.getClass().getName());
 
-            // 6. Check the document
-            validator.validate(source);
-            log.debug("{} file is valid.", getSchemaTitle());
-        }
-        catch (SAXException ex) {
-            // TODO: get cause of SaxException and display in form other than cryptic SaxException message.
-            errors.reject("error.file.not.valid", toStringArray(getSchemaTitle(), ex.getMessage()), "File not valid");
-            log.debug("{} file is not valid because {}", getSchemaTitle(), ex.getMessage());
-        }
-        catch (IOException ioe) {
-            errors.reject("error.problem.reading.file", toStringArray(getSchemaTitle()), "Error reading file");
-            log.debug("Error reading file {} because {}", getSchemaTitle(), ioe.getMessage());
-        }
+        // 5. Parse the document you want to check.
+        Source source = new StreamSource(input);
+
+        // 6. Check the document
+        validator.validate(source);
+        log.debug("{} file is valid.", getSchemaTitle());
     }
 
     protected String getSchemaTitle() {
@@ -72,5 +60,49 @@ public class XMLValidator implements Validator {
 
     private static String[] toStringArray(String... values) {
         return values;
+    }
+
+    public static class BasicXMLValidator extends XMLValidator {
+        private BasicXMLValidator(Schema schema) {
+            super(schema);
+        }
+
+        public String validate(Object o) {
+            try {
+                doValidate(o);
+            } catch (SAXException e) {
+                log.debug("{} file is not valid because {}", getSchemaTitle(), e.getMessage());
+                return MessageFormatter.format("{0} file format is incorrect. {1}", toStringArray(getSchemaTitle()), "Error reading file");
+            } catch (IOException e) {
+                log.debug("Error reading file {} because {}", getSchemaTitle(), e.getMessage());
+                return MessageFormatter.format("There was a problem reading the {0} file.  Please try again.", getSchemaTitle(), e.getMessage());
+            }
+            return null;
+        }
+    }
+
+    private static class SpringXMLValidator extends XMLValidator implements Validator {
+        private SpringXMLValidator(Schema schema) {
+            super(schema);
+        }
+
+        public boolean supports(Class aClass) {
+            return InputStream.class.isAssignableFrom(aClass);
+        }
+
+        public void validate(Object o, Errors errors) {
+            try {
+                doValidate(o);
+            }
+            catch (SAXException ex) {
+                // TODO: get cause of SaxException and display in form other than cryptic SaxException message.
+                errors.reject("error.file.not.valid", toStringArray(getSchemaTitle(), ex.getMessage()), "File not valid");
+                log.debug("{} file is not valid because {}", getSchemaTitle(), ex.getMessage());
+            }
+            catch (IOException ioe) {
+                errors.reject("error.problem.reading.file", toStringArray(getSchemaTitle()), "Error reading file");
+                log.debug("Error reading file {} because {}", getSchemaTitle(), ioe.getMessage());
+            }
+        }
     }
 }

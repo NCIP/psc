@@ -7,16 +7,20 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator;
+import org.restlet.Request;
 import org.restlet.data.Disposition;
 import org.restlet.data.Method;
-import org.restlet.Request;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
+import java.io.InputStream;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * Resource representing a study and its planned calendar, including all amendments.
@@ -68,7 +72,14 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     public Representation put(Representation entity, Variant variant) throws ResourceException {
         Study out;
         try {
-            Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
+            InputStream in = entity.getStream();
+
+            String error = getTemplateSchemaValidator().validate(in);
+            if (isNotBlank(error)) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, error);
+            }
+
+            Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), in);
             out = studyService.getCompleteTemplateHistory(imported);
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
@@ -85,6 +96,10 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         }
 
         return null;
+    }
+
+    public XMLValidator.BasicXMLValidator getTemplateSchemaValidator() {
+        return XMLValidator.BASIC_TEMPLATE_VALIDATOR_INSTANCE;
     }
 
     ////// CONFIGURATION

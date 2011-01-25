@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.restlet.data.MediaType;
@@ -36,6 +37,7 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
     private TemplateImportService templateImportService;
     private StudyXmlSerializer studyXmlSerializer;
     private Date lastModifiedDate = DateUtils.createDate(2007, Calendar.OCTOBER, 5);
+    private XMLValidator.BasicXMLValidator templateValidator;
 
     @Override
     public void setUp() throws Exception {
@@ -45,6 +47,7 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
         templateImportService = registerMockFor(TemplateImportService.class);
         studyService = registerMockFor(StudyService.class);
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
+        templateValidator = registerMockFor(XMLValidator.BasicXMLValidator.class);
 
         request.setMethod(Method.GET);
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
@@ -63,7 +66,12 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
 
     @Override
     protected TemplateResource createAuthorizedResource() {
-        TemplateResource templateResource = new TemplateResource();
+        TemplateResource templateResource = new TemplateResource() {
+            @Override
+            public XMLValidator.BasicXMLValidator getTemplateSchemaValidator() {
+                return templateValidator;
+            }
+        };
         templateResource.setStudyDao(studyDao);
         templateResource.setXmlSerializer(studyXmlSerializer);
         templateResource.setTemplateImportService(templateImportService);
@@ -128,6 +136,7 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
 
         expectSuccessfulStudyLoad();
         InputStream in = expectPutEntity();
+        expect(templateValidator.validate(in)).andReturn(null);
         expect(templateImportService.readAndSaveTemplate(study, in)).andReturn(updatedStudy);
         expect(studyService.getCompleteTemplateHistory(updatedStudy)).andReturn(fullStudy);
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
@@ -139,10 +148,12 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
     }
 
     public void testPutNewXml() throws Exception {
+        InputStream in = expectPutEntity();
+
+        expect(templateValidator.validate(in)).andReturn(null);
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
-        InputStream in = expectPutEntity();
         expect(templateImportService.readAndSaveTemplate(null, in)).andReturn(study);
         expectStudyFilledOut();
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
@@ -151,6 +162,18 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
 
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
+    }
+
+    public void testPutWithInvalidXml() throws Exception {
+        InputStream in = expectPutEntity();
+
+        expect(templateValidator.validate(in)).andReturn("Schema validation error");
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
+
+        doPut();
+
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Schema validation error");
     }
 
     public void testEntityIsInDownloadModeWithDownloadParam() throws Exception {

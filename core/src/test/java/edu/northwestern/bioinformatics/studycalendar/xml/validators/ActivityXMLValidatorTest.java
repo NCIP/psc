@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.ACTIVITY_VALIDATOR_INSTANCE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.SPRING_ACTIVITY_VALIDATOR_INSTANCE;
 
 public class ActivityXMLValidatorTest extends StudyCalendarTestCase {
     private InputStream valid, invalid;
@@ -27,14 +27,14 @@ public class ActivityXMLValidatorTest extends StudyCalendarTestCase {
 
     public void testValidate() {
         BindException errors = new BindException(valid, StringUtils.EMPTY);
-        ValidationUtils.invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, valid, errors);
+        ValidationUtils.invokeValidator(SPRING_ACTIVITY_VALIDATOR_INSTANCE, valid, errors);
 
         assertFalse(errors.hasErrors());
     }
 
     public void testInvalid() {
         BindException errors = new BindException(invalid, StringUtils.EMPTY);
-        ValidationUtils.invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, invalid, errors);
+        ValidationUtils.invokeValidator(SPRING_ACTIVITY_VALIDATOR_INSTANCE, invalid, errors);
 
         assertTrue(errors.hasErrors());
         assertEquals("Wrong error count", 1, errors.getErrorCount());

@@ -37,7 +37,7 @@ public class ImportActivitiesCommand implements Validatable {
 
         try {
             if (getActivitiesType().toLowerCase().trim().equals("xml")) {
-                invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, activitiesFile.getInputStream(), errors);
+                invokeValidator(SPRING_ACTIVITY_VALIDATOR_INSTANCE, activitiesFile.getInputStream(), errors);
             }
         } catch (IOException ioe) {
             errors.reject("error.problem.reading.file", Schema.activities.title());

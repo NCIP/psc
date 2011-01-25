@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.SPRING_TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class ImportTemplateXmlCommand implements Validatable {
         }
 
         try {
-            invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, studyXml.getInputStream() , errors);
+            invokeValidator(SPRING_TEMPLATE_VALIDATOR_INSTANCE, studyXml.getInputStream() , errors);
         } catch (IOException ioe) {
             errors.reject("error.problem.reading.file", Schema.template.title());
             log.debug("Error reading file {} because {}", Schema.template.title(), ioe.getMessage());

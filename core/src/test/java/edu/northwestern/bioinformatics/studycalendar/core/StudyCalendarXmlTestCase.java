@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.SPRING_TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import org.apache.commons.io.IOUtils;
@@ -52,7 +52,7 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
 
     public void validate(byte[] byteOutput) {
         BindException errors = new BindException(byteOutput, EMPTY);
-        invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
+        invokeValidator(SPRING_TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
         assertFalse("Template xml should be error free", errors.hasErrors());
     }
