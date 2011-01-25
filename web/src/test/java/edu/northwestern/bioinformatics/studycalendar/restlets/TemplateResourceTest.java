@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateIm
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.apache.commons.io.IOUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -23,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
+import static org.easymock.EasyMock.*;
 import static org.easymock.classextension.EasyMock.expect;
 
 /**
@@ -136,8 +138,8 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
 
         expectSuccessfulStudyLoad();
         InputStream in = expectPutEntity();
-        expect(templateValidator.validate(in)).andReturn(null);
-        expect(templateImportService.readAndSaveTemplate(study, in)).andReturn(updatedStudy);
+        expect(templateValidator.validate(notNull())).andReturn(null);
+        expect(templateImportService.readAndSaveTemplate(eq(study), (InputStream) notNull())).andReturn(updatedStudy);
         expect(studyService.getCompleteTemplateHistory(updatedStudy)).andReturn(fullStudy);
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 
@@ -150,11 +152,11 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
     public void testPutNewXml() throws Exception {
         InputStream in = expectPutEntity();
 
-        expect(templateValidator.validate(in)).andReturn(null);
+        expect(templateValidator.validate(notNull())).andReturn(null);
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
-        expect(templateImportService.readAndSaveTemplate(null, in)).andReturn(study);
+        expect(templateImportService.readAndSaveTemplate((Study) isNull(), (InputStream) notNull())).andReturn(study);
         expectStudyFilledOut();
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 
@@ -167,7 +169,7 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
     public void testPutWithInvalidXml() throws Exception {
         InputStream in = expectPutEntity();
 
-        expect(templateValidator.validate(in)).andReturn("Schema validation error");
+        expect(templateValidator.validate(notNull())).andReturn("Schema validation error");
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
@@ -189,7 +191,7 @@ public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateRes
     }
 
     protected InputStream expectPutEntity() throws Exception {
-        final InputStream in = registerMockFor(InputStream.class);
+        final InputStream in = IOUtils.toInputStream("<foo></foo>");
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
         return in;
     }
