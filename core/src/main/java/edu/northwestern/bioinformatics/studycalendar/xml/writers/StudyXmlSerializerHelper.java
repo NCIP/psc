@@ -66,7 +66,7 @@ public class StudyXmlSerializerHelper {
                     throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
                 }
                 ref.updateActivity(foundActivityDef);
-                ref.getProperties().clear();
+                ref.setProperties(new ArrayList<ActivityProperty>());
                 for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
                     ref.addProperty(p.clone());
                 }
