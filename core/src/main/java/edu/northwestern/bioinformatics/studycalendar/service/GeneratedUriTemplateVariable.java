@@ -16,16 +16,10 @@ public enum GeneratedUriTemplateVariable {
     SITE_IDENTIFIER("site.assignedIdentifier")
     ;
 
-    private String resolutionPath;
-    private String secondTryResolutionPath;
+    private String[] resolutionPaths;
 
-    GeneratedUriTemplateVariable(String resolutionPath) {
-        this.resolutionPath = resolutionPath;
-    }
-
-    GeneratedUriTemplateVariable(String resolutionPath, String secondTryResolutionPath) {
-        this.resolutionPath = resolutionPath;
-        this.secondTryResolutionPath = secondTryResolutionPath;
+    GeneratedUriTemplateVariable(String... resolutionPaths) {
+        this.resolutionPaths = resolutionPaths;
     }
 
     public String attributeName() {
@@ -33,12 +27,11 @@ public enum GeneratedUriTemplateVariable {
     }
 
     public Object resolve(DomainContext context) {
-        if (resolutionPath.equals("subject.personId")){
-            if (context.getProperty(resolutionPath) == null || context.getProperty(resolutionPath).toString().trim().length() == 0) {
-                return context.getProperty(secondTryResolutionPath);
-            }
+        for (String resolutionPath : resolutionPaths) {
+            Object result = context.getProperty(resolutionPath);
+            if (result != null) return result;
         }
-        return context.getProperty(resolutionPath);
+        return null;
     }
 
     public static Map<String, Object> getAllTemplateValues(DomainContext context) {
