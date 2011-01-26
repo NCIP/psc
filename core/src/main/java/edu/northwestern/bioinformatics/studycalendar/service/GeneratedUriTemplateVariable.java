@@ -49,8 +49,10 @@ public enum GeneratedUriTemplateVariable {
         return all;
     }
 
+    // TODO: this special case should be handled elsewhere
     public static Map<String, Object> getAllTemplateValues(DomainContext context, StudySubjectAssignment assignment) {
         if (assignment != null) {
+            // TODO: this is bad -- the context is potentially a shared object and must not be mutated
             context.setStudySubjectAssignment(assignment);
         }
         return getAllTemplateValues(context);
