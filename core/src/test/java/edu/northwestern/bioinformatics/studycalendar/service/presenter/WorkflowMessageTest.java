@@ -23,6 +23,14 @@ public class WorkflowMessageTest extends TestCase {
             actual.getHtml());
     }
 
+    public void testHtmlMessageWorksWhenMountedAtRoot() throws Exception {
+        WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, "", true);
+        actual.setUriVariable("study-id", "14");
+        assertEquals("Wrong message HTML",
+            "needs at least one site <a href=\"/pages/cal/assignSite?id=14\" class=\"control\">assigned</a> for participation.",
+            actual.getHtml());
+    }
+
     public void testHtmlMessageContainsApplicableRoleWhenCannotPerform() throws Exception {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, null, false);
         assertEquals("Wrong message HTML",

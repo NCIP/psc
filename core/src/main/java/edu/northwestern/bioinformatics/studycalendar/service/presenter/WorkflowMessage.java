@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.restlet.routing.Template;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class WorkflowMessage {
         verifyTemplateVariablesAvailable(step.getUriTemplate(), uriTemplateValues);
 
         StringBuilder uri = new StringBuilder();
-        if (applicationMountPoint != null) {
+        if (StringUtils.hasText(applicationMountPoint)) {
             uri.append(applicationMountPoint);
             if (uri.charAt(uri.length() - 1) == '/') {
                 uri.deleteCharAt(uri.length() - 1);
