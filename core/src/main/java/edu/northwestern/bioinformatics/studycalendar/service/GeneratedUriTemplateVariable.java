@@ -11,7 +11,10 @@ public enum GeneratedUriTemplateVariable {
     SCHEDULED_ACTIVITY_IDENTIFIER("scheduledActivity.gridId"),
     ACTIVITY_CODE("scheduledActivity.activity.code"),
     DAY_FROM_STUDY_PLAN("scheduledActivity.dayNumber"),
-    STUDY_SUBJECT_IDENTIFIER("studySubjectAssignment.studySubjectId");
+    STUDY_SUBJECT_IDENTIFIER("studySubjectAssignment.studySubjectId"),
+    SITE_NAME("site.name"),
+    SITE_IDENTIFIER("site.assignedIdentifier")
+    ;
 
     private String resolutionPath;
     private String secondTryResolutionPath;

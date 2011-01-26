@@ -116,4 +116,18 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
 
         assertEquals("Identifier not resolved", studySubjectIdentifier, GeneratedUriTemplateVariable.STUDY_SUBJECT_IDENTIFIER.resolve(context));
     }
+
+    public void testResolveSiteName() throws Exception {
+        Site nu = Fixtures.createSite("Northwestern", "NU312");
+        context.setSite(nu);
+
+        assertEquals("Northwestern", GeneratedUriTemplateVariable.SITE_NAME.resolve(context));
+    }
+
+    public void testResolveSiteIdentifer() throws Exception {
+        Site nu = Fixtures.createSite("Northwestern", "NU312");
+        context.setSite(nu);
+
+        assertEquals("NU312", GeneratedUriTemplateVariable.SITE_IDENTIFIER.resolve(context));
+    }
 }
