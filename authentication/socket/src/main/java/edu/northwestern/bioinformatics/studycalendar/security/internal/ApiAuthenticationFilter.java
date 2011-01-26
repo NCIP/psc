@@ -45,9 +45,16 @@ public class ApiAuthenticationFilter implements Filter {
         ServletRequest request, ServletResponse response, FilterChain chain
     ) throws IOException, ServletException {
         String authorizationHeader = ((HttpServletRequest) request).getHeader("Authorization");
+        Authentication original = SecurityContextHolder.getContext().getAuthentication();
         if (authorizationHeader == null ||
             processAuthorization(authorizationHeader, (HttpServletResponse) response)) {
             chain.doFilter(request, response);
+
+            if (original == null) {
+                SecurityContextHolder.clearContext();
+            } else {
+                SecurityContextHolder.getContext().setAuthentication(original);
+            }
         }
     }
 

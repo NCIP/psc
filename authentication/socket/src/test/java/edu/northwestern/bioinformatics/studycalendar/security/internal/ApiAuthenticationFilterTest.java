@@ -17,6 +17,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -41,11 +43,13 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         new UsernamePasswordAuthenticationToken(
             USERNAME, null, new GrantedAuthority[] { PscRole.DATA_READER });
 
+    private static final Runnable NO_ASSERTIONS = new Runnable() { public void run() { } };
+
     private ApiAuthenticationFilter filter;
 
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private MockFilterChain filterChain;
+    private RunnableExecutingMockFilterChain filterChain;
     private AuthenticationSystem authenticationSystem;
     private AuthenticationManager authenticationManager;
 
@@ -54,7 +58,7 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         super.setUp();
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
-        filterChain = new MockFilterChain();
+        filterChain = new RunnableExecutingMockFilterChain();
 
         AuthenticationSystemConfiguration configuration =
             registerMockFor(AuthenticationSystemConfiguration.class);
@@ -79,7 +83,7 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
     }
 
     public void testDoesNothingWithNoAuthorizationHeader() throws Exception {
-        doFilter();
+        doFilter(NO_ASSERTIONS);
     }
 
     ////// HTTP BASIC
@@ -90,9 +94,11 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
             andReturn(AUTHENTICATED_TOKEN);
 
-        doFilter();
-
-        assertSame(AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame(AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
     }
 
     public void testReturns501WithBasicIfAuthenticationSystemDoesNotSupportUsernames() throws Exception {
@@ -101,7 +107,7 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationSystem.createUsernamePasswordAuthenticationRequest(USERNAME, PASSWORD)).
             andReturn(null);
 
-        doFilter(false);
+        doFilterAndExpectChainStopped();
 
         assertEquals("Should be 501", HttpServletResponse.SC_NOT_IMPLEMENTED, response.getStatus());
         assertEquals("Wrong message",
@@ -115,25 +121,19 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
             andThrow(new BadCredentialsException("Nope"));
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     public void testDoesNothingForInvalidBasic() throws Exception {
         request.addHeader("Authorization", "Basic notbase64atall");
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     public void testDoesNothingForIncompleteBasic() throws Exception {
         request.addHeader("Authorization", "Basic");
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     ////// PSC_TOKEN
@@ -144,9 +144,11 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(TOKEN_AUTH_REQUEST_TOKEN)).
             andReturn(AUTHENTICATED_TOKEN);
 
-        doFilter();
-
-        assertSame(AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame(AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
     }
 
     public void testReturns501WithBasicIfAuthenticationSystemDoesNotSupportTokens() throws Exception {
@@ -155,7 +157,7 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationSystem.createTokenAuthenticationRequest(TOKEN)).
             andReturn(null);
 
-        doFilter(false);
+        doFilterAndExpectChainStopped();
 
         assertEquals("Should be 501", HttpServletResponse.SC_NOT_IMPLEMENTED, response.getStatus());
         assertEquals("Wrong message",
@@ -169,17 +171,13 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(TOKEN_AUTH_REQUEST_TOKEN)).
             andThrow(new BadCredentialsException("Nope"));
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     public void testDoesNothingForIncompleteToken() throws Exception {
         request.addHeader("Authorization", "psc_token");
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     ////// REPLACE EXISTING
@@ -192,9 +190,12 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
             andReturn(AUTHENTICATED_TOKEN);
 
-        doFilter();
-
-        assertSame(AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame(AUTHENTICATED_TOKEN,
+                    SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
     }
 
     public void testExistingSecurityContextClearedWithBadAuthorization() throws Exception {
@@ -205,34 +206,78 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
             andThrow(new BadCredentialsException("Nope"));
 
-        doFilter();
-
-        assertNoOneLoggedIn();
+        doFilterAndExpectNoOneLoggedIn();
     }
 
     public void testExistingSecurityContextRemainsWithNoAuthorization() throws Exception {
-        Authentication otherUser = expectOtherUserLoggedIn();
+        final Authentication otherUser = expectOtherUserLoggedIn();
 
-        doFilter();
-
-        assertSame(otherUser, SecurityContextHolder.getContext().getAuthentication());
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame(otherUser, SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
     }
 
     public void testDoesNothingForOtherScheme() throws Exception {
         request.addHeader("Authorization", "Digest-or-something 3456");
 
-        doFilter();
+        doFilterAndExpectNoOneLoggedIn();
+    }
+
+    public void testNewlyCreatedSecurityContextClearedAfterExecution() throws Exception {
+        request.addHeader("Authorization", BASIC_FOR_USERNAME_AND_PASSWORD);
+
+        expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
+            andReturn(AUTHENTICATED_TOKEN);
+
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame("Test setup failure",
+                    AUTHENTICATED_TOKEN, SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
 
         assertNoOneLoggedIn();
     }
 
-    ////// HELPERS
+    public void testExistingSecurityContextReturnedAfterExecution() throws Exception {
+        Authentication otherUser = expectOtherUserLoggedIn();
 
-    private void doFilter() throws IOException, ServletException {
-        doFilter(true);
+        request.addHeader("Authorization", BASIC_FOR_USERNAME_AND_PASSWORD);
+
+        expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTH_REQUEST_TOKEN)).
+            andReturn(AUTHENTICATED_TOKEN);
+
+        doFilter(new Runnable() {
+            public void run() {
+                assertSame("Test setup failure", AUTHENTICATED_TOKEN,
+                    SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
+
+        assertSame(otherUser, SecurityContextHolder.getContext().getAuthentication());
     }
 
-    private void doFilter(boolean expectContinued) throws IOException, ServletException {
+    ////// HELPERS
+
+    private void doFilter(Runnable assertions) throws IOException, ServletException {
+        doFilter(assertions, true);
+    }
+
+    private void doFilterAndExpectChainStopped() throws IOException, ServletException {
+        doFilter(null, false);
+    }
+
+    private void doFilterAndExpectNoOneLoggedIn() throws IOException, ServletException {
+        doFilter(new Runnable() {
+            public void run() { assertNoOneLoggedIn(); }
+        });
+    }
+
+    private void doFilter(Runnable assertions, boolean expectContinued) throws IOException, ServletException {
+        filterChain.setAssertions(assertions);
+
         replayMocks();
         filter.doFilter(request, response, filterChain);
         verifyMocks();
@@ -257,7 +302,6 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
         assertNull("No one should be logged in", SecurityContextHolder.getContext().getAuthentication());
     }
 
-
     private static final class SingleTokenAuthenticationToken extends AbstractAuthenticationToken {
         private String token;
 
@@ -271,6 +315,29 @@ public class ApiAuthenticationFilterTest extends AuthenticationTestCase {
 
         public Object getPrincipal() {
             return "SOMEONE";
+        }
+    }
+
+    /**
+     * A mock filter chain that allows assertions to be injected to be executed if the
+     * chain is continued.
+     */
+    private static final class RunnableExecutingMockFilterChain extends MockFilterChain {
+        private Runnable assertions;
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response) {
+            super.doFilter(request, response);
+
+            if (getAssertions() != null) getAssertions().run();
+        }
+
+        public Runnable getAssertions() {
+            return assertions;
+        }
+
+        public void setAssertions(Runnable assertions) {
+            this.assertions = assertions;
         }
     }
 }
