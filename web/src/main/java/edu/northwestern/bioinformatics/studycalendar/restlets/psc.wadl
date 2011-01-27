@@ -1949,8 +1949,29 @@
                   </doc>
               </response>
           </method>
+          <resource path="{user-action-identifier}">
+              <doc>
+                  <html:p>A single user action.</html:p>
+              </doc>
+              <param style="template" name="user-action-identifier">
+                  <doc>The generated user action identifier.</doc>
+              </param>
+              <method name="DELETE">
+                   <doc>
+                       <html:p>
+                           Sets undone flag for user action and reverse
+                           the effects of all the audit events associated with the undone user action.
+                       </html:p>
+                       <html:div class="roles">
+                           Authorized to:
+                            <html:ul>
+                                <html:li>Study Subject Calendar Manager</html:li>
+                            </html:ul>
+                       </html:div>
+                   </doc>
+              </method>
+          </resource>
       </resource>
-
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>

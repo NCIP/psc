@@ -302,6 +302,9 @@
     <bean name="/user-actions" id="userActionsResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserActionsResource" />
 
+     <bean name="/user-actions/{user-action-identifier}" id="userActionResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UserActionResource" />
+
     <!-- AUXILIARIES -->
 
     <bean id="resourceFreemarkerConfiguration"

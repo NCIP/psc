@@ -28,7 +28,8 @@ public enum UriTemplateParameters {
     BUNDLE_ID,
     NOTIFICATION_IDENTIFIER,
     SOURCE_NAME,
-    SERVICE_IDENTIFIER
+    SERVICE_IDENTIFIER,
+    USER_ACTION_IDENTIFIER
     ;
 
     public String attributeName() {
