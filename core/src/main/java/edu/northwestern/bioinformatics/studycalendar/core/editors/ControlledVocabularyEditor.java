@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.editors;
+package edu.northwestern.bioinformatics.studycalendar.core.editors;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -59,3 +59,4 @@ public class ControlledVocabularyEditor extends PropertyEditorSupport {
         }
     }
 }
+

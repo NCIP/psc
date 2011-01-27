@@ -1,8 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.editors;
+package edu.northwestern.bioinformatics.studycalendar.core.editors;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
-import junit.framework.Test;
 
 /**
  * @author Rhett Sutphin
@@ -30,7 +29,7 @@ public class ControlledVocabularyEditorTest extends StudyCalendarTestCase {
         editor.setValue(null);
         assertNull(editor.getAsText());
     }
-    
+
     public void testNoBlankAsNullWhenNotAllowed() throws Exception {
         try {
             editor.setAsText("");
@@ -68,3 +67,4 @@ public class ControlledVocabularyEditorTest extends StudyCalendarTestCase {
         }
     }
 }
+
