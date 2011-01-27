@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.cabig.ctms.audit.domain.*;
 import gov.nih.nci.cabig.ctms.audit.util.AuditUtil;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
@@ -10,6 +11,7 @@ import org.hibernate.type.CollectionType;
 import org.hibernate.type.Type;
 
 import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  * @author Jalpa Patel
@@ -118,7 +120,11 @@ public class AuditEvent extends DataAuditEvent implements Comparable<AuditEvent>
             Integer id = AuditUtil.getObjectId(propertyValue);
             return id.toString();
         } else {
-            return propertyValue.toString();
+            if (propertyValue instanceof Date) {
+                return DateFormat.getISO8601Format().format(propertyValue);
+            } else {
+                return propertyValue.toString();
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
@@ -23,7 +24,7 @@ public class AuditEventTest extends DomainTestCase {
     private final String STUDY_URL = "/psc/pages/newStudy";
     private final String NAME = "name";
     private final String ID = "id";
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private SimpleDateFormat sdf = DateFormat.getUTCFormat();
 
     protected void setUp() throws Exception {
         super.setUp();

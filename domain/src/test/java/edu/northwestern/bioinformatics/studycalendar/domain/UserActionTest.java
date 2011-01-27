@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import java.text.SimpleDateFormat;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNegative;
@@ -10,7 +11,7 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
  */
 public class UserActionTest  extends DomainTestCase {
     private User csmUser;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private SimpleDateFormat sdf = DateFormat.getUTCFormat();
 
     @Override
     protected void setUp() throws Exception {

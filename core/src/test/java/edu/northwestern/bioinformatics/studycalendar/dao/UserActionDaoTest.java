@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class UserActionDaoTest extends ContextDaoTestCase<UserActionDao> {
         List<UserAction> userActions = dao.getUserActionsByContext(context);
         assertNotNull("User actions not found", userActions);
         assertEquals("Wrong no of user actions", 2, userActions.size());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = DateFormat.getUTCFormat();
 
         Date time1 = sdf.parse("2010-08-17 21:27:58.361");
         UserAction ua1 = userActions.get(0);

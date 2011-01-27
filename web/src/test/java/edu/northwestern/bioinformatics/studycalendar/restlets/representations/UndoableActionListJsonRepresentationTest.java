@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setG
 public class UndoableActionListJsonRepresentationTest extends JsonRepresentationTestCase {
     private List<UserAction> userActions;
     private UserAction ua1, ua2, ua3;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private final SimpleDateFormat sdf = DateFormat.getUTCFormat();
     private final String CONTEXT = "/psc/schedule";
     private final String ROOT_URI = "localhost/api";
 

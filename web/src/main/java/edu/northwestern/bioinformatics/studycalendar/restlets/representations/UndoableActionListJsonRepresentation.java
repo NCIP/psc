@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ public class UndoableActionListJsonRepresentation extends StreamingJsonRepresent
     private List<UserAction> userActionList;
     private String context;
     private String rootURI;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private final SimpleDateFormat sdf = DateFormat.getUTCFormat();
 
     public UndoableActionListJsonRepresentation(List<UserAction> userActionList, String context, String rootURI) {
         this.userActionList = userActionList;
