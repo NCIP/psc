@@ -67,7 +67,7 @@ public class AuditEventDao implements InitializingBean {
     @SuppressWarnings("unchecked")
     public List<AuditEvent> getAuditEventsByUserActionId(String userActionId) {
         String[] query =  new String[] {
-                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "select id, ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
                 "from Audit_Events where user_action_id = ?"
         };
         List<AuditEvent> events =  jdbcTemplate.query(join(query, ' '), new Object[] {userActionId}, new AuditEventRowMappper());
@@ -78,7 +78,7 @@ public class AuditEventDao implements InitializingBean {
     @SuppressWarnings("unchecked")
     public List<AuditEvent> getAuditEventsWithLaterTimeStamp(String className, int objectId, Date time) {
         String[] query =  new String[] {
-                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "select id, ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
                 "from Audit_Events where class_name = ? and object_id = ? and time > ?"
         };
         return jdbcTemplate.query(join(query, ' '), new Object[] {className, objectId, time}, new AuditEventRowMappper());
@@ -119,7 +119,36 @@ public class AuditEventDao implements InitializingBean {
             event.getInfo().setTime(rs.getTimestamp("time"));
             event.getInfo().setUrl(rs.getString("url"));
             event.setUserActionId(rs.getString("user_action_id"));
+            event.addValues(getAuditEventValuesForEvent(rs.getInt("id")));
             return event;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DataAuditEventValue> getAuditEventValuesForEvent(int eventId) {
+        String[] query =  new String[] {
+                "select attribute_name, previous_value, new_value",
+                "from Audit_Event_Values where audit_event_id = ? order by id"
+        };
+
+        List<DataAuditEventValue> values =  jdbcTemplate.query(join(query, ' '),
+                new Object[] {eventId}, new AuditEventValueRowMappper());
+        return values;
+    }
+
+    public class AuditEventValueRowMappper implements RowMapper {
+        public Object mapRow(ResultSet rs, int i) throws SQLException {
+            AuditEventValueRecordResultSetExtractor extractor = new AuditEventValueRecordResultSetExtractor();
+            return extractor.extractData(rs);
+        }
+    }
+
+    public class AuditEventValueRecordResultSetExtractor implements ResultSetExtractor {
+        public Object extractData(ResultSet rs) throws SQLException {
+            return new DataAuditEventValue(
+                    rs.getString("attribute_name"),
+                    rs.getString("previous_value"),
+                    rs.getString("new_value"));
         }
     }
 }

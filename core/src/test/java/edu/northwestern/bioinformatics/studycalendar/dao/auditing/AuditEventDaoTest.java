@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
@@ -76,11 +77,29 @@ public class AuditEventDaoTest extends DaoTestCase {
         assertEquals("Wrong Operation", "CREATE", second.getOperation().toString());
     }
 
+    public void testGetAuditEventsWithValueByUserActionId() throws Exception {
+        interruptSession();
+        List<AuditEvent> auditEvents = dao.getAuditEventsByUserActionId("grid1");
+        assertNotNull("Audit Events not found", auditEvents);
+        assertEquals("No of audit events are wrong", 2, auditEvents.size());
+        AuditEvent event = auditEvents.get(1);
+
+        assertEquals("Wrong class_name", "edu.northwestern.bioinformatics.studycalendar.domain.Activity",
+                event.getReference().getClassName());
+        assertEquals("Wrong Operation", "CREATE", event.getOperation().toString());
+        List<DataAuditEventValue> values = event.getValues();
+        assertEquals("No values found", 3, values.size());
+
+        assertEquals("Wrong attribute name", "name", values.get(0).getAttributeName());
+        assertNull("Wrong previous name", values.get(0).getPreviousValue());
+        assertEquals("Wrong current value", "Name1", values.get(0).getCurrentValue());
+    }
+
     public void testGetAuditEventsBySearchCriteria() throws Exception {
         interruptSession();
         String className = "edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity";
         int objectId = -13;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = DateFormat.getUTCFormat();
 
         Date time = sdf.parse("2010-08-17 23:26:58.361");
         List<AuditEvent> auditEvents = dao.getAuditEventsWithLaterTimeStamp(className, objectId, time);

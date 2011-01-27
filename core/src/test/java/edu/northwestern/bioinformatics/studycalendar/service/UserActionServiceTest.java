@@ -3,23 +3,23 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.authorization.domainobjects.User;
-
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createInDevelopmentTemplate;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static org.easymock.EasyMock.expect;
 
@@ -38,21 +38,24 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
     private AuditEvent ae1Ua, ae2Ua,ae3Ua;
     private final String USER_NAME = "cathy";
     private final String IP = "10.10.10.155";
-    private final String URL = "/psc/pages/updateStudy";
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
+    private final String URL = "/psc/pages/update";
+    private final SimpleDateFormat sdf = DateFormat.getUTCFormat();
+    private DaoFinder daoFinder;
+    private DeletableDomainObjectDao domainObjectDao;
 
     public void setUp() throws Exception {
         super.setUp();
 
+        daoFinder = registerMockFor(DaoFinder.class);
+        domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
         userActionDao = registerDaoMockFor(UserActionDao.class);
         auditEventDao = registerDaoMockForNonStudyCalendarDao(AuditEventDao.class);
         applicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
-
         service =  new UserActionService();
         service.setAuditEventDao(auditEventDao);
         service.setUserActionDao(userActionDao);
         service.setApplicationSecurityManager(applicationSecurityManager);
+        service.setDaoFinder(daoFinder);
 
         csmUser1 = AuthorizationObjectFactory.createCsmUser(11, USER_NAME);
         csmUser2 = AuthorizationObjectFactory.createCsmUser(12, "peri");
@@ -205,6 +208,108 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         assertEquals("No undoable actions", 2, undoableActions.size());
         assertEquals("Undoable actions are not in order", Arrays.asList(ua4, ua3), undoableActions);
 
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForUpdateAuditEvents() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Site site = setId(11, createSite("UpdatedSite", "S1"));
+        ae1 = new AuditEvent(site, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("name", "Site", "UpdatedSite"));
+
+        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(11)).andReturn(site);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        assertEquals("Site name is not undone", "UpdatedSite", site.getName());
+        domainObjectDao.save(site);
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("Site name is undone", "Site", site.getName());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForComplexUpdateAuditEvents() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        ScheduledActivityState state =  new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2010, Calendar.OCTOBER, 18), "Just Canceled");
+        ScheduledActivity event = setId(1, createScheduledActivityWithStudy("DC", 2010, Calendar.OCTOBER, 18, state));
+        event.getCurrentState().setReason("Delay for 1 day");
+        event.setNotes("note1");
+        ae1 = new AuditEvent(event, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("notes", "note", "note1"));
+        ae1.addValue(new DataAuditEventValue("currentState.reason", "Initialized from template", "Delay for 1 day"));
+        ae1.addValue(new DataAuditEventValue("currentState.date", "2010-10-17T00:00:00.0Z", "2010-10-18T00:00:00.0Z"));
+        ae1.addValue(new DataAuditEventValue("currentState.mode", "1", "3"));
+
+        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(ScheduledActivity.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(1)).andReturn(event);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        assertEquals("Scheduled Activity is not undone ", ScheduledActivityMode.CANCELED, event.getCurrentState().getMode());
+        domainObjectDao.save(event);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("Scheduled Activity is undone", "note", event.getNotes());
+        assertEquals("Scheduled Activity is undone", "Initialized from template", event.getCurrentState().getReason());
+        assertEquals("Scheduled Activity is undone", "Sun Oct 17 00:00:00 CDT 2010", event.getCurrentState().getDate().toString());
+        assertEquals("Scheduled Activity is undone", ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
+
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForCreateAuditEvents() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Site site = setId(11, createSite("Site", "S1"));
+        ae1 = new AuditEvent(site, Operation.CREATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("name", null, "Site"));
+        ae1.addValue(new DataAuditEventValue("assignedIdentifier", null, "S1"));
+
+        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(11)).andReturn(site);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        domainObjectDao.delete(site);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForDeleteAuditEvents() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Site site = setId(11, createSite("Site", "S1"));
+        ae1 = new AuditEvent(site, Operation.DELETE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("name", "Site", null));
+        ae1.addValue(new DataAuditEventValue("assignedIdentifier","S1", null));
+
+        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(11)).andReturn(null);
+        assertFalse("UserAction is undone", ua1.isUndone());
+
+        Site newSite = createSite("Site", "S1");
+        domainObjectDao.save(newSite);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
     }
 
     private void expectCurrentUser() {

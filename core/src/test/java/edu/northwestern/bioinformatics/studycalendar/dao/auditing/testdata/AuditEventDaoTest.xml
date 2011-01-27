@@ -74,4 +74,25 @@
         url="/psc/pages/activities/addNewActivity"
         version="0"
         object_id="-13" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-103"
+        audit_event_id="-101"
+        attribute_name="gridId"
+        new_value="grid1"
+        version="0" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-104"
+        audit_event_id="-101"
+        attribute_name="assignedIdentifier"
+        new_value="AssignId1"
+        version="0" />
+
+    <AUDIT_EVENT_VALUES
+        id = "-105"
+        audit_event_id="-101"
+        attribute_name="name"
+        new_value="Name1"
+        version="0" />
 </dataset>
