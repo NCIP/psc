@@ -244,8 +244,10 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     public ScheduledActivityState getCurrentState() {
         return currentState;
     }
-
-    private void setCurrentState(ScheduledActivityState currentState) {
+    /* To implement undo, setter should have public access. Undo doesn't need to preserve the history for scheduled activity.
+       But for all other uses, it is required to preserve history, so use changeState instead.
+     */
+    public void setCurrentState(ScheduledActivityState currentState) {
         this.currentState = currentState;
     }
 
