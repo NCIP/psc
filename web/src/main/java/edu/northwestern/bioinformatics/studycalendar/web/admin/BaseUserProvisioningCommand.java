@@ -252,19 +252,18 @@ public abstract class BaseUserProvisioningCommand {
         return String.format("[%s]", StringUtils.join(js, ",\n"));
     }
 
-    private String buildJavaScriptProvisionableUser(PscUser user) {
+    protected String buildJavaScriptProvisionableUser(PscUser user) {
         try {
             return String.format(
-                "new psc.admin.ProvisionableUser(%s, %s, %s)",
+                "new psc.admin.ProvisionableUser(%s, %s)",
                 buildJavaScriptString(user.getCsmUser().getLoginName()),
-                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH),
-                "PROVISIONABLE_ROLES");
+                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH));
         } catch (JSONException e) {
             throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
         }
     }
 
-    private String buildJavaScriptString(String s) {
+    protected String buildJavaScriptString(String s) {
         if (s == null) {
             return "null";
         } else {
@@ -272,7 +271,7 @@ public abstract class BaseUserProvisioningCommand {
         }
     }
 
-    private JSONObject buildProvisionableUserRoleJSON(PscUser user) throws JSONException {
+    protected JSONObject buildProvisionableUserRoleJSON(PscUser user) throws JSONException {
         JSONObject rolesJSON = new JSONObject();
         for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : user.getMemberships().entrySet()) {
             rolesJSON.put(entry.getKey().getCsmName(), buildProvisionableUserScopeJSON(entry.getValue()));

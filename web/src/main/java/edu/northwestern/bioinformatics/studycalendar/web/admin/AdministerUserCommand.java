@@ -231,6 +231,18 @@ public class AdministerUserCommand
         }
     }
 
+    protected String buildJavaScriptProvisionableUser(PscUser user) {
+        try {
+            return String.format(
+                "new psc.admin.ProvisionableUser(%s, %s, %s)",
+                buildJavaScriptString(user.getCsmUser().getLoginName()),
+                buildProvisionableUserRoleJSON(user).toString(JSON_INDENT_DEPTH),
+                "PROVISIONABLE_ROLES");
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
+        }
+    }
+
     // package level for testing
     JSONObject buildJavaScriptProvisionableStudies() throws JSONException {
         JSONObject studies = new JSONObject();

@@ -505,32 +505,32 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
     ////// javascript state init
 
     public void testJavaScriptUserForEmptyUserIsCorrect() throws Exception {
-        assertEquals("new psc.admin.ProvisionableUser('jo', {}, PROVISIONABLE_ROLES)", command.getJavaScriptProvisionableUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {})", command.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserForUnnamedUserHasNoUsername() throws Exception {
         command.getUser().getCsmUser().setLoginName(null);
-        assertEquals("new psc.admin.ProvisionableUser(null, {}, PROVISIONABLE_ROLES)",
+        assertEquals("new psc.admin.ProvisionableUser(null, {})",
             command.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneGroupOnlyRole() throws Exception {
         TestCommand actual = create(new PscUserBuilder("jo").add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}}, PROVISIONABLE_ROLES)",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}})",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneSiteScopedRole() throws Exception {
         TestCommand actual = create(
             new PscUserBuilder("jo").add(PscRole.USER_ADMINISTRATOR).forSites(austin).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"user_administrator\": {\"sites\": [\"i-a\"]}}, PROVISIONABLE_ROLES)",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"user_administrator\": {\"sites\": [\"i-a\"]}})",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavaScriptUserWithOneSitePlusStudyScopedRole() throws Exception {
         TestCommand actual = create(
             new PscUserBuilder("jo").add(PscRole.DATA_READER).forSites(sanAntonio).forAllStudies().toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\"data_reader\": {\n    \"sites\": [\"i-sa\"],\n    \"studies\": [\"__ALL__\"]\n}}, PROVISIONABLE_ROLES)",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"data_reader\": {\n    \"sites\": [\"i-sa\"],\n    \"studies\": [\"__ALL__\"]\n}})",
             actual.getJavaScriptProvisionableUser());
     }
 
@@ -541,7 +541,7 @@ public class BaseUserProvisioningCommandTest extends WebTestCase {
                 add(PscRole.DATA_READER).forAllSites().
                     forStudies(Fixtures.createBasicTemplate("T"), Fixtures.createBasicTemplate("Q")).
                 toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n    \"data_reader\": {\n        \"sites\": [\"__ALL__\"],\n        \"studies\": [\n            \"T\",\n            \"Q\"\n        ]\n    },\n    \"user_administrator\": {\"sites\": [\"i-a\"]}\n}, PROVISIONABLE_ROLES)",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n    \"data_reader\": {\n        \"sites\": [\"__ALL__\"],\n        \"studies\": [\n            \"T\",\n            \"Q\"\n        ]\n    },\n    \"user_administrator\": {\"sites\": [\"i-a\"]}\n})",
             actual.getJavaScriptProvisionableUser());
     }
 
