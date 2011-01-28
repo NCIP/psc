@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySiteRelationship;
@@ -34,13 +35,31 @@ public class RegistrationService {
 
         PscUser studySubjectCalendarManager = registration.getStudySubjectCalendarManager();
         UserStudySiteRelationship ussr = new UserStudySiteRelationship(studySubjectCalendarManager, studySite);
-        Subject subject = subjectService.findSubject(registration.getSubject());
-        if (subject != null) {
-            registration.setSubject(subject);
+        Subject existingSubject = subjectService.findSubject(registration.getSubject());
+        if (existingSubject != null) {
+            Subject newSubject = registration.getSubject();
+            mergeSubjectProperties(newSubject, existingSubject);
+            registration.setSubject(existingSubject);
         } else if (!ussr.getCanCreateSubjects()) {
             throw new StudyCalendarValidationException("%s has insufficient privilege to create new subject.", studySubjectCalendarManager);
         }
         return registration;
+    }
+
+    private void mergeSubjectProperties(Subject newSubject, Subject existingSubject) {
+        for (SubjectProperty newProperty : newSubject.getProperties()) {
+            boolean propertyExists = false;
+            for (SubjectProperty existingProperty : existingSubject.getProperties()) {
+                if (existingProperty.getName().equals(newProperty.getName())) {
+                    existingProperty.setValue(newProperty.getValue());
+                    propertyExists = true;
+                    break;
+                }
+            }
+            if (!propertyExists) {
+                existingSubject.getProperties().add(newProperty);
+            }
+        }
     }
 
     private PscUser resolvePscUser(PscUser spec) {

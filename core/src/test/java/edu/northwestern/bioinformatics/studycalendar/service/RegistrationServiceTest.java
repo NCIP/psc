@@ -2,18 +2,25 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 
+import java.util.Calendar;
+import java.util.List;
+
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static java.util.Calendar.JANUARY;
 import static org.easymock.EasyMock.expect;
@@ -39,7 +46,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         subjectService = registerMockFor(SubjectService.class);
 
-        subject =  Fixtures.createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
+        subject =  createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
         // by default, expect the subject is new
         expect(subjectService.findSubject(subject)).andStubReturn(null);
 
@@ -92,13 +99,41 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistrationWhenMatchingSubjectFound() throws Exception {
-        Subject subjectFound =  Fixtures.createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
+        Subject subjectFound =  createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
         subjectFound .setId(4);
         expect(subjectService.findSubject(subject)).andReturn(subjectFound );
         replayMocks();
         service.resolveRegistration(registration, studySite);
         verifyMocks();
         assertNotNull("Subject is not present in system", registration.getSubject().getId());
+    }
+
+    public void testResolveRegistrationMergesPropertiesWhenSubjectExists() throws Exception {
+        Subject existing = setId(7,
+            createSubject("P1", "DC", "DC", DateTools.createDate(1987, Calendar.JANUARY, 4)));
+        existing.getProperties().add(new SubjectProperty("First language", "jp"));
+        existing.getProperties().add(new SubjectProperty("Favorite color", "red"));
+        expect(subjectService.findSubject(subject)).andReturn(existing);
+
+        subject.getProperties().add(new SubjectProperty("Height", "150cm"));
+        subject.getProperties().add(new SubjectProperty("Favorite color", "burgundy"));
+
+        replayMocks(); service.resolveRegistration(registration, studySite); verifyMocks();
+
+        List<SubjectProperty> actualProps = registration.getSubject().getProperties();
+        assertEquals("Wrong number of resulting properties",
+            3, actualProps.size());
+        assertSubjectProperty("Unchanged property not left alone",
+            "First language", "jp", actualProps.get(0));
+        assertSubjectProperty("Existing property not updated",
+            "Favorite color", "burgundy", actualProps.get(1));
+        assertSubjectProperty("New property not appended",
+            "Height", "150cm", actualProps.get(2));
+    }
+
+    private void assertSubjectProperty(String message, String expectedName, String expectedValue, SubjectProperty actual) {
+        assertEquals(message + ": wrong name", expectedName, actual.getName());
+        assertEquals(message + ": wrong value", expectedValue, actual.getValue());
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubjectForStudySite() throws Exception {

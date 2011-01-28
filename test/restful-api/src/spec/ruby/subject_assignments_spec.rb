@@ -102,6 +102,44 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
       response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
     end
 
+    describe "with subject properties" do
+      before do
+        xml = subject_registration_xml { |subject|
+          subject.property :name => "Car make", :value => "Nissan"
+          subject.property :name => "Phone number", :value => "312-503-1212"
+        }
+
+        post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
+        response.status_code.should == 201
+      end
+
+      it "stores the properties" do
+        subject = application_context["subjectDao"].get_by_person_id("ID006")
+        subject.properties.collect { |p| [p.name, p.value] }.should == [
+            ["Car make", "Nissan"], ["Phone number", "312-503-1212"]
+        ]
+      end
+
+      it "merges the properties for a subsequent registration of the same person" do
+        xml = subject_registration_xml(:registration => {
+            'date' => '2010-01-04', 'desired-assignment-id' => 'POP-234'
+        }) { |subject|
+          subject.property :name => "E-mail address", :value => "suzuki@gmail.com"
+          subject.property :name => "Car make", :value => "Toyota"
+        }
+
+        post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
+        response.status_code.should == 201
+
+        subject = application_context["subjectDao"].get_by_person_id("ID006")
+        subject.properties.collect { |p| [p.name, p.value] }.should == [
+          ["Car make", "Toyota"],
+          ["Phone number", "312-503-1212"],
+          ["E-mail address", "suzuki@gmail.com"],
+        ]
+      end
+    end
+
     it "fails creation of a new subject with wrong gender" do
       xml = subject_registration_xml(:subject => { "gender" => "female too" })
 
