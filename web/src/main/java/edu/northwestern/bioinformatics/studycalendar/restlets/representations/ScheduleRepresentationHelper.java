@@ -283,9 +283,13 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         JacksonTools.nullSafeWriteStringField(generator, "last_name", subject.getLastName());
         JacksonTools.nullSafeWriteStringField(generator, "full_name", subject.getFullName());
         JacksonTools.nullSafeWriteStringField(generator, "last_first", subject.getLastFirst());
-        if (subject.getDateOfBirth() != null)
-            JacksonTools.nullSafeWriteStringField(generator, "birth_date", getApiDateFormat().format(subject.getDateOfBirth()));
-        JacksonTools.nullSafeWriteStringField(generator, "gender", subject.getGender().getDisplayName());
+        if (subject.getDateOfBirth() != null) {
+            generator.writeStringField(
+                "birth_date", getApiDateFormat().format(subject.getDateOfBirth()));
+        }
+        if (subject.getGender() != null) {
+            generator.writeStringField("gender", subject.getGender().getDisplayName());
+        }
         generator.writeEndObject();
     }
 

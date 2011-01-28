@@ -365,6 +365,15 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         assertEquals("Missing gender", "Female", actual.get("gender"));
     }
 
+    public void testSubjectInfoStillGeneratedIfSubjectHasNoGender() throws Exception {
+        subject.setGender(null);
+        scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        JSONObject jsonSubj = outputAsObject();
+        // expect no error, plus:
+
+        assertFalse("Should have no gender", jsonSubj.has("gender"));
+    }
+
     private JSONObject outputAsObject() throws IOException {
         generator.close();
         try {
