@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -16,7 +17,7 @@ import java.lang.reflect.Method;
 /**
  * @author Rhett Sutphin
  */
-public class DomainContext {
+public class DomainContext implements Cloneable {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private Study study;
@@ -44,6 +45,10 @@ public class DomainContext {
 
     public DomainContext(TemplateService templateService) {
         this.templateService = templateService;
+        resetWrapper();
+    }
+
+    private void resetWrapper() {
         selfWrapper = new BeanWrapperImpl(this);
     }
 
@@ -237,5 +242,18 @@ public class DomainContext {
 
     public Population getPopulation() {
         return population;
+    }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public DomainContext clone() {
+        try {
+            DomainContext clone = (DomainContext) super.clone();
+            clone.resetWrapper();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("It is supported", e);
+        }
     }
 }

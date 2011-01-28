@@ -66,15 +66,6 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
     }
 
-    public void testCreateAllVariablesMapWithAssignmentPassedIn() throws Exception {
-        String gridId = "Expected Assignment";
-        StudySubjectAssignment assignment = new StudySubjectAssignment();
-        assignment.setGridId(gridId);
-
-        Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context, assignment);
-        assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
-    }
-
     public void testResolveScheduledActivityIdentifier() throws Exception {
         String scheduledActivityIdentifier = "Expected";
         ScheduledActivity scheduledActivity = new ScheduledActivity();

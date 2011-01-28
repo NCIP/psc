@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public enum GeneratedUriTemplateVariable {
     STUDY_IDENTIFIER("study.assignedIdentifier"),
@@ -40,14 +39,5 @@ public enum GeneratedUriTemplateVariable {
             all.put(variable.attributeName(), variable.resolve(context));
         }
         return all;
-    }
-
-    // TODO: this special case should be handled elsewhere
-    public static Map<String, Object> getAllTemplateValues(DomainContext context, StudySubjectAssignment assignment) {
-        if (assignment != null) {
-            // TODO: this is bad -- the context is potentially a shared object and must not be mutated
-            context.setStudySubjectAssignment(assignment);
-        }
-        return getAllTemplateValues(context);
     }
 }
