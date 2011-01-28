@@ -45,7 +45,9 @@ describe "/subjects/{subject-identifier}/schedules" do
     application_context['studySiteDao'].save(@studySite2)
 
     #create subject
-    @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+    @subject = PscTest::Fixtures.createSubject(
+      "ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+    @subject.properties << Psc::Domain::SubjectProperty.new("Soup preference", "Chicken Alphabet")
 
     #create a study subject assignment
     @studySegment1 = @nu480.plannedCalendar.epochs.first.studySegments.first
@@ -129,6 +131,12 @@ describe "/subjects/{subject-identifier}/schedules" do
 
           it "has the gender" do
             @subject['gender'].should == "Male"
+          end
+
+          it "has the properties" do
+            @subject['properties'].should == [
+              { 'name' => 'Soup preference', 'value' => 'Chicken Alphabet' }
+            ]
           end
         end
 

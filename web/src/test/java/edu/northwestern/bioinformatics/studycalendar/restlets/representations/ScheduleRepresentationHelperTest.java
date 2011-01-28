@@ -18,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -372,6 +373,15 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         // expect no error, plus:
 
         assertFalse("Should have no gender", jsonSubj.has("gender"));
+    }
+
+    public void testSubjectPropertiesIncludedInJson() throws Exception {
+        subject.getProperties().add(new SubjectProperty("Cube root", "9"));
+
+        scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        JSONObject actual = outputAsObject();
+        assertTrue("No properties", actual.has("properties"));
+        assertEquals("Wrong number of properties", 1, actual.getJSONArray("properties").length());
     }
 
     private JSONObject outputAsObject() throws IOException {

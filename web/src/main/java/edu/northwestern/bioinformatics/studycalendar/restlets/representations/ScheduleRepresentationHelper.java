@@ -290,6 +290,14 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         if (subject.getGender() != null) {
             generator.writeStringField("gender", subject.getGender().getDisplayName());
         }
+            generator.writeArrayFieldStart("properties");
+            for (SubjectProperty property : subject.getProperties()) {
+                generator.writeStartObject();
+                JacksonTools.nullSafeWriteStringField(generator, "name", property.getName());
+                JacksonTools.nullSafeWriteStringField(generator, "value", property.getValue());
+                generator.writeEndObject();
+            }
+            generator.writeEndArray();
         generator.writeEndObject();
     }
 
