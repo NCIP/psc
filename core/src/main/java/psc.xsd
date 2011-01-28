@@ -36,11 +36,11 @@
             <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:sources" minOccurs="0" maxOccurs="1"/>
-          <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
+            <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:choice>
-      <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
-      <xsd:attribute name="provider" type="xsd:string" use="optional"/>
-      <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
+        <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="provider" type="xsd:string" use="optional"/>
+        <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="study-snapshot" type="psc:RealizedStudy"/>
@@ -128,8 +128,8 @@
         <xsd:sequence>
             <xsd:element name="label" type="psc:Label" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:choice>
-              <xsd:element name="activity" type="psc:Activity"/>
-              <xsd:element name="activity-reference" type="psc:ActivityReference"/>
+                <xsd:element name="activity" type="psc:Activity"/>
+                <xsd:element name="activity-reference" type="psc:ActivityReference"/>
             </xsd:choice>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="optional"/>
@@ -249,7 +249,7 @@
 
     <xsd:complexType name="Activity">
         <xsd:sequence>
-           <xsd:element name="property" type="psc:Property" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="property" type="psc:Property" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -287,7 +287,6 @@
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
-    
     <xsd:element name="source" type="psc:Source"/>
 
     <!-- Elements of Subject Assignments -->
@@ -356,7 +355,6 @@
         <xsd:attribute name="amendment" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-
     <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
 
     <xsd:complexType name="StudySiteLink">
@@ -367,13 +365,11 @@
     <xsd:element name="sites" type="psc:sites"/>
     <xsd:element name="site" type="psc:Site"/>
 
-
     <xsd:complexType name="sites">
         <xsd:sequence>
             <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
-
 
     <xsd:complexType name="Site">
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="optional"/>
@@ -419,7 +415,6 @@
     <xsd:element name="scheduled-activities" type="psc:scheduled-activities"/>
     <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>
 
-
     <xsd:complexType name="scheduled-activities">
         <xsd:sequence>
             <xsd:element name="scheduled-activity" type="psc:ScheduledActivity" maxOccurs="unbounded"/>
@@ -427,7 +422,6 @@
     </xsd:complexType>
 
     <xsd:element name="scheduled-activity-state" type="psc:ScheduledActivityState"/>
-
 
     <xsd:complexType name="ScheduledActivity">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -470,7 +464,6 @@
             <xsd:element name="blackout-date" type="psc:blackout-date" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
-
 
     <xsd:complexType name="blackout-date">
         <xsd:attribute name="id" type="xsd:string"/>
@@ -526,7 +519,6 @@
         </xsd:sequence>
     </xsd:complexType>
 
-
     <xsd:complexType name="Notification">
         <xsd:attribute name="message" type="xsd:string"/>
         <xsd:attribute name="id" type="xsd:string" />
@@ -534,5 +526,4 @@
         <xsd:attribute name="action-required" type="xsd:boolean"/>
         <xsd:attribute name="dismissed" type="xsd:boolean"/>
     </xsd:complexType>
-
 </xsd:schema>
