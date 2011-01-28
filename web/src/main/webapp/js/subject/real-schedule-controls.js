@@ -7,9 +7,7 @@ psc.subject.RealScheduleControls = (function ($) {
 
   function performDelay(evt, data) {
     var params = psc.subject.RealScheduleControls.computeDelayParameters();
-    var count = 0;
-    for each(var id in params)
-      count = count + 1;
+    var count = _.size(params);
     var action = psc.subject.RealScheduleControls.createDelayUserAction(count);
     executeScheduleUpdateWithUserAction
             (params, action, batchResource, executePartialScheduleUpdate, data);
