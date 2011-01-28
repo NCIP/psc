@@ -68,7 +68,7 @@ public class AuditEvent extends DataAuditEvent implements Comparable<AuditEvent>
         } else if (propertyType.isComponentType()) {
             addComponentValues((AbstractComponentType) propertyType, propertyName, previousState, currentState);
         } else {
-            if (previousState == null && currentState == null) {
+            if (ignoreStates(previousState, currentState)) {
                 return;
             } else {
                 String prevValue = scalarAuditableValue(previousState);
@@ -83,30 +83,38 @@ public class AuditEvent extends DataAuditEvent implements Comparable<AuditEvent>
 
     private void addComponentValues(final AbstractComponentType propertyType,
                                   final String propertyName, final Object previousState, final Object currentState) {
-        Object[] componentPrevState = previousState == null ? null : propertyType.getPropertyValues(previousState,
-            ENTITY_MODE);
-        Object[] componentCurState = currentState == null ? null : propertyType.getPropertyValues(currentState,
-            ENTITY_MODE);
+        Object[] componentPrevState = getComponentState(propertyType, previousState);
+        Object[] componentCurState = getComponentState(propertyType, currentState);
 
-        if (componentPrevState == null && componentCurState == null) {
+        if (ignoreStates(componentPrevState, componentCurState)) {
             return;
         } else {
             int index = componentCurState == null ? componentPrevState.length : componentCurState.length;
             for (int i=0; i<index; i++) {
                 String compPropertyName = propertyName.concat(".").concat(propertyType.getPropertyNames()[i]);
                 if (componentPrevState != null && componentCurState != null) {
-                    if (!ComparisonTools.nullSafeEquals(componentCurState[i], componentPrevState[i])) {
-                        addValue(new DataAuditEventValue(compPropertyName,
-                            scalarAuditableValue(componentPrevState[i]),
-                            scalarAuditableValue(componentCurState[i])));
+                    if (ComparisonTools.nullSafeEquals(componentCurState[i], componentPrevState[i])) {
+                        return;
                     }
-                } else {
-                    addValue(new DataAuditEventValue(compPropertyName,
-                        componentPrevState == null ? null : scalarAuditableValue(componentPrevState[i]),
-                        componentCurState == null ? null : scalarAuditableValue(componentCurState[i])));
                 }
+                addValue(new DataAuditEventValue(compPropertyName,
+                    componentPrevState == null ? null : scalarAuditableValue(componentPrevState[i]),
+                    componentCurState == null ? null : scalarAuditableValue(componentCurState[i])));
             }
         }
+    }
+
+    private Object[] getComponentState(AbstractComponentType propertyType, Object previousState) {
+        return previousState == null ? null : propertyType.getPropertyValues(previousState,
+                ENTITY_MODE);
+    }
+
+    private boolean ignoreStates(Object prevState, Object curState) {
+        return prevState == null && curState == null;
+    }
+
+    private boolean ignoreStates(Object[] componentPrevState, Object[] componentCurState) {
+        return componentPrevState == null && componentCurState == null;
     }
 
     private boolean ignoreCurrentStateForType(final Type type) {

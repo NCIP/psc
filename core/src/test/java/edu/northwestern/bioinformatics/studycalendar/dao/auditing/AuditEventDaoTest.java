@@ -79,7 +79,7 @@ public class AuditEventDaoTest extends DaoTestCase {
 
     public void testGetAuditEventsWithValueByUserActionId() throws Exception {
         interruptSession();
-        List<AuditEvent> auditEvents = dao.getAuditEventsByUserActionId("grid1");
+        List<AuditEvent> auditEvents = dao.getAuditEventsWithValuesByUserActionId("grid1");
         assertNotNull("Audit Events not found", auditEvents);
         assertEquals("No of audit events are wrong", 2, auditEvents.size());
         AuditEvent event = auditEvents.get(1);

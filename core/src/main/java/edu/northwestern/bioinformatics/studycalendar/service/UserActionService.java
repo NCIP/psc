@@ -8,9 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
@@ -83,7 +81,7 @@ public class UserActionService {
 
     @SuppressWarnings({ "unchecked" })
     public UserAction applyUndo(UserAction userAction) {
-        List<AuditEvent> auditEvents = auditEventDao.getAuditEventsByUserActionId(userAction.getGridId());
+        List<AuditEvent> auditEvents = auditEventDao.getAuditEventsWithValuesByUserActionId(userAction.getGridId());
 
         for (AuditEvent ae : auditEvents) {
             applyUndoToAuditEvent(ae);
@@ -122,36 +120,13 @@ public class UserActionService {
     @SuppressWarnings({ "unchecked" })
     private void saveOrUpdateEntity(AuditEvent ae, DeletableDomainObjectDao dao, AbstractMutableDomainObject entity) {
         BeanWrapperImpl objWrapper = createBeanWrapper(entity);
-        List<DataAuditEventValue> values = getEventValuesInRightOrder(ae, objWrapper);
 
-        for (DataAuditEventValue value : values) {
+        for (DataAuditEventValue value : ae.getValues()) {
             if( !isVersionAttribute(value.getAttributeName())) {
-                if (ScheduledActivityMode.class.equals(objWrapper.getPropertyType(value.getAttributeName())) &&
-                        entity instanceof ScheduledActivity) {
-                    ControlledVocabularyEditor editor = new ControlledVocabularyEditor(ScheduledActivityMode.class);
-                    editor.setAsText(value.getPreviousValue());
-                    ScheduledActivityState state = new ScheduledActivityState((ScheduledActivityMode)editor.getValue());
-                    objWrapper.setPropertyValue("currentState", state);
-                } else {
-                    objWrapper.setPropertyValue(value.getAttributeName(), value.getPreviousValue());
-                }
+                objWrapper.setPropertyValue(value.getAttributeName(), value.getPreviousValue());
             }
         }
         dao.save(entity);
-    }
-
-    private List<DataAuditEventValue> getEventValuesInRightOrder(AuditEvent ae, BeanWrapperImpl objWrapper) {
-        List<DataAuditEventValue> eventValues = ae.getValues();
-        List<DataAuditEventValue> orderedValues = new ArrayList<DataAuditEventValue>(eventValues.size());
-        for (DataAuditEventValue value : eventValues) {
-            if (ScheduledActivityMode.class.equals(objWrapper.getPropertyType(value.getAttributeName()))){
-                orderedValues.add(value);
-                eventValues.remove(value);
-                break;
-            }
-        }
-        orderedValues.addAll(eventValues);
-        return orderedValues;
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -162,7 +137,9 @@ public class UserActionService {
     private BeanWrapperImpl createBeanWrapper(AbstractMutableDomainObject entity) {
         BeanWrapperImpl objWrapper = new BeanWrapperImpl(entity);
         objWrapper.registerCustomEditor(Date.class,
-                    new CustomDateEditor(DateFormat.getISO8601Format(), true));
+                new CustomDateEditor(DateFormat.getISO8601Format(), true));
+        objWrapper.registerCustomEditor(ScheduledActivityMode.class,
+                new ControlledVocabularyEditor(ScheduledActivityMode.class));
         return objWrapper;
     }
 

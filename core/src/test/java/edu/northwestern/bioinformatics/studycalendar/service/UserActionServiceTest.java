@@ -218,7 +218,7 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         ae1 = new AuditEvent(site, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
         ae1.addValue(new DataAuditEventValue("name", "Site", "UpdatedSite"));
 
-        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
         expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
         expect(domainObjectDao.getById(11)).andReturn(site);
         assertFalse("UserAction is undone", ua1.isUndone());
@@ -247,7 +247,7 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         ae1.addValue(new DataAuditEventValue("currentState.date", "2010-10-17T00:00:00.0Z", "2010-10-18T00:00:00.0Z"));
         ae1.addValue(new DataAuditEventValue("currentState.mode", "1", "3"));
 
-        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
         expect(daoFinder.findDao(ScheduledActivity.class)).andReturn(domainObjectDao);
         expect(domainObjectDao.getById(1)).andReturn(event);
         assertFalse("UserAction is undone", ua1.isUndone());
@@ -275,7 +275,7 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         ae1.addValue(new DataAuditEventValue("name", null, "Site"));
         ae1.addValue(new DataAuditEventValue("assignedIdentifier", null, "S1"));
 
-        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
         expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
         expect(domainObjectDao.getById(11)).andReturn(site);
         assertFalse("UserAction is undone", ua1.isUndone());
@@ -297,7 +297,7 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         ae1.addValue(new DataAuditEventValue("name", "Site", null));
         ae1.addValue(new DataAuditEventValue("assignedIdentifier","S1", null));
 
-        expect(auditEventDao.getAuditEventsByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
         expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
         expect(domainObjectDao.getById(11)).andReturn(null);
         assertFalse("UserAction is undone", ua1.isUndone());

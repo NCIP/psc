@@ -67,10 +67,10 @@ public class AuditEventDao implements InitializingBean {
     @SuppressWarnings("unchecked")
     public List<AuditEvent> getAuditEventsByUserActionId(String userActionId) {
         String[] query =  new String[] {
-                "select id, ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
                 "from Audit_Events where user_action_id = ?"
         };
-        List<AuditEvent> events =  jdbcTemplate.query(join(query, ' '), new Object[] {userActionId}, new AuditEventRowMappper());
+        List<AuditEvent> events =  jdbcTemplate.query(join(query, ' '), new Object[] {userActionId}, new AuditEventRowMappper(false));
         Collections.sort(events);
         return events;
     }
@@ -78,12 +78,24 @@ public class AuditEventDao implements InitializingBean {
     @SuppressWarnings("unchecked")
     public List<AuditEvent> getAuditEventsWithLaterTimeStamp(String className, int objectId, Date time) {
         String[] query =  new String[] {
-                "select id, ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "select ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
                 "from Audit_Events where class_name = ? and object_id = ? and time > ?"
         };
-        return jdbcTemplate.query(join(query, ' '), new Object[] {className, objectId, time}, new AuditEventRowMappper());
+        return jdbcTemplate.query(join(query, ' '), new Object[] {className, objectId, time}, new AuditEventRowMappper(false));
     }
 
+    @SuppressWarnings("unchecked")
+    public List<AuditEvent> getAuditEventsWithValuesByUserActionId(String userActionId) {
+        String[] query =  new String[] {
+                "select id, ip_address, user_name, time, class_name, operation, url, object_id, user_action_id",
+                "from Audit_Events where user_action_id = ?"
+        };
+        List<AuditEvent> events =  jdbcTemplate.query(join(query, ' '), new Object[] {userActionId}, new AuditEventRowMappper(true));
+        Collections.sort(events);
+        return events;
+    }
+
+    @SuppressWarnings("unchecked")
     private String determineDatabaseType() {
         String databaseType = (String) jdbcTemplate.execute(new ConnectionCallback() {
             public Object doInConnection(Connection connection) throws SQLException, DataAccessException {
@@ -102,13 +114,23 @@ public class AuditEventDao implements InitializingBean {
     }
 
     public class AuditEventRowMappper implements RowMapper {
+        boolean includeValues;
+        public AuditEventRowMappper(boolean includeValues) {
+            this.includeValues = includeValues;
+        }
+
         public Object mapRow(ResultSet rs, int i) throws SQLException {
-            AuditEventRecordResultSetExtractor extractor = new AuditEventRecordResultSetExtractor();
+            AuditEventRecordResultSetExtractor extractor = new AuditEventRecordResultSetExtractor(includeValues);
             return extractor.extractData(rs);
         }
     }
 
     public class AuditEventRecordResultSetExtractor implements ResultSetExtractor {
+        boolean includeValues;
+        public AuditEventRecordResultSetExtractor(boolean includeValues) {
+            this.includeValues = includeValues;
+        }
+
         public Object extractData(ResultSet rs) throws SQLException {
             DataReference reference = new DataReference(rs.getString("class_name"), rs.getInt("object_id"));
             AuditEvent event = new AuditEvent();
@@ -119,7 +141,9 @@ public class AuditEventDao implements InitializingBean {
             event.getInfo().setTime(rs.getTimestamp("time"));
             event.getInfo().setUrl(rs.getString("url"));
             event.setUserActionId(rs.getString("user_action_id"));
-            event.addValues(getAuditEventValuesForEvent(rs.getInt("id")));
+            if (includeValues) {
+                event.addValues(getAuditEventValuesForEvent(rs.getInt("id")));
+            }
             return event;
         }
     }
