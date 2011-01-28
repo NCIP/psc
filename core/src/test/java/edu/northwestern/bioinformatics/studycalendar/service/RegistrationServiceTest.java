@@ -38,10 +38,15 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         super.setUp();
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         subjectService = registerMockFor(SubjectService.class);
+
         subject =  Fixtures.createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
+        // by default, expect the subject is new
+        expect(subjectService.findSubject(subject)).andStubReturn(null);
 
         segment = new StudySegment();
         segment.setGridId("segment1");
+        // by default, expect to find the segment
+        expect(studySegmentDao.getByGridId(segment.getGridId())).andStubReturn(segment);
 
         sammyc = createPscUser("sammyc", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
 
@@ -67,7 +72,6 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistration() throws Exception {
-        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(subject);
         replayMocks();
         service.resolveRegistration(registration, studySite);
@@ -90,7 +94,6 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     public void testResolveRegistrationWhenMatchingSubjectFound() throws Exception {
         Subject subjectFound =  Fixtures.createSubject("P1", "FName", "LName", DateTools.createDate(1987, JANUARY, 4));
         subjectFound .setId(4);
-        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
         expect(subjectService.findSubject(subject)).andReturn(subjectFound );
         replayMocks();
         service.resolveRegistration(registration, studySite);
@@ -100,8 +103,6 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
 
     public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubjectForStudySite() throws Exception {
         sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forAllSites());
-        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
-        expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
         service.resolveRegistration(registration, studySite);
         verifyMocks();
@@ -110,8 +111,6 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
 
     public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubjectForStudySite() throws Exception {
         sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forSites(new Site()));
-        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
-        expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
          try {
             service.resolveRegistration(registration, studySite);
@@ -122,8 +121,6 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubject() throws Exception {
-        expect(studySegmentDao.getByGridId(segment.getGridId())).andReturn(segment);
-        expect(subjectService.findSubject(subject)).andReturn(null);
         replayMocks();
          try {
             service.resolveRegistration(registration, studySite);
