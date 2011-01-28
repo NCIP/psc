@@ -1,12 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Date;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.assertSameDay;
 
 /**
  * @author Padmaja Vedula
@@ -16,7 +23,6 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
     private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
     private AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
-    private StudySubjectAssignmentDao ssaDao = (StudySubjectAssignmentDao) getApplicationContext().getBean("studySubjectAssignmentDao");
 
     public void testGetAll() throws Exception {
         List<Subject> actual = getDao().getAll();
@@ -162,6 +168,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         assertNotNull("No subject matched", subject);
         assertEquals("Wrong subject matched", -101, (int) subject.getId());
     }
+
     // Becuase of Constraint @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN}) in Subject,
     // the deletion deletes subject and it's referred children
     public void testDeleteSubjectWithSubjectAssigment() throws Exception {
@@ -169,8 +176,8 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         getDao().delete(subject);
         Subject subject1 = getDao().getById(-100);
         assertNull("Subject is null, althouth it shoudln't be ", subject1);
-        
     }
+
     public void testDeleteSubject() throws Exception {
         Subject subject = getDao().getById(-101);
         getDao().delete(subject);

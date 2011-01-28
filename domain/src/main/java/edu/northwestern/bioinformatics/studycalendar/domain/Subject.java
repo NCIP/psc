@@ -19,9 +19,9 @@ import java.util.List;
 @Entity
 @Table
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
+    parameters = {
         @Parameter(name = "sequence", value = "seq_subjects_id")
-                }
+    }
 )
 @Where(clause = "load_status > 0")
 public class Subject extends AbstractMutableDomainObject {
@@ -33,9 +33,8 @@ public class Subject extends AbstractMutableDomainObject {
     private List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment>();
     private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
-    // business methods
+    ////// LOGIC
 
-    // The subject identifier could be the Medical Record No based on the site
     public void addAssignment(StudySubjectAssignment studySubjectAssignment) {
         getAssignments().add(studySubjectAssignment);
         studySubjectAssignment.setSubject(this);
@@ -93,7 +92,8 @@ public class Subject extends AbstractMutableDomainObject {
         }
     }
 
-    // bean methods
+    ////// BEAN ACCESSORS
+
     @Column(name = "first_name")
     public String getFirstName() {
         return firstName;
@@ -147,10 +147,25 @@ public class Subject extends AbstractMutableDomainObject {
         return assignments;
     }
 
+    @SuppressWarnings( { "UnusedDeclaration" }) // used by hibernate
     public void setAssignments(List<StudySubjectAssignment> assignments) {
         this.assignments = assignments;
     }
 
+    @Enumerated(EnumType.ORDINAL)
+    public LoadStatus getLoadStatus() {
+        return loadStatus;
+    }
+
+    /**
+     * Added for hibernate only..
+     * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
+     * @param loadStatus
+     */
+    @SuppressWarnings( { "UnusedDeclaration" })
+    public void setLoadStatus(final LoadStatus loadStatus) { }
+
+    ////// OBJECT METHODS
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -180,20 +195,4 @@ public class Subject extends AbstractMutableDomainObject {
         result = 29 * result + (personId != null ? personId.hashCode() : 0);
         return result;
     }
-
-    @Enumerated(EnumType.ORDINAL)
-    public LoadStatus getLoadStatus() {
-        return loadStatus;
-    }
-
-    /**
-     * Added for hibernate only..
-     * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
-     * @param loadStatus
-     */
-    public void setLoadStatus(final LoadStatus loadStatus) {
-
-        //this.loadStatus = loadStatus;
-    }
-
 }
