@@ -572,11 +572,8 @@
 
     <bean name="/admin/team/study" id="singleStudyStudyTeamMemberController"
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.SingleStudyStudyTeamMemberController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Single study"/>
-                <property name="parent" ref="studyTeamController"/>
-            </bean>
+        <property name="crumb.parent">
+          <ref local="studyTeamController"/>
         </property>
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="pscUserService" ref="pscUserService"/>

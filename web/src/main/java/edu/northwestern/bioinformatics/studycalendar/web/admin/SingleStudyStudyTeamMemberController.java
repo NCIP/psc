@@ -5,13 +5,16 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonObjectEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,13 +35,13 @@ public class SingleStudyStudyTeamMemberController
     private ProvisioningSessionFactory psFactory;
 
     public SingleStudyStudyTeamMemberController() {
+        setCrumb(new Crumb());
         setCommandClass(SingleStudyStudyTeamMemberCommand.class);
     }
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
-        int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
-        Study study = studyDao.getById(studyId);
+        Study study = getStudy(request);
         PscUser putativeTeamAdmin = applicationSecurityManager.getUser();
 
         return SingleStudyStudyTeamMemberCommand.create(study,
@@ -67,8 +70,14 @@ public class SingleStudyStudyTeamMemberController
         } else {
             Map<String, Object> model = errors.getModel();
             model.put("roles", PscRole.valuesProvisionableByStudyTeamAdministrator());
+            model.put("study", getStudy(request));
             return new ModelAndView("admin/studyTeamSingleStudy", model);
         }
+    }
+
+    private Study getStudy(HttpServletRequest request) throws ServletRequestBindingException {
+        int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
+        return studyDao.getById(studyId);
     }
 
     ////// CONFIGURATION
@@ -91,5 +100,16 @@ public class SingleStudyStudyTeamMemberController
     @Required
     public void setProvisioningSessionFactory(ProvisioningSessionFactory psFactory) {
         this.psFactory = psFactory;
+    }
+
+    private class Crumb extends DefaultCrumb {
+        public Crumb() {
+            super("Single study");
+        }
+
+        @Override
+        public Map<String, String> getParameters(DomainContext context) {
+            return createParameters("study", context.getStudy().getId().toString());
+        }
     }
 }
