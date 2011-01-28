@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ public class DomainContext implements Cloneable {
     private Activity activity;
     private Amendment amendment;
     private Population population;
+    private PscUser user;
 
     private TemplateService templateService;
 
@@ -176,6 +178,10 @@ public class DomainContext implements Cloneable {
         this.population = population;
     }
 
+    public void setUser(PscUser user) {
+        this.user = user;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -242,6 +248,10 @@ public class DomainContext implements Cloneable {
 
     public Population getPopulation() {
         return population;
+    }
+
+    public PscUser getUser() {
+        return user;
     }
 
     ////// OBJECT METHODS

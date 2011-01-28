@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonObjectEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -12,6 +14,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,6 +33,10 @@ public class SingleMemberStudyTeamMemberController extends PscAbstractCommandCon
     private ApplicationSecurityManager applicationSecurityManager;
     private ProvisioningSessionFactory psFactory;
 
+    public SingleMemberStudyTeamMemberController() {
+        setCrumb(new Crumb());
+    }
+
     @Override
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) throws Exception {
         return ResourceAuthorization.createCollection(PscRole.STUDY_TEAM_ADMINISTRATOR);
@@ -37,8 +44,7 @@ public class SingleMemberStudyTeamMemberController extends PscAbstractCommandCon
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
-        String username = ServletRequestUtils.getRequiredStringParameter(request, "user");
-        PscUser target = pscUserService.getProvisionableUser(username);
+        PscUser target = getPscUser(request);
         return SingleMemberStudyTeamMemberCommand.create(target,
             psFactory, applicationSecurityManager, studyDao,
             applicationSecurityManager.getUser());
@@ -64,10 +70,15 @@ public class SingleMemberStudyTeamMemberController extends PscAbstractCommandCon
         } else {
             Map<String, Object> model = errors.getModel();
             model.put("roles", PscRole.valuesProvisionableByStudyTeamAdministrator());
+            model.put("user", getPscUser(request));
             return new ModelAndView("admin/studyTeamSingleMember", model);
         }
     }
 
+    private PscUser getPscUser(HttpServletRequest request) throws ServletRequestBindingException {
+        String username = ServletRequestUtils.getRequiredStringParameter(request, "user");
+        return pscUserService.getProvisionableUser(username);
+    }
     ////// CONFIGURATION
 
     @Required
@@ -88,5 +99,16 @@ public class SingleMemberStudyTeamMemberController extends PscAbstractCommandCon
     @Required
     public void setProvisioningSessionFactory(ProvisioningSessionFactory psFactory) {
         this.psFactory = psFactory;
+    }
+
+    private class Crumb extends DefaultCrumb {
+        public Crumb() {
+            super("Single member");
+        }
+
+        @Override
+        public Map<String, String> getParameters(DomainContext context) {
+            return createParameters("user", context.getUser().getUsername());
+        }
     }
 }
