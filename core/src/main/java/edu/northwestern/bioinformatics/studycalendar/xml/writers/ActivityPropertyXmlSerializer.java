@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Jalpa Patel
@@ -31,21 +30,4 @@ public class ActivityPropertyXmlSerializer  extends AbstractStudyCalendarXmlSeri
             activityProperty.setValue(XsdAttribute.ACTIVITY_PROPERTY_VALUE.from(element));
         return activityProperty;
     }
-
-    public boolean validateElement(ActivityProperty ap, Element element) {
-        boolean valid = true;
-        if (element == null && ap == null) {
-            return true;
-        } else if ((element != null && ap == null) || (ap != null && element == null)) {
-            return false;
-        } else if (!StringUtils.equals(ap.getNamespace(),XsdAttribute.ACTIVITY_PROPERTY_NAMESPACE.from(element))) {
-            valid = false;
-        }  else if (!StringUtils.equals(ap.getName(),XsdAttribute.ACTIVITY_PROPERTY_NAME.from(element))) {
-            valid = false;
-        }  else if (!StringUtils.equals(ap.getValue(),XsdAttribute.ACTIVITY_PROPERTY_VALUE.from(element))) {
-            valid = false;
-        }
-        return valid;
-    }
-
 }
