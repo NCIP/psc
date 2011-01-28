@@ -5,6 +5,17 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
+<jsp:useBean id="command" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleActivityCommand"/>
+<jsp:useBean id="scheduledActivity" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity"/>
+<jsp:useBean id="subject" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.domain.Subject"/>
+<jsp:useBean id="readOnly" scope="request" type="java.lang.Boolean"/>
+<jsp:useBean id="uriMap" scope="request" type="java.util.Map<java.lang.String, java.lang.String>"/>
+<jsp:useBean id="modes" scope="request"
+             type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode>"/>
+
 <c:set var="modeTitle" value="Edit"/>
 <c:if test="${readOnly}">
     <c:set var="modeTitle" value="View"/>
@@ -58,6 +69,37 @@
 
         div.row div.value {
             margin-left: 12em;
+        }
+
+        dl#subject-properties {
+            margin: 0; padding: 0;
+            float: left;
+            width: 35em;
+        }
+
+        dl#subject-properties dt {
+            text-align: right;
+            float: left;
+            clear: both;
+            width: 30%;
+            font-style: italic;
+        }
+
+        dl#subject-properties dd {
+            float: left;
+            padding-left: 0.5em;
+            width: 66%;
+        }
+
+        dl#subject-properties dt, dl#subject-properties dd {
+            margin: 0;
+            border-top: 1px solid #444;
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+
+        dl#subject-properties dt.first, dl#subject-properties dd.first {
+            border-top-width: 0;
         }
     </style>
     <script type="text/javascript">
@@ -131,7 +173,7 @@
                          </div>
                     </c:forEach>
                 </div>
-            <c:set var="count" value="${count + 1}"/>
+                <c:set var="count" value="${count + 1}"/>
             </c:if>
             <div class="row ${commons:parity(count)}">
                 <div class="label">
@@ -159,6 +201,23 @@
                 </div>
             </div>
             <c:set var="count" value="${count + 1}"/>
+
+            <c:if test="${not empty subject.properties}">
+                <div class="row ${commons:parity(count)} autoclear">
+                    <div class="label" title="These values are particular to the subject, not to the activity. They'll be the same on every activity for this subject.">
+                        Additional subject information
+                    </div>
+                    <div class="value">
+                        <dl id="subject-properties">
+                            <c:forEach items="${subject.properties}" var="prop" varStatus="propStatus">
+                                <dt class="${propStatus.first ? 'first' : ''}">${prop.name}</dt>
+                                <dd class="${propStatus.first ? 'first' : ''}">${prop.value}</dd>
+                            </c:forEach>
+                        </dl>
+                    </div>
+                </div>
+                <c:set var="count" value="${count + 1}"/>
+            </c:if>
 
             <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
