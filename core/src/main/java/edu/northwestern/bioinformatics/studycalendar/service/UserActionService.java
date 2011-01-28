@@ -102,15 +102,19 @@ public class UserActionService {
         if (ae.getOperation().equals(Operation.UPDATE)) {
             saveOrUpdateEntity(ae, dao, entity);
         } else if (ae.getOperation().equals(Operation.CREATE)) {
-            deleteEntity(dao, entity);
-        } else if (ae.getOperation().equals(Operation.DELETE) && entity == null) {
-            try {
-                AbstractMutableDomainObject newObj = (AbstractMutableDomainObject) klass.newInstance();
-                saveOrUpdateEntity(ae, dao, newObj);
-            } catch (InstantiationException e) {
-                throw new StudyCalendarError("This shouldn't be possible", e);
-            } catch (IllegalAccessException e) {
-                throw new StudyCalendarError("This shouldn't be possible", e);
+            if (entity != null) {
+                deleteEntity(dao, entity);
+            }
+        } else if (ae.getOperation().equals(Operation.DELETE)) {
+            if (entity == null) {
+                try {
+                    AbstractMutableDomainObject newObj = (AbstractMutableDomainObject) klass.newInstance();
+                    saveOrUpdateEntity(ae, dao, newObj);
+                } catch (InstantiationException e) {
+                    throw new StudyCalendarError("This shouldn't be possible", e);
+                } catch (IllegalAccessException e) {
+                    throw new StudyCalendarError("This shouldn't be possible", e);
+                }
             }
         } else {
            throw new StudyCalendarError("Unexpected Audit Event. Undo to the audit event is not possible");
@@ -121,7 +125,12 @@ public class UserActionService {
     private void saveOrUpdateEntity(AuditEvent ae, DeletableDomainObjectDao dao, AbstractMutableDomainObject entity) {
         BeanWrapperImpl objWrapper = createBeanWrapper(entity);
 
-        for (DataAuditEventValue value : ae.getValues()) {
+        List<DataAuditEventValue> values = ae.getValues();
+        if (values.size() == 1 && isVersionAttribute(values.get(0).getAttributeName())) {
+            return;
+        }
+
+        for (DataAuditEventValue value : values) {
             if( !isVersionAttribute(value.getAttributeName())) {
                 objWrapper.setPropertyValue(value.getAttributeName(), value.getPreviousValue());
             }

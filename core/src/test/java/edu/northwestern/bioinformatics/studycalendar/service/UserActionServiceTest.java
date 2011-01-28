@@ -263,8 +263,26 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         assertEquals("Scheduled Activity is undone", "Initialized from template", event.getCurrentState().getReason());
         assertEquals("Scheduled Activity is undone", "Sun Oct 17 00:00:00 CDT 2010", event.getCurrentState().getDate().toString());
         assertEquals("Scheduled Activity is undone", ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
-
     }
+
+    public void testApplyDoNotSaveEntityIfOnlyVersionIsUpdated() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Site site = setId(11, createSite("Site", "S1"));
+        ae1 = new AuditEvent(site, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("version", "0", "1"));
+
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(Site.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(11)).andReturn(site);
+        assertFalse("UserAction is undone", ua1.isUndone());
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
+     }
 
     @SuppressWarnings({ "unchecked" })
     public void testApplyUndoForCreateAuditEvents() throws Exception {
