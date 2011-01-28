@@ -47,4 +47,14 @@ public class SubjectTest extends TestCase {
         assertNotNull(subject.getProperties());
         assertEquals(0, subject.getProperties().size());
     }
+
+    public void testGetPropertyWhenExists() throws Exception {
+        subject.getProperties().add(new SubjectProperty("Address", "714 Etc. Ave."));
+        assertEquals("714 Etc. Ave.", subject.getProperty("Address"));
+    }
+
+    public void testGetPropertyWhenNotExists() throws Exception {
+        subject.getProperties().add(new SubjectProperty("Address", "714 Etc. Ave."));
+        assertNull(subject.getProperty("Phone number"));
+    }
 }

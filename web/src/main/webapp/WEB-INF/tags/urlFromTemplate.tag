@@ -12,5 +12,5 @@
 %>
 
 <c:if test="${not empty uriTemplate}">
-    <c:url value="<%= uriTemplate.format(GeneratedUriTemplateVariable.getAllTemplateValues(context)) %>"/>
+    <c:url value="<%= GeneratedUriTemplateVariable.fillTemplate(uriTemplate.getPattern(), context) %>"/>
 </c:if>

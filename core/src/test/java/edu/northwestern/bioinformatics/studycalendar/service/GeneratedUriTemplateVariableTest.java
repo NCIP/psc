@@ -1,9 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-
-import java.util.Map;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 
 /**
  * @author Rhett Sutphin
@@ -56,14 +65,17 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         assertEquals("Identifier not resolved", "36", GeneratedUriTemplateVariable.SUBJECT_IDENTIFIER.resolve(context));
     }
 
-    public void testCreateAllVariablesMap() throws Exception {
-        String gridId = "Expected";
-        StudySubjectAssignment assignment = new StudySubjectAssignment();
-        assignment.setGridId(gridId);
-        context.setStudySubjectAssignment(assignment);
+    public void testFillTemplate() throws Exception {
+        context.setSite(Fixtures.createSite("Zeppo"));
 
-        Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context);
-        assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
+        Subject subject = new Subject();
+        subject.getProperties().add(new SubjectProperty("Expected (Y/N)", "yes"));
+        context.setSubject(subject);
+
+        assertEquals("sn=Zeppo expected=yes random= more",
+            GeneratedUriTemplateVariable.fillTemplate(
+                "sn={site-name} expected={subject-property:Expected (Y/N)} random={subject-property:Not set} more",
+                context));
     }
 
     public void testResolveScheduledActivityIdentifier() throws Exception {

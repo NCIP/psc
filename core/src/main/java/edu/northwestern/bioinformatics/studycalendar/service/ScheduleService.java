@@ -88,8 +88,7 @@ public class ScheduleService {
         while(iterator.hasNext()) {
             List<String> textTemplateValue = (List)(iterator.next());
             String uriTemplate = textTemplateValue.get(1);
-            Template template = new Template(uriTemplate);
-            String generatedUri = template.format(GeneratedUriTemplateVariable.getAllTemplateValues(context));
+            String generatedUri = GeneratedUriTemplateVariable.fillTemplate(uriTemplate, context);
             uriMap.put(textTemplateValue.get(0),generatedUri);
         }
         return uriMap;

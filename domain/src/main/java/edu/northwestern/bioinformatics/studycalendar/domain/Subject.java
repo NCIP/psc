@@ -92,6 +92,15 @@ public class Subject extends AbstractMutableDomainObject {
         }
     }
 
+    public String getProperty(String name) {
+        for (SubjectProperty property : getProperties()) {
+            if (name.equals(property.getName())) {
+                return property.getValue();
+            }
+        }
+        return null;
+    }
+
     ////// BEAN ACCESSORS
 
     @Column(name = "first_name")
