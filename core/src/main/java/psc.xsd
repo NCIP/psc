@@ -322,6 +322,8 @@
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="male"/>
                     <xsd:enumeration value="female"/>
+                    <xsd:enumeration value="not reported"/>
+                    <xsd:enumeration value="unknown"/>
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
