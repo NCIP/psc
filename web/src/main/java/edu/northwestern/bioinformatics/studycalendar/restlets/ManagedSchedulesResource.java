@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.MultipleAssignmentScheduleJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
@@ -61,7 +61,7 @@ public class ManagedSchedulesResource extends AbstractPscResource {
                 return new StringRepresentation(
                     xmlSerializer.createDocumentString(assignments), MediaType.TEXT_XML);
             } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-                return new ScheduleRepresentationHelper(
+                return new MultipleAssignmentScheduleJsonRepresentation(
                     relatedAssignments, nowFactory, templateService);
             } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
                 return createICSRepresentation(relatedAssignments);

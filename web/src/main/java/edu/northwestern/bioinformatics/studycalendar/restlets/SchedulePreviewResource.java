@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.MultipleAssignmentScheduleJsonRepresentation;
 import org.apache.commons.collections15.CollectionUtils;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -135,7 +135,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
         }
 
         SortedMap<Date,List<ScheduledActivity>> activities =  createActivitiesByDate(scheduledActivities);
-        return new ScheduleRepresentationHelper(activities, scheduledCalendar.getScheduledStudySegments(), templateService);
+        return new MultipleAssignmentScheduleJsonRepresentation(activities, scheduledCalendar.getScheduledStudySegments(), templateService);
     }
 
     public SortedMap<Date, List<ScheduledActivity>> createActivitiesByDate(List<ScheduledActivity> scheduledActivities) {

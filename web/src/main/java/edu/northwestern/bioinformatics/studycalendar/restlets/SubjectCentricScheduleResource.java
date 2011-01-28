@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.MultipleAssignmentScheduleJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
@@ -90,7 +90,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visible);
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ScheduleRepresentationHelper(related, nowFactory, templateService, subject);
+            return new MultipleAssignmentScheduleJsonRepresentation(related, nowFactory, templateService, subject);
         } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
             return  createICSRepresentation(related);
         }

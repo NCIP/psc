@@ -21,9 +21,7 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
 /**
  * @author Jalpa Patel
  */
-// TODO: this is split from the Resources that use it along an odd seam -- the two resources still have a
-// bunch of duplicated code related to building the whole object
-public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
+public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonRepresentation  {
     private List<UserStudySubjectAssignmentRelationship> relatedAssignments;
     private TemplateService templateService;
 
@@ -32,22 +30,32 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
     private MultipleAssignmentScheduleView schedule;
     private Subject subject;
 
-    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService) {
+    public MultipleAssignmentScheduleJsonRepresentation(
+        List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory,
+        TemplateService templateService
+    ) {
         relatedAssignments = assignments;
         this.templateService = templateService;
         schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
     }
 
-    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService, Subject subject ) {
+    public MultipleAssignmentScheduleJsonRepresentation(
+        List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory,
+        TemplateService templateService, Subject subject
+    ) {
         relatedAssignments = assignments;
         this.templateService = templateService;
         schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
         this.subject = subject;
     }
 
-
-
-    public ScheduleRepresentationHelper(SortedMap<Date,List<ScheduledActivity>> activities,  List<ScheduledStudySegment> segments, TemplateService templateService ) {
+    // TODO: the code that uses this constructor should instead generate a mock SSA which contains
+    // the designated activities.  Then this constructor should be removed and the branched code
+    // that handles these fields should be simplified.
+    public MultipleAssignmentScheduleJsonRepresentation(
+        SortedMap<Date, List<ScheduledActivity>> activities, List<ScheduledStudySegment> segments,
+        TemplateService templateService
+    ) {
         this.activities = activities;
         this.segments = segments;
         this.templateService = templateService;
@@ -95,7 +103,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    public static void createJSONStateInfo(JsonGenerator generator, ScheduledActivityState state) throws IOException{
+    // package level for testing
+    static void createJSONStateInfo(JsonGenerator generator, ScheduledActivityState state) throws IOException{
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "name", state.getMode().toString());
             if (state.getDate() != null) {
@@ -105,7 +114,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    public static void createJSONActivityProperty(JsonGenerator generator, ActivityProperty ap) throws IOException {
+    // package level for testing
+    static void createJSONActivityProperty(JsonGenerator generator, ActivityProperty ap) throws IOException {
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "namespace", ap.getNamespace());
             JacksonTools.nullSafeWriteStringField(generator, "name", ap.getName());
@@ -113,7 +123,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    public static void createJSONActivity(JsonGenerator generator, Activity activity) throws IOException{
+    // package level for testing
+    static void createJSONActivity(JsonGenerator generator, Activity activity) throws IOException{
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "name", activity.getName());
             JacksonTools.nullSafeWriteStringField(generator, "type", activity.getType().getName());
@@ -139,7 +150,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         }
     }
 
-    public void createJSONScheduledActivity(JsonGenerator generator, ScheduledActivity scheduledActivity) throws IOException {
+    // package level for testing
+    void createJSONScheduledActivity(JsonGenerator generator, ScheduledActivity scheduledActivity) throws IOException {
         generator.writeStartObject();
             if (scheduledActivity.getGridId()!=null) {
                 JacksonTools.nullSafeWriteStringField(generator, "id", scheduledActivity.getGridId());
@@ -218,7 +230,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         return null;
     }
 
-    public void createJSONScheduledActivities(JsonGenerator generator, Boolean hidden_activities, Collection<ScheduledActivity> scheduledActivities) throws IOException{
+    // package level for testing
+    void createJSONScheduledActivities(JsonGenerator generator, Boolean hidden_activities, Collection<ScheduledActivity> scheduledActivities) throws IOException{
         generator.writeStartObject();
             if (hidden_activities != null) {
                 JacksonTools.nullSafeWriteStringField(generator, "hidden_activities", ""+ hidden_activities.toString());
@@ -233,7 +246,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    public void createJSONStudySegment(JsonGenerator generator, ScheduledStudySegment segment) throws IOException {
+    // package level for testing
+    void createJSONStudySegment(JsonGenerator generator, ScheduledStudySegment segment) throws IOException {
         generator.writeStartObject();
             if (segment.getGridId() != null) {
                 JacksonTools.nullSafeWriteStringField(generator,"id", segment.getGridId());
@@ -277,7 +291,8 @@ public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
         generator.writeEndObject();
     }
 
-    public void createJSONSubject(JsonGenerator generator, Subject subject) throws IOException {
+    // package level for testing
+    static void createJSONSubject(JsonGenerator generator, Subject subject) throws IOException {
         generator.writeStartObject();
         JacksonTools.nullSafeWriteStringField(generator, "first_name", subject.getFirstName());
         JacksonTools.nullSafeWriteStringField(generator, "last_name", subject.getLastName());

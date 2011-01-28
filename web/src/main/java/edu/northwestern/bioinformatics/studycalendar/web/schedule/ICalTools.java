@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.MultipleAssignmentScheduleJsonRepresentation;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
@@ -103,7 +103,7 @@ public class ICalTools {
         if (scheduledActivity.getPlannedActivity() != null) {
             if (scheduledActivity.getPlannedActivity().getCondition() !=null )
                 sb.append("Condition:" +scheduledActivity.getPlannedActivity().getCondition()).append("\n");
-            sb.append("Study plan day:" +ScheduleRepresentationHelper.formatDaysFromPlan(scheduledActivity)).append("\n");
+            sb.append("Study plan day:" + MultipleAssignmentScheduleJsonRepresentation.formatDaysFromPlan(scheduledActivity)).append("\n");
         }
         return sb.toString();
     }

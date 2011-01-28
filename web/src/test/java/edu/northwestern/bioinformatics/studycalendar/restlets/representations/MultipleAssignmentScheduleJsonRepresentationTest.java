@@ -50,11 +50,10 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
-
 /**
  * @author Jalpa Patel
  */
-public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase{
+public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepresentationTestCase{
     private ScheduledActivity sa;
     private ScheduledActivityState state;
     private Activity activity;
@@ -67,7 +66,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     private ScheduledStudySegment scheduledSegment;
     private Subject subject;
 
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private MultipleAssignmentScheduleJsonRepresentation representation;
     private TemplateService templateService;
     private JsonGenerator generator;
 
@@ -141,11 +140,11 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
             createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites());
         UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(user, ssa);
 
-        scheduleRepresentationHelper = new ScheduleRepresentationHelper(Arrays.asList(rel), nowFactory, templateService);
+        representation = new MultipleAssignmentScheduleJsonRepresentation(Arrays.asList(rel), nowFactory, templateService);
     }
 
     public void testStateInfoInJson() throws Exception {
-        ScheduleRepresentationHelper.createJSONStateInfo(generator, state);
+        MultipleAssignmentScheduleJsonRepresentation.createJSONStateInfo(generator, state);
         JSONObject stateInfo = outputAsObject();
 
         assertEquals("State mode is different", "scheduled", stateInfo.get("name"));
@@ -155,7 +154,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     public void testStateContainsNoDate() throws Exception {
         ScheduledActivityState saState = ScheduledActivityMode.CANCELED.createStateInstance();
-        ScheduleRepresentationHelper.createJSONStateInfo(generator, saState);
+        MultipleAssignmentScheduleJsonRepresentation.createJSONStateInfo(generator, saState);
         JSONObject stateInfo = outputAsObject();
         assertEquals("State mode is different", "canceled", stateInfo.get("name"));
         assertFalse("State date should not be present", stateInfo.has("date"));
@@ -163,7 +162,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     public void testActivityPropertyInJson() throws Exception {
         ActivityProperty ap = createActivityProperty("URI","text","activity defination");
-        ScheduleRepresentationHelper.createJSONActivityProperty(generator, ap);
+        MultipleAssignmentScheduleJsonRepresentation.createJSONActivityProperty(generator, ap);
         JSONObject apJson = outputAsObject();
 
         assertEquals("Namespace is different", ap.getNamespace(), apJson.get("namespace"));
@@ -173,7 +172,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     public void testActivityInJson() throws Exception {
         activity.setProperties(properties);
-        ScheduleRepresentationHelper.createJSONActivity(generator, activity);
+        MultipleAssignmentScheduleJsonRepresentation.createJSONActivity(generator, activity);
         JSONObject activityJson = outputAsObject();
         assertEquals("No of elements are different", 3, activityJson.length());
         assertEquals("Activity name is different", activity.getName(), activityJson.get("name"));
@@ -182,14 +181,14 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testActivityWhenPropertiesAreEmpty() throws Exception {
-        ScheduleRepresentationHelper.createJSONActivity(generator, activity);
+        MultipleAssignmentScheduleJsonRepresentation.createJSONActivity(generator, activity);
         JSONObject activityJson = outputAsObject();
         assertEquals("No of elements are different", 2, activityJson.length());
         assertTrue(activityJson.isNull("properties"));
     }
 
     public void testScheduledActivityInJson() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
 
         assertEquals("Grid Id is different", sa.getGridId(), jsonSA.get("id"));
@@ -201,21 +200,21 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testScheduledActivityIncludesAssignmentName() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
         assertEquals("Missing assignment name",
            "S" , jsonSA.getJSONObject("assignment").get("name"));
     }
 
     public void testScheduledActivityIncludesAssignmentId() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
         assertEquals("Missing assignment name",
             "GRID-ASSIGN", ((JSONObject) jsonSA.get("assignment")).get("id"));
     }
 
     public void testScheduledActivityHasUpdatePrivilege() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
         assertEquals("Missing update privilege",
             "update", jsonSA.getJSONObject("assignment").getJSONArray("privileges").get(0));
@@ -224,14 +223,14 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     public void testScheduledActivityWithoutUpdatePrivilege() throws Exception {
         user.getMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).notForAllSites().notForAllStudies();
 
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
         assertEquals("Should not include update privilege",
             0, jsonSA.getJSONObject("assignment").getJSONArray("privileges").length());
     }
 
     public void testScheduledActivityCurrentState() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject jsonSA = outputAsObject();
         JSONObject currentState = (JSONObject) jsonSA.get("current_state");
         assertNotNull("current state is missing", currentState);
@@ -241,14 +240,14 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testScheduledActivityStateHistoryContainsAllStates() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         JSONArray history = actual.getJSONArray("state_history");
         assertEquals(2, history.length());
     }
 
     public void testScheduledActivityStateHistoryStartsWithInitial() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         JSONArray history = actual.getJSONArray("state_history");
         JSONObject first = (JSONObject) history.get(0);
@@ -256,7 +255,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testScheduledActivityStateHistoryEndsWithCurrent() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         JSONArray history = actual.getJSONArray("state_history");
         JSONObject first = (JSONObject) history.get(1);
@@ -264,20 +263,20 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testWithHiddenActivities() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivities(generator, true, scheduledActivities);
+        representation.createJSONScheduledActivities(generator, true, scheduledActivities);
         JSONObject jsonScheduleActivities = outputAsObject();
         assertTrue("has no hidden activities", Boolean.valueOf(jsonScheduleActivities.getString("hidden_activities")));
     }
 
     public void testWhenHiddenActivitiesIsNull() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivities(generator, null, scheduledActivities);
+        representation.createJSONScheduledActivities(generator, null, scheduledActivities);
         JSONObject jsonScheduleActivities = outputAsObject();
         assertTrue(jsonScheduleActivities.isNull("hidden_activities"));
         assertEquals("no of elements is different", 1, jsonScheduleActivities.length());
     }
 
     public void testScheduledStudySegmentsInJson() throws Exception {
-        scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        representation.createJSONStudySegment(generator, scheduledSegment);
         JSONObject jsonSegment = outputAsObject();
         assertEquals("has different name", scheduledSegment.getName(), jsonSegment.get("name"));
         assertEquals("missing ID", scheduledSegment.getGridId(), jsonSegment.get("id"));
@@ -301,21 +300,21 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     }
 
     public void testScheduledSegmentIncludesAssignmentName() throws Exception {
-        scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        representation.createJSONStudySegment(generator, scheduledSegment);
         JSONObject actual = outputAsObject();
         assertEquals("Missing assignment name", "Treatment: Screening",
             actual.get("name"));
     }
 
     public void testCreateJSONStudySegment() throws Exception {
-        scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        representation.createJSONStudySegment(generator, scheduledSegment);
         JSONObject actual = outputAsObject();
         assertTrue("Missing properties", actual.has("id"));
         assertTrue("Missing properties", actual.has("name"));
     }
 
     public void testScheduledSegmentIncludesAssignmentId() throws Exception {
-        scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        representation.createJSONStudySegment(generator, scheduledSegment);
         JSONObject actual = outputAsObject();
         assertEquals("Missing assignment id", "GRID-ASSIGN",
             ((JSONObject) actual.get("assignment")).get("id"));
@@ -323,32 +322,32 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     public void testDetailsInJson() throws Exception {
         sa.setDetails("Detail");
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         assertEquals("Missing details", "Detail", actual.get("details"));
     }
 
     public void testMissingDetailsInJson() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         assertTrue(actual.isNull("details"));
     }
 
     public void testStudySubjectIdInJson() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         assertEquals("Missing study subject id", "Study Subject Id", actual.get("study_subject_id"));
     }
 
     public void testConditionalInJson() throws Exception {
         sa.getPlannedActivity().setCondition("Conditional Details");
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         assertEquals("Missing conditions", "Conditional Details", actual.get("condition"));
     }
 
     public void testLabelsInJson() throws Exception {
-        scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
         assertEquals("Missing labels", "label1 label2", actual.get("labels"));
     }
@@ -356,7 +355,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     public void testSubjectInfoInJson() throws Exception {
         subject.setDateOfBirth(DateUtils.createDate(1978, Calendar.MARCH, 15));
         subject.setGender(Gender.FEMALE);
-        scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        representation.createJSONSubject(generator, subject);
         JSONObject actual = outputAsObject();
         assertEquals("Missing first", subject.getFirstName(), actual.get("first_name"));
         assertEquals("Missing last", subject.getLastName(), actual.get("last_name"));
@@ -368,7 +367,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     public void testSubjectInfoStillGeneratedIfSubjectHasNoGender() throws Exception {
         subject.setGender(null);
-        scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        representation.createJSONSubject(generator, subject);
         JSONObject jsonSubj = outputAsObject();
         // expect no error, plus:
 
@@ -378,7 +377,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
     public void testSubjectPropertiesIncludedInJson() throws Exception {
         subject.getProperties().add(new SubjectProperty("Cube root", "9"));
 
-        scheduleRepresentationHelper.createJSONSubject(generator, subject);
+        representation.createJSONSubject(generator, subject);
         JSONObject actual = outputAsObject();
         assertTrue("No properties", actual.has("properties"));
         assertEquals("Wrong number of properties", 1, actual.getJSONArray("properties").length());

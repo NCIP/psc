@@ -64,7 +64,7 @@ public class SubjectsResource extends AbstractPscResource {
     }
 
 
-    //TODO might want to move to helper class, if we make ScheduleRepresentationHelper more suitable for all types of objects
+    //TODO might want to move to helper class, if we make MultipleAssignmentScheduleJsonRepresentation more suitable for all types of objects
     public JSONObject createJSONSubject(Subject subject) throws ResourceException {
         try {
             JSONObject jsonSubject = new JSONObject();
