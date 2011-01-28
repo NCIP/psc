@@ -1,24 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.sql.SQLException;
 
 @Transactional(readOnly = true)
 public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> implements DeletableDomainObjectDao<Subject> {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     @Override
     public Class<Subject> domainClass() {
         return Subject.class;
@@ -49,6 +48,11 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
                 new Object[]{subject, site, study}));
     }
 
+    @Deprecated // use getByPersonId instead
+    public Subject findSubjectByPersonId(final String mrn) {
+        return getByPersonId(mrn);
+    }
+
     /**
      * Finds the subject for the given mrn (person id)
      *
@@ -56,17 +60,21 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
      * @return      the subject that correspnds to the given mrn
      */
     @SuppressWarnings("unchecked")
-    public Subject findSubjectByPersonId(final String mrn) {
+    public Subject getByPersonId(final String mrn) {
         if (mrn != null) {
             List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.personId= ?", mrn);
             if (!results.isEmpty()) {
-                Subject subject = results.get(0);
-                return subject;
+                return results.get(0);
             }
         }
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    @Deprecated // use getByGridOrPersonId instead
+    public Subject findSubjectByGridOrPersonId(final String mrn) {
+        return getByGridIdOrPersonId(mrn);
+    }
 
     /**
      * Finds the subject for the given mrn (person id)
@@ -74,10 +82,9 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
      * @param  mrn the mrn (person id) to search for the subject with
      * @return      the subject that correspnds to the given mrn
      */
-    @SuppressWarnings("unchecked")
-    public Subject findSubjectByGridOrPersonId(final String mrn) {
+    public Subject getByGridIdOrPersonId(final String mrn) {
         if (mrn != null) {
-           Subject subject = findSubjectByPersonId(mrn);
+           Subject subject = getByPersonId(mrn);
            if (subject == null) {
                 List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.gridId= ?", mrn);
                 if (!results.isEmpty()) {
@@ -88,6 +95,11 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
         return null;
     }
 
+    @Deprecated // use searchByName instead
+    public List<Subject> getSubjectsBySearchText(final String searchText) {
+        return searchByName(searchText);
+    }
+
    /**
     * Finds the subjects doing a LIKE search with some search text for subject's firs name, middle name or last name.
     *
@@ -95,7 +107,7 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
     * @return      a list of subjects found based on the search text
     */
     @SuppressWarnings({ "unchecked" })
-    public List<Subject> getSubjectsBySearchText(final String searchText) {
+    public List<Subject> searchByName(final String searchText) {
         return (List<Subject>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria criteria = session.createCriteria(Subject.class);
@@ -108,6 +120,13 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
         });
     }
 
+    @Deprecated // use getByFirstNameLastNameAndDoB
+    public List<Subject> findSubjectByFirstNameLastNameAndDoB(
+        final String firstName, final String lastName, Date dateOfBirth
+    ) {
+        return getByFirstNameLastNameAndDoB(firstName, lastName, dateOfBirth);
+    }
+
     /**
      * Finds all the subjects for the given first name, last name, and birth date.
      *
@@ -117,7 +136,9 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
      * @return      finds the subject for the given first name, last name and date of birth
      */
     @SuppressWarnings("unchecked")
-    public List<Subject> findSubjectByFirstNameLastNameAndDoB(final String firstName, final String lastName, Date dateOfBirth) {
+    public List<Subject> getByFirstNameLastNameAndDoB(
+        final String firstName, final String lastName, Date dateOfBirth
+    ) {
         List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.firstName= ? and s.lastName= ? and s.dateOfBirth= ?", new Object[] {firstName, lastName, dateOfBirth});
         if (!results.isEmpty()) {
             return results;

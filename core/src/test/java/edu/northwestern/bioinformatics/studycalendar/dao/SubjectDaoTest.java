@@ -274,7 +274,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
     }
 
     public void testFindSubjectByPersonIdWhenIdIsNull() throws Exception {
-        Subject subject = getDao().findSubjectByPersonId(null);
+        Subject subject = getDao().getByPersonId(null);
         assertNull("Subject is not null ", subject);
     }
 }
