@@ -321,7 +321,7 @@ psc.subject.RealScheduleControls = (function ($) {
       $.ajax({
           url: url,
           type: 'DELETE',
-          success: reloadSchedule()
+          success: reloadSchedule
       });
   }
 
