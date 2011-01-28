@@ -54,65 +54,62 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
   end
 
   describe "POST" do
-    before do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
+    def subject_registration_xml(overrides={})
+      psc_xml("registration",
+        {
+          'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
+          'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
+        }.merge(overrides[:registration] || {})
+      ) { |registration|
+        registration.subject(
+          {
             'first-name' => "Andre", 'last-name' => "Suzuki",
-            'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")
+            'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male"
+          }.merge(overrides[:subject] || {})
+        ) { |subject|
+          yield subject if block_given?
+        }
       }
     end
 
     it "does not allow the subject coordinator to assign patients when the template has not been made available" do
       post "/studies/NU480/sites/IL036/subject-assignments",
-        @subject_registration_xml, :as => :darlene
+        subject_registration_xml, :as => :darlene
 
       response.status_code.should == 403
     end
 
     it "allows creation of a new subject-assignment for an authorized user" do
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      post "/studies/NU480/sites/PA015/subject-assignments", subject_registration_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
     end
 
     it "uses the specified assignment ID" do
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      post "/studies/NU480/sites/PA015/subject-assignments", subject_registration_xml, :as => :erin
 
       application_context["studySubjectAssignmentDao"].getByGridId("POP-4").should_not be_nil
     end
 
     it "gives 400 if studySegment with gridId from xml not found in system" do
-      @wrong_subject_registration_xml = psc_xml(
-          "registration", 'first-study-segment-id' => "unknownSegment", 'date' => "2008-12-27",
-          'subject-coordinator-name' => "erin"
-      ) { |subject|
-          subject.tag!('subject',
-                'first-name' => "Andre", 'last-name' => "Suzuki",
-                'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @wrong_subject_registration_xml, :as => :erin
+      xml = subject_registration_xml(
+        :registration => { 'first-study-segment-id' => "unknownSegment" }
+      )
+      post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
       response.status_code.should == 400
       response.status_message.should == "Bad Request"
       response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
     end
 
     it "fails creation of a new subject with wrong gender" do
-      @subject_registration_xml = psc_xml(
-        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-      ) { |subject|
-        subject.tag!('subject',
-            'first-name' => "Test", 'last-name' => "GenderM",
-            'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> "female too")
-      }
-      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      xml = subject_registration_xml(:subject => { "gender" => "female too" })
+
+      post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
       response.status_code.should == 400
       response.status_message.should == "Bad Request"
-      response.entity.should include("The specified gender 'female too' is invalid: Please check the spelling")
+      response.entity.
+        should include("The specified gender 'female too' is invalid: Please check the spelling")
     end
 
     [%w(Male Male),
@@ -127,18 +124,12 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
      ].each do |valid_gender, canonical_gender|
       it "allows the creation of a new subject with gender '#{valid_gender}' " do
         # create XML using valid_gender, do POST, check that it was successful
-        @subject_registration_xml = psc_xml(
-              "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-              'subject-coordinator-name' => "erin", 'desired-assignment-id' => 'POP-4'
-        ) { |subject|
-          subject.tag!('subject',
-              'first-name' => "Test", 'last-name' => "GenderM",
-              'birth-date' => "1982-04-13", 'person-id' => "ID007", 'gender'=> valid_gender)
-        }
-        post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+        xml = subject_registration_xml(:subject => { 'gender' => valid_gender })
+
+        post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
         response.status_code.should == 201
-        response.meta['location'].should =~ %r(studies/NU480/schedules/POP-4)
-        application_context['subjectDao'].findSubjectByPersonId('ID007').gender.displayName.should == canonical_gender
+        application_context['subjectDao'].
+          findSubjectByPersonId('ID006').gender.displayName.should == canonical_gender
       end
     end
   end
