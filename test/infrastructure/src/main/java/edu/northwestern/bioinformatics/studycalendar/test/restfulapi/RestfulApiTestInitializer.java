@@ -37,6 +37,7 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
             put("user_role_study_sites", Arrays.asList("user_role_id", "study_site_id")).
             put("osgi_cm_property_values", Arrays.asList("property_id", "list_index")).
             put("managing_sites", Arrays.asList("study_id", "site_id")).
+            put("subject_properties", Arrays.asList("subject_id", "name")).
             toMap();
 
     private SitesInitializer sitesInitializer;

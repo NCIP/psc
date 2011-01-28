@@ -31,6 +31,7 @@ public class Subject extends AbstractMutableDomainObject {
     private Gender gender;
     private String personId;
     private List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment>();
+    private List<SubjectProperty> properties = new ArrayList<SubjectProperty>();
 
     ////// LOGIC
 
@@ -149,6 +150,20 @@ public class Subject extends AbstractMutableDomainObject {
     @SuppressWarnings( { "UnusedDeclaration" }) // used by hibernate
     public void setAssignments(List<StudySubjectAssignment> assignments) {
         this.assignments = assignments;
+    }
+
+    @CollectionOfElements(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "subject_properties",
+        joinColumns = @JoinColumn(name = "subject_id")
+    )
+    @IndexColumn(name = "list_index")
+    public List<SubjectProperty> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<SubjectProperty> properties) {
+        this.properties = properties;
     }
 
     ////// OBJECT METHODS

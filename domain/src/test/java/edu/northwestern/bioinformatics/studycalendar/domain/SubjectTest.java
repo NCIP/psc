@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 public class SubjectTest extends TestCase {
     private Subject subject = new Subject();
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         subject.setFirstName("Ana");
@@ -40,5 +41,10 @@ public class SubjectTest extends TestCase {
     public void testFullNameNoFirst() throws Exception {
         subject.setFirstName(null);
         assertEquals("Ng", subject.getFullName());
+    }
+
+    public void testPropertiesDefaultsToAnEmptyList() throws Exception {
+        assertNotNull(subject.getProperties());
+        assertEquals(0, subject.getProperties().size());
     }
 }

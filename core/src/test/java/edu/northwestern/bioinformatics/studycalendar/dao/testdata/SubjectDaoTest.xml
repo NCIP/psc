@@ -17,6 +17,19 @@
         person_id="555-01-3456"
         grid_id="What is the"
         />
+    <SUBJECT_PROPERTIES
+        subject_id="-101"
+        name="Hair Color"
+        value="blue"
+        list_index="1"
+        />
+    <SUBJECT_PROPERTIES
+        subject_id="-101"
+        name="Preferred Contact Address"
+        value="world@bridge.us"
+        list_index="0"
+        />
+
     <SITES
         id="-1001"
         name="New Site"
