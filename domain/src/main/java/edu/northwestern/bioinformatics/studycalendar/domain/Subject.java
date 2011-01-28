@@ -31,7 +31,6 @@ public class Subject extends AbstractMutableDomainObject {
     private Gender gender;
     private String personId;
     private List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment>();
-    private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
     ////// LOGIC
 
@@ -151,19 +150,6 @@ public class Subject extends AbstractMutableDomainObject {
     public void setAssignments(List<StudySubjectAssignment> assignments) {
         this.assignments = assignments;
     }
-
-    @Enumerated(EnumType.ORDINAL)
-    public LoadStatus getLoadStatus() {
-        return loadStatus;
-    }
-
-    /**
-     * Added for hibernate only..
-     * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
-     * @param loadStatus
-     */
-    @SuppressWarnings( { "UnusedDeclaration" })
-    public void setLoadStatus(final LoadStatus loadStatus) { }
 
     ////// OBJECT METHODS
 
