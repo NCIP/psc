@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
-import java.util.Date;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
@@ -16,7 +15,7 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
  * @author John Dzak
  */
 public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Subject> {
-
+    @Override
     public Element createElement(Subject subject) {
         Element elt = SUBJECT.create();
         SUBJECT_FIRST_NAME.addTo(elt, subject.getFirstName());
@@ -33,31 +32,21 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
         return elt;
     }
 
+    @Override
     @SuppressWarnings( { "unchecked" })
     public Subject readElement(Element element) {
-        String personId = SUBJECT_PERSON_ID.from(element);
-        String firstName = SUBJECT_FIRST_NAME.from(element);
-        String lastName = SUBJECT_LAST_NAME.from(element);
-        Date birthDate = SUBJECT_BIRTH_DATE.fromDate(element);
-        String gender = SUBJECT_GENDER.from(element);
-        Subject subject = createSubject(personId, firstName, lastName, birthDate, gender);
+        Subject subject = new Subject();
+        subject.setPersonId(SUBJECT_PERSON_ID.from(element));
+        subject.setFirstName(SUBJECT_FIRST_NAME.from(element));
+        subject.setLastName(SUBJECT_LAST_NAME.from(element));
+        subject.setDateOfBirth(SUBJECT_BIRTH_DATE.fromDate(element));
+        subject.setGender(Gender.getByCode(SUBJECT_GENDER.from(element)));
 
         for (Element child : ((List<Element>) element.elements(SUBJECT_PROPERTY.xmlName()))) {
             subject.getProperties().add(
                 new SubjectProperty(PROPERTY_NAME.from(child), PROPERTY_VALUE.from(child)));
         }
 
-        return subject;
-    }
-
-
-    private Subject createSubject(String personId, String firstName, String lastName, Date birthDate, String gender) {
-        Subject subject = new Subject();
-        subject.setPersonId(personId);
-        subject.setFirstName(firstName);
-        subject.setLastName(lastName);
-        subject.setDateOfBirth(birthDate);
-        subject.setGender(Gender.getByCode(gender));
         return subject;
     }
 }

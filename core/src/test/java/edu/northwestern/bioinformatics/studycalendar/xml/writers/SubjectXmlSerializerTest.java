@@ -49,13 +49,12 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertPropertyElement("Wrong 2nd prop", "A female deer?", "no", propertyChildren.get(1));
     }
 
+    // TODO: this assumes that equals in Subject checks all the fields that are deserialized.
+    // It would be better to check them directly.
     public void testReadElement() throws ParseException {
         Element element = createElement(subject);
 
-        replayMocks();
-        Subject actual = serializer.readElement(element);
-        verifyMocks();
-        assertEquals("Wrong Subject", subject, actual);
+        assertEquals("Wrong Subject", subject, serializer.readElement(element));
     }
 
     public void testReadElementReadsProperties() throws Exception {
@@ -69,7 +68,7 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertSubjectProperty("Wrong 2nd prop", "Hat color", "black", actual.getProperties().get(1));
     }
 
-    ////// Helper Methods
+    ////// HELPERS
 
     private void assertPropertyElement(
         String message, String expectedName, String expectedValue, Element actual
