@@ -312,6 +312,19 @@ psc.subject.RealScheduleControls = (function ($) {
       return endDate;
   }
 
+  function reloadSchedule() {
+     psc.subject.ScheduleData.refresh();
+  }
+
+  function makeUndoRequest() {
+      var url = $(this).attr('link');
+      $.ajax({
+          url: url,
+          type: 'DELETE',
+          success: reloadSchedule()
+      });
+  }
+
   return {
     init: function () {
       $('#xls-report').click(makeReportRequest)
@@ -335,6 +348,9 @@ psc.subject.RealScheduleControls = (function ($) {
         return false;
       });
       $('a.notification-control').click(dismissNotification)
+      var undoLink = jQuery('<a class="Undo" id="undo-control"/>').attr('href', '#')
+      $('#schedule-controls-box h2').append(undoLink);
+      $('#undo-control').click(makeUndoRequest)
     },
 
     batchResource: function (uri) {
@@ -433,6 +449,7 @@ psc.subject.RealScheduleControls = (function ($) {
           desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " " + newState + " activities for "
                   + subject + " by " + delayAmount + " days."
       } else {
+          newState = newState.replace(/-/g, " ");
           desc = count + " activities mark as " + newState.replace(/-/g, " ") + " for " + subject;
       }
 
@@ -442,6 +459,26 @@ psc.subject.RealScheduleControls = (function ($) {
         action_type: newState
       };
       return params;
+    },
+
+    generateUndoControl: function(newData) {
+      if (newData != null) {
+        var ua = newData["undoable_actions"][0];
+        var text = "Undo ";
+        var actionType = ua["action_type"];
+        var link = ua["URI"];
+        $('#undo-control').text(text + actionType).attr('link', link)
+      }
+    },
+
+    getUndoableActions: function() {
+      $.ajax({
+          dataType: 'json',
+          url: (psc.subject.ScheduleData.undoableActionsURI())(),
+          success: function(data){
+              psc.subject.RealScheduleControls.generateUndoControl(data)
+        }
+      });
     }
   }
 }(jQuery));

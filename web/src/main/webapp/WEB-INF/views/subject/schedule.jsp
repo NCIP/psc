@@ -86,6 +86,9 @@
                 psc.subject.ScheduleData.contextAPI(function () {
                     return psc.tools.Uris.deployed('${scheduleResource}');
                 });
+                psc.subject.ScheduleData.undoableActionsURI(function () {
+                    return psc.tools.Uris.relative('${scheduleResource}'+"/undoable-actions.json");
+                });
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
             </script>

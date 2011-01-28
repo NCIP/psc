@@ -20,6 +20,7 @@ psc.namespace("subject");
     
     var uriGenerator = null;
     var contextAPI = null;
+    var undoableActionsURI = null;
     function error(XMLHttpRequest, textStatus, errorThrown) {
       if (textStatus === "notmodified") {
         triggerScheduleReady();
@@ -33,8 +34,9 @@ psc.namespace("subject");
     function replaceSchedule(newData) {
       schedule = new psc.subject.Schedule(newData);
       triggerScheduleReady();
+      psc.subject.RealScheduleControls.getUndoableActions();
     }
-    
+
     function triggerScheduleReady() {
       $('#schedule').trigger('schedule-ready');
       $('#schedule').trigger('focus-date-changed', { 
@@ -116,6 +118,18 @@ psc.namespace("subject");
           }
           else {
             throw "psc.subject.ScheduleData.contextAPI not set."
+          }
+        }
+      },
+
+      undoableActionsURI: function (uaURI) {
+        if (arguments.length > 0) {
+          undoableActionsURI = uaURI;
+        } else {
+          if (undoableActionsURI) {
+            return undoableActionsURI;
+          } else {
+            throw "psc.subject.ScheduleData.undoableActionsURI not set."
           }
         }
       },
