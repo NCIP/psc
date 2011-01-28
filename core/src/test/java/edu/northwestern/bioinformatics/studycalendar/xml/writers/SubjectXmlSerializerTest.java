@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
-import org.easymock.EasyMock;
-import org.easymock.IArgumentMatcher;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 
 /**
  * @author John Dzak
@@ -20,6 +21,7 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SubjectXmlSerializer serializer;
     private Subject subject;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         serializer = new SubjectXmlSerializer();
@@ -35,6 +37,18 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong subject birth date", "1990-01-15", actual.attributeValue("birth-date"));
     }
 
+    @SuppressWarnings( { "unchecked" })
+    public void testCreateElementIncludesProperties() throws Exception {
+        subject.getProperties().add(new SubjectProperty("Anonymous", "yes"));
+        subject.getProperties().add(new SubjectProperty("A female deer?", "no"));
+
+        Element actual = serializer.createElement(subject);
+        List<Element> propertyChildren = actual.elements("property");
+        assertEquals("Wrong number of child elements", 2, propertyChildren.size());
+        assertPropertyElement("Wrong 1st prop", "Anonymous", "yes", propertyChildren.get(0));
+        assertPropertyElement("Wrong 2nd prop", "A female deer?", "no", propertyChildren.get(1));
+    }
+
     public void testReadElement() throws ParseException {
         Element element = createElement(subject);
 
@@ -44,8 +58,34 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong Subject", subject, actual);
     }
 
+    public void testReadElementReadsProperties() throws Exception {
+        Element subjElement = createElement(subject);
+        subjElement.add(elementFromString("<property name='Hat size' value='7'/>"));
+        subjElement.add(elementFromString("<property name='Hat color' value='black'/>"));
+
+        Subject actual = serializer.readElement(subjElement);
+        assertEquals("Wrong number of properties", 2, actual.getProperties().size());
+        assertSubjectProperty("Wrong 1st prop", "Hat size", "7", actual.getProperties().get(0));
+        assertSubjectProperty("Wrong 2nd prop", "Hat color", "black", actual.getProperties().get(1));
+    }
+
     ////// Helper Methods
-    private Element createElement(Subject subj) throws ParseException {
+
+    private void assertPropertyElement(
+        String message, String expectedName, String expectedValue, Element actual
+    ) {
+        assertEquals(message + ": wrong element name", "property", actual.getName());
+        assertEquals(message + ": wrong name", expectedName, actual.attribute("name").getValue());
+        assertEquals(message + ": wrong value", expectedValue, actual.attribute("value").getValue());
+        assertEquals(message + ": wrong number of attributes", 2, actual.attributeCount());
+    }
+
+    private void assertSubjectProperty(String message, String expectedName, String expectedValue, SubjectProperty actual) {
+        assertEquals(message + ": wrong name", expectedName, actual.getName());
+        assertEquals(message + ": wrong value", expectedValue, actual.getValue());
+    }
+
+    private Element createElement(Subject subj) {
         Element elt = new BaseElement("subject");
         elt.addAttribute("gender", subj.getGender().getDisplayName());
         elt.addAttribute("last-name", subj.getLastName());
@@ -53,36 +93,5 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         elt.addAttribute("first-name", subj.getFirstName());
         elt.addAttribute("birth-date", toDateString(subj.getDateOfBirth()));
         return elt;
-    }
-
-    ////// Custom Matchers
-    public static Subject eqSubject(Subject in) {
-        EasyMock.reportMatcher(new SubjectMatcher(in));
-        return null;
-    }
-
-    public static class SubjectMatcher implements IArgumentMatcher {
-        private Subject expected;
-
-        public SubjectMatcher(Subject expected) {
-            this.expected = expected;
-        }
-
-        public boolean matches(Object actual) {
-            if (!(actual instanceof Subject)) {
-                return false;
-            }
-            String personId = ((Subject) actual).getPersonId();
-            return expected.getPersonId().equals(personId);
-        }
-
-        public void appendTo(StringBuffer buffer) {
-            buffer.append("eqSubject(");
-            buffer.append(expected.getClass().getName());
-            buffer.append(" with person id \"");
-            buffer.append(expected.getPersonId());
-            buffer.append("\")");
-
-        }
     }
 }

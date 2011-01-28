@@ -22,6 +22,7 @@ public enum XsdElement {
     SUBJECT_ASSIGNMENTS,
     SUBJECT_ASSIGNMENT,
     SUBJECT,
+    SUBJECT_PROPERTY("property"),
 
     SITES,
     SITE,

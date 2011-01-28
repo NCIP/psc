@@ -23,11 +23,11 @@ public enum XsdAttribute {
     ACTIVITY_TYPE("type"),
     ACTIVITY_SOURCE("source"),
 
+    PROPERTY_NAME("name"),
+    PROPERTY_VALUE("value"),
 
     ACTIVITY_SOURCE_NAME("name"),
     ACTIVITY_PROPERTY_NAMESPACE("namespace"),
-    ACTIVITY_PROPERTY_NAME("name"),
-    ACTIVITY_PROPERTY_VALUE("value"),
 
     PLANNED_ACTIVITY_LABEL_NAME("label"),
     PLANNED_ACTIVITY_LABEL_ID("planned-activity-label-id"),

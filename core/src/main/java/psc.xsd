@@ -249,7 +249,7 @@
 
     <xsd:complexType name="Activity">
         <xsd:sequence>
-            <xsd:element name="property" type="psc:Property" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="property" type="psc:ActivityProperty" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -265,12 +265,17 @@
         <xsd:attribute name="source" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="property" type="psc:Property"/>
-
     <xsd:complexType name="Property">
-        <xsd:attribute name="namespace" type="xsd:string" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ActivityProperty" >
+        <xsd:complexContent>
+            <xsd:extension base="psc:Property">
+                <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:element name="label" type="psc:Label"/>
@@ -313,6 +318,9 @@
     </xsd:complexType>
 
     <xsd:complexType name="Subject">
+        <xsd:sequence>
+            <xsd:element name="property" type="psc:Property" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
         <xsd:attribute name="first-name" type="xsd:string"/>
         <xsd:attribute name="last-name" type="xsd:string"/>
         <xsd:attribute name="birth-date" type="xsd:date"/>
