@@ -400,7 +400,7 @@
             </div>
 
             <%--*********** Select and modify Portion****************--%>
-            <div class="accordionDiv">
+            <div class="accordionDiv" id="mark-select-header">
             <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
             </div>
             <div id="mark-select-content" class="accordion-content">

@@ -2,7 +2,6 @@ psc.namespace("subject");
 
 psc.subject.RealScheduleControls = (function ($) {
   var batchResource;
-  var selectAndModifyTabIsOpen = false;
   var userActionUrl = psc.tools.Uris.relative('/api/v1/user-actions');
 
   function performDelay(evt, data) {
@@ -138,22 +137,26 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function updateActivityCountMessage() {
+    jQuery('#apply-modified-activities-div').effect("highlight", {}, 2000);
     var count = $('input.event:checked').length;
     if (count === 0) {
       $('#mark-activities-count').
-        text('There are currently no activities checked.');
+        text('There are no activities checked.');
     } else if (count === 1) {
-      if (selectAndModifyTabIsOpen !== true) {
-        jQuery("#schedule-controls").accordion('activate', 4);
-        selectAndModifyTabIsOpen = true;
-      }
       $('#mark-activities-count').
-        text('There is currently 1 activity checked.');
+        text('There is 1 activity checked.');
     } else {
       $('#mark-activities-count').
-        text('There are currently ' + count + ' activities checked.');
+        text('There are ' + count + ' activities checked.');
     }
-    jQuery('#apply-modified-activities-div').effect("highlight", {}, 2000);
+  }
+
+  var isFirstSelection = true;
+  function showSelectModifyOnFirstSelection() {
+    if ((isFirstSelection && $('#mark-select-content:visible').length == 0) || $(".accordion-content:visible").length == 0) {
+      jQuery("#schedule-controls").accordion('activate', "#mark-select-header");
+      isFirstSelection = false;
+    }
   }
 
   function isShiftingMarkMode() {
@@ -336,7 +339,9 @@ psc.subject.RealScheduleControls = (function ($) {
       $('.hideControl').click(performHideAction);
       $('a.mark-select').click(checkScheduledActivitiesByClass).
         click(updateActivityCountMessage);
-      $('input.event').live('click', updateActivityCountMessage);
+      $('input.event').
+        live('click', updateActivityCountMessage).
+        live('click', showSelectModifyOnFirstSelection);
       $('#mark-new-mode').change(mutateMarkForm);
       $('#toggle-plan-days').click(function () {
         $('.event-details.plan-day').toggle();
