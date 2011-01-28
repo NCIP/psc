@@ -69,6 +69,7 @@ psc.namespace("subject");
         });
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
+        $('#schedule').bind('undoable-action-ready', psc.subject.RealScheduleControls.getUndoableActions);
       },
 
       /* Creates an index of the positions of each day block to make it easier to search for what's visible */

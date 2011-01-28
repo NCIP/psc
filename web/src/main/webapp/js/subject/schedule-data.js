@@ -34,7 +34,6 @@ psc.namespace("subject");
     function replaceSchedule(newData) {
       schedule = new psc.subject.Schedule(newData);
       triggerScheduleReady();
-      psc.subject.RealScheduleControls.getUndoableActions();
     }
 
     function triggerScheduleReady() {
@@ -44,6 +43,7 @@ psc.namespace("subject");
         source: "load",
         range: new psc.tools.Range(focusDate, focusDate)
       });
+      $('#schedule').trigger('undoable-action-ready');
     }
     
     function doLoad() {
