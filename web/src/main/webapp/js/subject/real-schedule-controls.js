@@ -29,6 +29,8 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function toggleActivitiesByState(evt, data) {
+    $('#schedule').trigger("activity-visibility-about-to-change");
+
     var state = $(this).closest("li.legend-row").attr("id").split("-")[0];
 
     var affected = $("li.scheduled-activity." + state);
@@ -48,6 +50,8 @@ psc.subject.RealScheduleControls = (function ($) {
         $(day).hide();
       }
     });
+
+    $('#schedule').trigger("activity-visibility-changed");
 
     // Even though we permit either control to toggle visibility, it's
     // important to let the user know whether a particular state is visible or not.

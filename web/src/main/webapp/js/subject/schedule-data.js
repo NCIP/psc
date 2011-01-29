@@ -3,9 +3,8 @@ psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {
-    var schedule, subjectCoordinator = null, focusDate = new Date();
+    var schedule, subjectCoordinator = null, focusDate = new Date(), hoverDate;
 
-    
     function triggeredDateComparableFn(triggerData) {
       return triggerData && triggerData.date && triggerData.date.getTime();
     }
@@ -46,6 +45,14 @@ psc.namespace("subject");
       $('#schedule').trigger('undoable-action-ready');
     }
     
+    function trackFocusDate(evt, data) {
+      focusDate = data.date;
+    }
+
+    function trackHoverDate(evt, data) {
+      hoverDate = data.date;
+    }
+
     function doLoad() {
       try {
         $.ajax({
@@ -74,7 +81,7 @@ psc.namespace("subject");
       
       focusDate: function (newFocusDate, source, range) {
         if (arguments.length > 0) {
-          focusDateTriggerer.update({ 
+          focusDateTriggerer.update({
             date: newFocusDate, 
             source: source, 
             range: range
@@ -167,6 +174,8 @@ psc.namespace("subject");
       
       init: function () {
         $('#schedule').bind('schedule-load-start', doLoad);
+        $('#schedule').bind('focus-date-changed', trackFocusDate);
+        $('#schedule').bind('hover-date-changed', trackHoverDate);
       }
     };
   }());

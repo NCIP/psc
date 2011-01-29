@@ -38,6 +38,11 @@ psc.tools.AsyncUpdater = function(updateFn, comparableValueFn) {
   this.stop = function () {
     clearTimeout(timeoutHandle);
   }
+
+  // Accessor for current value for debugging.  Don't modify the object returned here.
+  this.current = function() {
+    return currentValue;
+  }
 }
 
 psc.tools.AsyncUpdater.prototype.refreshTime = 20; // ~50 fps

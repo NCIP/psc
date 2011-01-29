@@ -62,6 +62,22 @@ psc.namespace("subject");
       $('.loading').fadeOut();
     }
 
+    var listTopVisibilityDesc = null;
+
+    function contentVisibilityAboutToChange(evt) {
+      listTopVisibilityDesc = { }
+      listTopVisibilityDesc.range = psc.subject.ScheduleList.visibleDayRange();
+      listTopVisibilityDesc.date = listTopVisibilityDesc.range.start;
+      listTopVisibilityDesc.additionalOffset =
+        $('#scheduled-activities div.date-' + psc.tools.Dates.utcToApiDate(listTopVisibilityDesc.date)).
+          position().top
+    }
+
+    function contentVisibilityChanged(evt) {
+      psc.subject.ScheduleList.buildDayPixelRanges();
+      psc.subject.ScheduleList.FocusHandler.realign(listTopVisibilityDesc);
+    }
+
     return {
       init: function () {
         $('#schedule').bind('schedule-load-start', function () {
@@ -70,12 +86,14 @@ psc.namespace("subject");
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
         $('#schedule').bind('undoable-action-ready', psc.subject.RealScheduleControls.getUndoableActions);
+        $('#schedule').bind('activity-visibility-about-to-change', contentVisibilityAboutToChange)
+        $('#schedule').bind('activity-visibility-changed', contentVisibilityChanged)
       },
 
       /* Creates an index of the positions of each day block to make it easier to search for what's visible */
       buildDayPixelRanges: function() {
         var currentOffset = $('#schedule').scrollTop();
-        this.dayPixelRanges = $('#scheduled-activities > div.day').collect(function () {
+        this.dayPixelRanges = $('#scheduled-activities > div.day:visible').collect(function () {
           var header = $(this).find("h3");
           var blockTop = $(this).position().top;
           return {
@@ -129,14 +147,23 @@ psc.namespace("subject");
         });
 
         var focusAnimator = new psc.tools.AsyncUpdater(function (data) {
+          if (SOURCE_NAME == data.source) return;
           var scrollTo = determineOffsetToDate(data.date, data.range);
+          if (data.additionalOffset) scrollTo -= data.additionalOffset;
           if (scrollTo) {
             programaticallyScrolling = true;
             $('#schedule').scrollTop(scrollTo);
-            programaticallyScrolling = false;
+            // allow scroll handlers to fire
+            setTimeout(function () {
+              programaticallyScrolling = false;
+            }, 1);
           }
         }, function (v) {
-          return v === null ? null : v.date.getTime();
+          if (v === null) {
+            return null;
+          } else {
+            return v.date.getTime() + " " + v.additionalOffset;
+          }
         });
 
         function extractDate(classes) {
@@ -170,7 +197,7 @@ psc.namespace("subject");
             }
           } else {
             var nextVisibleBlock;
-            $('#scheduled-activities > div.day').each(function (i, dayBlock) {
+            $('#scheduled-activities > div.day:visible').each(function (i, dayBlock) {
               if (date <= $(dayBlock).data('date')) {
                 nextVisibleBlock = $(dayBlock);
                 return false;
@@ -200,9 +227,7 @@ psc.namespace("subject");
         }
 
         function scrollToFocusDate(evt, triggerData) {
-          if (triggerData.source !== SOURCE_NAME) {
-            focusAnimator.update(triggerData);
-          }
+          focusAnimator.update(triggerData);
         }
 
         return {
@@ -212,6 +237,12 @@ psc.namespace("subject");
 
             $('#schedule').bind('hover-date-changed', hoverEvent);
             $('#schedule').bind('focus-date-changed', scrollToFocusDate);
+          },
+
+          /* When the content changes, this function can shift the scroll so that the previously
+             focussed date is still focussed. */
+          realign: function (ref) {
+            scrollToFocusDate(null, ref);
           }
         };
       }())
