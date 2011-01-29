@@ -29,29 +29,20 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function toggleActivitiesByState(evt, data) {
-    $('#schedule').trigger("activity-visibility-about-to-change");
-
     var state = $(this).closest("li.legend-row").attr("id").split("-")[0];
-
     var affected = $("li.scheduled-activity." + state);
-    // This deliberately ignores which control was clicked.
-    // Given a particular page state, clicking either control will have the same behavior.
-    var show = !affected.is(":visible");
 
-    show ? affected.show() : affected.hide();
+    var evtData = {
+      state: state,
+      // This deliberately ignores which control was clicked.
+      // Given a particular page state, clicking either control will have the same behavior.
+      show: !affected.is(":visible")
+    };
+    $('#schedule').trigger("change-activity-visibility", evtData);
+
     console.log(affected.length, state,
       affected.length == 1 ? "activity" : "activities",
-      show ? 'shown' : 'hidden');
-
-    $('div.day').each(function (index, day) {
-      if (show && $(day).find('li.scheduled-activity.' + state).is('*')) {
-        $(day).show();
-      } else if (!show && !$(day).find('li.scheduled-activity').is(':visible')) {
-        $(day).hide();
-      }
-    });
-
-    $('#schedule').trigger("activity-visibility-changed");
+      evtData.show ? 'shown' : 'hidden');
 
     // Even though we permit either control to toggle visibility, it's
     // important to let the user know whether a particular state is visible or not.

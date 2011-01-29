@@ -62,20 +62,27 @@ psc.namespace("subject");
       $('.loading').fadeOut();
     }
 
-    var listTopVisibilityDesc = null;
-
-    function contentVisibilityAboutToChange(evt) {
-      listTopVisibilityDesc = { }
-      listTopVisibilityDesc.range = psc.subject.ScheduleList.visibleDayRange();
-      listTopVisibilityDesc.date = listTopVisibilityDesc.range.start;
-      listTopVisibilityDesc.additionalOffset =
-        $('#scheduled-activities div.date-' + psc.tools.Dates.utcToApiDate(listTopVisibilityDesc.date)).
+    function changeActivityVisibility(evt, data) {
+      var originalVisibilityCriteria = { }
+      originalVisibilityCriteria.range = psc.subject.ScheduleList.visibleDayRange();
+      originalVisibilityCriteria.date = originalVisibilityCriteria.range.start;
+      originalVisibilityCriteria.additionalOffset =
+        $('#scheduled-activities div.date-' + psc.tools.Dates.utcToApiDate(originalVisibilityCriteria.date)).
           position().top
-    }
 
-    function contentVisibilityChanged(evt) {
+      var affected = $("#scheduled-activities div.day li.scheduled-activity." + data.state);
+
+      data.show ? affected.show() : affected.hide();
+      $('#scheduled-activities div.day').each(function (index, day) {
+        if (data.show && $(day).find('li.scheduled-activity.' + data.state).is('*')) {
+          $(day).show();
+        } else if (!data.show && !$(day).find('li.scheduled-activity').is(':visible')) {
+          $(day).hide();
+        }
+      });
+
       psc.subject.ScheduleList.buildDayPixelRanges();
-      psc.subject.ScheduleList.FocusHandler.realign(listTopVisibilityDesc);
+      psc.subject.ScheduleList.FocusHandler.realign(originalVisibilityCriteria);
     }
 
     return {
@@ -86,8 +93,7 @@ psc.namespace("subject");
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
         $('#schedule').bind('undoable-action-ready', psc.subject.RealScheduleControls.getUndoableActions);
-        $('#schedule').bind('activity-visibility-about-to-change', contentVisibilityAboutToChange)
-        $('#schedule').bind('activity-visibility-changed', contentVisibilityChanged)
+        $('#schedule').bind('change-activity-visibility', changeActivityVisibility)
       },
 
       /* Creates an index of the positions of each day block to make it easier to search for what's visible */
