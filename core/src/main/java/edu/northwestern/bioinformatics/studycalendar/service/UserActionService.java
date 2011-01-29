@@ -8,15 +8,18 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -33,6 +36,7 @@ public class UserActionService {
     private AuditEventDao auditEventDao;
     private ApplicationSecurityManager applicationSecurityManager;
     private DaoFinder daoFinder;
+    private AmendmentDao amendmentDao;
 
     public List<UserAction> getUndoableActions(String context) {
         List<UserAction> userActions = userActionDao.getUserActionsByContext(context);
@@ -149,6 +153,7 @@ public class UserActionService {
                 new CustomDateEditor(DateFormat.getISO8601Format(), true));
         objWrapper.registerCustomEditor(ScheduledActivityMode.class,
                 new ControlledVocabularyEditor(ScheduledActivityMode.class));
+        objWrapper.registerCustomEditor(Amendment.class, new DaoBasedEditor(amendmentDao));
         return objWrapper;
     }
 
@@ -192,5 +197,10 @@ public class UserActionService {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
     }
 }

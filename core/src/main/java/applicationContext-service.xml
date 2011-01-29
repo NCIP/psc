@@ -78,6 +78,7 @@
         <property name="userActionDao" ref="userActionDao"/>
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="daoFinder" ref="daoFinder"/>
+        <property name="amendmentDao" ref="amendmentDao"/>
     </bean>
 
     <!-- the applicationContextPath property is set in the web module -->

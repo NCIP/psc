@@ -5,8 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
@@ -263,6 +265,35 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         assertEquals("Scheduled Activity is undone", "Initialized from template", event.getCurrentState().getReason());
         assertEquals("Scheduled Activity is undone", "Sun Oct 17 00:00:00 CDT 2010", event.getCurrentState().getDate().toString());
         assertEquals("Scheduled Activity is undone", ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForUpdateAuditEventForAmendmentApply() throws Exception {
+        AmendmentDao amendmentDao =  registerDaoMockFor(AmendmentDao.class);
+        service.setAmendmentDao(amendmentDao);
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Amendment a2 = setId(12, createAmendment("New A", DateTools.createDate(2010, Calendar.OCTOBER, 18), false));
+        Amendment a1 = setId(11, createAmendment("A", DateTools.createDate(2010, Calendar.OCTOBER, 17), false));
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setCurrentAmendment(a2);
+        setId(1, assignment);
+        ae1 = new AuditEvent(assignment, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("currentAmendment", "11", "12"));
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(StudySubjectAssignment.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(1)).andReturn(assignment);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        expect(amendmentDao.getById(11)).andReturn(a1);
+        assertEquals("StudySubjectAssignment is undone", a2, assignment.getCurrentAmendment());
+        domainObjectDao.save(assignment);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("StudySubjectAssignment is undone", a1, assignment.getCurrentAmendment());
     }
 
     public void testApplyDoNotSaveEntityIfOnlyVersionIsUpdated() throws Exception {
