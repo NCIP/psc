@@ -93,13 +93,16 @@ public class AuditEvent extends DataAuditEvent implements Comparable<AuditEvent>
             for (int i=0; i<index; i++) {
                 String compPropertyName = propertyName.concat(".").concat(propertyType.getPropertyNames()[i]);
                 if (componentPrevState != null && componentCurState != null) {
-                    if (ComparisonTools.nullSafeEquals(componentCurState[i], componentPrevState[i])) {
-                        return;
+                    if (!ComparisonTools.nullSafeEquals(componentCurState[i], componentPrevState[i])) {
+                        addValue(new DataAuditEventValue(compPropertyName,
+                            scalarAuditableValue(componentPrevState[i]),
+                            scalarAuditableValue(componentCurState[i])));
                     }
+                } else {
+                    addValue(new DataAuditEventValue(compPropertyName,
+                        componentPrevState == null ? null : scalarAuditableValue(componentPrevState[i]),
+                        componentCurState == null ? null : scalarAuditableValue(componentCurState[i])));
                 }
-                addValue(new DataAuditEventValue(compPropertyName,
-                    componentPrevState == null ? null : scalarAuditableValue(componentPrevState[i]),
-                    componentCurState == null ? null : scalarAuditableValue(componentCurState[i])));
             }
         }
     }
