@@ -97,8 +97,12 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
         userAction.setContext(sb.toString());
         userAction.setActionType("population");
         StringBuilder des = new StringBuilder("Population changed to ");
-        for (Population pop : command.getPopulations()) {
+        if (command.getPopulations() == null) {
+            des.append("none");
+        } else {
+            for (Population pop : command.getPopulations()) {
                 des.append("[").append(pop.getAbbreviation()).append(": ").append(pop.getName()).append("]");
+            }
         }
         des.append(" for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
         userAction.setDescription(des.toString());

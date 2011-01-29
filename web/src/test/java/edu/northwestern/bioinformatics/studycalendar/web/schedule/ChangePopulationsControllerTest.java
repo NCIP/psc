@@ -74,4 +74,28 @@ public class ChangePopulationsControllerTest extends ControllerTestCase {
         assertEquals("User action's des is different", des, actualUa.getDescription());
         assertEquals("User action's user is different", pscUser.getCsmUser(), actualUa.getUser());
     }
+
+    public void testOnSubmitSetsUserActionToAuditEventForPopulationChangesToNone() throws Exception {
+        command.setPopulations(null);
+        UserAction userAction = new UserAction();
+        String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
+        userAction.setContext(context);
+        userAction.setActionType("population");
+        userAction.setUser(pscUser.getCsmUser());
+        String des = "Population changed to none for Perry Duglas for Joe's Study";
+        userAction.setDescription(des);
+        expect(applicationSecurityManager.getUser()).andReturn(pscUser);
+        userActionDao.save(userAction);
+        subjectService.updatePopulations(assignment, null);
+        replayMocks();
+        controller.onSubmit(request, response, command, null);
+        verifyMocks();
+
+        UserAction actualUa = AuditEvent.getUserAction();
+        assertNotNull("User Action is not set", actualUa);
+        assertEquals("User action's context is different", context, actualUa.getContext());
+        assertEquals("User action's actionType is different", "population", actualUa.getActionType());
+        assertEquals("User action's des is different", des, actualUa.getDescription());
+        assertEquals("User action's user is different", pscUser.getCsmUser(), actualUa.getUser());
+    }
 }
