@@ -28,64 +28,29 @@ psc.subject.RealScheduleControls = (function ($) {
     }
   }
 
-  function performShowAction(evt, data) {
-    var focusDate = psc.subject.ScheduleData.focusDate();
-    var dateRange = psc.subject.ScheduleList.visibleDayRange();
+  function hideOrShowActivitiesByState(evt, data) {
+    var show = $(this).is(".show-control");
+    var state = $(this).closest("li.legend-row").attr("id").split("-")[0];
 
-    var parentElm = $(this).parent("li");
-    var parentId = parentElm.attr('id');
-    var activityType = parentId.split("-")[0];
-    var activityClass = "li."+activityType;
+    var affected = $("li.scheduled-activity." + state);
+    if (affected.is(":visible") ^ show) {
+      show ? affected.show() : affected.hide();
+      console.log(affected.length, state,
+        affected.length == 1 ? "activity" : "activities",
+        show ? 'shown' : 'hidden');
 
-    $.each(jQuery('.day'), function (index, dayElm) {
-      var arrayOfLi = $(dayElm).find('li[class~='+activityType+']');
-      if (arrayOfLi.size() > 0) {
-        dayElm.show();
-      }
-    });
-
-    var arrayOfActivities = jQuery(activityClass);
-    arrayOfActivities.show();
-
-    $('#schedule').trigger('focus-date-changed', {
-        date: focusDate,
-        source: "show",
-        range: dateRange
-    });
-
-    $(this).removeClass('enableControl').addClass('disableControl');
-    var hideControl = parentElm.children(".hideControl");
-    hideControl.removeClass('disableControl').addClass('enableControl');
-  }
-
-  function performHideAction(evt, data) {
-    var focusDate = psc.subject.ScheduleData.focusDate();
-    var dateRange = psc.subject.ScheduleList.visibleDayRange();
-
-    var parentElm = $(this).parent("li");
-    var parentId = parentElm.attr('id');
-    var activityType = parentId.split("-")[0];
-    var activityClass = "li."+activityType;
-
-    var arrayOfActivities = jQuery(activityClass);
-    arrayOfActivities.hide();
-
-    $.each(jQuery('.day'), function (index, dayElm) {
-      var arrayOfLis = $(dayElm).find('li:visible');
-      if (arrayOfLis.size() == 0) {
-        dayElm.hide();
-      }
-    });
-
-    $('#schedule').trigger('focus-date-changed', {
-        date: focusDate,
-        source: "hide",
-        range: dateRange
+      $('div.day').each(function (index, day) {
+        if (show && $(day).find('li.scheduled-activity.' + state).is('*')) {
+          $(day).show();
+        } else if (!show && !$(day).find('li.scheduled-activity').is(':visible')) {
+          $(day).hide();
+        }
       });
 
-    $(this).removeClass('enableControl').addClass('disableControl');
-    var showControl = parentElm.children(".showControl");
-    showControl.removeClass('disableControl').addClass('enableControl');
+      $(this).parent().find(".control").toggleClass('enabled').toggleClass('disabled');
+    }
+
+    return false;
   }
 
   function executeScheduleUpdateWithUserAction(updates, action, url, callback, data) {
@@ -335,8 +300,7 @@ psc.subject.RealScheduleControls = (function ($) {
       $('#report-options').click(makeReportMoreOptionsRequest)
       $('#delay-submit').click(performDelay);
       $('#mark-submit').click(performCheckedModifications);
-      $('.showControl').click(performShowAction);
-      $('.hideControl').click(performHideAction);
+      $('.visibility-controls .control').click(hideOrShowActivitiesByState);
       $('a.mark-select').click(checkScheduledActivitiesByClass).
         click(updateActivityCountMessage);
       $('input.event').

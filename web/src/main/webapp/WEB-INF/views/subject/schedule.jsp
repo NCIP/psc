@@ -110,13 +110,6 @@
             font-size: 0.8em;
         }
 
-        #schedule-legend  {
-            width: 70%;
-            position: static;
-            right: 0;
-            top: 0;
-        }
-
         #schedule-controls .accordionDiv .accordionHeader {
             padding: 0;
             border: 0;

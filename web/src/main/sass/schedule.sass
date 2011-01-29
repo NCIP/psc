@@ -1,15 +1,8 @@
 // Styles that are shared among the various schedule pages
 #schedule-legend
-  position: absolute
-  right: 1em
-  top: 1em
-  width: 20%
   border: 1px solid #444
   background-color: white
-  z-index: 50
-  padding: 0
-  margin: 0
-  h3
+  h4
     background: #444
     color: #fff
     padding: 4px
@@ -22,9 +15,26 @@
     display: block
     padding: 3px
     border-top: 1px solid #444
+    clear: both
   a
     display: inline
-  .disableControl
-    color: grey
-  .enableControl
-    color: blue
+  div.legend-entry
+    float: left
+    img
+      vertical-align: middle
+  div.visibility-controls
+    float: right
+    white-space: nowrap
+    color: #444
+    a.control
+      display: inline
+      padding: 0
+      background: none
+      border: 0
+      font-weight: inherit
+      &.enabled
+        text-decoration: underline
+      &.disabled
+        cursor: inherit
+        text-decoration: none
+        color: inherit
