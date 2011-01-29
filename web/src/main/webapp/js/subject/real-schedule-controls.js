@@ -28,27 +28,30 @@ psc.subject.RealScheduleControls = (function ($) {
     }
   }
 
-  function hideOrShowActivitiesByState(evt, data) {
-    var show = $(this).is(".show-control");
+  function toggleActivitiesByState(evt, data) {
     var state = $(this).closest("li.legend-row").attr("id").split("-")[0];
 
     var affected = $("li.scheduled-activity." + state);
-    if (affected.is(":visible") ^ show) {
-      show ? affected.show() : affected.hide();
-      console.log(affected.length, state,
-        affected.length == 1 ? "activity" : "activities",
-        show ? 'shown' : 'hidden');
+    // This deliberately ignores which control was clicked.
+    // Given a particular page state, clicking either control will have the same behavior.
+    var show = !affected.is(":visible");
 
-      $('div.day').each(function (index, day) {
-        if (show && $(day).find('li.scheduled-activity.' + state).is('*')) {
-          $(day).show();
-        } else if (!show && !$(day).find('li.scheduled-activity').is(':visible')) {
-          $(day).hide();
-        }
-      });
+    show ? affected.show() : affected.hide();
+    console.log(affected.length, state,
+      affected.length == 1 ? "activity" : "activities",
+      show ? 'shown' : 'hidden');
 
-      $(this).parent().find(".control").toggleClass('enabled').toggleClass('disabled');
-    }
+    $('div.day').each(function (index, day) {
+      if (show && $(day).find('li.scheduled-activity.' + state).is('*')) {
+        $(day).show();
+      } else if (!show && !$(day).find('li.scheduled-activity').is(':visible')) {
+        $(day).hide();
+      }
+    });
+
+    // Even though we permit either control to toggle visibility, it's
+    // important to let the user know whether a particular state is visible or not.
+    $(this).parent().find(".control").toggleClass('enabled').toggleClass('disabled');
 
     return false;
   }
@@ -300,7 +303,7 @@ psc.subject.RealScheduleControls = (function ($) {
       $('#report-options').click(makeReportMoreOptionsRequest)
       $('#delay-submit').click(performDelay);
       $('#mark-submit').click(performCheckedModifications);
-      $('.visibility-controls .control').click(hideOrShowActivitiesByState);
+      $('.visibility-controls .control').click(toggleActivitiesByState);
       $('a.mark-select').click(checkScheduledActivitiesByClass).
         click(updateActivityCountMessage);
       $('input.event').
