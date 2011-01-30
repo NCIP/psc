@@ -92,7 +92,6 @@ psc.namespace("subject");
         });
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
-        $('#schedule').bind('undoable-action-ready', psc.subject.RealScheduleControls.getUndoableActions);
         $('#schedule').bind('change-activity-visibility', changeActivityVisibility)
       },
 
