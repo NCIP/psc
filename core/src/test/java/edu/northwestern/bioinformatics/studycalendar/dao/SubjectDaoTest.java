@@ -257,6 +257,21 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         assertEquals("Wrong subject matched", -101, (int) subject.getId());
     }
 
+    public void testGetByPersonId() throws Exception {
+        Subject subject = getDao().getByPersonId("123-45-6789");
+        assertEquals("Wrong subject found", -100, subject.getId().intValue());
+    }
+
+    public void testGetByPersonOrGridIdChecksPersonId() throws Exception {
+        Subject subject = getDao().getByGridIdOrPersonId("123-45-6789");
+        assertEquals("Wrong subject found", -100, subject.getId().intValue());
+    }
+
+    public void testGetByPersonOrGridIdChecksGridId() throws Exception {
+        Subject subject = getDao().getByGridIdOrPersonId("What is the");
+        assertEquals("Wrong subject found", -101, subject.getId().intValue());
+    }
+
     // Becuase of Constraint @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN}) in Subject,
     // the deletion deletes subject and it's referred children
     public void testDeleteSubjectWithSubjectAssigment() throws Exception {

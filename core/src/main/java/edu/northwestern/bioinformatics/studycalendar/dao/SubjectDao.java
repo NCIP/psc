@@ -90,7 +90,9 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
                 if (!results.isEmpty()) {
                     return results.get(0);
                 }
-            }
+           } else {
+               return subject;
+           }
         }
         return null;
     }
