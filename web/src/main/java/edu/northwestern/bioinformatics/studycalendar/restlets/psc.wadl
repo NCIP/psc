@@ -898,69 +898,112 @@
             </resource>
         </resource>
 
-        <resource path="subjects/{subject-identifier}/schedules">
+        <resource path="subjects/{subject-identifier}">
             <doc>
-               <html:p>The schedule for a single subject for all assigned studies</html:p>
+               <html:p>A single subject</html:p>
             </doc>
             <param style="template" name="subject-identifier">
-                <doc>The persion id or generated identifier for subject.You can assign
-                    the person id while creating the subject and use for subject registration</doc>
+                <doc>
+                    The person ID or generated UUID for the subject.  The person ID can be submitted
+                    with the registration request.
+                </doc>
             </param>
             <method name="GET">
                 <doc>
                     <html:p>
-                        Retrieve the full schedule for the subject from multiple studies
+                        Retrieve the attributes of a subject.
                     </html:p>
                     <html:div class="roles">
                         Authorized to:
                         <html:ul>
+                            <html:li>Subject Manager</html:li>
                             <html:li>Study Subject Calendar Manager</html:li>
-                            <html:li>Study Team Administrator</html:li>
                             <html:li>Data Reader</html:li>
                         </html:ul>
+                        <html:p>
+                            A user may only view information about subjects that are registered
+                            on studies in which her site is participating.
+                        </html:p>
                     </html:div>
                 </doc>
                 <response>
-                    <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
-                    <representation mediaType="text/calendar"/>
+                    <doc>
+<html:pre class="example">
+{
+  // updateable attributes
+  "first_name": "Jo",
+  "last_name":  "Carlson",
+  "gender":     "Female", // or "Male", "Unknown", or "Not Reported",
+  "birth_date": "1950-05-30",
+  "person_id": "XC1500530002",
+  "properties": [
+    { "name": "Hat size", "value": "7" },
+    { "name": "Phone number", "value": "312-555-1212" }
+  ],
+
+  // read-only attributes
+  "full_name":  "Jo Carlson",
+  "last_first": "Carlson, Jo",
+  "subject_identifier", "XC1500530002",
+  "href": {
+    "schedules": "${baseUri}/subjects/XC1500530002/schedules"
+  }
+}
+</html:pre>
+                    </doc>
                 </response>
             </method>
-            <resource path="activities">
+            <method name="PUT">
                 <doc>
-                    <html:p>The batch update for the list of scheduled activities for single subject</html:p>
-                </doc>
-                <method name="POST">
-                    <doc>
+                    <html:p>
+                        Replace the attributes of an existing subject.
+                        Creating new subjects via this resource is not permitted; new subjects
+                        may only be created in conjunction with a registration.
+                    </html:p>
+                    <html:p>
+                        Beware: if you change a person ID via this resource, the URI for the
+                        subject will change.
+                    </html:p>
+                    <html:div class="roles">
+                        Authorized to:
+                        <html:ul>
+                            <html:li>Study Manager</html:li>
+                        </html:ul>
                         <html:p>
-                            Accepts new scheduled activity state (date, status, and reason) to
-                            update the scheduled activity for the list of scheduled activities.
-                            Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
-                            If update is successful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+                            A user may only update information about subjects that are registered
+                            on studies in which her site is participating.
                         </html:p>
-                        <html:div class="roles">
-                            Authorized to:
-                            <html:ul>
-                                <html:li>Study Subject Calendar Manager</html:li>
-                            </html:ul>
-                        </html:div>
+                    </html:div>
+                </doc>
+                <response>
+                    <representation mediaType="application/json"/>
+                    <doc>
+<html:pre class="example">
+{
+  "first_name": "Jo",
+  "last_name":  "Carlson",
+  "gender":     "Female", // or "Male", "Unknown", or "Not Reported",
+  "birth_date": "1950-05-30",
+  "person_id": "XC1500530002",
+  "properties": [
+    { "name": "Hat size", "value": "7" },
+    { "name": "Phone number", "value": "312-555-1212" }
+  ],
+}
+</html:pre>
                     </doc>
-                    <request>
-                        <representation mediaType="application/json"/>
-                    </request>
-                    <response>
-                        <representation mediaType="application/json"/>
-                    </response>
-               </method>
-            </resource>
-            <resource path="undoable-actions">
+                </response>
+            </method>
+
+            <resource path="schedules">
                 <doc>
-                    <html:p>The list of actions a user may undo for single subject</html:p>
+                   <html:p>The schedule for a single subject for all assigned studies</html:p>
                 </doc>
                 <method name="GET">
                     <doc>
                         <html:p>
-                            Retrieve current undoable action list for subject.
+                            Retrieve the full schedule for the subject from multiple studies
                         </html:p>
                         <html:div class="roles">
                             Authorized to:
@@ -972,8 +1015,59 @@
                         </html:div>
                     </doc>
                     <response>
-                        <representation mediaType="application/json" />
+                        <representation href="#subject-assignments-xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/calendar"/>
+                    </response>
+                </method>
+                <resource path="activities">
+                    <doc>
+                        <html:p>The batch update for the list of scheduled activities for single subject</html:p>
+                    </doc>
+                    <method name="POST">
                         <doc>
+                            <html:p>
+                                Accepts new scheduled activity state (date, status, and reason) to
+                                update the scheduled activity for the list of scheduled activities.
+                                Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
+                                If update is successful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+                            </html:p>
+                            <html:div class="roles">
+                                Authorized to:
+                                <html:ul>
+                                    <html:li>Study Subject Calendar Manager</html:li>
+                                </html:ul>
+                            </html:div>
+                        </doc>
+                        <request>
+                            <representation mediaType="application/json"/>
+                        </request>
+                        <response>
+                            <representation mediaType="application/json"/>
+                        </response>
+                   </method>
+                </resource>
+                <resource path="undoable-actions">
+                    <doc>
+                        <html:p>The list of actions a user may undo for single subject</html:p>
+                    </doc>
+                    <method name="GET">
+                        <doc>
+                            <html:p>
+                                Retrieve current undoable action list for subject.
+                            </html:p>
+                            <html:div class="roles">
+                                Authorized to:
+                                <html:ul>
+                                    <html:li>Study Subject Calendar Manager</html:li>
+                                    <html:li>Study Team Administrator</html:li>
+                                    <html:li>Data Reader</html:li>
+                                </html:ul>
+                            </html:div>
+                        </doc>
+                        <response>
+                            <representation mediaType="application/json" />
+                            <doc>
 <html:pre class="example">
 {
   context: "${baseUri}/subjects/0000001/schedules",
@@ -989,47 +1083,21 @@
   ]
 }
 </html:pre>
-                        </doc>
-                    </response>
-               </method>
-            </resource>
-            <resource path="assignments/{assignment-identifier}/notifications">
-                <doc>
-                    <html:p>The list of current notifications for the study subject assignment for subject.</html:p>
-                </doc>
-                <param style="template" name="assignment-identifier">
-                    <doc>The generated identifier for study subject assignment.</doc>
-                </param>
-                <method name="GET">
+                            </doc>
+                        </response>
+                   </method>
+                </resource>
+                <resource path="assignments/{assignment-identifier}/notifications">
                     <doc>
-                        <html:p>
-                            Retrieve current notifications for the study subject assignment.
-                        </html:p>
-                        <html:div class="roles">
-                            Authorized to:
-                            <html:ul>
-                                <html:li>Study Subject Calendar Manager</html:li>
-                                <html:li>Study Team Administrator</html:li>
-                                <html:li>Data Reader</html:li>
-                            </html:ul>
-                        </html:div>
+                        <html:p>The list of current notifications for the study subject assignment for subject.</html:p>
                     </doc>
-                    <response>
-                        <representation href="#notifications-xml"/>
-                        <representation mediaType="application/json"/>
-                    </response>
-                </method>
-                <resource path="{notification-identifier}">
-                    <doc>
-                        <html:p>The current notifications with given identifier for the study subject assignment</html:p>
-                    </doc>
-                    <param style="template" name="notification-identifier">
-                        <doc>The generated identifier for notification.</doc>
+                    <param style="template" name="assignment-identifier">
+                        <doc>The generated identifier for study subject assignment.</doc>
                     </param>
                     <method name="GET">
                         <doc>
                             <html:p>
-                                The current notification with identifier for the study subject assignment.
+                                Retrieve current notifications for the study subject assignment.
                             </html:p>
                             <html:div class="roles">
                                 Authorized to:
@@ -1041,26 +1109,53 @@
                             </html:div>
                         </doc>
                         <response>
-                            <representation href="#notification-xml"/>
+                            <representation href="#notifications-xml"/>
                             <representation mediaType="application/json"/>
                         </response>
                     </method>
-                    <method name="PUT">
+                    <resource path="{notification-identifier}">
                         <doc>
-                            <html:p>
-                                Accepts notification's dismiss flag value and sets accordingly.
-                            </html:p>
-                            <html:div class="roles">
-                                Authorized to:
-                                <html:ul>
-                                    <html:li>Study Subject Calendar Manager</html:li>
-                                </html:ul>
-                            </html:div>
+                            <html:p>The current notifications with given identifier for the study subject assignment</html:p>
                         </doc>
-                        <request>
-                            <representation mediaType="application/json"/>
-                        </request>
-                    </method>
+                        <param style="template" name="notification-identifier">
+                            <doc>The generated identifier for notification.</doc>
+                        </param>
+                        <method name="GET">
+                            <doc>
+                                <html:p>
+                                    The current notification with identifier for the study subject assignment.
+                                </html:p>
+                                <html:div class="roles">
+                                    Authorized to:
+                                    <html:ul>
+                                        <html:li>Study Subject Calendar Manager</html:li>
+                                        <html:li>Study Team Administrator</html:li>
+                                        <html:li>Data Reader</html:li>
+                                    </html:ul>
+                                </html:div>
+                            </doc>
+                            <response>
+                                <representation href="#notification-xml"/>
+                                <representation mediaType="application/json"/>
+                            </response>
+                        </method>
+                        <method name="PUT">
+                            <doc>
+                                <html:p>
+                                    Accepts notification's dismiss flag value and sets accordingly.
+                                </html:p>
+                                <html:div class="roles">
+                                    Authorized to:
+                                    <html:ul>
+                                        <html:li>Study Subject Calendar Manager</html:li>
+                                    </html:ul>
+                                </html:div>
+                            </doc>
+                            <request>
+                                <representation mediaType="application/json"/>
+                            </request>
+                        </method>
+                    </resource>
                 </resource>
             </resource>
         </resource>

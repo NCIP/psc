@@ -223,6 +223,12 @@
           <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
     </bean>
 
+    <bean name="/subjects/{subject-identifier}"
+          id="singleSubjectResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectResource">
+        <property name="subjectDao" ref="subjectDao"/>
+    </bean>
+
     <bean name="/subjects/{subject-identifier}/schedules"
           id="subjectCentricScheduleResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCentricScheduleResource">

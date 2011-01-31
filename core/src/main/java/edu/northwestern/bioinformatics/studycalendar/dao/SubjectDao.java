@@ -8,11 +8,13 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -156,5 +158,17 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
 
     public void deleteAll(List<Subject> t) {
         getHibernateTemplate().delete(t); 
+    }
+
+    /**
+     * Returns all the distinct sites at which the subject is participating in at least one study.
+     */
+    @SuppressWarnings( { "unchecked" })
+    public Collection<Site> getSiteParticipation(Subject subject) {
+        return getHibernateTemplate().findByCriteria(
+            DetachedCriteria.forClass(Site.class).
+                createAlias("studySites", "ss").
+                createAlias("ss.studySubjectAssignments", "a").
+                add(Restrictions.eq("a.subject", subject)));
     }
 }

@@ -32,8 +32,13 @@
 
     <SITES
         id="-1001"
-        name="New Site"
-        assigned_identifier="New Site"
+        name="Northwestern"
+        assigned_identifier="IL450"
+       />
+    <SITES
+        id="-1002"
+        name="Mayo"
+        assigned_identifier="MN018"
        />
     <AMENDMENTS id="-55" amendment_date="2005-01-08"/>
     <STUDIES

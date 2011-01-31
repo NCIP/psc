@@ -14,6 +14,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -291,5 +292,12 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
     public void testFindSubjectByPersonIdWhenIdIsNull() throws Exception {
         Subject subject = getDao().getByPersonId(null);
         assertNull("Subject is not null ", subject);
+    }
+
+    public void testGetParticipatingSites() throws Exception {
+        Subject subject = getDao().getById(-100);
+        Collection<Site> actual = getDao().getSiteParticipation(subject);
+        assertEquals("Wrong number of sites", 1, actual.size());
+        assertEquals("Wrong site", -1001, actual.iterator().next().getId().longValue());
     }
 }

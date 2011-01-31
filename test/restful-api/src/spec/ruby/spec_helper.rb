@@ -57,6 +57,23 @@ module PscTest
     File.open(File.dirname(__FILE__) + "/../resources/templates/#{file_name}.xml").read
   end
 
+  # Ensures that the specified study is available to and approved at
+  # the given sites
+  def self.make_template_available(study, site)
+    ss = study.getStudySite(site)
+    unless ss
+      ss = Fixtures.createStudySite(study, site)
+      application_context['studySiteDao'].save(ss)
+    end
+    [*study.amendments_list].reverse.each do |amendment|
+      unless ss.get_amendment_approval(amendment)
+        ss.approveAmendment(amendment, createDate(2001, 1, 1))
+      end
+    end
+    application_context['studySiteDao'].save(ss)
+    ss
+  end
+
   class HibernateOpenSession
     def initialize
       mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new

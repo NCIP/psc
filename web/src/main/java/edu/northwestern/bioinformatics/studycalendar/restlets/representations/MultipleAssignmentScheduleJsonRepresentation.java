@@ -292,6 +292,7 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
     }
 
     // package level for testing
+    // TODO: reuse the code in SubjectJsonRepresentation
     static void createJSONSubject(JsonGenerator generator, Subject subject) throws IOException {
         generator.writeStartObject();
         JacksonTools.nullSafeWriteStringField(generator, "first_name", subject.getFirstName());

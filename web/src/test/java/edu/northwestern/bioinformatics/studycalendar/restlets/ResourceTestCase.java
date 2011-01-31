@@ -59,29 +59,24 @@ public abstract class ResourceTestCase<R extends ServerResource> extends Restlet
     }
 
     protected void doGet() {
-        replayMocks();
-        request.setMethod(Method.GET);
-        simulateFinderHandle();
-        verifyMocks();
+        doRequest(Method.GET);
     }
 
     protected void doPut() {
-        replayMocks();
-        request.setMethod(Method.PUT);
-        simulateFinderHandle();
-        verifyMocks();
+        doRequest(Method.PUT);
     }
 
     protected void doPost() {
-        replayMocks();
-        request.setMethod(Method.POST);
-        simulateFinderHandle();
-        verifyMocks();
+        doRequest(Method.POST);
     }
 
     protected void doDelete() {
+        doRequest(Method.DELETE);
+    }
+
+    protected void doRequest(Method method) {
         replayMocks();
-        request.setMethod(Method.DELETE);
+        request.setMethod(method);
         simulateFinderHandle();
         verifyMocks();
     }
