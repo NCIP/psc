@@ -6,6 +6,7 @@
 require 'yaml'
 
 require 'rubygems'
+require 'rubygems/user_interaction'
 require 'rubygems/dependency_installer'
 
 BUILD_YAML = File.expand_path("../build.yaml", __FILE__)
