@@ -335,7 +335,6 @@ psc.subject.RealScheduleControls = (function ($) {
       $('a.notification-control').click(dismissNotification)
       var undoControl = jQuery('<a class="undo" id="undo-control" style="font-style:italic"/>');
       $('#schedule-controls-box h2').append(undoControl);
-      $('#undo-control').click(makeUndoRequest);
       $('#schedule').bind('schedule-ready',
               psc.subject.RealScheduleControls.getUndoableActions);
     },
@@ -454,6 +453,7 @@ psc.subject.RealScheduleControls = (function ($) {
         dataType: 'json',
         url: (psc.subject.ScheduleData.undoableActionsURI())(),
         success: function(data) {
+          $('#undo-control').click(makeUndoRequest);
           $('#undo-control .indicator').css('visibility', 'hidden');
           generateUndoControl(data);
         },
