@@ -51,7 +51,7 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
         userActionDao = registerDaoMockFor(UserActionDao.class);
-        auditEventDao = registerDaoMockForNonStudyCalendarDao(AuditEventDao.class);
+        auditEventDao = registerMockFor(AuditEventDao.class);
         applicationSecurityManager = registerMockFor(ApplicationSecurityManager.class);
         service =  new UserActionService();
         service.setAuditEventDao(auditEventDao);
