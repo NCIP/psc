@@ -64,10 +64,6 @@ public class UserActionDao extends StudyCalendarMutableDomainObjectDao<UserActio
         }
     }
 
-    private DetachedCriteria criteria() {
-        return DetachedCriteria.forClass(UserAction.class);
-    }
-
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

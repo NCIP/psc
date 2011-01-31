@@ -146,8 +146,4 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
         for (Site site : t) site.stopManaging();
         getHibernateTemplate().deleteAll(t);
     }
-
-    private DetachedCriteria criteria() {
-        return DetachedCriteria.forClass(Site.class);
-    }
 }

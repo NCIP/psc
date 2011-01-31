@@ -125,8 +125,4 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
         }
         return result;
     }
-
-    private DetachedCriteria criteria() {
-        return DetachedCriteria.forClass(StudySubjectAssignment.class);
-    }
 }

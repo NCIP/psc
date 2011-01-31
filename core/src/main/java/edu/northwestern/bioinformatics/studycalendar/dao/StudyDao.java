@@ -267,8 +267,4 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     private Criterion searchRestriction(String searchText) {
         return Restrictions.ilike("assignedIdentifier", searchText, MatchMode.ANYWHERE);
     }
-
-    private DetachedCriteria criteria() {
-        return DetachedCriteria.forClass(Study.class);
-    }
 }
