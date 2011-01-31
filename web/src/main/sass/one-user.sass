@@ -1,18 +1,20 @@
-!role_manager_height = 72em
-!role_manager_width = 72em
-!role_tab_width = 15em
-!role_editor_width = !role_manager_width - !role_tab_width
-!group_role_height = 14em
+$role_manager_height: 72em
+$role_manager_width: 72em
+$role_tab_width: 15em
+$role_editor_width: $role_manager_width - $role_tab_width
+$group_role_height: 14em
 
 #role-manager
   position: relative
-  height= !role_manager_height
-  width= !role_manager_width
+  height: $role_manager_height
+  width: $role_manager_width
+
 .role-manager-view-option
   text-align: right
   margin: 0px 4px 8px 0
+
 #roles
-  width= !role_tab_width
+  width: $role_tab_width
   position: absolute
   left: 0
   top: 0
@@ -23,19 +25,19 @@
     position: relative
     margin: 0 0 0.5em 0
   .role
-    border: 1px solid #444
+    border: 1px solid #444444
     border-width: 1px 0 1px 1px
     text-align: right
     float: right
-    width= !role_tab_width - 3em
+    width: $role_tab_width - 3em
     padding: 2px
     padding-left: 1em
     display: block
     &.selected
-      background-color: #444
-      color: #fff
+      background-color: #444444
+      color: white
     &.member
-      background-image: url('../images/occurred.png')
+      background-image: url("../images/occurred.png")
       background-repeat: no-repeat
       background-position: 2px 2px
     border-radius: 5px 0 0 5px
@@ -43,19 +45,20 @@
   .role-control
     width: 2em
     position: absolute
+
 #role-editor
   position: absolute
-  left= !role_tab_width
-  width= !role_editor_width
-  border: 1px solid #444
+  left: $role_tab_width
+  width: $role_editor_width
+  border: 1px solid #444444
   border-left-width: 1px
   height: 100%
   overflow: auto
   border-radius: 5px
   -moz-border-radius: 5px
   h2
-    width: !role_editor_width
-    background-color: #444
+    width: $role_editor_width
+    background-color: #444444
     color: white
     margin: 0
     padding: 0.5em
@@ -67,20 +70,20 @@
       display: block
       font-style: italic
   div.disabled label
-    color: #999
+    color: #999999
 
 div.row
   padding: 2px 0
   div.label
-    width= !role_tab_width - 1em
+    width: $role_tab_width - 1em
     padding: 0
     margin: 0
   div.value
-    margin-left= !role_tab_width
+    margin-left: $role_tab_width
 
 #multiple-role-content
   .abstract-role-grouping
-    border: 1px solid #444
+    border: 1px solid #444444
     margin: 0 10px 10px 0
     h2
       text-align: center
@@ -89,10 +92,9 @@ div.row
         width: 15px
       div.value
         margin-left: 1.8em
-
   .column
     position: absolute
-    width= (!role_editor_width / 4) - 1em
+    width: $role_editor_width / 4 - 1em
   .column1
     left: 0
   .column2
@@ -101,17 +103,16 @@ div.row
     left: 50%
   #suite-roles-cell
     left: 75%
-    height= !group_role_height * 2 + 1
+    height: $group_role_height * 2 + 1
   .row1
     top: 0
-    height= !group_role_height
+    height: $group_role_height
   .row2
-    top= !group_role_height + 1
-    height= !group_role_height
+    top: $group_role_height + 1
+    height: $group_role_height
 
 #role-multiple-roles
-  background-color: #aaa
+  background-color: #aaaaaa
 
 #scope-container
-  margin-top= !group_role_height * 2 + 2
-
+  margin-top: $group_role_height * 2 + 2
