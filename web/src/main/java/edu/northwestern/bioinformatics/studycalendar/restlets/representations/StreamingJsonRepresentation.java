@@ -17,11 +17,7 @@ import java.io.OutputStream;
  */
 public abstract class StreamingJsonRepresentation extends OutputRepresentation {
     protected StreamingJsonRepresentation() {
-        this(MediaType.APPLICATION_JSON);
-    }
-
-    public StreamingJsonRepresentation(MediaType mediaType) {
-        super(mediaType);
+        super(MediaType.APPLICATION_JSON);
     }
 
     @Override
@@ -32,5 +28,6 @@ public abstract class StreamingJsonRepresentation extends OutputRepresentation {
         gen.close();
     }
 
-    public abstract void generate(JsonGenerator generator) throws IOException, JsonGenerationException;
+    public abstract void generate(JsonGenerator generator)
+        throws IOException, JsonGenerationException;
 }

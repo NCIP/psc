@@ -18,6 +18,7 @@ import java.nio.channels.Channels;
 public class StreamingJsonRepresentationTest extends TestCase {
     private TestRepresentation representation;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         representation = new TestRepresentation();
@@ -25,13 +26,7 @@ public class StreamingJsonRepresentationTest extends TestCase {
 
     public void testDefaultMediaTypeIsApplicationJson() throws Exception {
         assertEquals(MediaType.APPLICATION_JSON, new StreamingJsonRepresentation() {
-            public void generate(JsonGenerator generator) throws IOException { }
-        }.getMediaType());
-    }
-
-    public void testProvidedMediaTypeIsUsed() throws Exception {
-        assertEquals(MediaType.TEXT_PLAIN, new StreamingJsonRepresentation(MediaType.TEXT_PLAIN) {
-            public void generate(JsonGenerator generator) throws IOException { }
+            @Override public void generate(JsonGenerator generator) throws IOException { }
         }.getMediaType());
     }
 
@@ -65,6 +60,7 @@ public class StreamingJsonRepresentationTest extends TestCase {
     private static class TestRepresentation extends StreamingJsonRepresentation {
         private boolean generateStarted = false;
 
+        @Override
         public void generate(JsonGenerator generator) throws JsonGenerationException, IOException {
             generateStarted = true;
             generator.writeStartObject();
