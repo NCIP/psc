@@ -33,7 +33,7 @@
             indicator.reveal()
             YAHOO.util.Connect.initHeader("Content-Type", "application/json")
             YAHOO.util.Connect.asyncRequest('PUT',
-                INTERNAL_URI_BASE_PATH + "api/v1/osgi/bundles/" + bundleId + "/state.json",
+                INTERNAL_URI_BASE_PATH + "api/v1/osgi/bundles/" + bundleId + "/state",
                 {
                     success: function(o) {
                         updateBundleRow(rowId, bundleId, indicator);
