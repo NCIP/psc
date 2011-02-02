@@ -336,8 +336,11 @@ psc.subject.RealScheduleControls = (function ($) {
       var undoControl = jQuery('<a class="undo" id="undo-control" style="font-style:italic"/>');
       $('#schedule-controls-box h2').append(undoControl);
       $('#undo-control').click(makeUndoRequest);
+      /*
+       * Disabled for PSC 2.9.0 due to #1369.
       $('#schedule').bind('schedule-ready',
               psc.subject.RealScheduleControls.getUndoableActions);
+       */
     },
 
     batchResource: function (uri) {
