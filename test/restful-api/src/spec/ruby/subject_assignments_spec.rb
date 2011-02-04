@@ -92,14 +92,24 @@ describe "/studies/{study-identifier}/sites/{site-identifier}/subject-assignment
       application_context["studySubjectAssignmentDao"].getByGridId("POP-4").should_not be_nil
     end
 
-    it "gives 400 if studySegment with gridId from xml not found in system" do
+    it "gives 422 if studySegment with gridId from xml not found in system" do
       xml = subject_registration_xml(
         :registration => { 'first-study-segment-id' => "unknownSegment" }
       )
+
       post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :erin
-      response.status_code.should == 400
-      response.status_message.should == "Bad Request"
+      response.status_code.should == 422
       response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
+    end
+
+    it "uses the users's subject-managerness to determine whether a new subject may be created" do
+      xml = subject_registration_xml(
+        :registration => { 'subject-coordinator-name' => 'erin' }
+      )
+
+      post "/studies/NU480/sites/PA015/subject-assignments", xml, :as => :iris
+      response.status_code.should == 403
+      response.entity =~ %r(iris may not create new subjects.)
     end
 
     describe "with subject properties" do

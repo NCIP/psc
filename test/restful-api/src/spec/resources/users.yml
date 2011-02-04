@@ -48,6 +48,11 @@ hannah:
       studies: ['__ALL__']
     study_creator:
       sites: ['MN026']
+iris:
+  roles:
+    study_subject_calendar_manager:
+      sites: ['IL036', 'PA015']
+      studies: ['__ALL__']
 
 # Juno is a superuser -- all permissions at all sites
 juno:
