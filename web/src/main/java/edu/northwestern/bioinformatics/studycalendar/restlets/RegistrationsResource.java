@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -55,12 +56,9 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
                 Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
                 Reference.encode(assigned.getGridId()));
         } catch (StudyCalendarValidationException scve) {
-            // TODO: this is terrible.  You control both the throwing code and the catching code.
-            // Fix the throw if you need more specific information.
-            if (scve.getMessage().contains("to create new subject.")) {
-               throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, scve.getMessage(), scve);
-            }
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, scve.getMessage(), scve);
+        } catch (StudyCalendarAuthorizationException scae) {
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, scae.getMessage(), scae);
         }
     }
 

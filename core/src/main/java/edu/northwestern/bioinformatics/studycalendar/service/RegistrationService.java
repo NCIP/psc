@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -41,7 +42,8 @@ public class RegistrationService {
             mergeSubjectProperties(newSubject, existingSubject);
             registration.setSubject(existingSubject);
         } else if (!ussr.getCanCreateSubjects()) {
-            throw new StudyCalendarValidationException("%s has insufficient privilege to create new subject.", studySubjectCalendarManager);
+            throw new StudyCalendarAuthorizationException(
+                "%s may not create a new subject.", studySubjectCalendarManager);
         }
         return registration;
     }

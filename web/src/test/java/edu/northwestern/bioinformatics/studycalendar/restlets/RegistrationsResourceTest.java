@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -199,15 +200,15 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
             "try harder next time");
     }
 
-    public void testPostReturnsErrorCodeIfUserNotAuthorized() throws Exception {
+    public void testPostIs403IfUserNotAuthorized() throws Exception {
         Registration posted = testRegistrationBuilder().toRegistration();
         expectReadXmlFromRequestAs(posted);
         expect(registrationService.resolveRegistration(posted, studySite)).
-            andThrow(new StudyCalendarValidationException("jo has insufficient privilege to create new subject."));
+            andThrow(new StudyCalendarAuthorizationException("not allowed, jerk"));
 
         doPost();
 
-        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN, "jo has insufficient privilege to create new subject.");
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN, "not allowed, jerk");
     }
 
     private Registration.Builder testRegistrationBuilder() {
