@@ -130,7 +130,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
             assertContains("Missing event", actualIds, expectedId);
         }
     }
-    
+
     public void testSaveUpdatesLabels() throws Exception {
         {
             ScheduledActivity loaded = getDao().getById(-10);
@@ -145,5 +145,33 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEquals("Wrong number of labels", 2, reloaded.getLabels().size());
         assertEquals("Wrong first label", "clean-only", reloaded.getLabels().first());
         assertEquals("Wrong second label", "research", reloaded.getLabels().last());
+    }
+
+    public void testSaveUpdatesCurrentStateModeOnly() throws Exception {
+        {
+            ScheduledActivity loaded = getDao().getById(-10);
+            loaded.getCurrentState().setMode(ScheduledActivityMode.CANCELED);
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledActivity reloaded = getDao().getById(-10);
+        assertEquals("Wrong mode value", ScheduledActivityMode.CANCELED, reloaded.getCurrentState().getMode());
+    }
+
+    public void testSaveUpdatesCurrentStateModeAndReason() throws Exception {
+        {
+            ScheduledActivity loaded = getDao().getById(-10);
+            loaded.getCurrentState().setMode(ScheduledActivityMode.CANCELED);
+            loaded.getCurrentState().setReason("Changing Mode");
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledActivity reloaded = getDao().getById(-10);
+        assertEquals("Wrong mode value", ScheduledActivityMode.CANCELED, reloaded.getCurrentState().getMode());
+        assertEquals("Wrong reason", "Changing Mode", reloaded.getCurrentState().getReason());
     }
 }

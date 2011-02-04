@@ -63,19 +63,57 @@ describe "/user-actions/{user-action-identifier}" do
       response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
       response.xml_attributes("current-scheduled-activity-state", "reason").should include("Just canceled")
       response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-29")
-     
+
       delete "/user-actions/#{@ua_identifier}", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       actual = retrieve(@ua_identifier)
       actual.undone.should be(true)
-     
+
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("scheduled")
       response.xml_attributes("current-scheduled-activity-state", "reason").should include("Initialized from template")
       response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
     end
-       
+
+    #1369
+    it "sets user action flag to undone and reverse the effect of audit event for multiple update to same event without reason" do
+      @ua_header1 = create_user_action("Occurred on 2008-12-28", "occurred", erin, @context_uri)
+      @JSONentity1 = "{#{@scheduled_activities[1].gridId} : { state : occurred, reason : nil, date : 2008-12-28}}"
+      post "/subjects/ID001/schedules/activities", @JSONentity1, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header1
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("occurred")
+     
+      @ua_header2 = create_user_action("Canceled on 2008-12-28", "canceled", erin, @context_uri)
+      @JSONentity2 = "{#{@scheduled_activities[1].gridId} : { state : canceled, reason : nil, date : 2008-12-28 }}"
+      post "/subjects/ID001/schedules/activities", @JSONentity2, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header2
+     
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
+     
+      @ua_header3 = create_user_action("Missed on 2008-12-28", "missed", erin, @context_uri)
+      @JSONentity3 = "{#{@scheduled_activities[1].gridId} : { state : missed, reason : nil, date : 2008-12-28 }}"
+      post "/subjects/ID001/schedules/activities", @JSONentity3, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header3
+     
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("missed")
+     
+      @ua_identifier3 = @ua_header3.split('/').last
+     
+      delete "/user-actions/#{@ua_identifier3}", :as => :erin
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      actual = retrieve(@ua_identifier3)
+      actual.undone.should be(true)
+     
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
+      response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
+    end
+    
     it "gives 403 status if user doesn't have access to undo the user actions" do
       delete "/user-actions/#{@ua_identifier}", :as => :darlene
       response.status_code.should == 403
