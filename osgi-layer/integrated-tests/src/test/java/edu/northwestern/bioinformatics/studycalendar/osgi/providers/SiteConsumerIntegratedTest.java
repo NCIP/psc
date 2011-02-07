@@ -5,12 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockData
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions;
 
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.*;
 
 /**
  * @author Rhett Sutphin
@@ -19,6 +20,7 @@ public class SiteConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
     private static final String MOCK_PROVIDERS_SYMBOLIC_NAME = "edu.northwestern.bioinformatics.psc-providers-mock";
     private Site site;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         site = Fixtures.createSite("Iowa Lutheran Hospital", "IA030");
@@ -29,6 +31,7 @@ public class SiteConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         dumpBundles();
     }
 
+    @Override
     public void tearDown() throws Exception {
         stopBundle(MOCK_PROVIDERS_SYMBOLIC_NAME);
 
@@ -41,7 +44,7 @@ public class SiteConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         assertEquals("Iowa Lutheran Hospital", refreshed.getName());
         assertNotNull("Could not find test site", refreshed);
         assertNotNull("Test site not refreshed", refreshed.getLastRefresh());
-        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 15000);
+        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 25000);
     }
 
     ////// HELPERS
