@@ -1,18 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.providers;
 
-import edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.startBundle;
-import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.stopBundle;
-import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.getApplicationContext;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockDataProviderTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockDataProviderTools;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions;
 
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.*;
 
 /**
  * @author Jalpa Patel
@@ -21,6 +20,7 @@ public class StudyConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
     private static final String MOCK_PROVIDERS_SYMBOLIC_NAME = "edu.northwestern.bioinformatics.psc-providers-mock";
     private Study study;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         study = Fixtures.createSingleEpochStudy("StudyName", "E", "S1", "S2");
@@ -31,6 +31,7 @@ public class StudyConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         startBundle(MOCK_PROVIDERS_SYMBOLIC_NAME, StudyProvider.class.getName());
     }
 
+    @Override
     public void tearDown() throws Exception {
         stopBundle(MOCK_PROVIDERS_SYMBOLIC_NAME);
 
@@ -43,7 +44,7 @@ public class StudyConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         assertEquals("NCT00003641", refreshed.getAssignedIdentifier());
         assertNotNull("Could not find test study", refreshed);
         assertNotNull("Test study not refreshed", refreshed.getLastRefresh());
-        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 10000);
+        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 25000);
     }
 
     ////// HELPERS
