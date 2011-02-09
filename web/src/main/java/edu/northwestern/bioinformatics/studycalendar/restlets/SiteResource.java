@@ -40,7 +40,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
         try {
             siteService.removeSite(site);
         } catch (Exception e) {
-            String message = "Can not delete the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
+            String message = "Can not delete the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
         }
     }
@@ -51,7 +51,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
             Site existingSite = getRequestedObject();
             siteService.createOrMergeSites(existingSite, site);
         } catch (Exception e) {
-            String message = "Can not update the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
+            String message = "Can not update the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
         }
     }
@@ -63,7 +63,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Unknown Site Identifier " +UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
         }
         if (site.hasAssignments()) {
-            String message = "Can not delete the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) +
+            String message = "Can not delete the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) +
                     " because site has some assignments";
             log.error(message);
 

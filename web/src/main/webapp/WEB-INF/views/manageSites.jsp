@@ -29,6 +29,13 @@
                     method: 'DELETE',
                     onSuccess : function() {
                         window.location = SC.relativeUri("/pages/admin/manage/sites")
+                    },
+                    onFailure: function(response) {
+                        var msg = response.responseText;
+                        var statusCode = response.status
+                        var statusText = response.statusText
+                        msg = msg.replace(statusCode, "").replace(statusText, "");
+                        alert(msg);
                     }
                 })
                 return true;
