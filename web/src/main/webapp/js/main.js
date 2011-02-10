@@ -23,8 +23,9 @@ SC.Main.registerGoToScheduleControl = function() {
             Event.stop(evt);
             var a = Event.element(evt);
             var ssId = a.id.substring('go-to-schedule-control-'.length);
-            var scheduleId = $F('assigned-subject-selector-' + ssId);
-            window.location.href = a.href + "?assignment=" + scheduleId;
+            var selected = jQuery('#assigned-subject-selector-' + ssId + ' option:selected');
+            var assignment = selected.attr('assignment');
+            window.location.href = a.href + "?assignment=" + assignment;
         });
     });
 };
