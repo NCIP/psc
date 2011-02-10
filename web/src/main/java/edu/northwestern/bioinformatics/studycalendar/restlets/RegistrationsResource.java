@@ -58,9 +58,9 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
             // TODO: this is terrible.  You control both the throwing code and the catching code.
             // Fix the throw if you need more specific information.
             if (scve.getMessage().contains("to create new subject.")) {
-               throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, scve.getMessage());
+               throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, scve.getMessage(), scve);
             }
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
+            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, scve.getMessage(), scve);
         }
     }
 
