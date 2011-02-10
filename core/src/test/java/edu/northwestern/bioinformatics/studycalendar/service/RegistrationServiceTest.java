@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -37,7 +39,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     private Registration registration;
     private Subject subject;
     private StudySegment segment;
-    private PscUser sammyc;
+    private PscUser sammyc, apploman;
     private StudySite studySite;
 
     @Override
@@ -56,6 +58,8 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         expect(studySegmentDao.getByGridId(segment.getGridId())).andStubReturn(segment);
 
         sammyc = createPscUser("sammyc", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+        apploman = createPscUser("apploman", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        SecurityContextHolderTestHelper.setSecurityContext(apploman);
 
         Study study = createBasicTemplate();
         study.setAssignedIdentifier("study");
@@ -145,13 +149,14 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubjectForStudySite() throws Exception {
-        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forSites(new Site()));
+        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER,
+            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forSites(new Site()));
         replayMocks();
          try {
             service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("sammyc has insufficient privilege to create new subject.", scve.getMessage());
+        } catch (StudyCalendarAuthorizationException scve) {
+            assertEquals("sammyc may not create a new subject.", scve.getMessage());
         }
     }
 
@@ -160,8 +165,8 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
          try {
             service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("sammyc has insufficient privilege to create new subject.", scve.getMessage());
+        } catch (StudyCalendarAuthorizationException scve) {
+            assertEquals("sammyc may not create a new subject.", scve.getMessage());
         }
     }
 }
