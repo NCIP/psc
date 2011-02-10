@@ -37,11 +37,11 @@ describe "GET" do
 
       it "returns all the users" do
         actual_usernames.should ==
-          %w(alice barbara carla darlene erin frieda gertrude hannah juno yvette zelda)
+          %w(alice barbara carla darlene erin frieda gertrude hannah iris juno yvette zelda)
       end
 
       it "includes the correct total" do
-        response.json["total"].should == 11
+        response.json["total"].should == 12
       end
 
       it "includes the correct offset" do
@@ -96,7 +96,7 @@ describe "GET" do
         end
 
         it "includes all users" do
-          response.json["users"].size.should == 11
+          response.json["users"].size.should == 12
         end
 
         it "includes role information" do
@@ -138,7 +138,7 @@ describe "GET" do
         end
 
         it "include all users" do
-          response.json["users"].size.should == 11
+          response.json["users"].size.should == 12
         end
 
         it "includes all scope information" do
@@ -168,7 +168,7 @@ describe "GET" do
         end
 
         it "includes the correct total" do
-          response.json["total"].should == 11
+          response.json["total"].should == 12
         end
       end
 
@@ -190,7 +190,7 @@ describe "GET" do
         end
 
         it "includes the correct total" do
-          response.json["total"].should == 11
+          response.json["total"].should == 12
         end
       end
 
@@ -227,7 +227,7 @@ describe "GET" do
 
         it "provides a useful error message" do
           response.entity.should =~
-            /Offset 13 is too large.  There are 11 result\(s\), so the max offset is 10./
+            /Offset 13 is too large.  There are 12 result\(s\), so the max offset is 11./
         end
       end
     end
