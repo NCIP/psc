@@ -20,11 +20,15 @@ psc.subject.RealScheduleControls = (function ($) {
       executeScheduleUpdateWithUserAction
               (params, action, batchResource, executePartialScheduleUpdate, data);
     }
-    if (params == null) {
+    var numberOfActivitiesChecked = $('input.event:checked').length;
+
+    if (params == null && numberOfActivitiesChecked > 0) {
       alert("There selected activities are not suitable to be modified due to the state." +
         "\nOnly scheduled and conditional types will be changed");
-    } else if (isParamsEmpty) {
+    } else if (isParamsEmpty && numberOfActivitiesChecked>0) {
       alert("There were no properties modified to change the activity");
+    } else if (numberOfActivitiesChecked == 0) {
+      alert ("Please select the activities that you wish to modify");
     }
   }
 
