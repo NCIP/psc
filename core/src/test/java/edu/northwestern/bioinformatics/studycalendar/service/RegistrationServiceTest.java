@@ -80,6 +80,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         service.setStudySegmentDao(studySegmentDao);
         service.setSubjectService(subjectService);
         service.setPscUserDetailsService(userService);
+        service.setApplicationSecurityManager(applicationSecurityManager);
     }
 
     public void testResolveRegistration() throws Exception {
@@ -141,7 +142,8 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanCreateNewSubjectForStudySite() throws Exception {
-        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER, AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forAllSites());
+        apploman.getMemberships().put(SuiteRole.SUBJECT_MANAGER,
+            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forAllSites());
         replayMocks();
         service.resolveRegistration(registration, studySite);
         verifyMocks();
@@ -149,14 +151,14 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveRegistrationNewSubjectAndUserCanNotCreateNewSubjectForStudySite() throws Exception {
-        sammyc.getMemberships().put(SuiteRole.SUBJECT_MANAGER,
+        apploman.getMemberships().put(SuiteRole.SUBJECT_MANAGER,
             AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.SUBJECT_MANAGER).forSites(new Site()));
         replayMocks();
          try {
             service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
         } catch (StudyCalendarAuthorizationException scve) {
-            assertEquals("sammyc may not create a new subject.", scve.getMessage());
+            assertEquals("apploman may not create a new subject.", scve.getMessage());
         }
     }
 
@@ -166,7 +168,7 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
             service.resolveRegistration(registration, studySite);
             fail("Exception not thrown");
         } catch (StudyCalendarAuthorizationException scve) {
-            assertEquals("sammyc may not create a new subject.", scve.getMessage());
+            assertEquals("apploman may not create a new subject.", scve.getMessage());
         }
     }
 }

@@ -70,6 +70,7 @@
          <property name="pscUserDetailsService" ref="pscUserService"/>
          <property name="subjectService" ref="subjectService"/>
          <property name="studySegmentDao" ref="studySegmentDao"/>
+         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
     <bean id="userActionService"

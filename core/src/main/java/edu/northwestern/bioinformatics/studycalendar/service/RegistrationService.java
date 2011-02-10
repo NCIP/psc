@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -20,6 +21,7 @@ public class RegistrationService {
     private StudySegmentDao studySegmentDao;
     private SubjectService subjectService;
     private PscUserDetailsService userService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public Registration resolveRegistration(Registration registration, StudySite studySite) {
         if (registration.getStudySubjectCalendarManager() != null) {
@@ -34,16 +36,17 @@ public class RegistrationService {
         }
         registration.setFirstStudySegment(segment);
 
-        PscUser studySubjectCalendarManager = registration.getStudySubjectCalendarManager();
-        UserStudySiteRelationship ussr = new UserStudySiteRelationship(studySubjectCalendarManager, studySite);
+        UserStudySiteRelationship ussr =
+            new UserStudySiteRelationship(applicationSecurityManager.getUser(), studySite);
         Subject existingSubject = subjectService.findSubject(registration.getSubject());
+
         if (existingSubject != null) {
             Subject newSubject = registration.getSubject();
             mergeSubjectProperties(newSubject, existingSubject);
             registration.setSubject(existingSubject);
         } else if (!ussr.getCanCreateSubjects()) {
             throw new StudyCalendarAuthorizationException(
-                "%s may not create a new subject.", studySubjectCalendarManager);
+                "%s may not create a new subject.", ussr.getUser());
         }
         return registration;
     }
@@ -68,6 +71,8 @@ public class RegistrationService {
         return userService.loadUserByUsername(spec.getUsername());
     }
 
+    ////// CONFIGURATION
+
     @Required
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
@@ -81,5 +86,10 @@ public class RegistrationService {
     @Required
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
         userService = userDetailsService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }
