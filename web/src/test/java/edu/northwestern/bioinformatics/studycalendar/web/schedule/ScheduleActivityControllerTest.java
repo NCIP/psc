@@ -150,9 +150,42 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         UserAction userAction = new UserAction();
         String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
         userAction.setContext(context);
-        userAction.setActionType("occurred");
+        userAction.setActionType("activity update");
         userAction.setUser(pscUser.getCsmUser());
-        String des = "testActivity mark as occurred on 2003-03-15 for Perry Duglas for test-study";
+        String des = "testActivity is updated for Perry Duglas for test-study";
+        userAction.setDescription(des);
+        expect(mockApplicationSecurityManager.getUser()).andReturn(pscUser);
+        userActionDao.save(userAction);
+        command.apply();
+
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+    }
+
+    public void testAddNotesOnSubmit() throws Exception {
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("Perry", "Duglas");
+        subject.setGridId("1111");
+        StudySite studySite = new StudySite();
+        Study study = new Study();
+        study.setAssignedIdentifier("test-study");
+        studySite.setStudy(study);
+
+        command.setEvent(createScheduledActivity("testActivity", 2003, 03, 14,
+            ScheduledActivityMode.SCHEDULED.createStateInstance
+                    (DateUtils.createDate(2003, Calendar.MARCH, 14), "testing")));
+        command.setNewNotes("New notes");
+        command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
+        command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(Fixtures.createAssignment(studySite, subject));
+        request.setMethod("POST");
+
+        UserAction userAction = new UserAction();
+        String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
+        userAction.setContext(context);
+        userAction.setActionType("activity update");
+        userAction.setUser(pscUser.getCsmUser());
+        String des = "testActivity is updated for Perry Duglas for test-study";
         userAction.setDescription(des);
         expect(mockApplicationSecurityManager.getUser()).andReturn(pscUser);
         userActionDao.save(userAction);

@@ -42,7 +42,6 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     private ApplicationSecurityManager applicationSecurityManager;
     private UserActionDao userActionDao;
     private String applicationPath;
-    protected static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public ScheduleActivityController() {
         setBindOnNewForm(true);
@@ -97,20 +96,11 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         StringBuilder sb = new StringBuilder(applicationPath);
         Subject subject =  assignment.getSubject();
         sb.append("/api/v1/subjects/").append(subject.getGridId()).append("/schedules");
-        ScheduledActivityMode newState = command.getNewMode();
-
         UserAction userAction = new UserAction();
         userAction.setContext(sb.toString());
-        userAction.setActionType(newState.getName());
-        String newDate = DATE_FORMAT.format(command.getNewDate());
-
+        userAction.setActionType("activity update");
         StringBuilder des = new StringBuilder(sa.getActivity().getName());
-        if (sa.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED) && newState.equals(ScheduledActivityMode.SCHEDULED)) {
-            des.append(" rescheduled from ").append(sa.getActualDate()).append(" to ").append(newDate);
-        } else {
-            des.append(" mark as ").append(newState.getName()).append(" on ").append(newDate);
-        }
-        des.append(" for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
+        des.append(" is updated for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
         userAction.setDescription(des.toString());
         PscUser user = applicationSecurityManager.getUser();
         if (user != null) {
