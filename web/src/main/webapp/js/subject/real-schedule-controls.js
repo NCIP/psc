@@ -463,7 +463,7 @@ psc.subject.RealScheduleControls = (function ($) {
         },
         error: function() {
           $('#undo-control').removeAttr('href').removeAttr('link')
-          .css('color', '#444').text("Nothing to undo");
+          .css('color', '#444').text("Nothing to undo").unbind('click');
         }
       });
     }
