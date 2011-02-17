@@ -380,9 +380,8 @@
                             </c:otherwise>
                         </c:choose>
                     </select>
-
                     by <input id="delay-amount" size="3" value="7"/> day(s)
-                    as of <laf:dateInput local="true" path="delay-as-of"/>.
+                    as of <laf:dateInput local="true" path="delay-as-of" todayDateValue="${todayDate}"/>.
                     <br/>
                     Why? <input id="delay-reason"/>
                 </div>
