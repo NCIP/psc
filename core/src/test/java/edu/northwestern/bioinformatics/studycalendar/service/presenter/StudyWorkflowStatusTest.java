@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -23,9 +25,10 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 /**
  * @author Rhett Sutphin
  */
-public class StudyWorkflowStatusTest extends TestCase {
+public class StudyWorkflowStatusTest extends StudyCalendarTestCase {
     private Study study;
     private Site nu, vanderbilt;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,6 +46,7 @@ public class StudyWorkflowStatusTest extends TestCase {
         vanderbilt = createSite("VU", "TN054");
         StudySite ss = study.addSite(nu);
         ss.approveAmendment(study.getAmendment(), new Date());
+        configuration = registerMockFor(Configuration.class);
     }
 
     private StudyWorkflowStatus actual() {
@@ -51,7 +55,8 @@ public class StudyWorkflowStatusTest extends TestCase {
         return new StudyWorkflowStatus(study,
             AuthorizationObjectFactory.createPscUser("jo", mem),
             new WorkflowMessageFactory(),
-            Fixtures.getTestingDeltaService());
+            Fixtures.getTestingDeltaService(),
+            configuration);
     }
 
     ////// messages
@@ -144,7 +149,8 @@ public class StudyWorkflowStatusTest extends TestCase {
         StudyWorkflowStatus actual = new StudyWorkflowStatus(study,
             AuthorizationObjectFactory.createPscUser("jo", mem),
             new WorkflowMessageFactory(),
-            Fixtures.getTestingDeltaService());
+            Fixtures.getTestingDeltaService(),
+            configuration);
         assertEquals("Unexpected availability present", 1, actual.getTemplateAvailabilities().size());
         assertFalse("Unexpected availability present", 
                 actual.getTemplateAvailabilities().contains(TemplateAvailability.IN_DEVELOPMENT));

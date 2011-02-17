@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarAuthorizationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -22,6 +23,7 @@ public class RegistrationService {
     private SubjectService subjectService;
     private PscUserDetailsService userService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private Configuration configuration;
 
     public Registration resolveRegistration(Registration registration, StudySite studySite) {
         if (registration.getStudySubjectCalendarManager() != null) {
@@ -37,7 +39,7 @@ public class RegistrationService {
         registration.setFirstStudySegment(segment);
 
         UserStudySiteRelationship ussr =
-            new UserStudySiteRelationship(applicationSecurityManager.getUser(), studySite);
+            new UserStudySiteRelationship(applicationSecurityManager.getUser(), studySite, configuration);
         Subject existingSubject = subjectService.findSubject(registration.getSubject());
 
         if (existingSubject != null) {
@@ -91,5 +93,10 @@ public class RegistrationService {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

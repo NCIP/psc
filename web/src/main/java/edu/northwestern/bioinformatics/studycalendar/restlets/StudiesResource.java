@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -41,6 +42,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
     private ActivityService activityService;
+    private Configuration configuration;
 
     @Override
     public void doInit() {
@@ -72,7 +74,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
             }
 
             for (Study study : studies) {
-                UserTemplateRelationship utr = new UserTemplateRelationship(getCurrentUser(), study);
+                UserTemplateRelationship utr = new UserTemplateRelationship(getCurrentUser(), study, configuration);
                 List<StudyPrivilege> studyPrivileges = StudyPrivilege.valuesFor(utr);
                 if (studyPrivileges.containsAll(requestedPrivileges)) {
                    filteredStudies.add(study);
@@ -87,7 +89,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
-            return new StudyListJsonRepresentation(getAllObjects(), getCurrentUser());
+            return new StudyListJsonRepresentation(getAllObjects(), getCurrentUser(), configuration);
         } else {
             return super.get(variant);
         }
@@ -162,5 +164,10 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Required
     public void setActivityService(ActivityService activityService) {
         this.activityService = activityService;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

@@ -938,12 +938,14 @@
                             </div>
                             <div class="value">
                                 <ul>
-                                    <tags:conditionalListItemLink
-                                        showIf="${ssRelationship.canAssignSubjects}"
-                                        url="/pages/cal/assignSubject?study=${study.id}&site=${ssRelationship.studySite.site.id}"
-                                        cssClass="control">
-                                        Assign subject
-                                    </tags:conditionalListItemLink>
+                                    <c:if test="${configuration.map.enableAssigningSubject}">
+                                        <tags:conditionalListItemLink
+                                            showIf="${ssRelationship.canAssignSubjects}"
+                                            url="/pages/cal/assignSubject?study=${study.id}&site=${ssRelationship.studySite.site.id}"
+                                            cssClass="control">
+                                            Assign subject
+                                        </tags:conditionalListItemLink>
+                                    </c:if>
                                     <tags:conditionalListItemLink
                                         showIf="${ssRelationship.canApproveAmendments}"
                                         url="/pages/cal/template/approve?studySite=${ssRelationship.studySite.id}"

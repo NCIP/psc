@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -22,6 +23,7 @@ import java.util.List;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -30,6 +32,7 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
     private List<Study> studies;
     private Study study;
     private Site nu, mayo, vanderbilt;
+    private Configuration configuration;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -41,6 +44,7 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
         s2.setProvider("universe");
         s2.setLongTitle("This is the longest title I can think of");
         studies.add(s2);
+        configuration = registerMockFor(Configuration.class);
     }
 
     public void testStudiesElementIsEmptyArrayForEmptyList() throws Exception {
@@ -195,8 +199,12 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
 
     public void testRegisterStudyPrivilege() throws Exception {
         createStudyForPrivilege();
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         JSONObject actual = ((JSONObject) serializeAndReturnStudiesArrayWithUser(studies,
                 createUserWithMembership(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(study))).get(3));
+        verifyMocks();
         assertTrue("Privileges not an array",
             actual.get("privileges") instanceof JSONArray);
         String actualPrivilege = ((JSONArray) actual.get("privileges")).get(0).toString();
@@ -205,8 +213,12 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
 
     public void testSeeReleasedStudyPrivilege() throws Exception {
         createStudyForPrivilege();
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         JSONObject actual = ((JSONObject) serializeAndReturnStudiesArrayWithUser(studies,
                 createUserWithMembership(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(study))).get(3));
+        verifyMocks();
         assertTrue("Privileges not an array",
             actual.get("privileges") instanceof JSONArray);
         String actualPrivilege = ((JSONArray) actual.get("privileges")).get(1).toString();
@@ -239,7 +251,7 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
     //Helper Methods
 
     private JSONObject serialize(List<Study> expected) throws IOException {
-        return writeAndParseObject(new StudyListJsonRepresentation(expected));
+        return writeAndParseObject(new StudyListJsonRepresentation(expected, configuration));
     }
 
     private JSONArray serializeAndReturnStudiesArray(List<Study> expected) throws IOException, JSONException {
@@ -267,7 +279,7 @@ public class StudyListJsonRepresentationTest extends JsonRepresentationTestCase 
     }
 
     private JSONObject serializeWithUser(List<Study> expected, PscUser user) throws IOException {
-        return writeAndParseObject(new StudyListJsonRepresentation(expected, user));
+        return writeAndParseObject(new StudyListJsonRepresentation(expected, user, configuration));
     }
 
     private JSONArray serializeAndReturnStudiesArrayWithUser(List<Study> expected, PscUser user) throws IOException, JSONException {

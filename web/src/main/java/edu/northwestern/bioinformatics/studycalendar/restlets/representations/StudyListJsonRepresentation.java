@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.restlets.StudyPrivilege;
@@ -17,14 +18,17 @@ import java.util.List;
 public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
     private List<Study> studies;
     private PscUser user;
+    private Configuration configuration;
 
-    public StudyListJsonRepresentation(List<Study> studies) {
+    public StudyListJsonRepresentation(List<Study> studies, Configuration configuration) {
         this.studies = studies;
+        this.configuration = configuration;
     }
 
-    public StudyListJsonRepresentation(List<Study> studies, PscUser user) {
+    public StudyListJsonRepresentation(List<Study> studies, PscUser user, Configuration configuration) {
         this.studies = studies;
         this.user = user;
+        this.configuration = configuration;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
 
     private void writeStudyPrivileges(JsonGenerator generator, Study study) throws IOException {
         generator.writeFieldName("privileges");
-        UserTemplateRelationship utr = new UserTemplateRelationship(getUser(), study);
+        UserTemplateRelationship utr = new UserTemplateRelationship(getUser(), study, configuration);
         generator.writeStartArray();
         List<StudyPrivilege> privileges = StudyPrivilege.valuesFor(utr);
         for (StudyPrivilege privilege : privileges) {

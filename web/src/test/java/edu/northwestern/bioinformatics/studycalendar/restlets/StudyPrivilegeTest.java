@@ -28,7 +28,7 @@ public class StudyPrivilegeTest extends WebTestCase {
     }
 
     public void testAllPrivilegePropertiesExist() throws Exception {
-        UserTemplateRelationship utr = new UserTemplateRelationship(null, null);
+        UserTemplateRelationship utr = new UserTemplateRelationship(null, null, null);
         BeanWrapper bw = new BeanWrapperImpl(utr);
 
         for (StudyPrivilege privilege : StudyPrivilege.values()) {

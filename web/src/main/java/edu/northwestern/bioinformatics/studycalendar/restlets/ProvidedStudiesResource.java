@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
@@ -21,6 +22,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
     private StudyConsumer studyConsumer;
+    private Configuration configuration;
 
     @Override
     public void doInit() {
@@ -39,7 +41,7 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
-            return new StudyListJsonRepresentation(getAllObjects());
+            return new StudyListJsonRepresentation(getAllObjects(), configuration);
         } else {
             return super.get(variant);
         }
@@ -57,6 +59,11 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }
 

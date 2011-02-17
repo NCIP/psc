@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -32,6 +33,7 @@ public class DashboardCommandTest extends WebTestCase {
     private Study eg, ie, etc;
     private Site nu;
     private PscUser jo, dash, zelda;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -63,8 +65,9 @@ public class DashboardCommandTest extends WebTestCase {
 
         studyDao = registerDaoMockFor(StudyDao.class);
         pscUserService = registerMockFor(PscUserService.class);
+        configuration = registerMockFor(Configuration.class);
 
-        command = new DashboardCommand(jo, pscUserService, studyDao);
+        command = new DashboardCommand(jo, pscUserService, studyDao, configuration);
         command.setUser(dash);
     }
 
@@ -107,7 +110,7 @@ public class DashboardCommandTest extends WebTestCase {
     }
 
     public void testIsHiddenInformationWhenCurrentUserIsNotAnSSCM() throws Exception {
-        DashboardCommand thisCmd = new DashboardCommand(zelda, pscUserService, studyDao);
+        DashboardCommand thisCmd = new DashboardCommand(zelda, pscUserService, studyDao, configuration);
         thisCmd.setUser(jo);
         assertTrue(thisCmd.getHasHiddenInformation());
     }
@@ -156,6 +159,7 @@ public class DashboardCommandTest extends WebTestCase {
         expect(studyDao.getVisibleStudies(
             dash.getVisibleStudyParameters(STUDY_SUBJECT_CALENDAR_MANAGER))).
             andReturn(Arrays.asList(ie, etc));
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         Map<Study, List<UserStudySiteRelationship>> actual = command.getAssignableStudies();
@@ -175,7 +179,7 @@ public class DashboardCommandTest extends WebTestCase {
         expect(studyDao.getVisibleStudies(
             dash.getVisibleStudyParameters(STUDY_SUBJECT_CALENDAR_MANAGER))).
             andReturn(Arrays.asList(eg, ie, etc)).once();
-
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
         replayMocks();
         assertSame(command.getAssignableStudies(), command.getAssignableStudies());
         verifyMocks();

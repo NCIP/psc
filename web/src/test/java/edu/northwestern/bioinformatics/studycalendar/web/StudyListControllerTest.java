@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -47,6 +48,7 @@ public class StudyListControllerTest extends ControllerTestCase {
     private StudyWorkflowStatus both;
     private List<Study> allStudies;
     private List<List<StudySite>> allStudySites;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -54,6 +56,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         controller = new StudyListController();
         studyService = registerMockFor(StudyService.class);
         studySiteService = registerMockFor(StudySiteService.class);
+        configuration = registerMockFor(Configuration.class);
 
         controller.setStudyService(studyService);
         controller.setStudySiteService(studySiteService);
@@ -64,17 +67,20 @@ public class StudyListControllerTest extends ControllerTestCase {
 
         completeStudy = setId(COMPLETE_ID, createSingleEpochStudy("Complete", "E1"));
         completeStudy.setAmendment(new Amendment());
-        complete = new StudyWorkflowStatus(completeStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
+        complete = new StudyWorkflowStatus(completeStudy, user, new WorkflowMessageFactory(),
+                getTestingDeltaService(), configuration);
 
         incompleteStudy = setId(INCOMPLETE_ID, createSingleEpochStudy("Incomplete", "E1"));
         incompleteStudy.setAmendment(null);
         incompleteStudy.setDevelopmentAmendment(new Amendment());
-        incomplete = new StudyWorkflowStatus(incompleteStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
+        incomplete = new StudyWorkflowStatus(incompleteStudy, user, new WorkflowMessageFactory(),
+                getTestingDeltaService(), configuration);
 
         bothStudy = setId(BOTH_ID, createSingleEpochStudy("Available but amending", "E1"));
         bothStudy.setDevelopmentAmendment(new Amendment());
         bothStudy.setAmendment(new Amendment());
-        both = new StudyWorkflowStatus(bothStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
+        both = new StudyWorkflowStatus(bothStudy, user, new WorkflowMessageFactory(),
+                getTestingDeltaService(), configuration);
 
         allStudies = asList(incompleteStudy, bothStudy, completeStudy);
         allStudySites = asList(

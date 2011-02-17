@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
@@ -53,6 +54,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
     private StudyConsumer studyConsumer;
     private OsgiLayerTools osgiLayerTools;
     private WorkflowService workflowService;
+    private Configuration configuration;
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         return ResourceAuthorization.createCollection(
@@ -87,7 +89,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
         PscUser user = applicationSecurityManager.getUser();
         model.put("user", user);
 
-        UserTemplateRelationship utr = new UserTemplateRelationship(user, study);
+        UserTemplateRelationship utr = new UserTemplateRelationship(user, study, configuration);
         model.put("relationship", utr);
 
         StudyWorkflowStatus workflow = workflowService.build(loaded, user);
@@ -251,6 +253,11 @@ public class DisplayTemplateController extends PscAbstractController implements 
     @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     public void setWorkflowService(WorkflowService workflowService) {

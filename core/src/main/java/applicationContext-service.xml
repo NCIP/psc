@@ -71,6 +71,7 @@
          <property name="subjectService" ref="subjectService"/>
          <property name="studySegmentDao" ref="studySegmentDao"/>
          <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+         <property name="configuration" ref="configuration"/>
     </bean>
 
     <bean id="userActionService"
@@ -91,6 +92,7 @@
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="deltaService" ref="deltaService"/>
         <property name="workflowMessageFactory" ref="workflowMessageFactory"/>
+        <property name="configuration" ref="configuration"/>
     </bean>
 
     <!--shceduling-->

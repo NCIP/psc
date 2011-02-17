@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -39,6 +40,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
     private StudySite a_nu, c_vu;
     private StudySubjectAssignment a_nu_1, a_nu_2, c_vu_1, c_m_1, c_m_2;
     private Errors errors;
+    private Configuration configuration;
 
     @Override
     public void setUp() throws Exception {
@@ -97,7 +99,8 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         expect(assignmentDao.getAssignmentsWithoutManagerCsmUserId()).
             andStubReturn(Arrays.asList(a_nu_2, c_m_2));
 
-        command = new ResponsibleUserForSubjectAssignmentCommand(jo, pscUserService, assignmentDao);
+        configuration = registerMockFor(Configuration.class);
+        command = new ResponsibleUserForSubjectAssignmentCommand(jo, pscUserService, assignmentDao, configuration);
         errors = new BindException(command, "command");
     }
 
@@ -124,6 +127,8 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
     public void testReassignablesIncludesAssignmentsForSelectedUserOnly() throws Exception {
         command.setResponsible(alice);
 
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
         replayMocks();
         Map<Site, Map<Study, ResponsibleUserForSubjectAssignmentCommand.ReassignableAssignments>> actual =
             command.getReassignables();
@@ -143,6 +148,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
 
     public void testReassignablesIncludesAllReassignableUnassignedWhenNoResponsibleUser() throws Exception {
         command.setResponsible(null);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         Map<Site, Map<Study, ResponsibleUserForSubjectAssignmentCommand.ReassignableAssignments>> actual =
@@ -163,6 +169,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
 
     public void testReassignablesExcludesNonassignableAssignmentsForSelectedUser() throws Exception {
         command.setResponsible(barbara);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         Map<Site, Map<Study, ResponsibleUserForSubjectAssignmentCommand.ReassignableAssignments>> actual =
@@ -188,6 +195,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         command.setResponsible(null);
         command.setNewResponsible(barbara);
         command.setTargetAssignments(Arrays.asList(c_m_2));
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         command.validate(errors);
@@ -212,6 +220,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         command.setResponsible(alice);
         command.setNewResponsible(barbara);
         command.setTargetAssignments(Arrays.asList(a_nu_1));
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         command.validate(errors);
@@ -224,6 +233,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         command.setResponsible(alice);
         command.setNewResponsible(null);
         command.setTargetAssignments(Arrays.asList(a_nu_1));
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         command.validate(errors);
@@ -236,6 +246,7 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         command.setResponsible(barbara);
         command.setNewResponsible(alice);
         command.setTargetAssignments(Arrays.asList(c_vu_1));
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
 
         replayMocks();
         command.validate(errors);

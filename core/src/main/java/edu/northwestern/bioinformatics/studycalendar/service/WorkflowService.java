@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -14,13 +15,14 @@ public class WorkflowService {
     private WorkflowMessageFactory workflowMessageFactory;
     private DeltaService deltaService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private Configuration configuration;
 
     public StudyWorkflowStatus build(Study study) {
         return build(study, applicationSecurityManager.getUser());
     }
 
     public StudyWorkflowStatus build(Study study, PscUser user) {
-        return new StudyWorkflowStatus(study, user, workflowMessageFactory, deltaService);
+        return new StudyWorkflowStatus(study, user, workflowMessageFactory, deltaService, configuration);
     }
 
     ////// CONFIGURATION
@@ -38,5 +40,10 @@ public class WorkflowService {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

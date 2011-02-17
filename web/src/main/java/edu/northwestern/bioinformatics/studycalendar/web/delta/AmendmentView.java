@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -24,8 +25,8 @@ public class AmendmentView {
     private RevisionChanges revisionChanges;
     private Map<StudySite, ApprovalView> approvals;
 
-    public AmendmentView(PscUser user, Study study, Amendment amendment, DaoFinder daoFinder) {
-        this.rel = new UserTemplateRelationship(user, study);
+    public AmendmentView(PscUser user, Study study, Amendment amendment, DaoFinder daoFinder, Configuration configuration) {
+        this.rel = new UserTemplateRelationship(user, study, configuration);
         this.amendment = amendment;
         this.revisionChanges = new RevisionChanges(daoFinder, amendment, study);
         initApprovals();

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -21,11 +22,13 @@ public class UserStudySiteRelationship {
     private StudySite studySite;
 
     private UserRelationshipTools tools;
+    private Configuration configuration;
 
-    public UserStudySiteRelationship(PscUser user, StudySite studySite) {
+    public UserStudySiteRelationship(PscUser user, StudySite studySite, Configuration configuration) {
         this.tools = new UserRelationshipTools(user, studySite.getStudy());
         this.user = user;
         this.studySite = studySite;
+        this.configuration = configuration;
     }
 
     /**
@@ -44,7 +47,11 @@ public class UserStudySiteRelationship {
      */
     public boolean getCanAssignSubjects() {
         return !getStudySite().getAmendmentApprovals().isEmpty() &&
-            hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER);
+            hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER) && isEnabledToAssignSubjects();
+    }
+
+    public Boolean isEnabledToAssignSubjects() {
+        return configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT);
     }
 
     /**
@@ -52,6 +59,7 @@ public class UserStudySiteRelationship {
      * associated site.
      */
     public boolean getCanCreateSubjects() {
+
         return hasMatchingRole(SUBJECT_MANAGER);
     }
 

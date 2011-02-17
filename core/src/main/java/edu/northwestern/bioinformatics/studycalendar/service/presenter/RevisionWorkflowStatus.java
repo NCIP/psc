@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -20,7 +21,8 @@ public class RevisionWorkflowStatus {
     private final WorkflowMessageFactory workflowMessageFactory;
     private UserTemplateRelationship utr;
 
-    public RevisionWorkflowStatus(Study study, PscUser user, WorkflowMessageFactory workflowMessageFactory, DeltaService deltaService) {
+    public RevisionWorkflowStatus(Study study, PscUser user, WorkflowMessageFactory workflowMessageFactory,
+                                  DeltaService deltaService, Configuration configuration) {
         if (!study.isInDevelopment()) {
             throw new StudyCalendarSystemException(
                 "Cannot create a %s instance for a study that is not in development",
@@ -29,7 +31,7 @@ public class RevisionWorkflowStatus {
         this.revisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
         this.user = user;
         this.workflowMessageFactory = workflowMessageFactory;
-        this.utr = new UserTemplateRelationship(user, study);
+        this.utr = new UserTemplateRelationship(user, study, configuration);
     }
 
     public List<WorkflowMessage> getMessages() {
