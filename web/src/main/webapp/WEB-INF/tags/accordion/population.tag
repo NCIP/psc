@@ -9,17 +9,18 @@
         <div class="value">
             <ul>
                 <c:if test="${empty assignment.populations}">
-                    <li class="none">None</li>
+                    <li class="none">None
                 </c:if>
                 <c:if test="${not empty assignment.populations}">
                     <c:forEach items="${assignment.populations}" var="pop">
-                        <li>${pop.name}</li>
+                        <li>${pop.name}
                     </c:forEach>
                 </c:if>
                 <c:if test="${canUpdateSchedule}">
-                    <a class="control"
+                    <a class="control positionToTheEnd"
                         href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
                 </c:if>
+                </li>
             </ul>
         </div>
     </div>

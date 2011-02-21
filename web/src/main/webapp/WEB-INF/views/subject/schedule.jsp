@@ -168,6 +168,10 @@
         a.notification-control {
             padding:0 2px;
         }
+
+        a.positionToTheEnd {
+            float:right;
+        }
     </style>
 
     <script type="text/javascript">
