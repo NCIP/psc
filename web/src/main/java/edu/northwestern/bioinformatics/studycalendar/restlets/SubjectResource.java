@@ -48,6 +48,8 @@ public class SubjectResource extends AbstractDomainObjectResource<Subject> {
             }
         } else {
             addAuthorizationsFor(Method.PUT, PscRole.SUBJECT_MANAGER);
+            addAuthorizationsFor(Method.GET, PscRole.SUBJECT_MANAGER,
+                    PscRole.STUDY_SUBJECT_CALENDAR_MANAGER, PscRole.DATA_READER);
         }
     }
 
