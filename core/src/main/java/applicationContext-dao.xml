@@ -91,12 +91,12 @@
             <map>
                 <entry key="post-insert">
                    <list>
-                        <ref local="auditCreateEventListener"/>
+                        <ref local="auditEventListener"/>
                     </list>
                 </entry>
                 <entry key="post-delete">
                    <list>
-                        <ref local="auditDeleteEventListener"/>
+                        <ref local="auditEventListener"/>
                     </list>
                 </entry>
                 <entry key="post-load">
@@ -109,7 +109,22 @@
                 <entry key="post-update">
                     <list>
                         <ref local="authorizationScopeUpdaterListener"/>
-                        <ref local="auditUpdateEventListener"/>
+                        <ref local="auditEventListener"/>
+                    </list>
+                </entry>
+                <entry key="pre-collection-update">
+                    <list>
+                        <ref local="auditEventListener"/>
+                    </list>
+                </entry>
+                <entry key="post-collection-recreate">
+                    <list>
+                        <ref local="auditEventListener"/>
+                    </list>
+                </entry>
+                <entry key="pre-collection-remove">
+                    <list>
+                        <ref local="auditEventListener"/>
                     </list>
                 </entry>
             </map>
@@ -135,22 +150,11 @@
         <property name="suiteCsmHelper" ref="suiteCsmHelper"/>
     </bean>
 
-    <bean id="auditCreateEventListener"
-          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditCreateEventListener">
-        <property name="auditEventCreator" ref="auditEventCreator"/>
+    <bean id="auditEventListener"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventListener">
+        <property name="auditEventDao" ref="auditEventDao"/>
+        <property name="auditEventFactory" ref="auditEventFactory"/>
     </bean>
-
-    <bean id="auditDeleteEventListener"
-          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditDeleteEventListener">
-        <property name="auditEventCreator" ref="auditEventCreator"/>
-    </bean>
-
-    <bean id="auditUpdateEventListener"
-          class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditUpdateEventListener">
-        <property name="auditEventCreator" ref="auditEventCreator"/>
-    </bean>
-
-    <bean id="auditEventCreator" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventCreator" autowire="byName" />
 
     <bean  id="gridIdentifierInterceptor" class="edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierInterceptor" autowire="byType"></bean>
 

@@ -83,6 +83,9 @@
         <property name="amendmentDao" ref="amendmentDao"/>
     </bean>
 
+    <bean id="auditEventFactory"
+          class="edu.northwestern.bioinformatics.studycalendar.service.auditing.AuditEventFactory"/>
+
     <!-- the applicationContextPath property is set in the web module -->
     <bean id="workflowMessageFactory"
           class="edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory"/>
