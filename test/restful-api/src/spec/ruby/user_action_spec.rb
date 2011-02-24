@@ -20,6 +20,17 @@ describe "/user-actions/{user-action-identifier}" do
   def retrieve(grid_id)
     application_context['userActionDao'].getByGridId(grid_id)
   end
+  def subject_json(overrides={})
+    {
+      :first_name => 'Alan', :last_name => 'Boyarski',
+      :person_id => 'ID001', :gender => 'Male',
+      :birth_date => '1983-03-23',
+      :properties => [
+        { 'name' => 'Hair color', 'value' => 'brown' },
+        { 'name' => 'Only hope', 'value' => 'Obi-wan' }
+      ]
+    }.merge(overrides).to_json
+  end
   before do
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
@@ -84,34 +95,72 @@ describe "/user-actions/{user-action-identifier}" do
             'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header1
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("occurred")
-     
+
       @ua_header2 = create_user_action("Canceled on 2008-12-28", "canceled", erin, @context_uri)
       @JSONentity2 = "{#{@scheduled_activities[1].gridId} : { state : canceled, reason : nil, date : 2008-12-28 }}"
       post "/subjects/ID001/schedules/activities", @JSONentity2, :as => :erin ,
             'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header2
-     
+
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
-     
+
       @ua_header3 = create_user_action("Missed on 2008-12-28", "missed", erin, @context_uri)
       @JSONentity3 = "{#{@scheduled_activities[1].gridId} : { state : missed, reason : nil, date : 2008-12-28 }}"
       post "/subjects/ID001/schedules/activities", @JSONentity3, :as => :erin ,
             'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header3
-     
+
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("missed")
-     
+
       @ua_identifier3 = @ua_header3.split('/').last
-     
+
       delete "/user-actions/#{@ua_identifier3}", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       actual = retrieve(@ua_identifier3)
       actual.undone.should be(true)
-     
+
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
       response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
+    end
+    
+    it "reverse the effect of audit event for component collection ( Subject properties)" do
+      @subject.grid_id = "4567-LL47"
+      @subject.properties << Psc::Domain::SubjectProperty.new("Hair color", "brown")
+      @subject.properties << Psc::Domain::SubjectProperty.new("Only hope", "Obi-wan")
+      application_context["subjectDao"].save(@subject)
+      get "/subjects/ID001.json", :as => erin
+      response.json['properties'].should == [
+        { 'name' => 'Hair color', 'value' => 'brown' },
+        { 'name' => 'Only hope', 'value' => 'Obi-wan' }
+      ]
+      @ua_header1 = create_user_action("Subject properties are updated", "property", erin, @context_uri)
+      entity = subject_json(:properties => [
+        { 'name' => 'Only hope', 'value' => 'Obi-wan' },
+        { 'name' => 'Aliases', 'value' => 'Boushh' },
+        { 'name' => 'Hair color', 'value' => 'braun' }
+      ])
+      put "/subjects/ID001", entity,
+        'Content-Type' => 'application/json', :as => :erin , 'X-PSC-User-Action' => @ua_header1
+      response.status_code.should == 200
+      reloadedAfterUpdate = application_context['subjectDao'].getById(@subject.id)
+      reloadedAfterUpdate.properties.collect { |prop|
+             [prop.name, prop.value]
+           }.should == [
+             ['Only hope', 'Obi-wan'],
+             ['Aliases', 'Boushh'],
+             ['Hair color', 'braun']
+           ]
+      @ua_identifier1 = @ua_header1.split('/').last
+      delete "/user-actions/#{@ua_identifier1}", :as => :erin
+      actual = retrieve(@ua_identifier1)
+      actual.undone.should be(true)
+      get "/subjects/ID001.json", :as => erin
+      response.json['properties'].should == [
+        { 'name' => 'Hair color', 'value' => 'brown' },
+        { 'name' => 'Only hope', 'value' => 'Obi-wan' }
+      ]
     end
     
     it "gives 403 status if user doesn't have access to undo the user actions" do
@@ -119,13 +168,13 @@ describe "/user-actions/{user-action-identifier}" do
       response.status_code.should == 403
       response.status_message.should == "Forbidden"
     end
-       
+
     it "gives 404 status for unknown user action" do
       delete "/user-actions/unknownId", :as => :erin
       response.status_code.should == 404
       response.status_message.should == "Not Found"
     end
-       
+
     it "gives 400 status if user action is already undone" do
       ua = retrieve(@ua_identifier)
       ua.undone = true
@@ -134,23 +183,23 @@ describe "/user-actions/{user-action-identifier}" do
       response.status_code.should == 400
       response.status_message.should == "Bad Request"
     end
-       
+
     it "gives 400 status if no undoable actions for user action's context" do
       delete "/user-actions/#{@ua_identifier}", :as => :erin
       response.status_code.should == 400
       response.status_message.should == "Bad Request"
     end
-       
+
     it "gives 400 status if user action is out of order from undoable actions" do
       @JSONentity = "{#{@scheduled_activities[1].gridId} : { state : canceled, reason : Just canceled , date : 2008-12-29 }}"
       post "/subjects/ID001/schedules/activities", @JSONentity, :as => :erin ,
            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header
-           
+
       @ua_header1 = create_user_action("Delay by 2 days", "delay", erin, @context_uri)
       @JSONentity1 = "{#{@scheduled_activities[0].gridId} : { state : scheduled, reason : Delay by two days , date : 2008-12-29 }}"
       post "/subjects/ID001/schedules/activities", @JSONentity1, :as => :erin ,
              'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header1
-      
+
       delete "/user-actions/#{@ua_identifier}", :as => :erin
       response.status_code.should == 400
       response.status_message.should == "Bad Request"

@@ -81,6 +81,7 @@
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="daoFinder" ref="daoFinder"/>
         <property name="amendmentDao" ref="amendmentDao"/>
+        <property name="populationDao" ref="populationDao"/>
     </bean>
 
     <bean id="auditEventFactory"
