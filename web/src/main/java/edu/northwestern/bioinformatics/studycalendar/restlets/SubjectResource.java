@@ -27,7 +27,7 @@ import java.util.Collection;
 public class SubjectResource extends AbstractDomainObjectResource<Subject> {
     // TODO: do this a better way.
     private static final String[] UPDATEABLE_PROPERTIES =
-        { "firstName", "lastName", "personId", "dateOfBirth", "properties", "gender" };
+        { "firstName", "lastName", "personId", "dateOfBirth", "gender" };
 
     private SubjectDao subjectDao;
 
@@ -94,6 +94,7 @@ public class SubjectResource extends AbstractDomainObjectResource<Subject> {
         for (String property : UPDATEABLE_PROPERTIES) {
             out.setPropertyValue(property, in.getPropertyValue(property));
         }
+        getRequestedObject().replaceProperties(inRep.getSubject().getProperties());
         subjectDao.save(getRequestedObject());
 
         return new SubjectJsonRepresentation(getRequestedObject(), getRootRef());

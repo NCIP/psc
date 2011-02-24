@@ -32,4 +32,24 @@ public class SubjectProperty {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SubjectProperty that = (SubjectProperty) o;
+
+        if (!name.equals(that.getName())) return false;
+        if (!value.equals(that.getValue())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
 }

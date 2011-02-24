@@ -175,6 +175,11 @@ public class Subject extends AbstractMutableDomainObject {
         this.properties = properties;
     }
 
+    public void replaceProperties(List<SubjectProperty> properties) {
+        this.properties.clear();
+        this.properties.addAll(properties);
+    }
+
     ////// OBJECT METHODS
 
     public boolean equals(Object o) {
