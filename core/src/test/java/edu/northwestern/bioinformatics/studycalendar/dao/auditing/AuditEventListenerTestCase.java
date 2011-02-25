@@ -19,9 +19,9 @@ public abstract class AuditEventListenerTestCase extends DaoTestCase {
 
     protected int getEventIdForObject(int id, String className, String operation, String attributeName) {
         String[] query =  new String[] {
-                 "SELECT id FROM audit_events INNER JOIN audit_event_values",
-                 "ON (audit_events.id=audit_event_values.audit_event_id)",
-                 "WHERE object_id = ? and class_name = ? and operation = ? and attribute_name = ? GROUP BY id"
+                 "SELECT ae.id FROM audit_events ae INNER JOIN audit_event_values",
+                 "ON (ae.id=audit_event_values.audit_event_id)",
+                 "WHERE object_id = ? and class_name = ? and operation = ? and attribute_name = ? GROUP BY ae.id"
          };
         return getJdbcTemplate().queryForInt(join(query, ' '), new Object[] {id, className, operation, attributeName});
     }
