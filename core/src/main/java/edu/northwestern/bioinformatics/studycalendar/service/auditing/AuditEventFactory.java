@@ -65,7 +65,7 @@ public class AuditEventFactory {
             }
             if (AuditEvent.getUserAction() != null) {
                log.debug("Attaching user action id {} to the audit event {} on {}",
-                       new Object[] { AuditEvent.getUserAction(), operation, entity.getClass().getName()});
+                       new Object[] { AuditEvent.getUserAction().getGridId(), operation, entity.getClass().getName()});
             }
             AuditEvent event = new AuditEvent(entity, operation, DataAuditInfo.copy(info), AuditEvent.getUserAction());
             return event;
