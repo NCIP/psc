@@ -31,6 +31,11 @@ describe "/user-actions/{user-action-identifier}" do
       ]
     }.merge(overrides).to_json
   end
+  def apply_undo
+    get "/subjects/ID001/schedules/undoable-actions.json", :as => :erin
+    @ua_identifier = response.json['undoable_actions'][0]['URI'].split('/').last
+    delete "/user-actions/#{@ua_identifier}", :as => :erin
+  end
   before do
     # The released version of NU480
     @nu480 = create_study 'NU480' do |s|
@@ -122,6 +127,46 @@ describe "/user-actions/{user-action-identifier}" do
 
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
       response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
+      response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
+    end
+    
+    #1359
+    it "undo can undo all level back for multiple update to same event" do
+      @ua_header1 = create_user_action("Occurred on 2008-12-28", "occurred", erin, @context_uri)
+      @JSONentity1 = "{#{@scheduled_activities[1].gridId} : { state : occurred, reason : nil, date : 2008-12-28}}"
+      post "/subjects/ID001/schedules/activities", @JSONentity1, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header1
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("occurred")
+
+      @ua_header2 = create_user_action("Canceled on 2008-12-28", "canceled", erin, @context_uri)
+      @JSONentity2 = "{#{@scheduled_activities[1].gridId} : { state : canceled, reason : nil, date : 2008-12-28 }}"
+      post "/subjects/ID001/schedules/activities", @JSONentity2, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header2
+
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
+
+      @ua_header3 = create_user_action("Missed on 2008-12-28", "missed", erin, @context_uri)
+      @JSONentity3 = "{#{@scheduled_activities[1].gridId} : { state : missed, reason : nil, date : 2008-12-28 }}"
+      post "/subjects/ID001/schedules/activities", @JSONentity3, :as => :erin ,
+            'Content-Type' => 'application/json', 'X-PSC-User-Action' => @ua_header3
+
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("missed")
+      
+      # Undo upto initial state
+      apply_undo
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("canceled")
+      response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
+      apply_undo
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("occurred")
+      apply_undo
+      get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[1].gridId}", :as => :erin
+      response.xml_attributes("current-scheduled-activity-state", "state").should include("scheduled")
+      response.xml_attributes("current-scheduled-activity-state", "reason").should include("Initialized from template")
       response.xml_attributes("current-scheduled-activity-state", "date").should include("2008-12-28")
     end
     

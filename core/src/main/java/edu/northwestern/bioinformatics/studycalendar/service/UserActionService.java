@@ -89,6 +89,7 @@ public class UserActionService {
     }
 
     @SuppressWarnings({ "unchecked" })
+    @Transactional
     public UserAction applyUndo(UserAction userAction) {
         List<AuditEvent> auditEvents = auditEventDao.getAuditEventsWithValuesByUserActionId(userAction.getGridId());
 
@@ -96,6 +97,7 @@ public class UserActionService {
             applyUndoToAuditEvent(ae);
         }
         userAction.setUndone(true);
+        AuditEvent.setUserAction(userAction);
         return userAction;
     }
 
@@ -109,7 +111,9 @@ public class UserActionService {
         AbstractMutableDomainObject entity = (AbstractMutableDomainObject) dao.getById(object_Id);
 
         if (ae.getOperation().equals(Operation.UPDATE)) {
-            saveOrUpdateEntity(ae, dao, entity);
+            if (entity != null) {
+                saveOrUpdateEntity(ae, dao, entity);
+            }
         } else if (ae.getOperation().equals(Operation.CREATE)) {
             if (entity != null) {
                 deleteEntity(dao, entity);
