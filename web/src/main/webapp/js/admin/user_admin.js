@@ -417,6 +417,32 @@ psc.admin.UserAdmin = (function ($) {
       } else {
         firstRole = 'study_subject_calendar_manager';
       }
+      var containsFirstRole = false;
+      var userAdminRole = null;
+      var systemAdminRole = null;
+
+      var availableRoles = $("div.role-tab[role-type='psc'] a.role");
+      if (availableRoles.length >0) {
+        availableRoles.each(function(index, value) {
+          var idName = value.id.substring("role-".length);
+          if (idName === firstRole) {
+            containsFirstRole = true;
+          }
+          if (idName === "user_administrator") {
+            userAdminRole = "user_administrator";
+          }
+          if (idName === "system_administrator") {
+            systemAdminRole = "system_administrator";
+          }
+        })
+      }
+      if (!containsFirstRole) {
+        if (userAdminRole != null) {
+          firstRole = userAdminRole;
+        } else if (systemAdminRole != null) {
+          firstRole = systemAdminRole;
+        }
+      }
       selectRole(firstRole);
       $('a.role').click(selectRoleTab);
       $(user).bind('membership-change', syncRoleTabOnChange).
