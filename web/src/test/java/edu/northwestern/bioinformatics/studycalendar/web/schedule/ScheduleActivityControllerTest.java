@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -65,7 +66,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     
     public void testAuthorizedRoles() {
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }
 
     public void testBindEvent() throws Exception {
@@ -177,7 +178,8 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         command.setNewNotes("New notes");
         command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
         command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
-        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(Fixtures.createAssignment(studySite, subject));
+        StudySubjectAssignment ssa =Fixtures.createAssignment(studySite, subject);
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(ssa);
         request.setMethod("POST");
 
         UserAction userAction = new UserAction();
@@ -198,6 +200,20 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
 
     private void expectShowFormWithNoErrors() throws Exception {
         event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
+
+        command.setEvent(event);
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("Perry", "Duglas");
+        subject.setGridId("1111");
+        StudySite studySite = new StudySite();
+        Study study = new Study();
+        study.setAssignedIdentifier("test-study");
+        studySite.setStudy(study);
+        StudySubjectAssignment ssa =Fixtures.createAssignment(studySite, subject);
+
+        command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
+        command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(ssa);
+
         expect(scheduledActivityDao.getById(16)).andReturn(event);
         Map<String,String> uriListMap = new TreeMap<String, String>();
         expect(scheduleService.generateActivityTemplateUri(event)).andReturn(uriListMap);
