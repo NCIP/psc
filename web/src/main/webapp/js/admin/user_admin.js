@@ -348,7 +348,8 @@ psc.admin.UserAdmin = (function ($) {
     if (role !== editorRole && editorRole.indexOf(',') !== -1) { return; }
     var input;
     if (data.scopeType) {
-      input = $('#role-editor input#scope-' + data.scopeType + '-' + data.scopeIdentifier);
+      var studyName = escapeReservedCssSelectorChars(data.scopeIdentifier)
+      input = $("#role-editor input#scope-" + data.scopeType + "-" + studyName);
       setTimeout(syncAllVsOne, 0);
     } else {
       input = $('#role-editor input#group-' + data.role);
