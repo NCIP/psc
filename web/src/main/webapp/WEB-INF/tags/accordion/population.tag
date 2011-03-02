@@ -8,18 +8,22 @@
         <div class="label">${assignment.name}</div>
         <div class="value">
             <ul>
-                <c:if test="${empty assignment.populations}">
-                    <li class="none">None
-                </c:if>
-                <c:if test="${not empty assignment.populations}">
-                    <c:forEach items="${assignment.populations}" var="pop">
-                        <li>${pop.name}
-                    </c:forEach>
-                </c:if>
-                <c:if test="${canUpdateSchedule}">
-                    <a class="control positionToTheEnd"
-                        href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
-                </c:if>
+                <li style="display:block">
+                    <c:if test="${empty assignment.populations}">
+                            <div class="none">None </div>
+                    </c:if>
+                    <c:if test="${not empty assignment.populations}">
+                        <c:forEach items="${assignment.populations}" var="pop">
+                            <div>${pop.name}</div>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${canUpdateSchedule}">
+                        <div class="populationChange">
+                            <a class="control"
+                                href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
+                        </div>
+                        <br style="clear:both"/>
+                    </c:if>
                 </li>
             </ul>
         </div>

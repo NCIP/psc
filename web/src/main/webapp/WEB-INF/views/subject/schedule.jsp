@@ -169,7 +169,7 @@
             padding:0 2px;
         }
 
-        a.positionToTheEnd {
+        div.populationChange {
             float:right;
         }
     </style>
