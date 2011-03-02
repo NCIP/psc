@@ -3,6 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:useBean id="inDevelopmentTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus>"/>
 <jsp:useBean id="pendingTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus>"/>
@@ -92,6 +93,9 @@
         ul li ul.controls li {
             margin: 0;
             padding: 3px;
+        }
+        div.message {
+            padding-bottom:0.3em;
         }
 
     </style>
@@ -296,9 +300,12 @@
                                     </c:forEach>
                                 </c:when>
                                 <c:when test="${not empty template.studySiteWorkflowStatuses}">
+                                    <c:set var="isFirstSentencePublished" value="false"/>
                                     <c:forEach items="${template.studySiteWorkflowStatuses}" var="ss">
                                         <c:if test="${not empty ss.message}">
-                                            For <strong>${ss.studySite.site.name}</strong> it ${ss.message.html}
+                                            <div class="message">
+                                                ${fn:replace(ss.message.html, ".", "")} for <strong>${ss.studySite.site.name}</strong>.
+                                            </div>
                                         </c:if>
                                     </c:forEach>
                                 </c:when>

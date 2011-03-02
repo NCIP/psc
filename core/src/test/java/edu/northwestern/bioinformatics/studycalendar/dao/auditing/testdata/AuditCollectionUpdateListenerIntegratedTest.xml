@@ -1,0 +1,105 @@
+<dataset>
+    <AMENDMENTS id="-18" amendment_date="2007-06-05"/>
+    <STUDIES id="-100" assigned_identifier="S1" amendment_id="-18" long_title="S1"/>
+    <SITES id="-200" name="DC" assigned_identifier="DC"/>
+    <STUDY_SITES id="-15" study_id="-100" site_id="-200"/>
+
+    <SUBJECTS id="-20" first_name="R" last_name="J" birth_date="1950-02-04" gender="M" person_id="DC" grid_id="Alabaster"/>
+    <SUBJECTS id="-21" first_name="Alice" last_name="Childress" birth_date="1960-01-01" gender="F" person_id="UNIVERSAL" grid_id="What is the"/>
+    <SUBJECT_PROPERTIES
+        subject_id="-20"
+        name="Hair Color"
+        value="blue"
+        list_index="1"
+    />
+    <SUBJECT_PROPERTIES
+        subject_id="-20"
+        name="Preferred Contact Address"
+        value="world@bridge.us"
+        list_index="0"
+    />
+    <CSM_USER user_id="-67" login_name="jo" first_name="J" last_name="O"/>
+    <SUBJECT_ASSIGNMENTS id="-10" subject_id="-20" study_site_id="-15" start_date="2003-02-01"
+                         end_date="2003-09-01" study_subject_id="A" grid_id="NOT-SMALL1"
+                         current_amendment_id="-18" manager_csm_user_id="-67"/>
+    <SUBJECT_ASSIGNMENTS id="-11" subject_id="-21" study_site_id="-15" start_date="2003-02-01"
+                         end_date="2003-09-01" study_subject_id="B" grid_id="NOT-SMALL2"
+                         current_amendment_id="-18"/>
+    <SCHEDULED_CALENDARS id="-20" assignment_id="-10"/>
+    <SCHEDULED_CALENDARS id="-21" assignment_id="-11"/>
+
+    <SCHEDULED_ACTIVITY_MODES id="1" name="scheduled"/>
+    <SCHEDULED_ACTIVITY_MODES id="2" name="occurred"/>
+    <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
+
+    <ACTIVITY_TYPES id="2" name="ActivityType2"/>
+    <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>
+    <PLANNED_CALENDARS id="-1" study_id="-100"/>
+    <EPOCHS id="-2" planned_calendar_id="-1" name="Treatment"/>
+    <EPOCHS id="-3" planned_calendar_id="-1" name="Followup"/>
+    <STUDY_SEGMENTS id="-3" epoch_id="-2" name="A"/>
+    <PERIODS id="-5" study_segment_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
+    <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
+
+    <POPULATIONS id="-20" name="Hatch" abbreviation="H" study_id="-100"/>
+    <POPULATIONS id="-21" name="Beach" abbreviation="B" study_id="-100"/>
+    <SUBJECT_POPULATIONS population_id="-21" assignment_id="-10"/>
+
+
+    <SCHEDULED_STUDY_SEGMENTS
+        id="-20"
+        study_segment_id="-3"
+        scheduled_calendar_id="-20"
+        start_date="2006-11-04"
+        start_day="1"
+        list_index="1"
+        />
+    <SCHEDULED_ACTIVITIES
+        id="-17"
+        scheduled_study_segment_id="-20"
+        planned_activity_id="-6"
+        current_state_mode_id="3"
+        current_state_date="2008-05-09"
+        ideal_date="2008-05-09"
+        activity_id="-100"
+        details="Nice Details!!"
+        source_amendment_id="-18"
+        />
+    <SCHEDULED_ACTIVITIES
+        id="-10"
+        scheduled_study_segment_id="-20"
+        planned_activity_id="-6"
+        current_state_mode_id="2"
+        current_state_date="2006-10-25"
+        current_state_reason="Success"
+        ideal_date="2006-10-31"
+        notes="Boo!"
+        activity_id="-100"
+        details="Nice Details!!"
+        source_amendment_id="-18"
+        />
+    <SCHEDULED_ACTIVITY_STATES
+        id="-11"
+        list_index="0"
+        scheduled_activity_id="-10"
+        mode_id="1"
+        actual_date="2006-10-22"
+        reason="Initial input"
+        />
+    <SCHEDULED_ACTIVITY_STATES
+        id="-12"
+        list_index="1"
+        scheduled_activity_id="-10"
+        mode_id="3"
+        actual_date="2006-10-22"
+        reason="Called to cancel"
+        />
+    <SCHEDULED_ACTIVITY_LABELS
+        label="soc test"
+        scheduled_activity_id="-10"
+        />
+    <SCHEDULED_ACTIVITY_LABELS
+        label="clean-only"
+        scheduled_activity_id="-10"
+        />
+</dataset>

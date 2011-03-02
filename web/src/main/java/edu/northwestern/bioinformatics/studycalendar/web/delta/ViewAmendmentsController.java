@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -31,6 +32,7 @@ import java.util.Map;
 public class ViewAmendmentsController extends PscAbstractController implements PscAuthorizedHandler {
     private DaoFinder daoFinder;
     private StudyDao studyDao;
+    private Configuration configuration;
 
     public ViewAmendmentsController() {
         setCrumb(new Crumb());
@@ -57,13 +59,13 @@ public class ViewAmendmentsController extends PscAbstractController implements P
         log.trace("Displaying amendments of {} for {}", study, user);
 
         if (exposeDevelopmentAmendment(request, study)) {
-            model.put("dev", new AmendmentView(user, study, study.getDevelopmentAmendment(), daoFinder));
+            model.put("dev", new AmendmentView(user, study, study.getDevelopmentAmendment(), daoFinder, configuration));
         }
 
         List<Amendment> amendments = study.getAmendmentsList();
         List<AmendmentView> views = new ArrayList<AmendmentView>(amendments.size());
         for (Amendment amendment : amendments) {
-            views.add(new AmendmentView(user, study, amendment, daoFinder));
+            views.add(new AmendmentView(user, study, amendment, daoFinder, configuration));
         }
         model.put("amendments", views);
 
@@ -115,7 +117,7 @@ public class ViewAmendmentsController extends PscAbstractController implements P
 
     private boolean exposeDevelopmentAmendment(HttpServletRequest request, Study study) {
         PscUser user = getControllerTools().getCurrentUser(request);
-        return new UserTemplateRelationship(user, study).getCanSeeDevelopmentVersion();
+        return new UserTemplateRelationship(user, study, configuration).getCanSeeDevelopmentVersion();
     }
 
     ////// CONFIGURATION
@@ -128,6 +130,11 @@ public class ViewAmendmentsController extends PscAbstractController implements P
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     public class Crumb extends DefaultCrumb {

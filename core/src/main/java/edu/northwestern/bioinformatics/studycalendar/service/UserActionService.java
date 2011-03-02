@@ -3,13 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.editors.CollectionEditor;
 import edu.northwestern.bioinformatics.studycalendar.core.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.core.editors.EditorUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.AuditEventDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -37,6 +41,7 @@ public class UserActionService {
     private ApplicationSecurityManager applicationSecurityManager;
     private DaoFinder daoFinder;
     private AmendmentDao amendmentDao;
+    private PopulationDao populationDao;
 
     public List<UserAction> getUndoableActions(String context) {
         List<UserAction> userActions = userActionDao.getUserActionsByContext(context);
@@ -84,6 +89,7 @@ public class UserActionService {
     }
 
     @SuppressWarnings({ "unchecked" })
+    @Transactional
     public UserAction applyUndo(UserAction userAction) {
         List<AuditEvent> auditEvents = auditEventDao.getAuditEventsWithValuesByUserActionId(userAction.getGridId());
 
@@ -91,6 +97,7 @@ public class UserActionService {
             applyUndoToAuditEvent(ae);
         }
         userAction.setUndone(true);
+        AuditEvent.setUserAction(userAction);
         return userAction;
     }
 
@@ -104,7 +111,9 @@ public class UserActionService {
         AbstractMutableDomainObject entity = (AbstractMutableDomainObject) dao.getById(object_Id);
 
         if (ae.getOperation().equals(Operation.UPDATE)) {
-            saveOrUpdateEntity(ae, dao, entity);
+            if (entity != null) {
+                saveOrUpdateEntity(ae, dao, entity);
+            }
         } else if (ae.getOperation().equals(Operation.CREATE)) {
             if (entity != null) {
                 deleteEntity(dao, entity);
@@ -154,6 +163,26 @@ public class UserActionService {
         objWrapper.registerCustomEditor(ScheduledActivityMode.class,
                 new ControlledVocabularyEditor(ScheduledActivityMode.class));
         objWrapper.registerCustomEditor(Amendment.class, new DaoBasedEditor(amendmentDao));
+        objWrapper.registerCustomEditor(HashSet.class, "populations", new CollectionEditor(Set.class, populationDao));
+        objWrapper.registerCustomEditor(TreeSet.class, "labels", new CollectionEditor(SortedSet.class));
+        objWrapper.registerCustomEditor(List.class, "properties", new CollectionEditor(ArrayList.class) {
+            protected Object convertElement(String element) {
+                SubjectProperty sp = new SubjectProperty();
+                String[] propertyValues = EditorUtils.splitValue(element);
+                if (propertyValues.length == 0) {
+                    throw new StudyCalendarError("There are no property values for subject properties");
+                } else {
+                    if (propertyValues.length > 1) {
+                       sp.setName(EditorUtils.getDecodedString(propertyValues[0]));
+                       sp.setValue(EditorUtils.getDecodedString(propertyValues[1]));
+                    } else {
+                       sp.setName(EditorUtils.getDecodedString(propertyValues[0]));
+                       sp.setValue(EditorUtils.getDecodedString(null));
+                    }
+                }
+                return sp;
+            }
+        });
         return objWrapper;
     }
 
@@ -176,7 +205,7 @@ public class UserActionService {
          try {
              return (Class<T>) Class.forName(className);
          } catch (ClassNotFoundException e) {
-            throw new StudyCalendarError("Class " + className + " does not exist", e);
+             throw new StudyCalendarError("Class " + className + " does not exist", e);
          }
     }
     @Required
@@ -202,5 +231,10 @@ public class UserActionService {
     @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+    @Required
+    public void setPopulationDao(PopulationDao populationDao) {
+        this.populationDao = populationDao;
     }
 }

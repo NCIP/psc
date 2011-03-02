@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteAuthorizationValidationException;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import junit.framework.TestCase;
 
 import java.util.Date;
 
@@ -14,14 +15,16 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
-public class UserStudySiteRelationshipTest extends TestCase {
+public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
     private Site nu, mayo;
     private StudySite nuF;
     private Study study, otherStudy;
+    private Configuration configuration;
 
     @Override
     public void setUp() throws Exception {
@@ -38,32 +41,46 @@ public class UserStudySiteRelationshipTest extends TestCase {
         nuF = study.addSite(nu);
         nuF.approveAmendment(study.getAmendment(), new Date());
         nuF.addStudySubjectAssignment(createAssignment(nuF, createSubject("A", "B")));
+
+        configuration = registerMockFor(Configuration.class);
     }
 
     ////// canAssignSubjects
 
     public void testCanAssignIfAllScopesStudySubjectCalendarManager() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testCanAssignIfSpecificStudyStudySubjectCalendarManager() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(study)).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testCannotAssignIfWrongStudySubjectCalendarManager() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(otherStudy)).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testCanAssignIfSpecificSiteStudySubjectCalendarManager() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forAllStudies()).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testCannotAssignIfWrongSiteSubjectCalendarManager() throws Exception {
@@ -343,6 +360,6 @@ public class UserStudySiteRelationshipTest extends TestCase {
         } catch (SuiteAuthorizationValidationException save) {
             fail("Test membership is invalid.  " + save.getMessage());
         }
-        return new UserStudySiteRelationship(createPscUser("jo", membership), nuF);
+        return new UserStudySiteRelationship(createPscUser("jo", membership), nuF, configuration);
     }
 }

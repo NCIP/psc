@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -20,11 +21,13 @@ public class UserTemplateRelationship {
 
     private PscUser user;
     private Study study;
+    private Configuration configuration;
 
-    public UserTemplateRelationship(PscUser pscUser, Study study) {
+    public UserTemplateRelationship(PscUser pscUser, Study study, Configuration configuration) {
         tools = new UserRelationshipTools(pscUser, study);
         this.user = pscUser;
         this.study = study;
+        this.configuration = configuration;
     }
 
     /**
@@ -119,7 +122,7 @@ public class UserTemplateRelationship {
             = new ArrayList<UserStudySiteRelationship>(sscmStudySites.size());
         for (StudySite sscmStudySite : sscmStudySites) {
             UserStudySiteRelationship candidate =
-                new UserStudySiteRelationship(getUser(), sscmStudySite);
+                new UserStudySiteRelationship(getUser(), sscmStudySite, configuration);
             if (candidate.getCanAssignSubjects()) subjectAssignable.add(candidate);
         }
         return subjectAssignable;
@@ -139,7 +142,7 @@ public class UserTemplateRelationship {
     public Collection<UserStudySiteRelationship> getVisibleStudySites() {
         List<UserStudySiteRelationship> visible = new LinkedList<UserStudySiteRelationship>();
         for (StudySite ss : study.getStudySites()) {
-            UserStudySiteRelationship rel = new UserStudySiteRelationship(getUser(), ss);
+            UserStudySiteRelationship rel = new UserStudySiteRelationship(getUser(), ss, configuration);
             if (rel.isVisible()) visible.add(rel);
         }
         return visible;

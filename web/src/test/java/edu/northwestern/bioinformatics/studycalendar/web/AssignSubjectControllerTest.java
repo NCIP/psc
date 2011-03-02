@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
@@ -35,6 +36,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private List<Subject> subjects;
     private Site seattle, tacoma, olympia;
     private StudySite seattleSS, tacomaSS, olympiaSS;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -44,6 +46,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
+        configuration = registerMockFor(Configuration.class);
 
         controller = new AssignSubjectController();
         controller.setSubjectDao(subjectDao);
@@ -53,6 +56,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setPopulationDao(populationDao);
         controller.setControllerTools(controllerTools);
         controller.setApplicationSecurityManager(applicationSecurityManager);
+        controller.setConfiguration(configuration);
 
         // Stop controller from calling validation
         controller.setValidateOnBinding(false);
@@ -114,6 +118,8 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         request.setParameter("studySegment", "145");
         StudySegment expectedStudySegment = setId(145, createNamedInstance("B", StudySegment.class));
         expect(studySegmentDao.getById(145)).andReturn(expectedStudySegment);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
         AssignSubjectCommand command = getAndReturnCommand("studySegment");
         assertEquals(expectedStudySegment, command.getStudySegment());
     }
@@ -122,6 +128,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         request.setParameter("study", "15");
         study = setId(15, createBasicTemplate());
         expect(studyDao.getById(15)).andReturn(study);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
         AssignSubjectCommand command = getAndReturnCommand("study");
         assertEquals(study, command.getStudy());
     }
@@ -130,6 +137,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         request.setParameter("site", "25");
         Site expectedSite = setId(25, createNamedInstance("Northwestern", Site.class));
         expect(siteDao.getById(25)).andReturn(expectedSite);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
         AssignSubjectCommand command = getAndReturnCommand("site");
         assertEquals(expectedSite, command.getSite());
     }
@@ -141,6 +149,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         Population p28 = setId(28, new Population());
         expect(populationDao.getById(25)).andReturn(p25);
         expect(populationDao.getById(28)).andReturn(p28);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
         AssignSubjectCommand command = getAndReturnCommand("populations");
         Set<Population> actual = command.getPopulations();
         assertEquals("Wrong number of populations", 2, actual.size());

@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -42,7 +43,6 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     private ApplicationSecurityManager applicationSecurityManager;
     private UserActionDao userActionDao;
     private String applicationPath;
-    protected static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public ScheduleActivityController() {
         setBindOnNewForm(true);
@@ -51,7 +51,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }    
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -76,7 +76,8 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         Map<String,String> uriMap = scheduleService.generateActivityTemplateUri(command.getEvent());
         model.put("uriMap",uriMap);
         model.put("modes", command.getEventSpecificMode());
-        model.put("readOnly", readOnlyMode());
+        StudySubjectAssignment ssa = command.getEvent().getScheduledStudySegment().getScheduledCalendar().getAssignment();
+        model.put("readOnly", readOnlyMode(ssa));
         return new ModelAndView("schedule/event", model);
     }
 
@@ -97,20 +98,11 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         StringBuilder sb = new StringBuilder(applicationPath);
         Subject subject =  assignment.getSubject();
         sb.append("/api/v1/subjects/").append(subject.getGridId()).append("/schedules");
-        ScheduledActivityMode newState = command.getNewMode();
-
         UserAction userAction = new UserAction();
         userAction.setContext(sb.toString());
-        userAction.setActionType(newState.getName());
-        String newDate = DATE_FORMAT.format(command.getNewDate());
-
+        userAction.setActionType("activity update");
         StringBuilder des = new StringBuilder(sa.getActivity().getName());
-        if (sa.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED) && newState.equals(ScheduledActivityMode.SCHEDULED)) {
-            des.append(" rescheduled from ").append(sa.getActualDate()).append(" to ").append(newDate);
-        } else {
-            des.append(" mark as ").append(newState.getName()).append(" on ").append(newDate);
-        }
-        des.append(" for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
+        des.append(" is updated for ").append(subject.getFullName()).append(" for ").append(assignment.getName());
         userAction.setDescription(des.toString());
         PscUser user = applicationSecurityManager.getUser();
         if (user != null) {
@@ -121,9 +113,10 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         AuditEvent.setUserAction(userAction);
     }
 
-    private boolean readOnlyMode() {
+    private boolean readOnlyMode(StudySubjectAssignment ssa) {
         PscUser user = applicationSecurityManager.getUser();
-        return (user.hasRole(STUDY_SUBJECT_CALENDAR_MANAGER)) ? false : user.hasRole(DATA_READER) || user.hasRole(STUDY_TEAM_ADMINISTRATOR);
+        UserStudySubjectAssignmentRelationship ussar = new UserStudySubjectAssignmentRelationship(user, ssa);
+        return ussar.isVisible();
     }
 
     ////// CONFIGURATION

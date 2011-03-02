@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
@@ -13,8 +15,9 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 /**
  * @author Rhett Sutphin
  */
-public class StudySiteWorkflowStatusTest extends TestCase {
+public class StudySiteWorkflowStatusTest extends StudyCalendarTestCase {
     private StudySite nuB;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -22,12 +25,14 @@ public class StudySiteWorkflowStatusTest extends TestCase {
         Study b = assignIds(createBasicTemplate("B"));
         nuB = setId(14, b.addSite(setId(54, createSite("NU", "IL486"))));
         nuB.approveAmendment(b.getAmendment(), new Date());
+
+        configuration = registerMockFor(Configuration.class);
     }
 
     private StudySiteWorkflowStatus actual() {
         return new StudySiteWorkflowStatus(nuB,
             AuthorizationObjectFactory.createPscUser("jo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER),
-            new WorkflowMessageFactory());
+            new WorkflowMessageFactory(), configuration);
     }
 
     public void testNoMessagesWhenApproved() throws Exception {

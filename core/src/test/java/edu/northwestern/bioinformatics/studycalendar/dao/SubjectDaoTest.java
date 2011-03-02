@@ -13,10 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.assertSameDay;
 
@@ -228,6 +225,30 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             "Foreign National", "true", reloaded.getProperties().get(1));
         assertSubjectProperty("Wrong 3rd prop",
             "Hair Color", "blue", reloaded.getProperties().get(2));
+    }
+
+    public void testReplacingPropertiesWorks() throws Exception {
+        {
+            List<SubjectProperty> properties = new ArrayList<SubjectProperty>();
+            properties.add(new SubjectProperty("Hair Color", "blue"));
+            properties.add(new SubjectProperty("Foreign National", "true"));
+            properties.add(new SubjectProperty("Preferred Contact Address", "test@abc.com"));
+            Subject loaded = getDao().getById(-101);
+            assertEquals("Test setup failure", 2, loaded.getProperties().size());
+            loaded.replaceProperties(properties);
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        Subject reloaded = getDao().getById(-101);
+        assertEquals("Test setup failure", 3, reloaded.getProperties().size());
+        assertSubjectProperty("Wrong 1st prop",
+            "Hair Color", "blue", reloaded.getProperties().get(0));
+        assertSubjectProperty("Wrong 2nd prop",
+            "Foreign National", "true", reloaded.getProperties().get(1));
+        assertSubjectProperty("Wrong 3rd prop",
+            "Preferred Contact Address", "test@abc.com", reloaded.getProperties().get(2));
     }
 
     public void testLoadScheduledCalendar() throws Exception {

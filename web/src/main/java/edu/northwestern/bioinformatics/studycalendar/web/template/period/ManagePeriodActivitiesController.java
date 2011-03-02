@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
@@ -48,6 +49,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
     private SourceDao sourceDao;
     private ActivityTypeDao activityTypeDao;
     private ApplicationSecurityManager applicationSecurityManager;
+    private Configuration configuration;
 
     public ManagePeriodActivitiesController() {
         setCrumb(new Crumb());
@@ -91,7 +93,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
         }
 
         model.put("canEdit",
-            new UserTemplateRelationship(applicationSecurityManager.getUser(), study).getCanDevelop());
+            new UserTemplateRelationship(applicationSecurityManager.getUser(), study, configuration).getCanDevelop());
         
         model.put("activitySources", sourceDao.getAll());
         model.put("activityTypes", activityTypeDao.getAll());
@@ -157,7 +159,12 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
-    }    
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     private static class Crumb extends DefaultCrumb {
         @Override

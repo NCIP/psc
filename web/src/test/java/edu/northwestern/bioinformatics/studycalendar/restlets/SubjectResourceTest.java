@@ -187,13 +187,11 @@ public class SubjectResourceTest extends AuthorizedResourceTestCase<SubjectResou
 
     ////// GET
 
-    // Rationale: if you 404 for unknown, you leak information about which identifiers are in the
-    // system
-    public void testGet403sWithUnknownIdent() throws Exception {
+    public void testGet404sWithUnknownIdent() throws Exception {
         expect(subjectDao.getByGridIdOrPersonId(PERSON_ID)).andReturn(null);
 
         doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testGetReturnsSubjectRepresentation() throws Exception {

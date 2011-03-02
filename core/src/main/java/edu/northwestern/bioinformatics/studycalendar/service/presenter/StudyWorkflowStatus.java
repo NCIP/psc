@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -20,18 +21,21 @@ public class StudyWorkflowStatus {
 
     private final UserTemplateRelationship utr;
     private final RevisionWorkflowStatus revisionWorkflowStatus;
+    private final Configuration configuration;
 
     public StudyWorkflowStatus(
         Study study, PscUser user,
-        WorkflowMessageFactory factory, DeltaService deltaService
+        WorkflowMessageFactory factory, DeltaService deltaService,
+        Configuration configuration
     ) {
         this.study = study;
         this.user = user;
         this.workflowMessageFactory = factory;
+        this.configuration = configuration;
 
-        this.utr = new UserTemplateRelationship(user, study);
+        this.utr = new UserTemplateRelationship(user, study, configuration);
         if (study.isInDevelopment()) {
-            this.revisionWorkflowStatus = new RevisionWorkflowStatus(study, user, factory, deltaService);
+            this.revisionWorkflowStatus = new RevisionWorkflowStatus(study, user, factory, deltaService, configuration);
         } else {
             this.revisionWorkflowStatus = null;
         }
@@ -108,7 +112,7 @@ public class StudyWorkflowStatus {
     public List<StudySiteWorkflowStatus> getStudySiteWorkflowStatuses() {
         List<StudySiteWorkflowStatus> statuses = new LinkedList<StudySiteWorkflowStatus>();
         for (UserStudySiteRelationship ussr : utr.getVisibleStudySites()) {
-            statuses.add(new StudySiteWorkflowStatus(ussr.getStudySite(), getUser(), workflowMessageFactory));
+            statuses.add(new StudySiteWorkflowStatus(ussr.getStudySite(), getUser(), workflowMessageFactory, configuration));
         }
         return statuses;
     }

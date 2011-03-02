@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
@@ -40,6 +41,7 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     private WorkflowService workflowService;
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
+    private Configuration configuration;
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         // further authorization done in handleRequest
@@ -66,7 +68,7 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
         Study study = templateService.findStudy(studySegment);
 
         UserTemplateRelationship utr =
-            new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
+            new UserTemplateRelationship(applicationSecurityManager.getUser(), study, configuration);
             
         StudyWorkflowStatus workflow = workflowService.build(study, applicationSecurityManager.getUser());
         model.put("studyWorkflowMessages", workflow.getMessages());
@@ -128,5 +130,9 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
     }
-    
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
 }

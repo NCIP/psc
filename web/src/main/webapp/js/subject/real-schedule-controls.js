@@ -20,11 +20,15 @@ psc.subject.RealScheduleControls = (function ($) {
       executeScheduleUpdateWithUserAction
               (params, action, batchResource, executePartialScheduleUpdate, data);
     }
-    if (params == null) {
+    var numberOfActivitiesChecked = $('input.event:checked').length;
+
+    if (params == null && numberOfActivitiesChecked > 0) {
       alert("There selected activities are not suitable to be modified due to the state." +
         "\nOnly scheduled and conditional types will be changed");
-    } else if (isParamsEmpty) {
+    } else if (isParamsEmpty && numberOfActivitiesChecked>0) {
       alert("There were no properties modified to change the activity");
+    } else if (numberOfActivitiesChecked == 0) {
+      alert ("Please select the activities that you wish to modify");
     }
   }
 
@@ -335,12 +339,8 @@ psc.subject.RealScheduleControls = (function ($) {
       $('a.notification-control').click(dismissNotification)
       var undoControl = jQuery('<a class="undo" id="undo-control" style="font-style:italic"/>');
       $('#schedule-controls-box h2').append(undoControl);
-      $('#undo-control').click(makeUndoRequest);
-      /*
-       * Disabled for PSC 2.9.0 due to #1369.
       $('#schedule').bind('schedule-ready',
               psc.subject.RealScheduleControls.getUndoableActions);
-       */
     },
 
     batchResource: function (uri) {
@@ -457,12 +457,13 @@ psc.subject.RealScheduleControls = (function ($) {
         dataType: 'json',
         url: (psc.subject.ScheduleData.undoableActionsURI())(),
         success: function(data) {
+          $('#undo-control').click(makeUndoRequest);
           $('#undo-control .indicator').css('visibility', 'hidden');
           generateUndoControl(data);
         },
         error: function() {
           $('#undo-control').removeAttr('href').removeAttr('link')
-          .css('color', '#444').text("Nothing to undo");
+          .css('color', '#444').text("Nothing to undo").unbind('click');
         }
       });
     }

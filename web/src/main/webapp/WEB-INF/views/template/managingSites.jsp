@@ -51,9 +51,20 @@
 <body>
      <laf:box title="${action} Sites">
         <laf:division>
+            <p>Designate the sites that are involved in the management (as opposed to the use) of the template for the study  <strong>${study.assignedIdentifier}</strong>. From the managing site(s): </p>
+            <ul>
+                <li>
+                    Study Calendar Template Builders with the appropriate study-level access may edit and amend the template.
+                </li>
+                <li>
+                    Study QA Managers may release the template for use.
+                </li>
+                <li>
+                    Study Site Participation Administrators determine which sites will have access to the template.
+                </li>
+            </ul>
             <p>
-                You are making <strong>${study.assignedIdentifier}</strong> available to specific
-                sites.
+                If no managing sites are designated, every site will be a managing site for this template.
             </p>
 
             <c:url value="/pages/cal/template/managingSites?id=${study.id}&amendment=${amendmentId}" var="formAction"/>

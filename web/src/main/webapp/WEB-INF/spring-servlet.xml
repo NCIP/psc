@@ -594,6 +594,7 @@
         <property name="studySubjectAssignmentDao" ref="studySubjectAssignmentDao"/>
         <property name="pscUserService" ref="pscUserService"/>
         <property name="controllerTools" ref="controllerTools"/>
+        <property name="configuration" ref="configuration"/>
     </bean>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">

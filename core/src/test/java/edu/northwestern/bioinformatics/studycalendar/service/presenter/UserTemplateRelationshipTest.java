@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -15,6 +16,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -23,6 +25,7 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
     private Study study;
     private Site nu, mayo, vanderbilt;
     private Study otherStudy;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -42,6 +45,8 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
         study.addSite(vanderbilt);
 
         otherStudy = createBasicTemplate("Boo");
+
+        configuration = registerMockFor(Configuration.class);
     }
 
     ////// canStartAmendment
@@ -309,39 +314,63 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
     ////// canAssignSubjects
 
     public void testApprovedParticipatingSubjectCalendarManagerCanAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forAllStudies()).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testApprovedParticipatingSubjectCalendarManagerForThisSpecificStudyCanAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(study)).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testApprovedParticipatingSubjectCalendarManagerForOtherStudyCannotAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(otherStudy)).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testUnapprovedParticipatingSubjectCalendarManagerCannotAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(vanderbilt).forAllStudies()).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testNonparticipatingSubjectCalendarManagerCannotAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(mayo).forAllStudies()).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     public void testOtherRoleCannotAssignSubjects() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(SUBJECT_MANAGER).forSites(nu)).
                 getCanAssignSubjects());
+        verifyMocks();
     }
 
     ////// canScheduleReconsent
@@ -375,40 +404,60 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
     ////// getSubjectAssignableStudySites
 
     public void testCanOnlyAssignSubjectsForApprovedTemplatesWhenHasAccessToSpecificSites() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(vanderbilt, nu, mayo).forAllStudies()).
                 getSubjectAssignableStudySites();
+        verifyMocks();
         assertEquals("Wrong number of study sites", 1, actual.size());
         assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCanOnlyAssignSubjectsForApprovedTemplatesWhenHasAccessToAllSites() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
                 getSubjectAssignableStudySites();
+        verifyMocks();
         assertEquals("Wrong number of study sites", 1, actual.size());
         assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCannotAssignSubjectsWhenHasAccessOnlyToADifferentStudy() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(otherStudy)).
                 getSubjectAssignableStudySites();
+        verifyMocks();
         assertEquals("Wrong number of study sites", 0, actual.size());
     }
 
     public void testAssignSubjectsWhenHasAccessOnlyThisSpecificStudy() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(study)).
                 getSubjectAssignableStudySites();
+        verifyMocks();
         assertEquals("Wrong number of study sites", 1, actual.size());
         assertEquals("Wrong study site", nu, actual.iterator().next().getStudySite().getSite());
     }
 
     public void testCannotAssignSubjectsWhenInADifferentRole() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         Collection<UserStudySiteRelationship> actual =
             actual(createSuiteRoleMembership(REGISTRAR).forSites(nu).forAllStudies()).
                 getSubjectAssignableStudySites();
+        verifyMocks();
         assertEquals("Wrong number of study sites", 0, actual.size());
     }
 
@@ -472,9 +521,13 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
     }
 
     public void testAssignerCanSeeReleasedVersions() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
+
+        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forStudies(study)).
                 getCanSeeReleasedVersions());
+        verifyMocks();
     }
 
     ////// canAssignIdentifiers
@@ -545,6 +598,6 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
         } catch (SuiteAuthorizationValidationException save) {
             fail("Test membership is invalid.  " + save.getMessage());
         }
-        return new UserTemplateRelationship(createPscUser("jo", membership), study);
+        return new UserTemplateRelationship(createPscUser("jo", membership), study, configuration);
     }
 }

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -56,6 +57,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     private String studySubjectId;
     private String identifier;
     private String radioButton;
+    private Configuration configuration;
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -179,7 +181,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
 
     private boolean canCreateSubjects() {
         UserStudySiteRelationship ussr =
-                new UserStudySiteRelationship(getStudySubjectCalendarManager(), getStudySite());
+                new UserStudySiteRelationship(getStudySubjectCalendarManager(), getStudySite(), getConfiguration());
         return ussr.getCanCreateSubjects();
     }
 
@@ -191,6 +193,14 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
 
     public void setSubjectDao(SubjectDao subjectDao) {
         this.subjectDao = subjectDao;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     ////// BOUND PROPERTIES

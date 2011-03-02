@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -35,6 +36,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
     private SiteDao siteDao;
     private PopulationDao populationDao;
     private ApplicationSecurityManager applicationSecurityManager;
+    private Configuration configuration;
 
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
@@ -89,7 +91,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         StudySite studySite = command.getStudySite();
         PscUser user = applicationSecurityManager.getUser();
         if (user != null && studySite != null) {
-            UserStudySiteRelationship ussr = new UserStudySiteRelationship(user, studySite);
+            UserStudySiteRelationship ussr = new UserStudySiteRelationship(user, studySite, configuration);
             refdata.put("canCreateSubjects", ussr.getCanCreateSubjects());
         }
         refdata.put("populations", study.getPopulations());
@@ -99,6 +101,15 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         refdata.put("action", "New");
         refdata.put("site", command.getSite());
         return refdata;
+    }
+
+    @Override
+    protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
+        if (!configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                "UI subject creation is disabled.  There should be no links to this page visible.");
+        }
+        return super.showForm(request, response, errors);
     }
 
     @Override
@@ -115,6 +126,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         AssignSubjectCommand command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
         command.setSubjectDao(subjectDao);
+        command.setConfiguration(configuration);
         return command;
     }
 
@@ -168,5 +180,10 @@ public class AssignSubjectController extends PscSimpleFormController implements 
             }
             return params;
         }
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

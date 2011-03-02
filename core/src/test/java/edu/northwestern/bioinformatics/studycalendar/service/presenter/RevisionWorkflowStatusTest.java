@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -23,6 +24,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 public class RevisionWorkflowStatusTest extends StudyCalendarTestCase {
     private Study study;
     private Epoch soleEpoch;
+    private Configuration configuration;
 
     @Override
     protected void setUp() throws Exception {
@@ -39,6 +41,7 @@ public class RevisionWorkflowStatusTest extends StudyCalendarTestCase {
         soleEpoch.getStudySegments().get(0).addPeriod(p);
 
         assignIds(soleEpoch, 58);
+        configuration = registerMockFor(Configuration.class);
     }
 
     public void testCreationForNotInDevStudyIsAnError() throws Exception {
@@ -115,7 +118,7 @@ public class RevisionWorkflowStatusTest extends StudyCalendarTestCase {
     private RevisionWorkflowStatus actual() {
         return new RevisionWorkflowStatus(
             study, AuthorizationObjectFactory.createPscUser("jimbo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER),
-            new WorkflowMessageFactory(), getTestingDeltaService());
+            new WorkflowMessageFactory(), getTestingDeltaService(), configuration);
     }
 
     private void assertMessages(WorkflowStep... expectedSteps) {

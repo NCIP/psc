@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.core;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
@@ -52,6 +53,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         super.tearDown();
         applicationSecurityManager.removeUserSession();
         FormatTools.clearLocalInstance();
+        AuditEvent.setUserAction(null);
     }
 
     ////// MOCK REGISTRATION AND HANDLING

@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -28,10 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -88,6 +86,7 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         model.addAttribute(subject);
         model.addAttribute("schedulePreview", false);
         model.addAttribute("canUpdateSchedule", canUpdateSchedule(assignments));
+        model.addAttribute("todayDate", FormatTools.getLocal().formatDate(Calendar.getInstance().getTime()));
         return new ModelAndView("subject/schedule", model);
     }
 

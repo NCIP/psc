@@ -113,7 +113,8 @@ public class ScheduledActivityState extends AbstractMutableDomainObject implemen
         if (o == null || getClass() != o.getClass()) return false;
 
         ScheduledActivityState that = (ScheduledActivityState) o;
-
+        if (mode != null ? !mode.equals(that.getMode()) : that.getMode() != null) return false;
+        if (date != null ? !date.equals(that.getDate()) : that.getDate() != null) return false;
         if (reason != null ? !reason.equals(that.getReason()) : that.getReason() != null) return false;
 
         return true;

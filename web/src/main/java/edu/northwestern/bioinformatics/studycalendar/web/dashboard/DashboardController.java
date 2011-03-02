@@ -40,7 +40,7 @@ public class DashboardController extends PscAbstractCommandController<DashboardC
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new DashboardCommand(applicationSecurityManager.getUser(), pscUserService, studyDao);
+        return new DashboardCommand(applicationSecurityManager.getUser(), pscUserService, studyDao, configuration);
     }
 
     @Override

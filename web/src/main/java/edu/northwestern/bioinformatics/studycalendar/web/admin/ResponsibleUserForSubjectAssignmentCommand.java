@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -35,13 +36,16 @@ public class ResponsibleUserForSubjectAssignmentCommand implements Validatable {
 
     private PscUser responsible, newResponsible;
     private List<StudySubjectAssignment> targetAssignments;
+    private Configuration configuration;
 
     public ResponsibleUserForSubjectAssignmentCommand(
-        PscUser teamAdmin, PscUserService pscUserService, StudySubjectAssignmentDao assignmentDao
+        PscUser teamAdmin, PscUserService pscUserService, StudySubjectAssignmentDao assignmentDao,
+        Configuration configuration
     ) {
         this.teamAdmin = teamAdmin;
         this.pscUserService = pscUserService;
         this.assignmentDao = assignmentDao;
+        this.configuration = configuration;
     }
 
     ///// LOGIC
@@ -162,7 +166,7 @@ public class ResponsibleUserForSubjectAssignmentCommand implements Validatable {
         List<PscUser> subteam = new ArrayList<PscUser>(getTeam());
         for (Iterator<PscUser> it = subteam.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
-            if (!(new UserStudySiteRelationship(candidate, studySite)).getCanAssignSubjects()) {
+            if (!(new UserStudySiteRelationship(candidate, studySite, configuration)).getCanAssignSubjects()) {
                 it.remove();
             } else if (currentManager != null && candidate.getUsername().equals(currentManager.getUsername())) {
                 it.remove();

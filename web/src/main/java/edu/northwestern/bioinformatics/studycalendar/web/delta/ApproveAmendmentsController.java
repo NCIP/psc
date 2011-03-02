@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -34,6 +35,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
     private NowFactory nowFactory;
     private AmendmentService amendmentService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private Configuration configuration;
 
     public ApproveAmendmentsController() {
         super();
@@ -82,7 +84,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
         ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
         command.apply();
         UserStudySiteRelationship rel =
-            new UserStudySiteRelationship(applicationSecurityManager.getUser(), command.getStudySite());
+            new UserStudySiteRelationship(applicationSecurityManager.getUser(), command.getStudySite(), configuration);
         String viewName = rel.getCanAdministerTeam() ?
             "redirectToTeamAdminByStudy" : "redirectToCalendarTemplate";
         return new ModelAndView(viewName,
@@ -109,6 +111,11 @@ public class ApproveAmendmentsController extends PscSimpleFormController impleme
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     private static class Crumb extends DefaultCrumb {

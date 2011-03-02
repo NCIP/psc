@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 
 import java.util.Calendar;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
+
 /**
  * @author Rhett Sutphin
  */
@@ -62,5 +64,33 @@ public class ScheduledActivityStateTest extends TestCase {
     public void testScheduledSummaryWithNoReason() throws Exception {
         assertEquals("Scheduled for 11/2/2004",
             ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2004, Calendar.NOVEMBER, 2), null).getTextSummary());
+    }
+
+    public void testEqualsWithAllThree() throws Exception {
+        ScheduledActivityState sas1 = new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2010, Calendar.NOVEMBER, 2), "Reason");
+        ScheduledActivityState sas2 = new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2010, Calendar.NOVEMBER, 2), "Reason");
+        assertEquals("States are not equals", sas1, sas2);
+    }
+
+    public void testNotEqualsWhenOnlyMode() throws Exception {
+        ScheduledActivityState sas1 = new ScheduledActivityState(ScheduledActivityMode.CANCELED);
+        ScheduledActivityState sas2 = new ScheduledActivityState(ScheduledActivityMode.SCHEDULED);
+        assertNotEquals("States are equals", sas1, sas2);
+    }
+
+    public void testNotEqualsWhenModeAndReason() throws Exception {
+        ScheduledActivityState sas1 = new ScheduledActivityState(ScheduledActivityMode.CANCELED, null, "Reason1");
+        ScheduledActivityState sas2 = new ScheduledActivityState(ScheduledActivityMode.CANCELED, null, "Reason2");
+        assertNotEquals("States are equals", sas1, sas2);
+    }
+
+    public void testNotEqualsWithAllThree() throws Exception {
+        ScheduledActivityState sas1 = new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2010, Calendar.NOVEMBER, 2), "Reason");
+        ScheduledActivityState sas2 = new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2011, Calendar.NOVEMBER, 2), "Reason");
+        assertNotEquals("States are equals", sas1, sas2);
     }
 }

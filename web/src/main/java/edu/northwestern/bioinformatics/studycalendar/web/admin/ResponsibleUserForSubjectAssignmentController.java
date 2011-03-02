@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -29,6 +30,7 @@ public class ResponsibleUserForSubjectAssignmentController
     private ApplicationSecurityManager applicationSecurityManager;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private PscUserService pscUserService;
+    private Configuration configuration;
 
     public ResponsibleUserForSubjectAssignmentController() {
         setValidator(new ValidatableValidator());
@@ -47,7 +49,7 @@ public class ResponsibleUserForSubjectAssignmentController
         HttpServletRequest request
     ) throws Exception {
         return new ResponsibleUserForSubjectAssignmentCommand(
-            applicationSecurityManager.getUser(), pscUserService, studySubjectAssignmentDao);
+            applicationSecurityManager.getUser(), pscUserService, studySubjectAssignmentDao, configuration);
     }
 
     @Override
@@ -93,5 +95,10 @@ public class ResponsibleUserForSubjectAssignmentController
     @Required
     public void setPscUserService(PscUserService pscUserService) {
         this.pscUserService = pscUserService;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

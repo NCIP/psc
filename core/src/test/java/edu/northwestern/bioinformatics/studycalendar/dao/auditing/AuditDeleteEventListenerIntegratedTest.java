@@ -34,7 +34,7 @@ public class AuditDeleteEventListenerIntegratedTest extends AuditEventListenerTe
 
         int eventId = getEventIdForObject(-1111, Period.class.getName(), Operation.DELETE.name());
         assertNotNull("Audit event for DELETE is not created ", eventId);
-        
+
         DataAuditEventValue durationQuantityValue = getAuditEventValueFor(eventId, "duration.quantity");
         DataAuditEventValue durationUnitValue = getAuditEventValueFor(eventId, "duration.unit");
         DataAuditEventValue nameValue = getAuditEventValueFor(eventId, "name");

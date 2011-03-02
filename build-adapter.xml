@@ -90,7 +90,7 @@
         <install_gem name="buildr-iidea"/>
     </target>
 
-    <property name="gems.haml.version" value="2.2.23"/>
+    <property name="gems.haml.version" value="3.0.25"/>
     <gem_available name="haml"/>
     <target name="install:gem:haml" unless="haml.exists" depends="install:jruby" description="Installs haml gem">
         <install_gem name="haml"/>

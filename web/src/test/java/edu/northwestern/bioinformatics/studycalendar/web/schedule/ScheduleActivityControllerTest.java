@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserActionDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -65,7 +66,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     
     public void testAuthorizedRoles() {
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR);
     }
 
     public void testBindEvent() throws Exception {
@@ -150,9 +151,43 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         UserAction userAction = new UserAction();
         String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
         userAction.setContext(context);
-        userAction.setActionType("occurred");
+        userAction.setActionType("activity update");
         userAction.setUser(pscUser.getCsmUser());
-        String des = "testActivity mark as occurred on 2003-03-15 for Perry Duglas for test-study";
+        String des = "testActivity is updated for Perry Duglas for test-study";
+        userAction.setDescription(des);
+        expect(mockApplicationSecurityManager.getUser()).andReturn(pscUser);
+        userActionDao.save(userAction);
+        command.apply();
+
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+    }
+
+    public void testAddNotesOnSubmit() throws Exception {
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("Perry", "Duglas");
+        subject.setGridId("1111");
+        StudySite studySite = new StudySite();
+        Study study = new Study();
+        study.setAssignedIdentifier("test-study");
+        studySite.setStudy(study);
+
+        command.setEvent(createScheduledActivity("testActivity", 2003, 03, 14,
+            ScheduledActivityMode.SCHEDULED.createStateInstance
+                    (DateUtils.createDate(2003, Calendar.MARCH, 14), "testing")));
+        command.setNewNotes("New notes");
+        command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
+        command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        StudySubjectAssignment ssa =Fixtures.createAssignment(studySite, subject);
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(ssa);
+        request.setMethod("POST");
+
+        UserAction userAction = new UserAction();
+        String context = applicationPath.concat("/api/v1/subjects/1111/schedules");
+        userAction.setContext(context);
+        userAction.setActionType("activity update");
+        userAction.setUser(pscUser.getCsmUser());
+        String des = "testActivity is updated for Perry Duglas for test-study";
         userAction.setDescription(des);
         expect(mockApplicationSecurityManager.getUser()).andReturn(pscUser);
         userActionDao.save(userAction);
@@ -165,6 +200,20 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
 
     private void expectShowFormWithNoErrors() throws Exception {
         event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
+
+        command.setEvent(event);
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("Perry", "Duglas");
+        subject.setGridId("1111");
+        StudySite studySite = new StudySite();
+        Study study = new Study();
+        study.setAssignedIdentifier("test-study");
+        studySite.setStudy(study);
+        StudySubjectAssignment ssa =Fixtures.createAssignment(studySite, subject);
+
+        command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
+        command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(ssa);
+
         expect(scheduledActivityDao.getById(16)).andReturn(event);
         Map<String,String> uriListMap = new TreeMap<String, String>();
         expect(scheduleService.generateActivityTemplateUri(event)).andReturn(uriListMap);

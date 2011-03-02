@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -34,13 +35,16 @@ public class DashboardCommand {
     private List<PscUser> colleagues;
     private Map<Subject, List<Notification>> pendingNotifications;
     private List<UserStudySubjectAssignmentRelationship> managedAssignments;
+    private Configuration configuration;
 
-    public DashboardCommand(PscUser loggedInUser, PscUserService pscUserService, StudyDao studyDao) {
+    public DashboardCommand(PscUser loggedInUser, PscUserService pscUserService, StudyDao studyDao,
+                            Configuration configuration) {
         this.loggedInUser = loggedInUser;
         this.dashboardUser = loggedInUser; // default if nothing bound
 
         this.pscUserService = pscUserService;
         this.studyDao = studyDao;
+        this.configuration = configuration;
     }
 
     public boolean isColleagueDashboard() {
@@ -80,9 +84,9 @@ public class DashboardCommand {
             for (Study study : studies) {
                 for (StudySite studySite : study.getStudySites()) {
                     UserStudySiteRelationship loggedInRel =
-                        new UserStudySiteRelationship(loggedInUser, studySite);
+                        new UserStudySiteRelationship(loggedInUser, studySite, configuration);
                     UserStudySiteRelationship dashboardRel =
-                        new UserStudySiteRelationship(getUser(), studySite);
+                        new UserStudySiteRelationship(getUser(), studySite, configuration);
                     if (loggedInRel.getCanAssignSubjects() && dashboardRel.getCanAssignSubjects()) {
                         if (!assignableStudies.containsKey(study)) {
                             assignableStudies.put(study, new ArrayList<UserStudySiteRelationship>());

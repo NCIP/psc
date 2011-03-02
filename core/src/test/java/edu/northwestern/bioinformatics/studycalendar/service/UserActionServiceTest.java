@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
@@ -17,9 +17,7 @@ import gov.nih.nci.cabig.ctms.audit.domain.Operation;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
@@ -296,6 +294,101 @@ public class UserActionServiceTest extends StudyCalendarTestCase {
         assertEquals("StudySubjectAssignment is undone", a1, assignment.getCurrentAmendment());
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForUpdateAuditEventForPopulationChange() throws Exception {
+        PopulationDao populationDao=  registerDaoMockFor(PopulationDao.class);
+        service.setPopulationDao(populationDao);
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Population p1 = setId(21, createPopulation("F", "Female"));
+        Population p2 = setId(22, createPopulation("O", "OldFolks"));
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        Set populations = new TreeSet<Population>();
+        populations.add(p1);
+        populations.add(p2);
+        assignment.setPopulations(populations);
+        setId(1, assignment);
+        ae1 = new AuditEvent(assignment, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("populations", "21", "21,22"));
+
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(StudySubjectAssignment.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(1)).andReturn(assignment);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        expect(populationDao.getById(21)).andReturn(p1);
+        assertEquals("StudySubjectAssignment is undone", populations, assignment.getPopulations());
+        domainObjectDao.save(assignment);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        populations.remove(p2);
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("StudySubjectAssignment is undone", populations, assignment.getPopulations());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForUpdateAuditEventForLabels() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        ScheduledActivityState state =  new ScheduledActivityState(ScheduledActivityMode.CANCELED,
+                DateTools.createDate(2010, Calendar.OCTOBER, 18), "Just Canceled");
+        ScheduledActivity event = setId(1, createScheduledActivityWithStudy("DC", 2010, Calendar.OCTOBER, 18, state));
+        SortedSet<String> labels = new TreeSet<String>();
+        labels.add("label1");
+        event.setLabels(labels);
+        ae1 = new AuditEvent(event, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("labels", "label+label2 label1", "label1"));
+
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(ScheduledActivity.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(1)).andReturn(event);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        assertEquals("Scheduled Activity is not undone ", event.getLabels(), labels);
+        domainObjectDao.save(event);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+        labels.add("label label2");
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("Scheduled Activity is undone", labels, event.getLabels());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testApplyUndoForUpdateAuditEventForSubjectProperties() throws Exception {
+        ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
+        ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
+        Subject subject = setId(11, createSubject("p123", "Jo", "Carlson",
+                DateTools.createDate(1963, Calendar.MARCH, 17), Gender.FEMALE));
+        subject.setGridId("Eleventy");
+        List<SubjectProperty> properties = new ArrayList<SubjectProperty>();
+        SubjectProperty sp1 = new SubjectProperty("Meal Preference", "vegetarian");
+        SubjectProperty sp2 = new SubjectProperty("Seat Preference", "window");
+        properties.add(sp1);
+        properties.add(sp2);
+        subject.setProperties(properties);
+        ae1 = new AuditEvent(subject, Operation.UPDATE, new DataAuditInfo(USER_NAME, IP, sdf.parse("2010-08-17 10:44:58.361"), URL), ua1);
+        ae1.addValue(new DataAuditEventValue("properties", "Meal%2BPreference+vegetarian", "Meal%2BPreference+vegetarian Seat%2BPreference+window"));
+
+        expect(auditEventDao.getAuditEventsWithValuesByUserActionId("ua1")).andReturn(Arrays.asList(ae1));
+        expect(daoFinder.findDao(Subject.class)).andReturn(domainObjectDao);
+        expect(domainObjectDao.getById(11)).andReturn(subject);
+        assertFalse("UserAction is undone", ua1.isUndone());
+        assertEquals("Subject for properties is not undone ", subject.getProperties(), properties);
+        domainObjectDao.save(subject);
+
+        replayMocks();
+        service.applyUndo(ua1);
+        verifyMocks();
+
+        properties.remove(sp2);
+        assertTrue("UserAction is not undone", ua1.isUndone());
+        assertEquals("Subject for properties is undone", properties, subject.getProperties());
+    }
+
+    @SuppressWarnings({ "unchecked" })
     public void testApplyDoNotSaveEntityIfOnlyVersionIsUpdated() throws Exception {
         ua1 = setGridId("ua1", new UserAction("description1", "context1", "actionType1", false, csmUser1));
         ua1.setTime(sdf.parse("2010-08-17 10:30:45.361"));
