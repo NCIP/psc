@@ -135,7 +135,7 @@ psc.namespace("subject");
         if (min && max) {
           return new psc.tools.Range(min, max);
         } else {
-          return null;
+          return new psc.tools.Range(max);
         }
       },
 
