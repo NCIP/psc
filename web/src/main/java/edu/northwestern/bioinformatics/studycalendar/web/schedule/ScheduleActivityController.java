@@ -112,11 +112,10 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         userActionDao.save(userAction);
         AuditEvent.setUserAction(userAction);
     }
-
     private boolean readOnlyMode(StudySubjectAssignment ssa) {
         PscUser user = applicationSecurityManager.getUser();
         UserStudySubjectAssignmentRelationship ussar = new UserStudySubjectAssignmentRelationship(user, ssa);
-        return ussar.isVisible();
+        return (!ussar.getCanUpdateSchedule() && (ussar.getCanReadData() || ussar.getCanSetCalendarManager()));
     }
 
     ////// CONFIGURATION
