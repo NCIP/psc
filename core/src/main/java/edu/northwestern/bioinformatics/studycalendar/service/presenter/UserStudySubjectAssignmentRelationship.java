@@ -40,6 +40,10 @@ public class UserStudySubjectAssignmentRelationship
         return hasMatchingRole(STUDY_TEAM_ADMINISTRATOR);
     }
 
+    public boolean getCanReadData() {
+        return hasMatchingRole(DATA_READER);
+    }
+
     ////// comparable
 
     public int compareTo(UserStudySubjectAssignmentRelationship o) {
