@@ -6,7 +6,7 @@ psc.namespace("dashboard");
       psc.dashboard.Main.loadStarted("past-due");
       var qs = $.param({
         "responsible-user": psc.dashboard.Main.username,
-        "end-date": psc.tools.Dates.utcToApiDate(new Date()),
+        "end-date": psc.tools.Dates.utcToApiDate(psc.tools.Dates.shiftByDays(new Date(), -1)),
         "state": ["scheduled", "conditional"]
       }, true);
       $.ajax({
