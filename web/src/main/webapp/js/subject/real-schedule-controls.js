@@ -309,7 +309,7 @@ psc.subject.RealScheduleControls = (function ($) {
               text = actionType;
           }
           $('#undo-control').attr('href', '#').text("Undo " + text).
-                attr('link', ua["URI"]).css('color', 'black');
+                attr('link', ua["URI"]).css('color', '#ccc');
       }
   }
 
@@ -337,8 +337,9 @@ psc.subject.RealScheduleControls = (function ($) {
         return false;
       });
       $('a.notification-control').click(dismissNotification)
-      var undoControl = jQuery('<a class="undo" id="undo-control" style="font-style:italic"/>');
-      $('#schedule-controls-box h2').append(undoControl);
+      var undoControl = jQuery('<a class="undo" id="undo-control" ' +
+         'style="font-style:italic; font-weight:600; padding:4px 8px 0px; float:right;"/>');
+      $('#schedule-controls-box h2').before(undoControl);
       $('#schedule').bind('schedule-ready',
               psc.subject.RealScheduleControls.getUndoableActions);
     },
@@ -463,7 +464,7 @@ psc.subject.RealScheduleControls = (function ($) {
         },
         error: function() {
           $('#undo-control').removeAttr('href').removeAttr('link')
-          .css('color', '#444').text("Nothing to undo").unbind('click');
+          .css('color', 'black').text("Nothing to undo").unbind('click');
         }
       });
     }
