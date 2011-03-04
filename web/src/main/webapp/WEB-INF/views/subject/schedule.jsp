@@ -172,6 +172,10 @@
         div.populationChange {
             float:right;
         }
+
+        .legend-row {
+            list-style-type:none;
+        }
     </style>
 
     <script type="text/javascript">
