@@ -123,6 +123,11 @@
             width: 10em;
         }
 
+        #export-controls div.row {
+            margin:0;
+            padding:0;
+        }
+
         #schedule-controls div.row div.value {
             margin-left: 11em;
         }
@@ -495,6 +500,7 @@
                             title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
                     </div>
                 </div>
+                <br style="clear:both"/>
             </c:if>
             <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
                 <div class="row ${commons:parity(outerCounter.count)}">
@@ -507,6 +513,7 @@
                            href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
                            title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
                     </div>
+                    <br style="clear:both"/>
                 </div>
             </c:forEach>
             <div class="label" style="font-weight: bold;">Report:</div>
