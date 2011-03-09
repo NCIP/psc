@@ -64,6 +64,7 @@ describe "/subjects/{subject-identifier}/schedules" do
         subject(@subject).first_study_segment(@studySegment2).
         date(PscTest.createDate(2008, 12, 28)).manager(erin).
         to_registration)
+    application_context['studyService'].scheduleReconsent(@nu480, PscTest.createDate(2008, 12, 27), "Reconsent Activity1")
   end
 
   describe "GET" do
@@ -82,7 +83,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "has the right number of activities" do
-        response.xml_elements('//scheduled-activity').should have(6).activities
+        response.xml_elements('//scheduled-activity').should have(7).activities
       end
     end
 
@@ -100,7 +101,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "contains the right number of activities" do
-        response.json["days"].inject(0) { |sum, (_, day)| sum + day["activities"].size }.should == 6
+        response.json["days"].inject(0) { |sum, (_, day)| sum + day["activities"].size }.should == 7
       end
 
       describe "the structure" do
@@ -137,6 +138,29 @@ describe "/subjects/{subject-identifier}/schedules" do
             @subject['properties'].should == [
               { 'name' => 'Soup preference', 'value' => 'Chicken Alphabet' }
             ]
+          end
+        end
+        
+        describe "[assignments]" do
+          before do
+            response.json["assignments"].should have(2).assignment
+            @assignment = response.json["assignments"][0]
+          end
+
+          it "has the id" do
+            @assignment['id'].should == @studySubjectAssignment1.grid_id
+          end
+          
+          it "has the name" do
+            @assignment['name'].should == "NU480"
+          end
+          
+          it "has the privileges" do
+            @assignment['privileges'].should == ['visible', 'update-schedule', 'calendar-manager']
+          end
+          
+          it "has the notifications" do
+            @assignment['notifications'].should have(1).notification
           end
         end
 
@@ -322,7 +346,7 @@ describe "/subjects/{subject-identifier}/schedules" do
       end
 
       it "has the right number of events" do
-        response.calendar.events.size.should == 6
+        response.calendar.events.size.should == 7
       end
 
       it "has right calendar properties" do

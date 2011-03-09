@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.restlets.StudySubjectAssignmentPrivilege;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
@@ -9,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
+import org.restlet.data.Reference;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -29,24 +31,27 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
     private SortedMap<Date,List<ScheduledActivity>> activities;
     private MultipleAssignmentScheduleView schedule;
     private Subject subject;
+    private Reference rootRef;
 
     public MultipleAssignmentScheduleJsonRepresentation(
         List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory,
-        TemplateService templateService
+        TemplateService templateService, Reference rootReference
     ) {
         relatedAssignments = assignments;
         this.templateService = templateService;
         schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
+        this.rootRef = rootReference;
     }
 
     public MultipleAssignmentScheduleJsonRepresentation(
         List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory,
-        TemplateService templateService, Subject subject
+        TemplateService templateService, Subject subject, Reference rootReference
     ) {
         relatedAssignments = assignments;
         this.templateService = templateService;
         schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
         this.subject = subject;
+        this.rootRef = rootReference;
     }
 
     // TODO: the code that uses this constructor should instead generate a mock SSA which contains
@@ -67,6 +72,16 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
             if (subject != null) {
                 generator.writeFieldName("subject");
                 createJSONSubject(generator, subject);
+            }
+            if (schedule != null) {
+                generator.writeFieldName("assignments");
+                generator.writeStartArray();
+                for (UserStudySubjectAssignmentRelationship relationship: relatedAssignments) {
+                    if (relationship.isVisible()) {
+                        createJSONStudySubjectAssignment(generator, relationship);
+                    }
+                }
+                generator.writeEndArray();
             }
             generator.writeFieldName("days");
             generator.writeStartObject();
@@ -100,6 +115,44 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
                     }
                 }
             generator.writeEndArray();
+        generator.writeEndObject();
+    }
+
+    void createJSONStudySubjectAssignment(JsonGenerator generator, UserStudySubjectAssignmentRelationship relationship) throws IOException {
+        StudySubjectAssignment assignment = relationship.getAssignment();
+
+        generator.writeStartObject();
+        JacksonTools.nullSafeWriteStringField(generator, "id", assignment.getGridId());
+        JacksonTools.nullSafeWriteStringField(generator, "name", assignment.getName());
+
+        generator.writeFieldName("privileges");
+        generator.writeStartArray();
+        List<StudySubjectAssignmentPrivilege> privileges = StudySubjectAssignmentPrivilege.valuesFor(relationship);
+        for (StudySubjectAssignmentPrivilege privilege : privileges) {
+            generator.writeString(privilege.attributeName());
+        }
+        generator.writeEndArray();
+
+        generator.writeFieldName("notifications");
+        generator.writeStartArray();
+        for (Notification notification : assignment.getPendingNotifications()) {
+            createJSONNotification(generator, notification);
+        }
+        generator.writeEndArray();
+
+        generator.writeEndObject();
+    }
+
+    void createJSONNotification(JsonGenerator generator, Notification notification) throws IOException {
+        generator.writeStartObject();
+        JacksonTools.nullSafeWriteStringField(generator, "message", notification.getMessage());
+        JacksonTools.nullSafeWriteStringField(generator, "title", notification.getTitle());
+        Subject subject = notification.getAssignment().getSubject();
+        Reference notificationHref = getRootRef().clone().
+            addSegment("subjects").addSegment(subject.getPersonId() == null ? subject.getGridId() : subject.getPersonId())
+            .addSegment("assignments").addSegment(notification.getAssignment().getGridId())
+            .addSegment("notifications").addSegment(notification.getGridId());
+        generator.writeStringField("href", notificationHref.toString());
         generator.writeEndObject();
     }
 
@@ -319,5 +372,9 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    public Reference getRootRef() {
+        return rootRef;
     }
 }

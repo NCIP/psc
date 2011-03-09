@@ -90,7 +90,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visible);
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new MultipleAssignmentScheduleJsonRepresentation(related, nowFactory, templateService, subject);
+            return new MultipleAssignmentScheduleJsonRepresentation(related, nowFactory, templateService, subject, getRootRef());
         } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
             return  createICSRepresentation(related);
         }

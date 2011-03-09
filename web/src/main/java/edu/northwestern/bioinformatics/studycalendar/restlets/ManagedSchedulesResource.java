@@ -62,7 +62,7 @@ public class ManagedSchedulesResource extends AbstractPscResource {
                     xmlSerializer.createDocumentString(assignments), MediaType.TEXT_XML);
             } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
                 return new MultipleAssignmentScheduleJsonRepresentation(
-                    relatedAssignments, nowFactory, templateService);
+                    relatedAssignments, nowFactory, templateService, getRootRef());
             } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
                 return createICSRepresentation(relatedAssignments);
             }
