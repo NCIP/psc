@@ -1087,7 +1087,8 @@
                         </response>
                    </method>
                 </resource>
-                <resource path="assignments/{assignment-identifier}/notifications">
+            </resource>
+            <resource path="assignments/{assignment-identifier}/notifications">
                     <doc>
                         <html:p>The list of current notifications for the study subject assignment for subject.</html:p>
                     </doc>
@@ -1157,7 +1158,6 @@
                         </method>
                     </resource>
                 </resource>
-            </resource>
         </resource>
 
         <resource path="activities">
