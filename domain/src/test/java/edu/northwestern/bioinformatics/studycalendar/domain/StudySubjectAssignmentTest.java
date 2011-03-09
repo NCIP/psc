@@ -54,7 +54,7 @@ public class StudySubjectAssignmentTest extends TestCase {
         assignment.getNotifications().get(1).setDismissed(true);
         assertEquals(3, assignment.getNotifications().size());
 
-        Collection<Integer> currentAeIds = DomainObjectTools.collectIds(assignment.getCurrentAeNotifications());
+        Collection<Integer> currentAeIds = DomainObjectTools.collectIds(assignment.getPendingNotifications());
         assertEquals(2, currentAeIds.size());
         assertContains(currentAeIds, 1);
         assertContains(currentAeIds, 3);

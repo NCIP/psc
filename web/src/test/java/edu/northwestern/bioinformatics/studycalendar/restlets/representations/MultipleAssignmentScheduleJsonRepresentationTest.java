@@ -1,24 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.SubjectProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -72,6 +54,9 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private PscUser user;
+    private UserStudySubjectAssignmentRelationship rel;
+    private StudySubjectAssignment ssa;
+    private Notification notification;
 
     @Override
     public void setUp() throws Exception {
@@ -81,7 +66,7 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         templateService = new TestingTemplateService();
         Study study = createSingleEpochStudy("S", "Treatment");
         Site site = createSite("site");
-        subject = createSubject("First", "Last");
+        subject = setGridId("s1", createSubject("First", "Last"));
 
         calendar = new PlannedCalendar();
         epoch = Epoch.create("Treatment", "A", "B", "C");
@@ -99,7 +84,7 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         studySegment.addPeriod(p);
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
-        StudySubjectAssignment ssa = createAssignment(study,site,subject);
+        ssa = createAssignment(study,site,subject);
         ssa.setStudySubjectId("Study Subject Id");
         ssa.setStudySubjectCalendarManager(AuthorizationObjectFactory.createCsmUser(14L, "SammyC"));
         state = ScheduledActivityMode.SCHEDULED.createStateInstance();
@@ -138,9 +123,13 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
 
         user = AuthorizationObjectFactory.createPscUser("jo",
             createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites());
-        UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(user, ssa);
+        user.getCsmUser().setUserId(11l);
+        ssa.setStudySubjectCalendarManager(user.getCsmUser());
+        notification = setGridId("n11", new Notification(sa));
+        ssa.addNotification(notification);
+        rel = new UserStudySubjectAssignmentRelationship(user, ssa);
 
-        representation = new MultipleAssignmentScheduleJsonRepresentation(Arrays.asList(rel), nowFactory, templateService);
+        representation = new MultipleAssignmentScheduleJsonRepresentation(Arrays.asList(rel), nowFactory, templateService, request.getRootRef());
     }
 
     public void testStateInfoInJson() throws Exception {
@@ -381,6 +370,31 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         JSONObject actual = outputAsObject();
         assertTrue("No properties", actual.has("properties"));
         assertEquals("Wrong number of properties", 1, actual.getJSONArray("properties").length());
+    }
+
+    public void testStudySubjectAssignmentInJson() throws Exception {
+        representation.createJSONStudySubjectAssignment(generator, rel);
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing id", ssa.getGridId(), actual.get("id"));
+        assertEquals("Missing name", ssa.getName(), actual.get("name"));
+        assertTrue("No privileges", actual.has("privileges"));
+        JSONArray privileges = actual.getJSONArray("privileges");
+        assertEquals("Wrong number of privilege", 3, actual.getJSONArray("privileges").length());
+        assertEquals("Missing first priv", "visible", privileges.get(0));
+        assertEquals("Missing second priv", "update-schedule", privileges.get(1));
+        assertEquals("Missing third priv", "calendar-manager", privileges.get(2));
+        assertTrue("No notifications", actual.has("notifications"));
+        assertEquals("Wrong number of notifications", 1, actual.getJSONArray("notifications").length());
+    }
+
+    public void testAssignmentNotification() throws Exception {
+        representation.createJSONNotification(generator, notification);
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing message", notification.getMessage(), actual.get("message"));
+        assertEquals("Missing title", notification.getTitle(), actual.get("title"));
+        assertEquals("Missing href",
+           "http://trials.etc.edu/studycalendar/api/v1/subjects/s1/assignments/GRID-ASSIGN/notifications/n11"
+            , actual.get("href"));
     }
 
     private JSONObject outputAsObject() throws IOException {

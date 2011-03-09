@@ -65,12 +65,14 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
     ////// LOGIC
 
     @Transient
-    public List<Notification> getCurrentAeNotifications() {
-        List<Notification> aeNotifications = new LinkedList<Notification>();
+    public List<Notification> getPendingNotifications() {
+        List<Notification> pendingNotifications = new LinkedList<Notification>();
         for (Notification notification : getNotifications()) {
-            if (!notification.isDismissed()) aeNotifications.add(notification);
+            if (!notification.isDismissed()) {
+                pendingNotifications.add(notification);
+            }
         }
-        return aeNotifications;
+        return pendingNotifications;
     }
 
     public void addAeNotification(Notification notification) {
