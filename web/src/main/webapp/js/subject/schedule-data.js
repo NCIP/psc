@@ -42,7 +42,6 @@ psc.namespace("subject");
         source: "load",
         range: new psc.tools.Range(focusDate, focusDate)
       });
-      $('#schedule').trigger('undoable-action-ready');
     }
     
     function trackFocusDate(evt, data) {
