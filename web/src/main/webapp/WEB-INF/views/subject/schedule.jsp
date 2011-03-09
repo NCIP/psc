@@ -92,12 +92,6 @@
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
                 psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
             </script>
-            <c:set var="isNotificationAvailable" value="false"/>
-            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
-                <c:if test="${not empty assignment.currentAeNotifications}">
-                    <c:set var="isNotificationAvailable" value="true"/>
-                </c:if>
-           </c:forEach>
         </c:otherwise>
     </c:choose>
      <style type="text/css">
@@ -186,14 +180,6 @@
     <script type="text/javascript">
         jQuery(document).ready(function() {
             jQuery("#schedule-controls").accordion({ autoHeight: false, collapsible: true, navigation: true, active: false });
-            <c:choose>
-                <c:when test="${isNotificationAvailable == true}">
-                   jQuery("#schedule-controls").accordion('activate', 1)
-                </c:when>
-                <c:otherwise>
-                   jQuery("#schedule-controls").accordion('activate', 0)
-               </c:otherwise>
-            </c:choose>
         });
     </script>
 
@@ -255,6 +241,33 @@
         </li>
     </tags:resigTemplate>
 
+    <tags:resigTemplate id="notifications_entry">
+        [# if (hasNotifications) { #]
+        <div class="assignment row" >
+            <div class="label">[#= name #]</div>
+            <div class="value">
+                <ul>
+                    [#= notificationListItems #]
+                </ul>
+            </div>
+        </div>
+       [# } #]
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="list_notification_entry">
+        <li class="notification [#= notificationClass() #]">
+            [# if (hasMessageWithLink()) { #]
+                <a href="<c:url value="[#= displayMessage() #]"/>">[#= title #]</a>
+            [# } else { #]
+                <label>[#= displayMessage() #]</label>
+            [# } #]
+
+            [# if (canUpdateSchedule()) { #]
+                <a href="#" class="notification-control control" link="[#= href #]"
+                       title="This will permanently clear this notification from the screen">Dismiss</a>
+            [# } #]
+        </li>
+    </tags:resigTemplate>
     <c:if test="${schedulePreview}">
         <tags:resigTemplate id="preview_segment_entry">
             <li id="preview-segment-[#= id #]" class="preview-segment [#= name ? 'known' : 'unknown' #]">
@@ -295,55 +308,21 @@
 <laf:box title="Modify schedule" id="schedule-controls-box">
     <%--TODO - move css to display.jsp, make accordion fit in the box--%>
     <div id="schedule-controls" class="myaccordion">
-        <div class="accordionDiv">
+        <div class="accordionDiv" id="display-header">
             <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
-        <div class="accordion-content">
+        <div class="accordion-content" id="display-content">
             <sched:legend/>
             <div id="display-controls">
                 <a href="#" id="toggle-plan-days" class="control">Show days from study plan</a>
             </div>
         </div>
      <c:if test="${not schedulePreview}">
-        <div class="accordionDiv">
+        <div class="accordionDiv" id="notification-header">
             <h3><a class="accordionHeader" href="#">Notifications </a></h3>
         </div>
-        <div class="accordion-content">
-           <span id="notification-message"></span>
-           <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
-                <c:if test="${not empty assignment.currentAeNotifications}">
-                   <div class="row ${commons:parity(outerCounter.index)}" id="div-${assignment.name}" >
-                        <div class="label">${assignment.name}</div>
-                        <div class="value">
-                            <ul>
-                            <c:forEach items="${assignment.currentAeNotifications}" var="notification" varStatus="innerCounter">
-                                <li id="notifiction-${notification.gridId}" class="notification-list ${assignment.name} remove ${commons:parity(innerCounter.index)}" study="${assignment.name}">
-                                    <c:set var="message" value="${notification.message}"/>
-                                    <c:choose>
-                                        <c:when test="${fn:contains(message,'pages/cal')}">
-                                            <a href="<c:url value="${notification.message}"/>">${notification.title}</a>
-                                        </c:when>
-                                        <c:when test="${fn:contains(message, 'optional amendment')}">
-                                            <label>${notification.message} using amendment section</label>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <label>${notification.title}</label>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <c:if test="${canUpdateSchedule}">
-                                        <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
-                                            notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}" assignment-name="${assignment.name}">Dismiss</a>
-                                    </c:if>
-                                </li>
-                            </c:forEach>
-                            </ul>
-                        </div>
-                    </div>
-                </c:if>
-           </c:forEach>
-           <c:if test="${isNotificationAvailable == false}" >
-               <div class="label">No current notifications available.</div>
-           </c:if>
+        <div class="accordion-content" id="notification-content">
+            <div id="pending-notifications"></div>
         </div>
 
         <div class="accordionDiv">

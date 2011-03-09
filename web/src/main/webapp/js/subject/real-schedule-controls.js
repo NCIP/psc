@@ -55,7 +55,7 @@ psc.subject.RealScheduleControls = (function ($) {
     return false;
   }
 
-  function executeScheduleUpdateWithUserAction(updates, action, url, callback, data) {
+  function executeScheduleUpdateWithUserAction(updates, action, url, callback) {
     $.ajax({
       url: userActionUrl,
       type: 'POST',
@@ -65,7 +65,7 @@ psc.subject.RealScheduleControls = (function ($) {
           if (status === 'success') {
             if (xhr && xhr.getResponseHeader('Location')) {
               var userAction = xhr.getResponseHeader('Location');
-              callback(updates, url, userAction, data);
+              callback(updates, url, userAction);
             }
           }
         }
@@ -180,29 +180,22 @@ psc.subject.RealScheduleControls = (function ($) {
   }
 
   function dismissNotification() {
-    var notificationId = $(this).attr('notification');
-    var assignmentId = $(this).attr('assignment');
-    var subjectId = $(this).attr('subject');
-    var assignmentName = $(this).attr('assignment-name');
     var params = {
       dismissed: true
     };
-    var url = psc.tools.Uris.relative('/api/v1/subjects/'+psc.tools.Uris.escapePathElement(subjectId)+
-                          '/assignments/'+psc.tools.Uris.escapePathElement(assignmentId)+'/notifications/'
-                          +psc.tools.Uris.escapePathElement(notificationId))
-    var list = $(this).parents('li:first')
+    var url = $(this).attr('link');
     var subject = psc.subject.ScheduleData.subjectName();
-    var desc = "notification dismiss for " + subject + " for " +assignmentName;
+    var desc = "notification dismiss for " + subject;
     var action = null;
     action = {
       description: desc,
       context: (psc.subject.ScheduleData.contextAPI())(),
       action_type: "dismiss"
     };
-    executeScheduleUpdateWithUserAction(params, action, url, makeDismissNotificationRequest, list);
+    executeScheduleUpdateWithUserAction(params, action, url, makeDismissNotificationRequest);
   }
 
-  function makeDismissNotificationRequest(params, url, userAction, list) {
+  function makeDismissNotificationRequest(params, url, userAction) {
     $.ajax({
       url: url,
       type: 'PUT',
@@ -212,24 +205,10 @@ psc.subject.RealScheduleControls = (function ($) {
         xhr.setRequestHeader("X-PSC-User-Action", userAction);
       },
       complete: function() {
-        updateNotificationList(list);
         psc.subject.ScheduleData.refresh();
       }
     });
   }
-
-  function updateNotificationList(li) {
-       li.slideUp()
-       li.removeClass("remove");
-       if ($('li.'+li.attr('study')+'.remove:not(.removed)').length == 0) {
-         var div = $('#div-'+li.attr('study'))
-         div.slideUp()
-       }
-       if ($('li.remove:not(.removed)').length == 0) {
-         $('#notification-message').
-             text('No current notifications available.');
-       }
-   }
 
   function makeReportRequest() {
       var subjectId = $(this).attr('subject');
@@ -336,12 +315,13 @@ psc.subject.RealScheduleControls = (function ($) {
         }
         return false;
       });
-      $('a.notification-control').click(dismissNotification)
       var undoControl = jQuery('<a class="undo" id="undo-control" ' +
          'style="font-style:italic; font-weight:600; padding:4px 8px 0px; float:right;"/>');
       $('#schedule-controls-box h2').before(undoControl);
       $('#schedule').bind('schedule-ready',
               psc.subject.RealScheduleControls.getUndoableActions);
+      $('#schedule').bind('schedule-ready',
+              psc.subject.RealScheduleControls.registerNotificationControl);
     },
 
     batchResource: function (uri) {
@@ -467,6 +447,10 @@ psc.subject.RealScheduleControls = (function ($) {
           .css('color', 'black').text("Nothing to undo").unbind('click');
         }
       });
+    },
+
+    registerNotificationControl: function() {
+      $('a.notification-control').click(dismissNotification)
     }
   }
 }(jQuery));

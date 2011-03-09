@@ -134,6 +134,45 @@ psc.subject.Schedule = function (scheduleApiResponse) {
     });
   }
 
+  function enhanceAssignment(ssa) {
+    jQuery.extend(ssa, {
+      canUpdateSchedule: function () {
+        return(ssa.privileges != undefined  && _.include(ssa.privileges, 'update-schedule'));
+      },
+
+      hasNotifications: function () {
+        return (ssa['notifications'] != undefined  && ssa['notifications'].length > 0);
+      }
+    });
+  }
+
+  function enhanceNotification(n, index, canUpdateSchedule) {
+    jQuery.extend(n, {
+      notificationClass: function () {
+        return index%2==0 ? "even" : "odd";
+      },
+
+      canUpdateSchedule: function() {
+        return canUpdateSchedule;
+      },
+
+      hasMessageWithLink: function() {
+        return (n['message'] != undefined && n['message'].indexOf('pages/cal') >=0);
+      },
+
+      displayMessage: function() {
+        if (n['message'] != undefined) {
+          if (n['message'].indexOf('optional amendment') >=0) {
+            return n['message'] + " using amendment section";
+          } else if(n['message'].indexOf('pages/cal') >=0) {
+            return psc.tools.Uris.relative(n['message']);
+          }
+        }
+        return n['message'];
+      }
+    });
+  }
+
   ////// init
 
   (function () {
@@ -163,6 +202,17 @@ psc.subject.Schedule = function (scheduleApiResponse) {
     if (scheduleApiResponse['study_segments']) {
       jQuery.each(scheduleApiResponse['study_segments'], function (idx, ss) {
         enhanceScheduledStudySegment(ss);
+      });
+    }
+
+    if (scheduleApiResponse['assignments']) {
+       jQuery.each(scheduleApiResponse['assignments'], function (index, ssa) {
+       enhanceAssignment(ssa);
+       if (ssa['notifications']) {
+          jQuery.each(ssa['notifications'], function(index,notification) {
+          enhanceNotification(notification, index, ssa.canUpdateSchedule())
+        });
+      }
       });
     }
   }());

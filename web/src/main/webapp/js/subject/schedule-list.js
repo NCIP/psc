@@ -47,12 +47,51 @@ psc.namespace("subject");
             $(container.find("div.day:last-child")[0]).data("date", day);
           }
         });
+
+        if (buildNotificationControls(schedule)) {
+          if ($(".accordion-content:visible").length == 0) {
+            jQuery("#schedule-controls").accordion('activate', "#notification-header");
+          }
+        } else {
+          if ($(".accordion-content:visible").length == 0) {
+            jQuery("#schedule-controls").accordion('activate', "#display-header");
+          }
+        }
         psc.subject.ScheduleList.FocusHandler.init();
       }
 
       psc.subject.ScheduleList.buildDayPixelRanges();
       $('#schedule-error').hide();
       $('.loading').fadeOut().hide();
+    }
+
+    function buildNotificationControls(schedule) {
+      var container = $('#pending-notifications').empty();
+      if (schedule['assignments'] != null) {
+        var hasAnyNotification = false;
+        jQuery.each(schedule['assignments'], function (i, assignment) {
+          var name = assignment.name;
+          var hasNotifications = assignment.hasNotifications();
+          var items = $.map(assignment['notifications'], function(notification){
+             return resigTemplate('list_notification_entry', notification);
+          }).join('\n');
+          hasAnyNotification = hasNotifications;
+          container.append(
+            resigTemplate('notifications_entry', {
+              name: name,
+              hasNotifications:hasNotifications,
+              notificationListItems: items
+            })
+          );
+        });
+
+        if (!hasAnyNotification) {
+           container.text("No current notifications available.")
+        }
+        return hasAnyNotification;
+      } else {
+        return false;
+      }
     }
 
     function scheduleError(evt, message) {
