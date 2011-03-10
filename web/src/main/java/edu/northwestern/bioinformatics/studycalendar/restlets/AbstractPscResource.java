@@ -122,8 +122,8 @@ public class AbstractPscResource extends ServerResource implements AuthorizedRes
                 getRequest().getMethod());
             return true;
         } else if (authList.size() == 0) {
-            log.warn("Resource has no authorizations for {}",
-                getRequest().getMethod());
+            log.warn("Resource {} has no authorizations for {}",
+                getClass().getSimpleName(), getRequest().getMethod());
             return false;
         } else {
             log.debug("Authorizations for this resource are {}", authList);
