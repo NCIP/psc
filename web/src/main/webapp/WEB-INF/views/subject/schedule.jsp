@@ -341,6 +341,7 @@
                             </c:if>
                         </c:if>
                     </div>
+                    <br style="clear:both"/>
                 </div>
             </c:forEach>
         </div>
