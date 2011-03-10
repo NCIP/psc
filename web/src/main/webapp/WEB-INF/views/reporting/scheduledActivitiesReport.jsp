@@ -81,31 +81,31 @@
                 onSuccess: function(response) {
                     var resp = response.responseJSON;
                     var reportColumns = [
-                        { key: "activity_name", label: "Activity", sortable: true},
-                        { key: "activity_status", label: "Activity Status", sortable: true },
-                        { key: "scheduled_date", label:"Scheduled Date", sortable:true},
-                        { key: "details", label: "Details", sortable: true, width: 200},
-                        { key: "condition", label: "Condition", sortable: true, width: 200},
-                        { key: "labels", label: "Labels", sortable: false,
+                        { key: "activity_name", label: "Activity"},
+                        { key: "activity_status", label: "Activity Status"},
+                        { key: "scheduled_date", label:"Scheduled Date"},
+                        { key: "details", label: "Details"},
+                        { key: "condition", label: "Condition"},
+                        { key: "labels", label: "Labels",
                             formatter: function (elCell, oRecord, oColumn, oData) {
                                 elCell.innerHTML = oData ? oData.join(" ") : "";
                             }
                         },
-                        { key: "ideal_date", label: "Ideal Date", sortable: true},
-                        { key: "subject_name", label: "Subject", sortable: true,
+                        { key: "ideal_date", label: "Ideal Date"},
+                        { key: "subject_name", label: "Subject",
                             formatter: function (elCell, oRecord, oColumn, oData) {
                                 elCell.innerHTML = oRecord.getData('subject').name;
                             }
                         },
-                        { key: "person_id", label: "Person ID", sortable: true,
+                        { key: "person_id", label: "Person ID",
                             formatter: function (elCell, oRecord, oColumn, oData) {
                                 elCell.innerHTML = oRecord.getData('subject').person_id;
                             }
                         },
-                        { key: "study_subject_id", label: "Study Subject Id", sortable: true},
-                        { key: "responsible_user", label: "Responsible User", sortable: true},
-                        { key: "study", label: "Study", sortable: true},
-                        { key: "site", label: "Site", sortable: true}
+                        { key: "study_subject_id", label: "Study Subject Id"},
+                        { key: "responsible_user", label: "Responsible User"},
+                        { key: "study", label: "Study"},
+                        { key: "site", label: "Site"}
                     ];
                     var reportDS = new YAHOO.util.DataSource(resp);
                     reportDS.responseType = YAHOO.util.DataSource.TYPE_JSON;
@@ -128,7 +128,8 @@
                         ]
                     };
 
-                    new YAHOO.widget.DataTable("results", reportColumns, reportDS, {scrollable:true});
+                    var reportDT = new YAHOO.widget.DataTable("results", reportColumns, reportDS, {scrollable:false});
+                    reportDT.setAttributes({width:"100%"},true);
                 },
                 onFailure: function(response) {
                     var fullText = response.responseText;
