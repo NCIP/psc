@@ -391,9 +391,9 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         assertEquals("Wrong number of notifications", 1, actual.getJSONArray("notifications").length());
         assertTrue("No populations", actual.has("populations"));
         assertEquals("Wrong number of populations", 2, actual.getJSONArray("populations").length());
-        JSONObject actualPopulation = (JSONObject) actual.getJSONArray("populations").get(1);
-        assertEquals("Missing name", p1.getName(), actualPopulation.get("name"));
-        assertEquals("Missing title", p1.getAbbreviation(), actualPopulation.get("abbreviation"));
+        JSONObject actualPopulation = (JSONObject) actual.getJSONArray("populations").get(0);
+        assertTrue("Missing name", actualPopulation.has("name"));
+        assertTrue("Missing abbreviation", actualPopulation.has("abbreviation"));
 
     }
 
