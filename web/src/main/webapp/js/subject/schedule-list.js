@@ -47,7 +47,7 @@ psc.namespace("subject");
             $(container.find("div.day:last-child")[0]).data("date", day);
           }
         });
-
+        buildPopulationControls(schedule);
         if (buildNotificationControls(schedule)) {
           if ($(".accordion-content:visible").length == 0) {
             jQuery("#schedule-controls").accordion('activate', "#notification-header");
@@ -63,6 +63,32 @@ psc.namespace("subject");
       psc.subject.ScheduleList.buildDayPixelRanges();
       $('#schedule-error').hide();
       $('.loading').fadeOut().hide();
+    }
+
+    function buildPopulationControls(schedule){
+      var container = $('#assignment-populations').empty();
+      if (schedule['assignments'] != null) {
+        jQuery.each(schedule['assignments'], function (i, assignment) {
+          var name = assignment.name;
+          var id = assignment.id;
+          var canUpdateSchedule = assignment.canUpdateSchedule();
+          var counterClass = assignment.counterClass();
+          var hasPopulations = assignment.hasPopulations();
+          var items = $.map(assignment['populations'], function(population){
+             return resigTemplate('population_entry', population);
+          }).join('\n');
+          container.append(
+            resigTemplate('populations_entry', {
+              name: name,
+              id: id,
+              counterClass: counterClass,
+              canUpdateSchedule: canUpdateSchedule,
+              hasPopulations: hasPopulations,
+              populationsListItems: items
+            })
+          );
+        });
+      }
     }
 
     function buildNotificationControls(schedule) {

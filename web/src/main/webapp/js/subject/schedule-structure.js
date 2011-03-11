@@ -134,14 +134,22 @@ psc.subject.Schedule = function (scheduleApiResponse) {
     });
   }
 
-  function enhanceAssignment(ssa) {
+  function enhanceAssignment(ssa, index) {
     jQuery.extend(ssa, {
+      counterClass: function () {
+        return index%2==0 ? "even" : "odd";
+      },
+
       canUpdateSchedule: function () {
         return(ssa.privileges != undefined  && _.include(ssa.privileges, 'update-schedule'));
       },
 
       hasNotifications: function () {
         return (ssa['notifications'] != undefined  && ssa['notifications'].length > 0);
+      },
+
+      hasPopulations: function () {
+          return ssa['populations'] != undefined && ssa['populations'].length > 0;
       }
     });
   }
@@ -207,7 +215,7 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
     if (scheduleApiResponse['assignments']) {
        jQuery.each(scheduleApiResponse['assignments'], function (index, ssa) {
-       enhanceAssignment(ssa);
+       enhanceAssignment(ssa, index);
        if (ssa['notifications']) {
           jQuery.each(ssa['notifications'], function(index,notification) {
           enhanceNotification(notification, index, ssa.canUpdateSchedule())

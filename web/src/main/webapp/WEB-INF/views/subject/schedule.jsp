@@ -243,7 +243,7 @@
 
     <tags:resigTemplate id="notifications_entry">
         [# if (hasNotifications) { #]
-        <div class="assignment row" >
+        <div class="assignment notification row" >
             <div class="label">[#= name #]</div>
             <div class="value">
                 <ul>
@@ -268,6 +268,35 @@
             [# } #]
         </li>
     </tags:resigTemplate>
+
+    <tags:resigTemplate id="populations_entry">
+        <div class="assignment population row [#= counterClass #]" >
+            <div class="label">[#= name #]</div>
+            <div class="value">
+                [# if (hasPopulations) { #]
+                    <ul>
+                        [#= populationsListItems #]
+                    </ul>
+                [# }  else { #]
+                    <div class="none">None</div>
+                [# } #]
+                [# if (canUpdateSchedule) { #]
+                    <div class="populationChange">
+                        <a class="control"
+                           href="<c:url value="/pages/cal/schedule/populations"/>?assignment=[#= id #]">Change</a>
+                    </div>
+                    <br style="clear:both"/>
+                [# } #]
+            </div>
+        </div>
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="population_entry">
+        <li class="population">
+            <label>[#= name #]</label>
+        </li>
+    </tags:resigTemplate>
+
     <c:if test="${schedulePreview}">
         <tags:resigTemplate id="preview_segment_entry">
             <li id="preview-segment-[#= id #]" class="preview-segment [#= name ? 'known' : 'unknown' #]">
@@ -459,7 +488,7 @@
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
         <div class="accordion-content">
-            <markTag:population/>
+            <div id="assignment-populations"></div>
         </div>
 
         <!-- Export accordion -->

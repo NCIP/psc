@@ -14,8 +14,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -45,22 +51,12 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
     }
     
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        String[] studySubjectAssignmentArray = queryParameters.get("assignment");
-        try {
-            String studySubjectAssignmentString = studySubjectAssignmentArray[0];
-            Integer studySubjectAssignmentId = Integer.parseInt(studySubjectAssignmentString);
-            StudySubjectAssignment studySubjectAssignment = assignmentDao.getById(studySubjectAssignmentId);
-            StudySite studySite = studySubjectAssignment.getStudySite();
-            Site site = studySite.getSite();
-            return ResourceAuthorization.createCollection(site, STUDY_SUBJECT_CALENDAR_MANAGER);
-        } catch (Exception e) {
-            return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
-        }
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        StudySubjectAssignment assignment = assignmentDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "assignment"));
+        StudySubjectAssignment assignment = interpretUsingIdOrGridId(request, "assignment", assignmentDao);
         return new ChangePopulationsCommand(assignment, subjectService);
     }
 
@@ -162,6 +158,20 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private <T extends GridIdentifiable & DomainObject> T interpretUsingIdOrGridId(
+        HttpServletRequest request, String paramName, GridIdentifiableDao<T> dao
+    ) throws ServletRequestBindingException {
+        DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
+        String param = ServletRequestUtils.getStringParameter(request, paramName);
+        try{
+            editor.setAsText(param);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
+        return (T) editor.getValue();
     }
 
 }
