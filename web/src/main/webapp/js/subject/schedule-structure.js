@@ -149,7 +149,20 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       },
 
       hasPopulations: function () {
-          return ssa['populations'] != undefined && ssa['populations'].length > 0;
+        return ssa['populations'] != undefined && ssa['populations'].length > 0;
+      },
+
+      hasUnappliedAmendment : function() {
+        var hasUnappliedAmendment = false;
+          if (ssa['amendments'] != undefined) {
+            jQuery.each(ssa['amendments'], function(index, amendment) {
+              if (!amendment['applied']) {
+                hasUnappliedAmendment = true;
+                return false;
+              }
+            });
+          }
+        return hasUnappliedAmendment;
       }
     });
   }

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -21,16 +22,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
+import static java.util.Calendar.AUGUST;
 
 /**
  * @author Jalpa Patel
@@ -58,6 +55,7 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
     private StudySubjectAssignment ssa;
     private Notification notification;
     private Population p1;
+    private Amendment a0,a1;
 
     @Override
     public void setUp() throws Exception {
@@ -85,7 +83,28 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         studySegment.addPeriod(p);
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
+
+        Amendment a2 = createAmendments("A0", "A1", "A2");
+        a1 = a2.getPreviousAmendment();
+        a0 = a1.getPreviousAmendment();
+        a0.setDate(DateTools.createDate(2003, Calendar.MAY, 4));
+        a0.setName("a0");
+
+        a1.setDate(DateTools.createDate(2003, Calendar.MAY, 6));
+        a1.setName("a1");
+
+        a2.setDate(DateTools.createDate(2003, Calendar.MAY, 8));
+        a2.setName("a2");
+
+
+        study.setAmendment(a2);
+        StudySite ss = createStudySite(study, site);
+        ss.approveAmendment(a0, DateTools.createDate(2003, AUGUST, 1));
+        ss.approveAmendment(a1, DateTools.createDate(2003, AUGUST, 2));
+        ss.approveAmendment(a2, DateTools.createDate(2003, AUGUST, 3));
+
         ssa = createAssignment(study,site,subject);
+        ssa.setCurrentAmendment(a0);
         ssa.setStudySubjectId("Study Subject Id");
         ssa.setStudySubjectCalendarManager(AuthorizationObjectFactory.createCsmUser(14L, "SammyC"));
         state = ScheduledActivityMode.SCHEDULED.createStateInstance();
@@ -394,7 +413,20 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         JSONObject actualPopulation = (JSONObject) actual.getJSONArray("populations").get(0);
         assertTrue("Missing name", actualPopulation.has("name"));
         assertTrue("Missing abbreviation", actualPopulation.has("abbreviation"));
-
+        assertTrue("No current amendment", actual.has("current_amendment"));
+        assertEquals("Wrong current amendment name", a0.getDisplayName(),
+                actual.getJSONObject("current_amendment").get("display_name"));
+        assertEquals("Wrong current amendment natural key", a0.getNaturalKey(),
+                actual.getJSONObject("current_amendment").get("natural_key"));
+        assertTrue("No amendments", actual.has("amendments"));
+        assertEquals("Wrong number of amendments", 3, actual.getJSONArray("amendments").length());
+        JSONObject amendment0 = (JSONObject) actual.getJSONArray("amendments").get(0);
+        assertEquals("Wrong display name", a0.getDisplayName(), amendment0.get("display_name"));
+        assertEquals("Wrong natural key", a0.getNaturalKey(), amendment0.get("natural_key"));
+        assertEquals("Wrong applied", true, amendment0.get("applied"));
+        assertEquals("Missing href",
+           "http://trials.etc.edu/studycalendar/api/v1/studies/S/template/amendments/2003-05-04%7Ea0"
+            , amendment0.get("href"));
     }
 
     public void testAssignmentNotification() throws Exception {

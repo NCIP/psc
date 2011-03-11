@@ -297,6 +297,20 @@
         </li>
     </tags:resigTemplate>
 
+    <tags:resigTemplate id="amendments_entry">
+        <div class="assignment amendment row [#= counterClass #]" >
+            <div class="label">[#= name #]</div>
+            <div class="value">
+                [#= currentAmendment #]
+                [# if (canUpdateSchedule && hasUnappliedAmendment) { #]
+                    <a class="control"
+                           href="<c:url value="/pages/cal/schedule/amend"/>?assignment=[#= id #]">Apply</a>
+                [# } #]
+            </div>
+            <br style="clear:both"/>
+        </div>
+    </tags:resigTemplate>
+
     <c:if test="${schedulePreview}">
         <tags:resigTemplate id="preview_segment_entry">
             <li id="preview-segment-[#= id #]" class="preview-segment [#= name ? 'known' : 'unknown' #]">
@@ -358,21 +372,7 @@
             <h3><a class="accordionHeader" href="#">Amendments </a></h3>
         </div>
         <div class="accordion-content">
-            <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
-                <div class="row ${commons:parity(outerCounter.index)}" id="div-${assignment.name}" >
-                    <div class="label">${assignment.name}</div>
-                    <div class="value">
-                        ${assignment.currentAmendment.displayName}
-                        <c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">
-                            <c:if test="${canUpdateSchedule}">
-                                <a class="control"
-                                    href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
-                            </c:if>
-                        </c:if>
-                    </div>
-                    <br style="clear:both"/>
-                </div>
-            </c:forEach>
+            <div id="assignment-amendments"></div>
         </div>
         <c:if test="${canUpdateSchedule}">
               <%--************ Delay Or Advance Portion**********--%>

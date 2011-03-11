@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.StudySubjectAssignmentPrivilege;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
@@ -146,6 +147,29 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
             generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "name", population.getName());
             JacksonTools.nullSafeWriteStringField(generator, "abbreviation", population.getAbbreviation());
+            generator.writeEndObject();
+        }
+        generator.writeEndArray();
+
+        generator.writeFieldName("current_amendment");
+        generator.writeStartObject();
+            JacksonTools.nullSafeWriteStringField(generator, "display_name", assignment.getCurrentAmendment().getDisplayName());
+            JacksonTools.nullSafeWriteStringField(generator, "natural_key", assignment.getCurrentAmendment().getNaturalKey());
+        generator.writeEndObject();
+
+        generator.writeFieldName("amendments");
+        generator.writeStartArray();
+        Study study = assignment.getStudySite().getStudy();
+        for (Amendment amendment: study.getAmendmentsListInReverseOrder()) {
+            generator.writeStartObject();
+            JacksonTools.nullSafeWriteStringField(generator, "display_name", amendment.getDisplayName());
+            JacksonTools.nullSafeWriteStringField(generator, "natural_key", amendment.getNaturalKey());
+            generator.writeBooleanField("applied", !assignment.getAvailableUnappliedAmendments().contains(amendment));
+            Reference amendmentHref = getRootRef().clone().
+                addSegment("studies").addSegment(study.getAssignedIdentifier())
+                .addSegment("template").addSegment("amendments")
+                .addSegment(amendment.getNaturalKey());
+            generator.writeStringField("href", amendmentHref.toString());
             generator.writeEndObject();
         }
         generator.writeEndArray();

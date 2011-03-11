@@ -48,6 +48,7 @@ psc.namespace("subject");
           }
         });
         buildPopulationControls(schedule);
+        buildAmendmentControls(schedule);
         if (buildNotificationControls(schedule)) {
           if ($(".accordion-content:visible").length == 0) {
             jQuery("#schedule-controls").accordion('activate', "#notification-header");
@@ -69,22 +70,36 @@ psc.namespace("subject");
       var container = $('#assignment-populations').empty();
       if (schedule['assignments'] != null) {
         jQuery.each(schedule['assignments'], function (i, assignment) {
-          var name = assignment.name;
-          var id = assignment.id;
-          var canUpdateSchedule = assignment.canUpdateSchedule();
-          var counterClass = assignment.counterClass();
-          var hasPopulations = assignment.hasPopulations();
           var items = $.map(assignment['populations'], function(population){
              return resigTemplate('population_entry', population);
           }).join('\n');
           container.append(
             resigTemplate('populations_entry', {
-              name: name,
-              id: id,
-              counterClass: counterClass,
-              canUpdateSchedule: canUpdateSchedule,
-              hasPopulations: hasPopulations,
+              name: assignment.name,
+              id: assignment.id,
+              counterClass: assignment.counterClass(),
+              canUpdateSchedule: assignment.canUpdateSchedule(),
+              hasPopulations: assignment.hasPopulations(),
               populationsListItems: items
+            })
+          );
+        });
+      }
+    }
+
+    function buildAmendmentControls(schedule){
+      var container = $('#assignment-amendments').empty();
+      if (schedule['assignments'] != null) {
+        jQuery.each(schedule['assignments'], function (i, assignment) {
+          var currentAmendment = assignment['current_amendment']['display_name'];
+          container.append(
+            resigTemplate('amendments_entry', {
+              name: assignment.name,
+              id: assignment.id,
+              currentAmendment: currentAmendment,
+              counterClass: assignment.counterClass(),
+              canUpdateSchedule: assignment.canUpdateSchedule(),
+              hasUnappliedAmendment: assignment.hasUnappliedAmendment()
             })
           );
         });
@@ -96,16 +111,14 @@ psc.namespace("subject");
       if (schedule['assignments'] != null) {
         var hasAnyNotification = false;
         jQuery.each(schedule['assignments'], function (i, assignment) {
-          var name = assignment.name;
-          var hasNotifications = assignment.hasNotifications();
           var items = $.map(assignment['notifications'], function(notification){
-             return resigTemplate('list_notification_entry', notification);
+            return resigTemplate('list_notification_entry', notification);
           }).join('\n');
-          hasAnyNotification = hasNotifications;
+          hasAnyNotification = assignment.hasNotifications();
           container.append(
             resigTemplate('notifications_entry', {
-              name: name,
-              hasNotifications:hasNotifications,
+              name: assignment.name,
+              hasNotifications: assignment.hasNotifications(),
               notificationListItems: items
             })
           );
