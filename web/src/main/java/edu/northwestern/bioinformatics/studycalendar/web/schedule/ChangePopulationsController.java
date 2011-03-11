@@ -51,13 +51,22 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
     }
     
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        String[] studySubjectAssignmentArray = queryParameters.get("assignment");
+        try {
+            StudySubjectAssignment studySubjectAssignment = interpretUsingIdOrGridId(studySubjectAssignmentArray[0], assignmentDao);
+            StudySite studySite = studySubjectAssignment.getStudySite();
+            Site site = studySite.getSite();
+            return ResourceAuthorization.createCollection(site, STUDY_SUBJECT_CALENDAR_MANAGER);
+        } catch (Exception e) {
+            return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        }
     }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        StudySubjectAssignment assignment = interpretUsingIdOrGridId(request, "assignment", assignmentDao);
-        return new ChangePopulationsCommand(assignment, subjectService);
+        return new ChangePopulationsCommand(
+                interpretUsingIdOrGridId(ServletRequestUtils.getRequiredStringParameter(request, "assignment"), assignmentDao)
+                , subjectService);
     }
 
     @Override
@@ -160,12 +169,12 @@ public class ChangePopulationsController extends PscSimpleFormController impleme
         this.applicationSecurityManager = applicationSecurityManager;
     }
 
+    // TODO: defined in class so any controller with requirement of id or gridId can use it.
     @SuppressWarnings({"unchecked"})
     private <T extends GridIdentifiable & DomainObject> T interpretUsingIdOrGridId(
-        HttpServletRequest request, String paramName, GridIdentifiableDao<T> dao
+        String param, GridIdentifiableDao<T> dao
     ) throws ServletRequestBindingException {
         DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
-        String param = ServletRequestUtils.getStringParameter(request, paramName);
         try{
             editor.setAsText(param);
         } catch (IllegalArgumentException iae) {
