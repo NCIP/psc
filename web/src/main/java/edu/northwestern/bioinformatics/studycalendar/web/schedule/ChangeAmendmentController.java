@@ -15,8 +15,14 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,9 +53,7 @@ public class ChangeAmendmentController extends PscSimpleFormController implement
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         String[] studySubjectAssignmentArray = queryParameters.get("assignment");
         try {
-            String studySubjectAssignmentString = studySubjectAssignmentArray[0];
-            Integer studySubjectAssignmentId = Integer.parseInt(studySubjectAssignmentString);
-            StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getById(studySubjectAssignmentId);
+            StudySubjectAssignment studySubjectAssignment = interpretUsingIdOrGridId(studySubjectAssignmentArray[0], studySubjectAssignmentDao);
             StudySite studySite = studySubjectAssignment.getStudySite();
             Site site = studySite.getSite();
             return ResourceAuthorization.createCollection(site, STUDY_SUBJECT_CALENDAR_MANAGER);
@@ -60,8 +64,8 @@ public class ChangeAmendmentController extends PscSimpleFormController implement
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new ChangeAmendmentCommand(
-            studySubjectAssignmentDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "assignment")),
-            deltaService
+           interpretUsingIdOrGridId(ServletRequestUtils.getRequiredStringParameter(request, "assignment"), studySubjectAssignmentDao),
+           deltaService
         );
     }
 
@@ -151,5 +155,19 @@ public class ChangeAmendmentController extends PscSimpleFormController implement
         public Map<String, String> getParameters(DomainContext context) {
             return createParameters("assignment", context.getStudySubjectAssignment().getId().toString());
         }
+    }
+
+    // TODO: defined in class so any controller with requirement of id or gridId can use it.
+    @SuppressWarnings({"unchecked"})
+    private <T extends GridIdentifiable & DomainObject> T interpretUsingIdOrGridId(
+        String param, GridIdentifiableDao<T> dao
+    ) throws ServletRequestBindingException {
+        DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
+        try{
+            editor.setAsText(param);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
+        return (T) editor.getValue();
     }
 }
