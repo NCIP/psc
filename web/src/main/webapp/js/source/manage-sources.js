@@ -10,7 +10,7 @@ psc.source.ManageSources = (function () {
         var url = psc.tools.Uris.relative('/api/v1/activities/'
                 +psc.tools.Uris.escapePathElement(sourceName)+'/manual-target')
         var msg = "This will make " +sourceName +
-                      " as a manual activty target source"
+                      " as a manual activity target source"
                        + "\nAre you sure want to proceed?"
         
         if (window.confirm(msg)) {
