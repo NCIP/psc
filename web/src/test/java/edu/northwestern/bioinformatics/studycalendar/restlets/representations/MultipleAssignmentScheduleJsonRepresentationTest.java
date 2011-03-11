@@ -57,6 +57,7 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
     private UserStudySubjectAssignmentRelationship rel;
     private StudySubjectAssignment ssa;
     private Notification notification;
+    private Population p1;
 
     @Override
     public void setUp() throws Exception {
@@ -127,6 +128,9 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         ssa.setStudySubjectCalendarManager(user.getCsmUser());
         notification = setGridId("n11", new Notification(sa));
         ssa.addNotification(notification);
+        p1 = createPopulation("P", "Population");
+        ssa.addPopulation(p1);
+        ssa.addPopulation(createPopulation("T", "Test"));
         rel = new UserStudySubjectAssignmentRelationship(user, ssa);
 
         representation = new MultipleAssignmentScheduleJsonRepresentation(Arrays.asList(rel), nowFactory, templateService, request.getRootRef());
@@ -385,6 +389,12 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         assertEquals("Missing third priv", "calendar-manager", privileges.get(2));
         assertTrue("No notifications", actual.has("notifications"));
         assertEquals("Wrong number of notifications", 1, actual.getJSONArray("notifications").length());
+        assertTrue("No populations", actual.has("populations"));
+        assertEquals("Wrong number of populations", 2, actual.getJSONArray("populations").length());
+        JSONObject actualPopulation = (JSONObject) actual.getJSONArray("populations").get(1);
+        assertEquals("Missing name", p1.getName(), actualPopulation.get("name"));
+        assertEquals("Missing title", p1.getAbbreviation(), actualPopulation.get("abbreviation"));
+
     }
 
     public void testAssignmentNotification() throws Exception {

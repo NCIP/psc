@@ -140,6 +140,16 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
         }
         generator.writeEndArray();
 
+        generator.writeFieldName("populations");
+        generator.writeStartArray();
+        for (Population population : assignment.getPopulations()) {
+            generator.writeStartObject();
+            JacksonTools.nullSafeWriteStringField(generator, "name", population.getName());
+            JacksonTools.nullSafeWriteStringField(generator, "abbreviation", population.getAbbreviation());
+            generator.writeEndObject();
+        }
+        generator.writeEndArray();
+
         generator.writeEndObject();
     }
 
