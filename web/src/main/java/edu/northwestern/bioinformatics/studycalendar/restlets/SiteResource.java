@@ -17,6 +17,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  */
 public class SiteResource extends AbstractRemovableStorableDomainObjectResource<Site> {
     private SiteService siteService;
+    private String assignedIdentifier;
 
     @Override
     public void doInit() {
@@ -31,45 +32,35 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
 
     @Override
     protected Site loadRequestedObject(Request request) {
-        String assignedIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
-        return siteService.getByAssignedIdentifier(assignedIdentifier);
+        assignedIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
+        if (assignedIdentifier == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No site identifier in the request");
+        }
+        Site site = siteService.getByAssignedIdentifier(assignedIdentifier);
+        return site;
     }
 
     @Override
-    public void remove(final Site site) {
-        try {
-            siteService.removeSite(site);
-        } catch (Exception e) {
-            String message = "Can not delete the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
-            log.error(message, e);
-        }
+    public void remove(final Site site){
+        siteService.removeSite(site);
     }
 
     @Override
     public void store(final Site site) {
-        try {
-            Site existingSite = getRequestedObject();
-            siteService.createOrMergeSites(existingSite, site);
-        } catch (Exception e) {
-            String message = "Can not update the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
-            log.error(message, e);
-        }
+        siteService.createOrMergeSites(getRequestedObject(), site);
     }
 
     @Override
     public void verifyRemovable(final Site site) throws ResourceException {
         super.verifyRemovable(site);
         if (site == null) {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Unknown Site Identifier " +UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown site with identifier "+ assignedIdentifier);
         }
         if (site.hasAssignments()) {
             String message = "Can not delete the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) +
                     " because site has some assignments";
-            log.error(message);
-
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     message);
-
         }
     }
 

@@ -22,7 +22,7 @@ describe "/sites/{site-identifier}" do
       response.status_code.should == 200
     end
 
-    it "does not show an invalid site" do
+    it "gives 404 for unknown site" do
       get "/sites/MN009", :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
@@ -97,6 +97,44 @@ describe "/sites/{site-identifier}" do
       delete '/sites/IL000', :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
+    end
+
+    describe "site with assignment" do
+      before do
+        @site = PscTest::Fixtures.createSite("Test Site", "S001")
+        application_context['siteDao'].save(@site)
+        @ecog170 = create_study 'ECOG170' do |s|
+          s.planned_calendar do |cal|
+            cal.epoch "Followup" do |e|
+              e.study_segment "B" do |a|
+                a.period "P2", :start_day => 2, :duration => [3, :day], :repetitions => 1 do |p|
+                  p.activity "Lab Test", 1
+                  p.activity "Physical Test", 2
+                end
+              end
+            end
+          end
+        end
+
+        @studySite = PscTest::Fixtures.createStudySite(@ecog170, @site)
+        application_context['studySiteDao'].save(@studySite)
+        @approve_date = PscTest.createDate(2008, 12, 20)
+        @studySite.approveAmendment(@ecog170.amendment, @approve_date)
+        application_context['studySiteDao'].save(@studySite)
+        @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+        @studySubjectAssignment = application_context['subjectService'].assignSubject(
+          @studySite,
+          Psc::Service::Presenter::Registration::Builder.new.
+            subject(@subject).first_study_segment(@ecog170.plannedCalendar.epochs.first.studySegments.first).
+            date(PscTest.createDate(2008, 12, 26)).manager(erin).
+            to_registration)
+      end
+
+      it "gets 400" do
+        delete '/sites/S001', :as => :juno
+        response.status_code.should == 400
+        response.status_message.should == "Bad Request"
+      end
     end
   end
 end

@@ -67,6 +67,20 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
             PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
+    public void test400ForNoSiteIdentifier() throws Exception {
+        UriTemplateParameters.SITE_IDENTIFIER.removeFrom(request);
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No site identifier in the request");
+    }
+
+    public void test404ForUnknownSite() throws Exception {
+        expectFoundSite(null);
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+    }
+
     public void testGetXmlForExistingSite() throws Exception {
         expectFoundSite(site);
         expectObjectXmlized(site);
@@ -74,6 +88,18 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
         doGet();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseIsCreatedXml();
+    }
+
+    public void testPutNewXml() throws Exception {
+        expectFoundSite(null);
+        expectObjectXmlized(site);
+        expectReadXmlFromRequestAs(site);
+
+        expectCreateOrMergeSite(null, site, site);
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
 
@@ -98,25 +124,20 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
         assertEquals("Result not success", 200, response.getStatus().getCode());
     }
 
-    public void testDeleteExistingSiteWhichIsused() throws Exception {
-        expectFoundSite(site);
-        Fixtures.createAssignment(new Study(), site, new Subject());
-        
-        doDelete();
+    public void test404WhenDeleteExistingSiteNotFound() throws Exception {
+        expectFoundSite(null);
 
-        assertEquals("Result is success", 400, response.getStatus().getCode());
+        doDelete();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testPutNewXml() throws Exception {
-        expectFoundSite(null);
-        expectObjectXmlized(site);
-        expectReadXmlFromRequestAs(site);
+    public void test400WhenDeleteExistingSiteWhichIsUsed() throws Exception {
+        expectFoundSite(site);
+        Fixtures.createAssignment(new Study(), site, new Subject());
 
-        expectCreateOrMergeSite(null, site, site);
-        doPut();
-
-        assertResponseStatus(Status.SUCCESS_CREATED);
-        assertResponseIsCreatedXml();
+        doDelete();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                "Can not delete the site site_id because site has some assignments");
     }
 
     private void expectCreateOrMergeSite(final Site existingSite, final Site newSite, final Site expectedSite) throws Exception {
