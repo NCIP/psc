@@ -50,7 +50,7 @@ public class SiteService {
         return site;
     }
 
-    public void removeSite(final Site site) throws Exception {
+    public void removeSite(final Site site) {
         if (!site.hasAssignments()) {
             for (StudySite studySite: site.getStudySites()) {
                 studySite.getStudy().getStudySites().remove(studySite);
@@ -62,7 +62,7 @@ public class SiteService {
     /**
      * Creates a new site if existing site is null. Or merge existing site with new site if existing site is not null
      */
-    public Site createOrMergeSites(final Site existingSite, final Site newSite) throws Exception {
+    public Site createOrMergeSites(final Site existingSite, final Site newSite) {
         if (existingSite == null) {
             return createOrUpdateSite(newSite);
         } else if (existingSite.getProvider() == null){
