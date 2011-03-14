@@ -87,7 +87,7 @@ public class DashboardCommand {
                         new UserStudySiteRelationship(loggedInUser, studySite, configuration);
                     UserStudySiteRelationship dashboardRel =
                         new UserStudySiteRelationship(getUser(), studySite, configuration);
-                    if (loggedInRel.getCanAssignSubjects() && dashboardRel.getCanAssignSubjects()) {
+                    if (loggedInRel.getCouldSeeSubjectInformation() && dashboardRel.getCouldSeeSubjectInformation()) {
                         if (!assignableStudies.containsKey(study)) {
                             assignableStudies.put(study, new ArrayList<UserStudySiteRelationship>());
                         }

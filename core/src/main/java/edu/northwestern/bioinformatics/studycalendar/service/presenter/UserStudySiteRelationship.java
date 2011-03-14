@@ -88,6 +88,14 @@ public class UserStudySiteRelationship {
     }
 
     /**
+     * Returns true if the user is allowed to see subject information for the
+     * study site
+     */
+    public boolean getCouldSeeSubjectInformation() {
+        return hasAtLeastOneMatchingRole(PscRoleUse.SUBJECT_MANAGEMENT.roles());
+    }
+
+    /**
      * Returns true if the user is allowed to take subject off from the study for the
      * study site and there are any subjects associated with it.
      */
