@@ -9,7 +9,7 @@ psc.subject.RealScheduleControls = (function ($) {
     var count = _.size(params);
     var action = psc.subject.RealScheduleControls.createDelayUserAction(count);
     executeScheduleUpdateWithUserAction
-            (params, action, batchResource, executePartialScheduleUpdate, data);
+            (params, action, batchResource, executePartialScheduleUpdate);
   }
 
   function performCheckedModifications(evt, data) {
@@ -18,7 +18,7 @@ psc.subject.RealScheduleControls = (function ($) {
     if (params != null && !isParamsEmpty) {
       var action = psc.subject.RealScheduleControls.createMarkUserAction();
       executeScheduleUpdateWithUserAction
-              (params, action, batchResource, executePartialScheduleUpdate, data);
+              (params, action, batchResource, executePartialScheduleUpdate);
     }
     var numberOfActivitiesChecked = $('input.event:checked').length;
 
@@ -185,7 +185,7 @@ psc.subject.RealScheduleControls = (function ($) {
     };
     var url = $(this).attr('link');
     var subject = psc.subject.ScheduleData.subjectName();
-    var desc = "notification dismiss for " + subject;
+    var desc = "Notification is dismissed for " + subject;
     var action = null;
     action = {
       description: desc,
@@ -248,13 +248,6 @@ psc.subject.RealScheduleControls = (function ($) {
       return startDate;
   }
 
-  function getDelayOrAdvance(val) {
-      if (val == 1) {
-        return "delay";
-      } else {
-        return "advance";
-      }
-  }
   function getReportEndDate() {
       var endDate = $('#actual-date-stop').val() ?
             psc.tools.Dates.displayDateToApiDate($('#actual-date-stop').val()) :
@@ -392,8 +385,9 @@ psc.subject.RealScheduleControls = (function ($) {
       var delayAmount = $('#delay-amount').val();
       var delayOrAdvance = $('#delay-or-advance').val();
       var subject = psc.subject.ScheduleData.subjectName();
-      var actionType = getDelayOrAdvance(delayOrAdvance);
-      var desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " activities for " + subject + " by " + delayAmount + " days.";
+      var actionType = delayOrAdvance == 1 ? "delay" : "Advance";
+      var desc = (delayOrAdvance == 1 ? "Delayed" : "Advanced") + " " + count + " "
+              + (count > 1 ? "activities" : "activity") + " for " + subject + " by " + delayAmount + " days.";
       params = {
         description: desc,
         context: (psc.subject.ScheduleData.contextAPI())(),
@@ -411,17 +405,13 @@ psc.subject.RealScheduleControls = (function ($) {
       var subject = psc.subject.ScheduleData.subjectName();
       var desc;
       if (newState == 'move-date-only') {
-          newState = getDelayOrAdvance(delayOrAdvance);
-          desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " activities for " + subject +
-                  " by " + delayAmount + " days."
-      } else if (newState == 'scheduled') {
-          desc = getDelayOrAdvance(delayOrAdvance) + " " + count + " " + newState + " activities for "
-                  + subject + " by " + delayAmount + " days."
+          newState = delayOrAdvance == 1 ? "delay" : "Advance";
+          desc = (delayOrAdvance == 1 ? "Delayed " : "Advanced ") + count
+              + (count > 1 ? " activities" : " activity") + " for " + subject + " by " + delayAmount + " days."
       } else {
           newState = newState.replace(/-/g, " ");
-          desc = count + " activities mark as " + newState.replace(/-/g, " ") + " for " + subject;
+          desc = count + (count > 1 ? " activities are " : " activity is ") + "marked as " + newState.replace(/-/g, " ") + " for " + subject;
       }
-
       params = {
         description: desc,
         context: (psc.subject.ScheduleData.contextAPI())(),
