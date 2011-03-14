@@ -274,6 +274,16 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
                 getCanSeeSubjectInformation());
     }
 
+    ////// couldSeeSubjectInformation
+
+    public void testCouldSeeSubjectsInformationWhenThereAreNone() throws Exception {
+        nuF.getStudySubjectAssignments().clear();
+        assertTrue(
+            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
+                getCouldSeeSubjectInformation());
+    }
+
+
     ////// canAdministerUsers
 
     public void testCanAdministerUsersIfAllScopesUserAdministrator() throws Exception {
