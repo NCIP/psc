@@ -107,6 +107,7 @@
             $(function () {
                 $('#user-search').submit(search);
                 dataTable = createTable();
+                $('#q').val(" ");
             })
         }(jQuery));
     </script>
