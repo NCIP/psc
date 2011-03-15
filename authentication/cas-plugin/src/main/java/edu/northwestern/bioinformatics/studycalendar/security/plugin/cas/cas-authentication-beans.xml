@@ -40,7 +40,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </bean>
 
     <bean id="casLogoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-        <constructor-arg value="${cas.server.url.logout}"/>
+        <constructor-arg value="${cas.server.url.logout}?service=${cas.local.url}"/>
         <constructor-arg>
             <list>
                 <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
