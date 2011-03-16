@@ -199,7 +199,7 @@
                         <select id="state" class="filter-value direct">
                             <option></option>
                             <c:forEach items="${modes}" var="mode">
-                                <option>${mode.name}</option>
+                                <option value="${mode.name}">${mode.name}</option>
                             </c:forEach>
                         </select>
                     </label>
@@ -209,7 +209,7 @@
                         <select id="activity-type" class="filter-value direct">
                             <option></option>
                             <c:forEach items="${types}" var="type">
-                                <option>${type.name}</option>
+                                <option value="${type.name}">${type.name}</option>
                             </c:forEach>
                         </select>
                     </label>
