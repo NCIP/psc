@@ -162,6 +162,7 @@
         }
 
         jQuery(function () {
+            resetFilters();
             setInitialFilterValues();
             jQuery('#search-form').submit(function (evt) {
                 evt.preventDefault();
