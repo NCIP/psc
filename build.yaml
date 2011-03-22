@@ -1,5 +1,5 @@
 gems:
-- buildr ~>1.4.4
+- buildr =1.4.4      # See issue #1422
 - facets ~>2.4.0
 - haml ~>3.0.0
 - shenandoah =0.0.0
