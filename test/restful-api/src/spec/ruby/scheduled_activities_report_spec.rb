@@ -155,6 +155,10 @@ describe "/reports/scheduled-activities.json" do
       response.json["rows"][1]["details"].should == "DetailsOneTwoAnd Three"
     end
 
+    it "has the right values for reason" do
+      response.json["rows"][1]["reason"].should == "Initialized from template"
+    end
+
     it "has the right values for condition" do
       response.json["rows"][1]["condition"].should == "If CBC>100"
     end
