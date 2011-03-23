@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
+import edu.northwestern.bioinformatics.studycalendar.service.GeneratedUriTemplateVariable;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
@@ -54,18 +55,21 @@ public class AdvancedEditActivityController extends PscSimpleFormController impl
         super.initBinder(request, binder);
         getControllerTools().registerDomainObjectEditor(binder, "activity.type", activityTypeDao);
     }
-     @Override
+
+    @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         refdata.put("existingList",((AdvancedEditActivityCommand) command).getExistingUri());
         refdata.put("action", "Advanced Edit");
         refdata.put("activityTypes", activityTypeDao.getAll());
+        refdata.put("variables", GeneratedUriTemplateVariable.values());
         if(activity.getType()!=null)
             refdata.put("activityDefaultType" ,activity.getType().getName());
         refdata.put("activity",activity);
         refdata.put("source", activity.getSource());
         return refdata;
-     }
+    }
+
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AdvancedEditActivityCommand command = (AdvancedEditActivityCommand) oCommand;

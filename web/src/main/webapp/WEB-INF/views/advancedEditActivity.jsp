@@ -35,7 +35,16 @@
             padding:2px;
             font-weight:bold;
             text-decoration:none;
-}
+        }
+        #uri-tips {
+            float: right;
+            width: 47%;
+        }
+
+        #activity-input {
+            float: left;
+            width: 50%;
+        }
     </style>
     <script type="text/javascript">
         function updateActivityError() {
@@ -65,7 +74,15 @@
     </script>
   </head>
 <body>
-<laf:box title="${action} Activity">
+<laf:box title="Available URI Template Variables" autopad="true" id="uri-tips">
+    <c:forEach items="${variables}" var="variable">
+        <div class="row">
+            <div class="label">${variable.attributeName}</div>
+            <div class="value">${variable.description}</div>
+        </div>
+    </c:forEach>
+</laf:box>
+<laf:box title="${action} Activity" id="activity-input">
     <laf:division>
            <form:form id="activity-form">
             <div style="height:10px;padding-bottom:20px; width:40em; color:red;">
@@ -146,7 +163,7 @@
                 <label for="edit-property-textValue">Text</label>
             </div>
             <div class="value">
-                <input type="text" class="text" id="edit-property-textValue" hint="None" size="30"/>
+                <input type="text" class="text" id="edit-property-textValue" hint="External URI" size="40"/>
             </div>
         </div>
         <div class="row">
@@ -154,7 +171,7 @@
                 <label for="edit-property-templateValue">Template</label>
             </div>
             <div class="value">
-                <input type="text" class="text" id="edit-property-templateValue" hint="None" size="30" />
+                <input type="text" class="text" id="edit-property-templateValue" hint="https://external?subject={subject-identifier}." size="40" />
             </div>
         </div>
         <div class="row">
