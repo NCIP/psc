@@ -34,6 +34,7 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         Site site = createSite("Mayo");
         Study study = createNamedInstance("Whatever Study", Study.class);
         ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
+        saState.setReason("Scheduled Reason");
 
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);
@@ -217,6 +218,10 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
         allRows.add(row3);
         assertFalse("Condition included", writeAndGetRow(2).has("condition"));
+    }
+
+    public void testReasonIncludedInData() throws Exception {
+        assertEquals("Wrong condition", "Scheduled Reason", writeAndGetRow(1).optString("reason"));
     }
 
     private ScheduledActivityReportJsonRepresentation actual() {

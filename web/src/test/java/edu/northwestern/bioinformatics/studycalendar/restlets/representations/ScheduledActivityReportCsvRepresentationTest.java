@@ -24,7 +24,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
  * @author Nataliya Shurupova
  */
 public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
-    private static final String EXPECTED_CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Details,Condition,Labels,Ideal Date,Subject Name,Patient Id,Study Subject Id,Responsible User,Study,Site";
+    private static final String EXPECTED_CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Details,Reason,Condition,Labels,Ideal Date,Subject Name,Patient Id,Study Subject Id,Responsible User,Study,Site";
 
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportRow row2;
@@ -36,7 +36,7 @@ public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
         Site site = Fixtures.createSite("Site for whatever study");
         Study study = createNamedInstance("Whatever Study", Study.class);
         ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
-
+        saState.setReason("Scheduled Reason");
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);
         ScheduledActivity activity1 = Fixtures.createScheduledActivity("activity1 ", 2009, 11, 12, saState);
@@ -69,8 +69,8 @@ public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
         String csvDocument = actual();
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong header", EXPECTED_CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityOne = "activity1,Scheduled,2009-12-12,,,label1,2009-12-10,subject one,,,wilma,Whatever Study,Site for whatever study";
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,label2,2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
+        String csvRepForActivityOne = "activity1,Scheduled,2009-12-12,,Scheduled Reason,,label1,2009-12-10,subject one,,,wilma,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,Scheduled Reason,,label2,2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
         assertEquals("Wrong content for row1", csvRepForActivityOne, rows[1]);
         assertEquals("Wrong content for row2", csvRepForActivityTwo, rows[2]);
         assertEquals("There are too many rows in the document", 3, rows.length);
@@ -82,7 +82,7 @@ public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
         String csvDocument = actual();
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong header", EXPECTED_CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,\"labelA, labelB, labelC\",2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,Scheduled Reason,,\"labelA, labelB, labelC\",2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
         assertEquals("Wrong implementation of row2", csvRepForActivityTwo, rows[2]);
         assertEquals("There are too many rows in the document", 3, rows.length);
     }
@@ -93,7 +93,7 @@ public class ScheduledActivityReportCsvRepresentationTest extends TestCase {
         String csvDocument = actual();
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong header", EXPECTED_CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,\"\"\"labelA\"\", \"\"labelB\"\", \"\"labelC\"\"\",2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,Scheduled Reason,,\"\"\"labelA\"\", \"\"labelB\"\", \"\"labelC\"\"\",2009-11-13,subject two,,,,Whatever Study,Site for whatever study";
         assertEquals("Wrong implementation of row2", csvRepForActivityTwo, rows[2]);
         assertEquals("There are too many rows in the document", 3, rows.length);
     }

@@ -85,6 +85,7 @@
                         { key: "activity_status", label: "Activity Status"},
                         { key: "scheduled_date", label:"Scheduled Date"},
                         { key: "details", label: "Details"},
+                        { key: "reason", label: "Reason"},
                         { key: "condition", label: "Condition"},
                         { key: "labels", label: "Labels",
                             formatter: function (elCell, oRecord, oColumn, oData) {
@@ -117,6 +118,7 @@
                             { key: "activity_status"},
                             { key: "scheduled_date"},
                             { key: "details"},
+                            { key: "reason"},
                             { key: "condition"},
                             { key: "labels" },
                             { key: "ideal_date"},
