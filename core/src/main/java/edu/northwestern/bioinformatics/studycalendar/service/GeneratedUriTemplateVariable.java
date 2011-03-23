@@ -1,9 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.tools.UriTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 public enum GeneratedUriTemplateVariable {
     STUDY_IDENTIFIER("study.assignedIdentifier"),
@@ -18,6 +19,7 @@ public enum GeneratedUriTemplateVariable {
     ;
 
     private String[] resolutionPaths;
+    private static Properties uriProperties;
 
     GeneratedUriTemplateVariable(String... resolutionPaths) {
         this.resolutionPaths = resolutionPaths;
@@ -33,6 +35,30 @@ public enum GeneratedUriTemplateVariable {
             if (result != null) return result;
         }
         return null;
+    }
+
+    public String getAttributeName() {
+        return attributeName();
+    }
+
+    public String getDescription() {
+        return getUriProperties().getProperty(attributeName() + ".description");
+    }
+
+    /**
+     * Loads and returns the uri-template.properties resource.  This resource contains
+     * descriptions about each variable.
+    */
+    private synchronized static Properties getUriProperties() {
+        if (uriProperties == null) {
+            uriProperties = new Properties();
+            try {
+                uriProperties.load(GeneratedUriTemplateVariable.class.getResourceAsStream("uri-template.properties"));
+            } catch (IOException e) {
+                throw new StudyCalendarError("Cannot load uri template variable descriptions from properties", e);
+            }
+        }
+        return uriProperties;
     }
 
     /**

@@ -8,9 +8,28 @@
 <head>
     <tags:stylesheetLink name="admin"/>
     <title>Global configuration</title>
+    <style type="text/css">
+        #uri-tips {
+            float: right;
+            width: 30%;
+        }
+
+        #configure-input {
+            float: left;
+            width: 67%;
+        }
+    </style>
 </head>
 <body>
-<laf:box title="Configure application">
+<laf:box title="Available URI Template Variables" autopad="true" id="uri-tips">
+    <c:forEach items="${variables}" var="variable">
+        <div class="row">
+            <div class="label">${variable.attributeName}</div>
+            <div class="value">${variable.description}</div>
+        </div>
+    </c:forEach>
+</laf:box>
+<laf:box title="Configure application" id="configure-input">
     <form:form>
         <form:errors path="*"/>
         <c:forEach items="${command.conf}" var="entry" varStatus="status">

@@ -133,4 +133,10 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
 
         assertEquals("NU312", GeneratedUriTemplateVariable.SITE_IDENTIFIER.resolve(context));
     }
+
+    public void testAllUriVariablesHaveDescriptions() throws Exception {
+        for (GeneratedUriTemplateVariable variable : GeneratedUriTemplateVariable.values()) {
+            assertNotNull("Variable missing description: " + variable, variable.getDescription());
+        }
+    }
 }
