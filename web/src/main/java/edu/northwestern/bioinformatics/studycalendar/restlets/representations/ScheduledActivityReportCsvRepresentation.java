@@ -21,7 +21,7 @@ public class ScheduledActivityReportCsvRepresentation extends OutputRepresentati
     private List<ScheduledActivitiesReportRow> allRows;
     private char delimiter;
     private static final String[] HEADERS = new String[] {
-        "Activity Name", "Activity Status", "Scheduled Date", "Details", "Reason", "Condition", "Labels",
+        "Activity Name", "Activity Status", "Scheduled Date", "Last Change Reason", "Details", "Condition", "Labels",
         "Ideal Date", "Subject Name", "Patient Id", "Study Subject Id", "Responsible User",
         "Study", "Site"
     };
@@ -55,8 +55,8 @@ public class ScheduledActivityReportCsvRepresentation extends OutputRepresentati
            row.getScheduledActivity().getActivity().getName(),
            row.getScheduledActivity().getCurrentState().getMode().getDisplayName(),
            getApiDateFormat().format(row.getScheduledActivity().getActualDate()),
-           row.getScheduledActivity().getDetails(),
            row.getScheduledActivity().getCurrentState().getReason(),
+           row.getScheduledActivity().getDetails(),
            row.getScheduledActivity().getPlannedActivity().getCondition(),
            StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ' '),
            getApiDateFormat().format(row.getScheduledActivity().getIdealDate()),

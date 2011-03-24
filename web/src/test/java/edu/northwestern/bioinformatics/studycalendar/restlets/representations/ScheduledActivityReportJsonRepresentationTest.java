@@ -221,7 +221,7 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
     }
 
     public void testReasonIncludedInData() throws Exception {
-        assertEquals("Wrong condition", "Scheduled Reason", writeAndGetRow(1).optString("reason"));
+        assertEquals("Wrong reason", "Scheduled Reason", writeAndGetRow(1).optString("last_change_reason"));
     }
 
     private ScheduledActivityReportJsonRepresentation actual() {
