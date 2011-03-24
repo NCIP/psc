@@ -156,7 +156,7 @@ describe "/reports/scheduled-activities.json" do
     end
 
     it "has the right values for reason" do
-      response.json["rows"][1]["reason"].should == "Initialized from template"
+      response.json["rows"][1]["last_change_reason"].should == "Initialized from template"
     end
 
     it "has the right values for condition" do
