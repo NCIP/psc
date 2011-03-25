@@ -1,14 +1,14 @@
 <%@taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-
-<%@taglib prefix="commons1" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 
 <html>
 <title>Activities</title>
@@ -16,6 +16,15 @@
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:stylesheetLink name="report"/>
+    <tags:javascriptLink name="jquery/jquery.query" />
+    <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+    <tags:javascriptLink name="psc-tools/misc"/>
+
+    <tags:stylesheetLink name="yui-sam/2.7.0/paginator"/>
+    <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min button-min paginator-min', ' ')}" var="script">
+        <tags:javascriptLink name="yui/2.7.0/${script}"/>
+    </c:forEach>
+    <tags:javascriptLink name="underscore-min"/>
 
     <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
     <style type="text/css">
@@ -136,26 +145,327 @@
             $('addSource').value =""
         }
 
-        function loadActivities(){
-            var indicator = $('myIndicator')
-            indicator.reveal()
-            var input = $('sources').options[$('sources').selectedIndex].value
-            var data = ''
-            if (input != "selectAll") {
-             data = data+"sourceId"+"="+input;
-            }
-            data = data+"&index=0";
-            var href = '<c:url value="/pages/activities/getActivityBySource"/>'
-            href= href+"?"+data
-            var lastRequest = new Ajax.Request(href,
-            {
-                method: 'post',
-                onSuccess: enableExportOptions(),
-                onFailure: function(response) {
-                    displayErrorOnFailure(response, indicator)
+        (function($){
+            var ACTIVITIES_PER_PAGE = 100;
+
+            var dataSource = new YAHOO.util.XHRDataSource(
+                psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE));
+            dataSource.responseSchema = {
+                resultsList: "activities",
+                fields: ['activity_name', 'activity_type', 'activity_code', 'activity_description', 'controls', 'activity_id', 'deletable' ],
+                metaFields: {
+                    totalRecords: "total",
+                    activityTypes: "activity_types"
                 }
-            });
-        }
+            };
+
+            var dataTableAuxConfig = {
+                generateRequest: function (oState, oSelf) {
+                    var params = "&offset=" + oState.pagination.recordOffset + "&source=" + jQuery('#sources').val();
+
+                    return params;
+                },
+                paginator: new YAHOO.widget.Paginator({
+                    rowsPerPage: ACTIVITIES_PER_PAGE,
+                    template: "{PreviousPageLink} {PageLinks} {NextPageLink}"
+                }),
+                dynamicData: true,
+                initialLoad: false
+
+            };
+
+
+            //todo - activityTypes would be smart to withdraw in a separate request, since it's the same for all the activities/and pagination
+            var activityTypes;
+            var clicked = false;
+            function createTable() {
+                var dt = new YAHOO.widget.DataTable("results", [
+                    { key: "activity_name",     label: "Name", sortable: true,
+                        formatter: nameFormatter},
+                    { key: "activity_type", label: "Type",     sortable: true,
+                        formatter: typeFormatter},
+                    { key: "activity_code", label: "Code", sortable: false,
+                        formatter: codeFormatter},
+                    { key: "activity_description", label: "Description",  sortable: false,
+                        formatter: descriptionFormatter},
+                    { key: "controls", label: "Controls",  sortable: false,
+                        formatter: controlsFormatter
+                    }
+                ], dataSource, dataTableAuxConfig);
+                dt.handleDataReturnPayload = function (oRequest, oResponse, oPayload) {
+                    oPayload.totalRecords = oResponse.meta.totalRecords;
+                    activityTypes = oResponse.meta.activityTypes;
+                    return oPayload;
+                };
+                dt.subscribe('buttonClickEvent', editSaveDeleteButtonClicked);
+
+                var btnCreateNewActivity = new YAHOO.widget.Button("createNewActivityButton");
+                btnCreateNewActivity.subscribe("click", function() {
+                    createNewActivity()
+                },this,true);
+
+                var btnCreateNewActivity = new YAHOO.widget.Button("saveNewActivityButton");
+                btnCreateNewActivity.subscribe("click", function() {
+                    saveActivity(null, "new")
+                },this,true);
+
+                return dt;
+            }
+
+            function saveActivity(activityId, action) {
+                //activityId is null for the new activity
+                if (activityId == null) {
+                    activityId ="";
+                }
+                var activityName = $('#inputName'+activityId).val()
+                var activityTypeId = jQuery('#sourceTypes'+activityId).val();
+                var activityTypeName = jQuery('#sourceTypes'+activityId + ' :selected').text();
+                var activityCode = $('#inputCode'+activityId).val()
+                var activityDescription = $('#inputDescription' + activityId).val()
+                var activitySource= $('#sources').val()
+
+                var params = "&source="+activitySource+"&action="+action+"&activity-id="+activityId +"&activity-name="+activityName+
+                        "&activity-type="+activityTypeId+"&activity-code="+activityCode+
+                        "&activity-description="+ activityDescription
+                sendRequest(params)
+            }
+
+            function deleteActivity(activityId, action) {
+                var activityName = $('#inputName'+activityId).val()
+                var activityTypeId = jQuery('#sourceTypes'+activityId).val();
+                var activityTypeName = jQuery('#sourceTypes'+activityId + ' :selected').text();
+                var activityCode = $('#inputCode'+activityId).val()
+                var activityDescription = $('#inputDescription' + activityId).val()
+                var activitySource= $('#sources').val()
+
+
+                var confirmMessage = "Are you sure you want to delete activity: [name= " + activityName +", type= " + activityTypeName + ",code= " +
+                                    activityCode+ "] ? This will permanently remove it.  " +
+                                    "\n\nThis action cannot be undone."
+
+                if (!window.confirm(confirmMessage)) {
+                    return false;
+                }
+                var params = "&source="+activitySource+"&action="+action+"&activity-id="+activityId;
+                sendRequest(params)
+            }
+
+            function sendRequest (params) {
+                clearErrorMessage()
+                dataSource.sendRequest(params, {
+                    success:
+                        dataTable.onDataReturnInitializeTable,
+                    failure: function(request, response, payload){
+                        displayErrorOnResponse(response)
+                    },
+                    scope: dataTable,
+                    argument: dataTable.getState()
+                });
+            }
+
+            function displayErrorOnResponse(response) {
+                var fullText = response.responseText;
+                var statusCode = response.status
+                var statusText = response.statusText
+                var userFriendlyText = fullText.replace(statusCode,  "");
+                userFriendlyText = userFriendlyText.replace(statusText, "");
+                var typeLabel = jQuery('<label id="error"/>').text(userFriendlyText.trim());
+                $('#errors').append(typeLabel)
+            }
+
+            //if response had errors, the error label is cleared when next response comes in.
+            function clearErrorMessage(){
+                if ($('#error').size() >0) {
+                    $('#error').remove()
+                }
+            }
+
+            function editSaveDeleteButtonClicked(e, button) {
+                var buttonId = e.target.id;
+                var editAction = "edit";
+                var saveAction = "save";
+                var deleteAction = "delete";
+                var advancedEditAction = "advancedEdit";
+                var activityId;
+                if (buttonId.toLowerCase().startsWith(editAction)){
+                    //edit action just displays editable fields for the row
+                    activityId = getActivityIdFromTheButton(buttonId, editAction);
+                    editActivity(activityId)
+                } else if (buttonId.toLowerCase().startsWith(saveAction)) {
+                    activityId = getActivityIdFromTheButton(buttonId, saveAction);
+                    //when save button from the controls is pressed, the action that is performed is edit
+                    saveActivity(activityId, editAction);
+                } else if (buttonId.toLowerCase().startsWith(deleteAction)) {
+                    activityId = getActivityIdFromTheButton(buttonId, deleteAction);
+                    deleteActivity(activityId, deleteAction);
+                } else if (buttonId.toLowerCase().startsWith(advancedEditAction.toLowerCase())) {
+                    activityId = getActivityIdFromTheButton(buttonId, advancedEditAction);
+                    advancedEdit(activityId, advancedEditAction);
+                }
+            }
+
+            function advancedEdit(activityId, action){
+                var href = '<c:url value="/pages/advancedEditActivity"/>'
+                var data = "?activityId=" + activityId;
+                location.href = href+data;
+            }
+
+            function getActivityIdFromTheButton (buttonId, action) {
+                return buttonId.substr(action.length, buttonId.length)
+            }
+
+            function createNewActivity() {
+                if (!clicked) {
+                    var typeInput = jQuery('<select id="sourceTypes" name="sourceTypes">')
+                    for (var i =0; i < activityTypes.length; i++) {
+                        var activityTypeId = activityTypes[i].activity_type_id
+                        var activityTypeName = activityTypes[i].activity_type_name
+                        var row = jQuery('<option id="type" class="type" value="'+ activityTypeId +'"/>').text(activityTypeName);
+                        typeInput.append(row);
+                    }
+
+                    $('#divType').append(typeInput)
+                    $('#newActivityInfo').show();
+                    clicked = true;
+                }
+            }
+
+            function editActivity(activityId) {
+                var inputName = '#inputName'+activityId;
+                var labelName = '#name'+activityId;
+                $(inputName).show();
+                $(labelName).hide();
+
+
+                var inputCode = '#inputCode'+activityId;
+                var labelCode = '#code'+activityId;
+                $(inputCode).show();
+                $(labelCode).hide();
+
+                var inputDescription = '#inputDescription'+activityId;
+                var labelDescription = '#description'+activityId;
+                $(inputDescription).show();
+                $(labelDescription).hide();
+
+                var divType ='#divType'+activityId;
+                var labelType = '#type'+activityId;
+                $(labelType).hide();
+                $(divType).show();
+                var selectType = '#sourceTypes'+activityId;
+
+                var editButton = '#edit'+activityId;
+                $(editButton).hide();
+
+                var saveButton = '#save'+activityId;
+                $(saveButton).show();
+            }
+
+            function typeFormatter (elCell, oRecord, oColumn, oData) {
+                var activityType = oRecord.getData('activity_type');
+                var activityId = oRecord.getData('activity_id');
+
+                var container = jQuery('<div class="activityType"/>');
+                var typeLabel = jQuery('<label id="type' + activityId + '"/>').text(activityType);
+
+                var typeDiv = jQuery('<div id="divType'+activityId+'" style="display:none"/>');
+                    var select = jQuery('<select id="sourceTypes'+activityId+'">')
+
+                    for (var i =0; i < activityTypes.length; i++) {
+                        var activityTypeId = activityTypes[i].activity_type_id
+                        var activityTypeName = activityTypes[i].activity_type_name
+
+                        var row;
+                        if (activityType == activityTypeName) {
+                            row = jQuery('<option value="'+ activityTypeId +'" selected="selected"/>').text(activityTypeName);
+                        } else {
+                            row = jQuery('<option value="'+ activityTypeId +'"/>').text(activityTypeName);
+                        }
+                        select.append(row);
+                    }
+                typeDiv.append(select);
+                container.append(typeLabel);
+                container.append(typeDiv);
+                jQuery(elCell).append(container);
+            }
+
+            function nameFormatter (elCell, oRecord, oColumn, oData) {
+                cellEditor(elCell, oRecord, "Name");
+            }
+
+            function descriptionFormatter(elCell, oRecord, oColumn, oData) {
+                cellEditor(elCell, oRecord, "Description")
+            }
+
+            function codeFormatter(elCell, oRecord, oColumn, oData) {
+                cellEditor (elCell, oRecord, "Code");
+            }
+
+
+            //common method to add input/label pair for column/row cell.
+            function cellEditor (elCell, oRecord, columnName) {
+                //columnName = Description, Code, Name
+                var record = "activity_"+columnName.toLocaleLowerCase();
+                var className = "activity"+columnName;
+                var activityEltForColumn= oRecord.getData(record);
+                var activityId = oRecord.getData('activity_id');
+                var container = jQuery('<div class="'+className +'"/>');
+                var label = jQuery('<label id="' + columnName.toLowerCase() + activityId + '"/>').text(activityEltForColumn);
+                var input = jQuery('<input id="input' + columnName + activityId + '" type="text" value="' + activityEltForColumn + '" style="display:none"/>');
+                container.append(label);
+                container.append(input);
+                jQuery(elCell).append(container);
+            }
+
+            function controlsFormatter (elCell, oRecord, oColumn, oData) {
+                var container = jQuery('<div class="controls"/>');
+                var activityId = oRecord.getData('activity_id');
+
+                var editButton = jQuery('<input id="edit' + activityId + '" type="button" name="EditButton" value="Edit"/>')
+                var saveButton = jQuery('<input id="save' + activityId + '" type="button" name="SaveButton" value="Save" style="display:none"/>')
+                var advanceEditButton = jQuery('<input id="advancedEdit' + activityId + '" type="button" name="AdvancedEditButton" value="Advanced edit"/>')
+
+                var isDeletable = oRecord.getData('deletable');
+
+                container.append(editButton)
+                container.append(saveButton)
+                container.append(advanceEditButton)
+
+                if (isDeletable == "true") {
+                    var deleteButton = jQuery('<input id="delete' + activityId + '" type="button" name="DeleteButton" value="Delete"/>')
+                    container.append(deleteButton);
+                }
+                jQuery(elCell).append(container)
+            }
+
+            var sourceId = "";
+            function search() {
+                sourceId = jQuery('#sources').val();
+                dataTableAuxConfig.paginator.set('recordOffset', 0);
+                clearErrorMessage();
+                dataSource.sendRequest("&source=" + sourceId, {
+                    success:
+                        dataTable.onDataReturnInitializeTable,
+                    failure: function(request, response, payload){
+                        displayErrorOnResponse(response)
+                    },
+                    scope: dataTable,
+                    argument: dataTable.getState()
+                });
+                return false;
+            }
+
+            var dataTable;
+            $(function () {
+                $('#sources').change(search);
+                 dataTable = createTable() ;
+                var myLogReader = new YAHOO.widget.LogReader();
+
+                 dataTable.subscribe("initEvent", function(){
+
+                     $('#addActivity').show()
+                 });
+            })
+        }(jQuery));
 
         function enableExportOptions(){
             var selectedSourceId = $('sources').options[$('sources').selectedIndex].value
@@ -172,179 +482,6 @@
             }
         }
 
-        function editActivity(activityId) {
-            var inputName = 'InputName'+activityId
-            var labelName = 'Name'+activityId
-            $(inputName).show()
-            $(labelName).hide();
-
-
-            var inputCode = 'InputCode'+activityId
-            var labelCode = 'Code'+activityId
-            $(inputCode).show()
-            $(labelCode).hide();
-
-            var inputDescription = 'InputDescription'+activityId
-            var labelDescription = 'Description'+activityId
-            $(inputDescription).show()
-            $(labelDescription).hide();
-
-            var divType ='DivType'+activityId
-            var labelType = 'Type'+activityId
-            $(labelType).hide();
-            $(divType).style.display='block'
-            var selectType = 'SourceTypes'+activityId
-
-            var editButton = 'Edit'+activityId
-            $(editButton).style.display = 'none'
-
-            var saveButton = 'Save'+activityId
-            $(saveButton).style.display = "inline"
-        }
-
-        function saveActivity(activityId) {
-            var indicator = $('myIndicator')
-            indicator.reveal()
-            var inputName = 'InputName'+activityId
-            var labelName = 'Name'+activityId
-            var inputCode = 'InputCode'+activityId
-            var labelCode = 'Code'+activityId
-            var divType ='DivType'+activityId
-            var selectType = 'SourceTypes'+activityId
-            var labelType = 'Type'+activityId
-            var labelDescription = "Description"+activityId
-            var inputDescription = "InputDescription"+activityId
-            var sourceId = $('sources').options[$('sources').selectedIndex].value
-
-            var data = ''
-            data = data+"activityId="+activityId+"&";
-            data = data+"activityName="+$(inputName).value+"&";
-            data = data+"activityCode="+$(inputCode).value+"&";
-            data = data+"activityDescription="+$(inputDescription).value+"&";
-            data = data+"activityType="+$(selectType).options[$(selectType).selectedIndex].value+"&";
-            data = data+"sourceId"+"="+sourceId+"&";
-            var href = '<c:url value="/pages/activities/saveActivity"/>'
-            href= href+"?"+data
-            if($(inputName).value !="" && $(inputCode).value !="") {
-            var saveRequest = new Ajax.Request(href,
-            {
-                method: 'post',
-                onFailure: function(response) {
-                    displayErrorOnFailure(response, indicator)
-                }
-            });
-            }
-            else {
-            $('errors').innerHTML = "Activity name or code can not be empty";
-            }
-            indicator.conceal()
-        }
-
-
-        function deleteActivity(activityId) {
-            var labelName = 'Name'+activityId
-            var labelCode = 'Code'+activityId
-            var labelType = 'Type'+activityId
-
-            var activityName = $(labelName).innerHTML
-            var activityCode = $(labelCode).innerHTML
-            var activityType = $(labelType).innerHTML
-
-            var confirmMessage = "Are you sure you want to delete activity: [name= " + activityName +", type= " + activityType + ",code= " +
-                                activityCode+ "] ? This will permanently remove it.  " +
-                                "\n\nThis action cannot be undone."
-
-            if (window.confirm(confirmMessage)) {
-               deleteTheActivity(activityId)
-                return true;
-            } else {
-              return false;
-            }
-        }
-
-
-        function addNewActivity() {
-            var indicator = $('myIndicator')
-            indicator.reveal()
-            var activityName = $('addActivityName').value
-            var activityType = $('types').options[$('types').selectedIndex].value
-            var activityCode = $('addActivityCode').value
-            var activityDescription = $('addActivityDescription').value
-            var activitySource= $('sources').options[$('sources').selectedIndex].value
-
-            var href = '<c:url value="/pages/activities/addNewActivity"/>'
-
-            var data="";
-            data= data+"activityName="+activityName+"&"
-            data= data+"activityType="+activityType+"&"
-            data= data+"activityCode="+activityCode+"&"
-            data= data+"activityDescription="+activityDescription+"&"
-            data= data+"activitySource="+activitySource+"&"
-            href=href+"?"+data
-            var newActivityReques = new Ajax.Request(href,
-            {
-                method: 'post',
-                onFailure: function(response) {
-                    displayErrorOnFailure(response, indicator)
-                }
-            })
-
-            return true;
-        }
-
-        function deleteTheActivity(activityId) {
-            var indicator = $('myIndicator')
-            indicator.reveal()
-            var inputName = 'InputName'+activityId
-            var inputCode = 'InputCode'+activityId
-            var selectType = 'SourceTypes'+activityId
-
-            var href = '<c:url value="/pages/activities/deleteActivity"/>'
-            var data = "";
-
-            data = data+"activityId"+"="+activityId+"&";
-
-            href= href+"?"+data
-            var deleteRequest = new Ajax.Request(href,
-            {
-                method: 'post',
-                onFailure: function(response) {
-                    displayErrorOnFailure(response, indicator)
-                }
-            });
-
-            return true;
-        }
-
-
-        function displayNext(index) {
-            var indicator = $('myIndicator')
-            indicator.reveal()
-            var input = $('sources').options[$('sources').selectedIndex].value
-            var data = ''
-            data = data+"sourceId"+"="+input+"&";
-
-            data = data+"index="+ index+"&";
-
-            //need to parse location.href to get sorting parameters...
-            var arrayOfHrefParams = location.href.split('&');
-            for (var i = 0; i< arrayOfHrefParams.length; i++){
-                var pair = arrayOfHrefParams[i];
-                if (pair.startsWith('d')){
-                    data = data+ pair+"&"
-                }
-            }
-            var href = '<c:url value="/pages/activities/getActivityBySource"/>'
-            href= href+"?"+data
-            var lastRequest = new Ajax.Request(href,
-            {
-                method: 'post',
-                onFailure: function(response) {
-                    displayErrorOnFailure(response, indicator)
-                }
-            });
-        }
-
         function exportActivitiesToXML(extension) {
             var activitySource= $('sources').options[$('sources').selectedIndex].value
 
@@ -356,16 +493,15 @@
 
         Event.observe(window, "load", initMethods)
 
-
     </script>
 </head>
 <body>
-    <laf:box title="Activities">
+    <laf:box title="Activities" cssClass="yui-skin-sam">
         <laf:division>
-             <div id="activities-input">
+            <div id="activities-input">
                 <img id="myIndicator" src="<c:url value="/images/indicator.white.gif"/>"/>
                 <label for="source">Source:</label>
-                <select id="sources" name="sources" onchange="loadActivities()">
+                <select id="sources" name="sources">
                     <option value="select">Select... </option>
                     <c:forEach items="${sources}" var="source">
                         <c:if test="${sourceId == source.id}">
@@ -387,8 +523,6 @@
                 <a id="exportActivitiesLinkXML" class="underlined">XML</a>
                 <a id="exportActivitiesLinkCSV" class="underlined">CSV</a>
                 <a id="exportActivitiesLinkXLS" class="underlined">Excel</a>
-
-
             </div>
 
             <div id="errors" style="margin-right:10px; margin-left:0.5em;">
@@ -398,15 +532,36 @@
             <div id="bottomsTop">
 
             </div>
-            <div id="myTable">
-                <tags:activitiesTable/>
-                <script><tags:addNewActivityRow/></script>
+
+            <div id="addActivity" style="display:none">
+                <input type="button" id="createNewActivityButton" name="createNewActivityButton" value="Create new activity" />
+            </div>
+            <div id="newActivityInfo" style="display:none;">
+                <div class="row">
+                    <div class="label">Name</div>
+                    <div class="value"><input id="inputName"/></div>
+                </div>
+                <div class="row">
+                    <div class="label">Code</div>
+                    <div class="value"><input id="inputCode"/></div>
+                </div>
+                <div class="row">
+                    <div class="label">Type</div>
+                    <div class="value" id="divType"></div>
+                </div>
+                <div class="row">
+                    <div class="label">Description</div>
+                    <div class="value"><input  id="inputDescription"/></div>
+                </div>
+                <div class="row">
+                    <div class="value">
+                        <input type="button" id="saveNewActivityButton" name="saveNewActivityButton" value="Save" />
+                    </div>
+                </div>
             </div>
 
-            <div id="bottomsBottom">
+            <div id="results" class="results">
             </div>
-
-
     </laf:division>
     </laf:box>
 </body>

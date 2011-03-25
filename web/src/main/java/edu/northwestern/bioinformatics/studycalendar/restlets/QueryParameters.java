@@ -32,7 +32,13 @@ public enum QueryParameters {
     PRIVILEGE,
     BRIEF,
     LIMIT,
-    OFFSET
+    OFFSET,
+    SOURCE,
+    ACTION,
+    ACTIVITY_NAME,
+    ACTIVITY_DESCRIPTION,
+    ACTIVITY_CODE,
+    ACTIVITY_ID
     ;
 
     public String attributeName() {
