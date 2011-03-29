@@ -46,7 +46,7 @@ public class ExportActivitiesController extends AbstractController implements Ps
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not extract study identifier");
             return null;
         }
-        Source source = sourceDao.getById(new Integer(identifier));
+        Source source = sourceDao.getByName(identifier);
         if (source == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;

@@ -457,12 +457,16 @@
             }
 
             var sourceId = "";
-            function search() {
-                sourceId = $('#sources').val();
+            function search(sourceName) {
+                if (sourceName == null) {
+                    sourceName = $('#sources').val();
+                } else {
+                    $('#sources').val(sourceName);
+                }
                 dataTableAuxConfig.paginator.set('recordOffset', 0);
                 clearErrorMessage();
                 enableExportOptions();
-                dataSource.sendRequest("&source=" + sourceId, {
+                dataSource.sendRequest("&source=" + sourceName, {
                     success:
                         dataTable.onDataReturnInitializeTable,
                     failure: function(request, response, payload){
@@ -477,10 +481,14 @@
             var dataTable;
             $(function () {
                 $('#sources').change(search);
-                 dataTable = createTable() ;
-                 dataTable.subscribe("initEvent", function(){
-                     $('#addActivity').show()
-                 });
+
+                //this call happens when 'inport activities from XML or CSV' is pressed and sourceName and sourceId returned as the URL params
+                $(window).load(function() {search("${param.sourceName}")});
+
+                dataTable = createTable() ;
+                dataTable.subscribe("initEvent", function(){
+                    $('#addActivity').show()
+                });
             })
         }(jQuery));
 

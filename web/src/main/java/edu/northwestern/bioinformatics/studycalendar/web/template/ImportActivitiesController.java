@@ -63,6 +63,7 @@ public class ImportActivitiesController extends PscSimpleFormController implemen
                 }
             }
             model.put("sourceId", sourceToDisplay.getId());
+            model.put("sourceName", sourceToDisplay.getName());
             return new ModelAndView(getSuccessView(),model);
 
         }
