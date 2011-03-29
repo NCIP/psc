@@ -71,14 +71,15 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     }
 
 
-    private List<Activity> extractActivities(String sourceId) {
+    private List<Activity> extractActivities(String sourceName) {
         String selectAll = "selectAll";
         String select = "select";
         List<Activity> activities = new ArrayList<Activity>();
-        if (sourceId == null || sourceId.equals(selectAll)) {
+        if (sourceName == null || sourceName.equals(selectAll)) {
             activities = activityDao.getAll();
-        } else if(!sourceId.equals(select)) {
-            activities = activityDao.getBySourceId(new Integer(sourceId));
+        } else if(!sourceName.equals(select)) {
+            Source source = sourceDao.getByName(sourceName);
+            activities = activityDao.getBySourceId(source.getId());
         }
         return activities;
     }
@@ -86,8 +87,13 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     @Override
     public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            String sourceId = QueryParameters.SOURCE.extractFrom(getRequest());
-            Source source = sourceDao.getById(new Integer(sourceId));
+            String sourceName = QueryParameters.SOURCE.extractFrom(getRequest());
+            Source source = null;
+            if (sourceName != null) {
+                source = sourceDao.getByName(sourceName);
+            } else {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format("Provided ource is null"));
+            }
             String action = QueryParameters.ACTION.extractFrom(getRequest());
 
             String name = QueryParameters.ACTIVITY_NAME.extractFrom(getRequest());
@@ -111,7 +117,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
                 }
             }
 
-            List<Activity> activities = new ArrayList<Activity>(extractActivities(sourceId));
+            List<Activity> activities = new ArrayList<Activity>(extractActivities(sourceName));
             Integer limit = extractLimit();
             Integer offset = extractOffset(activities.size(), limit);
             List<Activity> toRender = buildRenderableActivities(activities, limit, offset);

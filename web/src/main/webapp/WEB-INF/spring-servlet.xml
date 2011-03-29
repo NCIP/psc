@@ -147,10 +147,6 @@
         </property>
     </bean>
 
-    <bean name="/activities/addSource" id="addSourceController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddSourceController">
-    </bean>
-
     <bean name="/activities/getActivityBySource" id="sourceControllerGetActivities" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
     </bean>
