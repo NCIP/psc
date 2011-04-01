@@ -147,20 +147,8 @@
         </property>
     </bean>
 
-    <bean name="/activities/addSource" id="addSourceController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddSourceController">
-    </bean>
-
     <bean name="/activities/getActivityBySource" id="sourceControllerGetActivities" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
-    </bean>
-
-    <bean name="/activities/saveActivity" id="sourceControllerSave" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.activity.EditActivityController">
-    </bean>
-
-    <bean name="/activities/deleteActivity" id="sourceControllerDelete" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.activity.DeleteController">
     </bean>
 
     <bean name="/activities/importActivities" id="importActivitiesController" autowire="byName"
@@ -178,9 +166,6 @@
     <bean name="/activities/display/*" id="exportActivitiesXmlController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportActivitiesController"/>
 
-    <bean name="/activities/addNewActivity" id="addNewActivityController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddActivityController">
-    </bean>
 
     <bean name="/activities/addEditActivityType" id="addEditActivityTypeController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
