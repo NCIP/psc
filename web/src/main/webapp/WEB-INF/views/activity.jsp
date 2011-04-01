@@ -263,9 +263,6 @@
                     contentType: 'text/xml',
                     data: element,
                     success : function() { sendRequest ("&source="+activitySource) },
-                    failure: function(response) {
-                        displayErrorOnResponse(response)
-                    },
                     error: function(response) {
                         displayErrorOnResponse(response)
                     }
@@ -317,6 +314,7 @@
                     type: 'DELETE',
                     success : function() { sendRequest ("&source="+activitySource) }
                 });
+                return true;
             }
 
             function sendRequest (params) {
@@ -346,10 +344,10 @@
                 } else if (buttonId.toLowerCase().startsWith(saveAction)) {
                     activityId = getActivityIdFromTheButton(buttonId, saveAction);
                     //when save button from the controls is pressed, the action that is performed is edit
-                    saveActivity(activityId, editAction);
+                    saveActivity(activityId);
                 } else if (buttonId.toLowerCase().startsWith(deleteAction)) {
                     activityId = getActivityIdFromTheButton(buttonId, deleteAction);
-                    deleteActivity(activityId, deleteAction);
+                    deleteActivity(activityId);
                 } else if (buttonId.toLowerCase().startsWith(advancedEditAction.toLowerCase())) {
                     activityId = getActivityIdFromTheButton(buttonId, advancedEditAction);
                     advancedEdit(activityId, advancedEditAction);
@@ -502,7 +500,7 @@
                 dataSource.sendRequest("&source=" + sourceName, {
                     success:
                         dataTable.onDataReturnInitializeTable,
-                    failure: function(request, response, payload){
+                    error: function(request, response, payload){
                         displayErrorOnResponse(response)
                     },
                     scope: dataTable,
