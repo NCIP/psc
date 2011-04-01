@@ -37,7 +37,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     public void doInit() {
         super.doInit();
         setAllAuthorizedFor(Method.GET);
-        
+
         addAuthorizationsFor(Method.GET,
                 STUDY_CALENDAR_TEMPLATE_BUILDER,
                 BUSINESS_ADMINISTRATOR,
@@ -75,7 +75,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         String selectAll = "selectAll";
         String select = "select";
         List<Activity> activities = new ArrayList<Activity>();
-        if (sourceName == null || sourceName.equals(selectAll)) {
+        if (sourceName == null || sourceName.equals(selectAll) || sourceDao.getByName(sourceName) == null) {
             activities = activityDao.getAll();
         } else if(!sourceName.equals(select)) {
             Source source = sourceDao.getByName(sourceName);
@@ -92,31 +92,8 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
             if (sourceName != null) {
                 source = sourceDao.getByName(sourceName);
             } else {
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format("Provided ource is null"));
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format("Provided source is null"));
             }
-            String action = QueryParameters.ACTION.extractFrom(getRequest());
-
-            String name = QueryParameters.ACTIVITY_NAME.extractFrom(getRequest());
-            String code = QueryParameters.ACTIVITY_CODE.extractFrom(getRequest());
-            String type = QueryParameters.ACTIVITY_TYPE.extractFrom(getRequest());
-            String description = QueryParameters.ACTIVITY_DESCRIPTION.extractFrom(getRequest());
-            String activityId = QueryParameters.ACTIVITY_ID.extractFrom(getRequest());
-
-
-            if (action != null) {
-                if (action.toLowerCase().equals("new") || action.toLowerCase().equals("edit")) {
-                    if (action.toLowerCase().equals("new")) {
-                        verifyActivity(name, code, source);
-                    }
-                    Activity activity = createOrEditActivity(activityId, name, code, type, description, source);
-                    activityDao.save(activity);
-                } else if (action.toLowerCase().equals("delete")){
-                    deleteActivity(activityId);
-                } else {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format("Action %s is not supported by resource", action));
-                }
-            }
-
             List<Activity> activities = new ArrayList<Activity>(extractActivities(sourceName));
             Integer limit = extractLimit();
             Integer offset = extractOffset(activities.size(), limit);
@@ -125,54 +102,6 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
             return new ActivitySourcesJsonRepresentation(toRender, activities.size(), offset, limit, types);
         } else {
             return super.get(variant);
-        }
-    }
-
-    public void deleteActivity(String activityId) throws ResourceException {
-        String message = "Can not delete the activity because activity is used by other planned activities";
-        Activity activity = activityDao.getById(new Integer(activityId));
-        boolean deleted= activityService.deleteActivity(activity);
-        if (!deleted){
-            log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, message);
-        }
-    }
-
-    public Activity createOrEditActivity(String activityId, String name, String code, String type, String description, Source source){
-        Activity activity;
-        if (activityId == null) {
-            activity = new Activity();
-        } else {
-            activity = activityDao.getById(new Integer(activityId));
-        }
-        activity.setName(name);
-        activity.setDescription(description);
-        ActivityType activityType = activityTypeDao.getById(new Integer(type));
-        activity.setType(activityType);
-        activity.setSource(source);
-        activity.setCode(code);
-        return activity;
-    }
-
-    public void verifyActivity(String name, String code, Source source) throws ResourceException {
-        String message = null;
-        if (name != null && name.length()>0) {
-            if (activityDao.getByNameAndSourceName(name, source.getName()) != null) {
-                message = "The activity name " + name + " already exists. Please enter a different activity name.";
-            }
-        } else {
-            message = "The activity name is empty.";
-        }
-        if(code !=null && code.length()>0) {
-            if(activityDao.getByCodeAndSourceName(code, source.getName()) != null) {
-                message = "The activity code " + code + " already exists. Please enter a different activity code.";
-            }
-        } else {
-            message = "The activity code is empty";
-        }
-        if (message != null) {
-            log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, message);
         }
     }
 

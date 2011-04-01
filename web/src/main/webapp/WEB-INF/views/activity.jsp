@@ -171,9 +171,8 @@
 
         (function($){
             var ACTIVITIES_PER_PAGE = 100;
-
-            var dataSource = new YAHOO.util.XHRDataSource(
-                psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE));
+            var URL = psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE)
+            var dataSource = new YAHOO.util.XHRDataSource(URL);
             dataSource.responseSchema = {
                 resultsList: "activities",
                 fields: ['activity_name', 'activity_type', 'activity_code', 'activity_description', 'controls', 'activity_id', 'deletable' ],
@@ -230,7 +229,7 @@
 
                 var btnSaveNewActivity = new YAHOO.widget.Button("saveNewActivityButton");
                 btnSaveNewActivity.subscribe("click", function() {
-                    saveActivity(null, "new")
+                    createAndSaveNewActivity()
                 },this,true);
 
                 var btnClearActivityInfo = new YAHOO.widget.Button("clearActivityInfoButton");
@@ -241,10 +240,10 @@
                 return dt;
             }
 
-            function saveActivity(activityId, action) {
+            function saveActivity(activityId) {
                 //activityId is null for the new activity
                 if (activityId == null) {
-                    activityId ="";
+                    activityId = ""
                 }
                 var activityName = $('#inputName'+activityId).val()
                 var activityTypeId = $('#sourceTypes'+activityId).val();
@@ -253,10 +252,43 @@
                 var activityDescription = $('#inputDescription' + activityId).val()
                 var activitySource= $('#sources').val()
 
-                var params = "&source="+activitySource+"&action="+action+"&activity-id="+activityId +"&activity-name="+activityName+
-                        "&activity-type="+activityTypeId+"&activity-code="+activityCode+
-                        "&activity-description="+ activityDescription
-                sendRequest(params)
+                var element = '<Activity name=\"' + activityName +'\" code=\"' + activityCode +'\" description=\"'
+                        + activityName +'\" type=\"'+activityTypeName+'\" type-id=\"' + activityTypeId +'\" source=\"'
+                        + activitySource + '\"/>'
+
+                clearErrorMessage();
+                $.ajax({
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    type: 'PUT',
+                    contentType: 'text/xml',
+                    data: element,
+                    success : function() { sendRequest ("&source="+activitySource) },
+                    failure: function(response) {
+                        displayErrorOnResponse(response)
+                    },
+                    error: function(response) {
+                        displayErrorOnResponse(response)
+                    }
+                });
+            }
+
+            function createAndSaveNewActivity() {
+                var activityCode = $('#inputCode').val()
+                var activitySource= $('#sources').val()
+
+                $.ajax({
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    type: 'GET',
+                    success : function(response) {
+                        var typeLabel = jQuery('<label id="error"/>').text("The activity with this code already exists for this source. Please specify the different code");
+                        jQuery('#errors').append(typeLabel)
+                    },
+                    error: function(response) {
+                        if (response.status == 404) {
+                            saveActivity(null)
+                        }
+                    }
+                });
             }
 
             function clearActivity() {
@@ -266,14 +298,11 @@
                 $('#inputDescription').val("")
             }
 
-            function deleteActivity(activityId, action) {
+            function deleteActivity(activityId) {
                 var activityName = $('#inputName'+activityId).val()
-                var activityTypeId = $('#sourceTypes'+activityId).val();
                 var activityTypeName = $('#sourceTypes'+activityId + ' :selected').text();
                 var activityCode = $('#inputCode'+activityId).val()
-                var activityDescription = $('#inputDescription' + activityId).val()
                 var activitySource= $('#sources').val()
-
 
                 var confirmMessage = "Are you sure you want to delete activity: [name= " + activityName +", type= " + activityTypeName + ",code= " +
                                     activityCode+ "] ? This will permanently remove it.  " +
@@ -282,8 +311,12 @@
                 if (!window.confirm(confirmMessage)) {
                     return false;
                 }
-                var params = "&source="+activitySource+"&action="+action+"&activity-id="+activityId;
-                sendRequest(params)
+                clearErrorMessage();
+                $.ajax({
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    type: 'DELETE',
+                    success : function() { sendRequest ("&source="+activitySource) }
+                });
             }
 
             function sendRequest (params) {
@@ -356,10 +389,10 @@
                 $(labelName).hide();
 
 
-                var inputCode = '#inputCode'+activityId;
-                var labelCode = '#code'+activityId;
-                $(inputCode).show();
-                $(labelCode).hide();
+//                var inputCode = '#inputCode'+activityId;
+//                var labelCode = '#code'+activityId;
+//                $(inputCode).show();
+//                $(labelCode).hide();
 
                 var inputDescription = '#inputDescription'+activityId;
                 var labelDescription = '#description'+activityId;
@@ -480,9 +513,9 @@
 
             var dataTable;
             $(function () {
-                $('#sources').change(search);
+                $('#sources').change(function() {search(null)});
 
-                //this call happens when 'inport activities from XML or CSV' is pressed and sourceName and sourceId returned as the URL params
+                //this call happens when 'import activities from XML or CSV' is pressed and sourceName and sourceId returned as the URL params
                 $(window).load(function() {search("${param.sourceName}")});
 
                 dataTable = createTable() ;
