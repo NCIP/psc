@@ -16,3 +16,4 @@ osgi/bnd-tmp
 *.pyc
 *.pickle
 .rvmrc
+felix-cache

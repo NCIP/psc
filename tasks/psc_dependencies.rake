@@ -405,6 +405,10 @@ def restlet_lib(name)
   end
 end
 
+def felix_lib(name, version)
+  "org.apache.felix:org.apache.felix.#{name}:jar:#{version}"
+end
+
 RESTLET = struct({
   :framework        => restlet_lib("org.restlet"),
   :spring_ext       => restlet_lib("org.restlet.ext.spring"),
@@ -420,17 +424,18 @@ CONTAINER_PROVIDED = [
 ]
 
 OSGI = struct(
-  :core => 'org.apache.felix:org.osgi.core:jar:1.2.0',
-  :compendium => 'org.apache.felix:org.osgi.compendium:jar:1.2.0'
+  :core => 'org.osgi:org.osgi.core:jar:4.2.0',
+  :compendium => 'org.osgi:org.osgi.compendium:jar:4.2.0'
 )
 
 FELIX = struct(
-  Dir[static_lib('felix-1.8.0/*.jar')].inject({}) do |map, jar|
-    group, name, version = jar.scan(%r{.*/(org.apache.felix)\.([\w\.]+)-([\d\.]+)\.jar$}).first
-    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
-    map
-  end
-)
+  :main         => felix_lib("main",         "3.0.9"), # TODO: I don't think this needed any more
+  :framework    => felix_lib("framework",    "3.0.9"),
+
+  :configadmin  => felix_lib("configadmin",  "1.2.8"),
+  :shell        => felix_lib("shell",        "1.4.2"),
+  :shell_tui    => felix_lib("shell.tui",    "1.4.2"),
+  :shell_remote => felix_lib("shell.remote", "1.1.2")
 )
 
 DYNAMIC_JAVA = struct(
