@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.test.osgi;
 
 import org.osgi.service.metatype.AttributeDefinition;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
@@ -75,11 +76,15 @@ public class PscMockAttributeDefinition implements AttributeDefinition {
     }
 
     public String[] getOptionValues() {
-        return this.options.values().toArray(new String[this.options.size()]);
+        return nullForNoneStringArrayForSome(this.options.values());
     }
 
     public String[] getOptionLabels() {
-        return this.options.keySet().toArray(new String[this.options.size()]);
+        return nullForNoneStringArrayForSome(this.options.keySet());
+    }
+
+    private String[] nullForNoneStringArrayForSome(Collection<String> values) {
+        return values.isEmpty() ? null : values.toArray(new String[values.size()]);
     }
 
     public String[] getDefaultValue() {

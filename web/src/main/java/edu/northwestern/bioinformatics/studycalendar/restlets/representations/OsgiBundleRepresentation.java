@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleState;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.representations.JacksonTools.*;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.osgi.framework.Bundle;
@@ -19,6 +18,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
+
+import static edu.northwestern.bioinformatics.studycalendar.restlets.representations.JacksonTools.nullSafeWriteStringField;
 
 /**
  * Representation for one or many OSGi bundles.
@@ -152,7 +153,7 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
 
         String[] optionLabels = definition.getOptionLabels();
         String[] optionValues = definition.getOptionValues();
-        int optionCount = Math.min(optionLabels.length, optionValues.length);
+        int optionCount = Math.min(nullSafeLength(optionLabels), nullSafeLength(optionValues));
         if (optionCount > 0) {
             g.writeArrayFieldStart("options");
             for (int i = 0 ; i < optionCount ; i++) {
@@ -165,6 +166,10 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
         }
 
         g.writeEndObject();
+    }
+
+    private int nullSafeLength(String[] array) {
+        return array == null ? 0 : array.length;
     }
 
     private String attributeTypeName(int code) {
