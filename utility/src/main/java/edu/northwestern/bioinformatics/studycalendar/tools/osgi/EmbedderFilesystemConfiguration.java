@@ -62,6 +62,13 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
     private Map<String, Object> frameworkProperties;
     private Collection<InstallableBundle> installableBundles;
 
+    public EmbedderFilesystemConfiguration() {
+    }
+
+    public EmbedderFilesystemConfiguration(File root) {
+        this.root = root;
+    }
+
     public Map<String, Object> getFrameworkProperties() {
         if (frameworkProperties == null) {
             loadFrameworkProperties();

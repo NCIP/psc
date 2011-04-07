@@ -434,7 +434,7 @@ FELIX = struct(
 
   :configadmin  => felix_lib("configadmin",  "1.2.8"),
   :shell        => felix_lib("shell",        "1.4.2"),
-  :shell_tui    => felix_lib("shell.tui",    "1.4.2"),
+  :shell_tui    => felix_lib("shell.tui",    "1.4.1"),
   :shell_remote => felix_lib("shell.remote", "1.1.2")
 )
 

@@ -6,14 +6,11 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 
+import static edu.northwestern.bioinformatics.studycalendar.tools.osgi.FrameworkFactoryFinder.getFrameworkFactory;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -55,28 +52,6 @@ public class EmbedderIntegrationTest {
         }
         throw new IllegalStateException(
             "Could not find anything in the classpath matching " + jarnameSubstring);
-    }
-
-    // adapted from http://felix.apache.org/site/apache-felix-framework-launching-and-embedding.html
-    private FrameworkFactory getFrameworkFactory() throws Exception {
-        URL url = getClass().getClassLoader().getResource(
-            "META-INF/services/org.osgi.framework.launch.FrameworkFactory");
-        if (url != null) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            try {
-                for (String s = br.readLine(); s != null; s = br.readLine()) {
-                    s = s.trim();
-                    // Try to load first non-empty, non-commented line.
-                    if ((s.length() > 0) && (s.charAt(0) != '#')) {
-                        return (FrameworkFactory) Class.forName(s).newInstance();
-                    }
-                }
-            } finally {
-                if (br != null) br.close();
-            }
-        }
-
-        throw new IllegalStateException("Could not find framework factory.");
     }
 
     @Test

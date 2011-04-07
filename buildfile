@@ -443,13 +443,10 @@ define "psc" do
 
   desc "Submodules related to building and deploying PSC's embedded plugin layer"
   define "osgi-layer" do
-    task :da_launcher_artifacts do |task|
+    task :embedder_artifacts => :artifacts do |task|
       class << task; attr_accessor :values; end
-      felix_main = artifact(FELIX.main)
-
-      system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact
-      system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional
-      osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
+      system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact.collect { |b| artifact(b) }
+      system_bundles = (FELIX.values - [FELIX.main, FELIX.framework]).collect { |b| artifact(b) } - system_optional
 
       system_bundles += (LOGBACK.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
         [ project('osgi-layer:log-configuration').packages.first ]
@@ -465,40 +462,43 @@ define "psc" do
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - application_bundles - application_infrastructure - [FELIX.shell] - GLOBUS_UNDUPLICABLE.values
+        system_bundles - system_optional - application_bundles - application_infrastructure -
+        [FELIX.shell,  GLOBUS_UNDUPLICABLE.values].flatten.collect { |b| artifact(b) }
 
-      task.values = osgi_framework.merge(
-        "bundles/system-bundles" => system_bundles,
-        "bundles/system-optional" => system_optional,
-        "bundles/application-bundles" => application_bundles,
-        "bundles/application-optional" => application_optional,
-        "bundles/application-infrastructure" => application_infrastructure,
-        "bundles/application-libraries" => application_libraries
-      )
+      task.values = {
+        "001_system/start"           => system_bundles,
+        "001_system/install"         => system_optional,
+        "002_infrastructure/start"   => application_infrastructure,
+        "002_infrastructure/install" => application_libraries,
+        "003_application/start"      => application_bundles,
+        "003_application/install"    => application_optional
+      }
     end
 
-    task :build_test_da_launcher => ["psc:osgi-layer:da_launcher_artifacts"] do |task|
-      mkdir_p _('target', 'test')
-      rm_rf _('target', 'test', 'da-launcher')
-      cp_r project('web')._('src', 'main', 'webapp', 'WEB-INF', 'da-launcher'), _('target', 'test')
-      task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
-        dadir = _("target/test/da-launcher/#{path}")
-        mkdir_p dadir
+    task :build_test_embedder => ["psc:osgi-layer:embedder_artifacts"] do |task|
+      base = _('target', 'test', 'embedder')
+      rm_rf base
+      mkdir_p base
+      cp _(:src, :main, :resources, 'framework.properties'), base
+      task("psc:osgi-layer:embedder_artifacts").values.each do |path, artifacts|
+        edir = File.join(base, path)
+        mkdir_p edir
         artifacts.each { |a|
           trace "Putting #{a} in #{path}"
           a.invoke;
-          cp a.to_s, dadir
+          cp a.to_s, edir
         }
       end
     end
 
     task :examine => :'psc:osgi-layer:console:run'
 
-    task :analyze_package_consistency => [:build_test_da_launcher] do
-      test_dal = _('target', 'test', 'da-launcher')
-      boot_packages = File.read("#{test_dal}/config/osgi-framework.xml").
-        grep(/org.osgi.framework.bootdelegation/).first.gsub(/<.*?>/, "").strip.split(',') +
-        ['java.*', 'javax.*', 'org.xml.sax.*', 'org.w3c.dom.*', 'org.omg.*']
+    task :analyze_package_consistency => [:build_test_embedder] do
+      test_dal = _('target', 'test', 'embedder')
+      boot_packages = Hash.from_java_properties(
+        File.read("#{test_dal}/framework.properties"))['org.osgi.framework.bootdelegation'].
+        split(/\s*,\s*/) +
+        ['java.*', 'javax.*', 'org.xml.sax.*', 'org.w3c.dom.*', 'org.omg.*', 'org.osgi.*']
       AnalyzeOsgiConsistency.analyze_packages(Dir["#{test_dal}/**/*.jar"], boot_packages)
     end
 
@@ -506,8 +506,8 @@ define "psc" do
     # Note that these are not all necessarily errors -- fragment bundles
     # may extend packages from their associated bundles and internal-only
     # packages may be repeated across bundles
-    task :find_duplicate_packages => [:build_test_da_launcher] do
-      Dir[_('target', 'test', 'da-launcher') + "/**/*.jar"].inject({}) { |h, jar|
+    task :find_duplicate_packages => [:build_test_embedder] do
+      Dir[_('target', 'test', 'embedder') + "/**/*.jar"].inject({}) { |h, jar|
         `jar tf #{jar}`.split(/\n/).grep(/.class$/).collect { |path|
           path.sub(/\/[^\/]+$/, '').gsub('/', '.')
         }.uniq.each { |package|
@@ -529,7 +529,7 @@ define "psc" do
       compile.with SLF4J, LOGBACK, DYNAMIC_JAVA, FELIX.main,
         project('core').and_dependencies
 
-      task :run => [:build_test_da_launcher, 'psc:osgi-layer:console:compile'] do
+      task :run => [:build_test_embedder, 'psc:osgi-layer:console:compile'] do
         cd _("target/classes") do
           mkdir_p _('tmp/logs')
           deps = project.test.dependencies.collect { |p| p.to_s }
@@ -539,7 +539,13 @@ define "psc" do
           end
           classpath = deps.collect { |d| d.to_s }.join(':')
           puts "Classpath:\n- #{deps.join("\n- ")}"
-          system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.console.DaLauncherConsole #{project('osgi-layer')._('target', 'test', 'da-launcher')}")
+          cmd = [
+            'java', "-Dcatalina.home=#{_('tmp')}",
+            '-cp', classpath,
+            'edu.northwestern.bioinformatics.studycalendar.osgi.console.EmbedderConsole',
+            project('osgi-layer')._('target', 'test', 'embedder')
+          ].join(' ')
+          exec cmd
         end
       end
     end
@@ -621,7 +627,7 @@ define "psc" do
         project('web').test_dependencies,
         project('authentication:plugin-api').test_dependencies,
         project('providers:mock')
-      test.enhance([:build_test_da_launcher, _('tmp/logs')])
+      test.enhance([:build_test_embedder, _('tmp/logs')])
     end
   end
 
@@ -984,9 +990,9 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      war.enhance ["psc:osgi-layer:da_launcher_artifacts", "psc:web:compile_sass"] do
-        task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
-          war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
+      war.enhance ["psc:osgi-layer:embedder_artifacts", "psc:web:compile_sass"] do
+        task("psc:osgi-layer:embedder_artifacts").values.each do |path, artifacts|
+          war.path("WEB-INF/osgi-layer").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
         war.path(COMPILED_SASS_PKG_DIR).include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
       end
@@ -1094,7 +1100,7 @@ define "psc" do
       end
     end
 
-    task :explode => [compile, :compile_sass, "psc:osgi-layer:da_launcher_artifacts"] do |t|
+    task :explode => [compile, :compile_sass, "psc:osgi-layer:embedder_artifacts"] do |t|
       class << t; attr_accessor :target; end
       t.target = _(:target, 'dev-webapp')
       rm_rf t.target
@@ -1116,8 +1122,8 @@ define "psc" do
           cp lib.to_s, libdir
         end
         info "- Exploding DA Launcher libs"
-        task('psc:osgi-layer:da_launcher_artifacts').values.each do |path, artifacts|
-          dadir = t.target + "/WEB-INF/da-launcher/#{path}"
+        task('psc:osgi-layer:embedder_artifacts').values.each do |path, artifacts|
+          dadir = t.target + "/WEB-INF/osgi-layer/#{path}"
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
