@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,7 +84,7 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
         File propFile = new File(getRoot(), "framework.properties");
         Properties props = new Properties();
         try {
-            props.load(new FileReader(propFile));
+            props.load(new FileInputStream(propFile));
         } catch (FileNotFoundException e) {
             log.debug("No properties file ({}) in embedder configuration root", propFile);
             frameworkProperties = Collections.emptyMap();
