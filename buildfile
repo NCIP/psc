@@ -445,9 +445,7 @@ define "psc" do
   define "osgi-layer" do
     task :da_launcher_artifacts do |task|
       class << task; attr_accessor :values; end
-      knopflerfish_main = artifact(KNOPFLERFISH.framework)
       felix_main = artifact(FELIX.main)
-      equinox_main = artifact(EQUINOX.osgi)
 
       system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact
       system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional

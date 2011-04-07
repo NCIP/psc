@@ -424,14 +424,6 @@ OSGI = struct(
   :compendium => 'org.apache.felix:org.osgi.compendium:jar:1.2.0'
 )
 
-KNOPFLERFISH = struct(
-  Dir[static_lib('knopflerfish-2.2.0/**/*.jar')].inject({}) do |map, jar|
-    group, name, version = jar.scan(%r{.*/(\w+)/(\w+)-([\d\.]+)\.jar$}).first
-    map[name.to_sym] = artifact("org.knopflerfish.#{group}:knopflerfish-#{name}:jar:#{version}").from(jar)
-    map
-  end
-)
-
 FELIX = struct(
   Dir[static_lib('felix-1.8.0/*.jar')].inject({}) do |map, jar|
     group, name, version = jar.scan(%r{.*/(org.apache.felix)\.([\w\.]+)-([\d\.]+)\.jar$}).first
@@ -439,13 +431,6 @@ FELIX = struct(
     map
   end
 )
-
-EQUINOX = struct(
-  Dir[static_lib('equinox-3.4.0/*.jar')].inject({}) do |map, jar|
-    group, _, name, version = jar.scan(%r{.*/(org\.eclipse(\.equinox)?)\.([\w\.]+)_([\w\d\.-]+)\.jar$}).first
-    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
-    map
-  end
 )
 
 DYNAMIC_JAVA = struct(
