@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerStartupListener;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
-import org.dynamicjava.osgi.da_launcher.web.DaLauncherWebConstants;
 
 import javax.servlet.ServletContext;
 
@@ -25,7 +25,7 @@ public class BundleContextLocator implements FactoryBean, ApplicationContextAwar
             throw new StudyCalendarSystemException("Cannot extract bundle context from normal application context.  (It's in the ServletContext.)");
         }
         ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
-        return servletContext.getAttribute(DaLauncherWebConstants.ServletContextAttributes.BUNDLE_CONTEXT_KEY);
+        return servletContext.getAttribute(OsgiLayerStartupListener.BUNDLE_CONTEXT_ATTRIBUTE);
     }
 
     public boolean isSingleton() {

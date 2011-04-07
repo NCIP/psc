@@ -429,20 +429,16 @@ OSGI = struct(
 )
 
 FELIX = struct(
-  :main         => felix_lib("main",         "3.0.9"), # TODO: I don't think this needed any more
   :framework    => felix_lib("framework",    "3.0.9"),
 
-  :configadmin  => felix_lib("configadmin",  "1.2.8"),
-  :shell        => felix_lib("shell",        "1.4.2"),
-  :shell_tui    => felix_lib("shell.tui",    "1.4.1"),
-  :shell_remote => felix_lib("shell.remote", "1.1.2")
-)
-
-DYNAMIC_JAVA = struct(
-  :da_launcher => "org.dynamicjava.osgi:da-launcher:jar:1.1.2",
-  :osgi_commons => "org.dynamicjava.osgi:osgi-commons:jar:1.1.3",
-  :bundle_building_utils => "org.dynamicjava.osgi:bundle-building-utils:jar:1.0.2",
-  :bundler => "org.dynamicjava.osgi:bundler:jar:1.0.1"
+  :bundlerepo   => felix_lib("bundlerepository", "1.6.4"),
+  :configadmin  => felix_lib("configadmin",      "1.2.8"),
+  :eventadmin   => felix_lib("eventadmin",       "1.2.10"),
+  :log          => felix_lib("log",              "1.0.0"),
+  :metatype     => felix_lib("metatype",         "1.0.0"),
+  :shell        => felix_lib("shell",            "1.4.2"),
+  :shell_tui    => felix_lib("shell.tui",        "1.4.1"),
+  :shell_remote => felix_lib("shell.remote",     "1.1.2")
 )
 
 SPRING_OSGI = struct(

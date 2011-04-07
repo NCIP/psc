@@ -43,7 +43,7 @@
     </context-param>
 
     <listener>
-        <listener-class>org.dynamicjava.osgi.da_launcher.web.servlet.DaLauncherContextListener</listener-class>
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerStartupListener</listener-class>
     </listener>
 
     <listener>

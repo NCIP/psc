@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -31,6 +32,13 @@ public class EmbedderFilesystemConfigurationTest {
     @Test
     public void itIncludesThePropertiesFromTheFile() throws Exception {
         assertThat(configuration.getFrameworkProperties(), hasEntry("foo.quux", (Object) "baz"));
+    }
+
+    @Test
+    public void itReplacesTheRootPropertyWithTheConfiguredRoot() throws Exception {
+        assertThat(configuration.getFrameworkProperties(),
+            hasEntry("something", (Object)
+                format("%s/quux", configuration.getRoot().getAbsolutePath())));
     }
 
     @Test

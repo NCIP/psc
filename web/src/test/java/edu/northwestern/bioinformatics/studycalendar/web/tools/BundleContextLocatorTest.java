@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import org.dynamicjava.osgi.da_launcher.web.DaLauncherWebConstants;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerStartupListener;
 import org.osgi.framework.BundleContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockServletContext;
@@ -33,7 +33,7 @@ public class BundleContextLocatorTest extends StudyCalendarTestCase {
 
     public void testObjectIsRetrievedFromServletContext() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        servletContext.setAttribute(DaLauncherWebConstants.ServletContextAttributes.BUNDLE_CONTEXT_KEY, bundleContext);
+        servletContext.setAttribute(OsgiLayerStartupListener.BUNDLE_CONTEXT_ATTRIBUTE, bundleContext);
 
         StaticWebApplicationContext applicationContext = new StaticWebApplicationContext();
         applicationContext.setServletContext(servletContext);

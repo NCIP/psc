@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
     }
 
     public EmbedderFilesystemConfiguration(File root) {
-        this.root = root;
+        this.setRoot(root);
     }
 
     public Map<String, Object> getFrameworkProperties() {
@@ -80,7 +81,7 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
     @SuppressWarnings( { "unchecked" })
     private synchronized void loadFrameworkProperties() {
         if (frameworkProperties != null) return;
-        File propFile = new File(root, "framework.properties");
+        File propFile = new File(getRoot(), "framework.properties");
         Properties props = new Properties();
         try {
             props.load(new FileReader(propFile));
@@ -90,8 +91,16 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
         } catch (IOException e) {
             throw new StudyCalendarSystemException("Could not read %s", propFile, e);
         }
+        replaceDynamicProperties(props);
         if (frameworkProperties == null) {
             frameworkProperties = new HashMap(props);
+        }
+    }
+
+    private void replaceDynamicProperties(Properties props) {
+        for (String name : props.stringPropertyNames()) {
+            String value = props.getProperty(name);
+            props.setProperty(name, value.replaceAll("\\$\\{root\\}", getRoot().getAbsolutePath()));
         }
     }
 
@@ -107,7 +116,7 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
         if (installableBundles != null) return;
         installableBundles = new LinkedList<InstallableBundle>();
 
-        for (File levelDir : root.listFiles(LevelDirectoryFilter.INSTANCE)) {
+        for (File levelDir : getRoot().listFiles(LevelDirectoryFilter.INSTANCE)) {
             installableBundles.addAll(findBundlesForLevel(levelDir));
         }
     }
@@ -142,6 +151,10 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
 
     public void setRoot(File baseDir) {
         this.root = baseDir;
+    }
+
+    public File getRoot() {
+        return root;
     }
 
     private static class LevelDirectoryFilter implements FileFilter {

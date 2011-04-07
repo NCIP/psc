@@ -8,6 +8,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,10 +25,12 @@ import java.util.TreeMap;
  * @author Rhett Sutphin
  */
 public class Embedder {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private FrameworkFactory frameworkFactory;
+    private EmbedderConfiguration configuration;
 
     private Framework framework;
-    private EmbedderConfiguration configuration;
 
     /**
      * Initialize and start the embedded OSGi framework instance. When this method returns,
@@ -36,14 +40,17 @@ public class Embedder {
     public BundleContext start() {
         StartupWatcher watcher;
         SortedMap<Integer, Collection<InstallableBundle>> byStartLevel =
-            partition(configuration.getBundlesToInstall());
+            partition(getConfiguration().getBundlesToInstall());
 
         try {
-            framework = frameworkFactory.newFramework(configuration.getFrameworkProperties());
+            framework = getFrameworkFactory().newFramework(getConfiguration().getFrameworkProperties());
+            log.debug("Initializing OSGi framework {}", framework);
             framework.init();
+
             watcher = createWatcher(byStartLevel.lastKey());
             framework.getBundleContext().addFrameworkListener(watcher);
 
+            log.debug("Starting OSGi framework {}", framework);
             framework.start();
 
             StartLevel startLevelService = getStartLevelService(framework.getBundleContext());
@@ -78,16 +85,19 @@ public class Embedder {
     ) throws BundleException {
         List<Bundle> toStart = new ArrayList<Bundle>(installableBundles.size());
         for (InstallableBundle bundle : installableBundles) {
+            log.debug("Installing {} at level {}", bundle.getLocation(), startLevel);
             Bundle installed = framework.getBundleContext().installBundle(bundle.getLocation());
             startLevelService.setBundleStartLevel(installed, startLevel);
             if (bundle.getShouldStart()) toStart.add(installed);
         }
 
+        log.debug("Marking bundles in level {} as startable", startLevel);
         // Defer starting so that all bundles in the same level are available before trying to
         // start any of them. (Start level controls take care of this for all levels except for 1,
         // so this is just for the benefit of that level.)
         for (Bundle bundle : toStart) bundle.start();
 
+        log.debug("Requesting that current start level be {}", startLevel);
         startLevelService.setStartLevel(startLevel);
     }
 
@@ -109,7 +119,9 @@ public class Embedder {
     public void stop() {
         if (framework == null) return;
         try {
+            log.debug("Requesting that OSGi framework stop");
             framework.stop();
+            log.debug("Waiting for OSGi framework to stop");
             framework.waitForStop(15000);
         } catch (BundleException e) {
             throw new StudyCalendarSystemException("Stopping the embedded OSGi layer failed", e);
@@ -120,12 +132,19 @@ public class Embedder {
 
     ////// CONFIGURATION
 
+    public EmbedderConfiguration getConfiguration() {
+        return configuration;
+    }
+
     public void setConfiguration(EmbedderConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    public FrameworkFactory getFrameworkFactory() {
+        return frameworkFactory;
     }
 
     public void setFrameworkFactory(FrameworkFactory frameworkFactory) {
         this.frameworkFactory = frameworkFactory;
     }
-
 }

@@ -1,9 +1,0 @@
-This directory contains the JAR files for supported OSGi Frameworks. The JAR files 
-should be grouped in directories first by Framework then by version. The Framework 
-should have the value 'felix', 'equinox' or 'knopflerfish', the Version directory can have 
-any valid directory name. So if you have version '3.3.0' of Equinox, you must create a directory 
-with the name 'equinox' and create a sub directory with the version name, you could name 
-it '3.3.0' (or any other suitable name for you like 'equinox-with-my-extensions'), then 
-you need to place the JAR files in the Version directory - You can use as a reference 
-the current included Frameworks. For the Framework to be used by your application you 
-need to configure the file '/config/osgi-framework.xml'.

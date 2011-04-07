@@ -446,7 +446,7 @@ define "psc" do
     task :embedder_artifacts => :artifacts do |task|
       class << task; attr_accessor :values; end
       system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact.collect { |b| artifact(b) }
-      system_bundles = (FELIX.values - [FELIX.main, FELIX.framework]).collect { |b| artifact(b) } - system_optional
+      system_bundles = (FELIX.values - [FELIX.framework]).collect { |b| artifact(b) } - system_optional
 
       system_bundles += (LOGBACK.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
         [ project('osgi-layer:log-configuration').packages.first ]
@@ -526,7 +526,7 @@ define "psc" do
     end
 
     define "console" do
-      compile.with SLF4J, LOGBACK, DYNAMIC_JAVA, FELIX.main,
+      compile.with SLF4J, LOGBACK, project('utility').and_dependencies, FELIX.framework,
         project('core').and_dependencies
 
       task :run => [:build_test_embedder, 'psc:osgi-layer:console:compile'] do
@@ -620,7 +620,7 @@ define "psc" do
     define "integrated-tests" do
       directory _('tmp/logs')
 
-      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA,
+      test.using(:junit).with UNIT_TESTING, FELIX.framework,
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
@@ -979,8 +979,8 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('psc:osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, DYNAMIC_JAVA,
-      FELIX.main
+      SPRING_WEB, RESTLET, WEB,
+      FELIX.framework
 
     test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
@@ -994,6 +994,7 @@ define "psc" do
         task("psc:osgi-layer:embedder_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/osgi-layer").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
+        war.path("WEB-INF/osgi-layer").include(project('osgi-layer').path_to(:source, :main, :resources, 'framework.properties'))
         war.path(COMPILED_SASS_PKG_DIR).include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
       end
     end
@@ -1121,12 +1122,13 @@ define "psc" do
         main_libs.each do |lib|
           cp lib.to_s, libdir
         end
-        info "- Exploding DA Launcher libs"
+        info "- Exploding OSGi layer libs"
         task('psc:osgi-layer:embedder_artifacts').values.each do |path, artifacts|
           dadir = t.target + "/WEB-INF/osgi-layer/#{path}"
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
+        cp project('osgi-layer').path_to(:src, :main, :resources, 'framework.properties'), t.target + "/WEB-INF/osgi-layer"
         info "- Linking Sass"
         ln_s COMPILED_SASS_TARGET, t.target + "/" + COMPILED_SASS_PKG_DIR
 
