@@ -97,8 +97,11 @@ public class EmbedderFilesystemConfiguration implements EmbedderConfiguration {
         }
     }
 
+    @SuppressWarnings( { "unchecked" })
     private void replaceDynamicProperties(Properties props) {
-        for (String name : props.stringPropertyNames()) {
+        Enumeration<String> names = (Enumeration<String>) props.propertyNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
             String value = props.getProperty(name);
             props.setProperty(name, value.replaceAll("\\$\\{root\\}", getRoot().getAbsolutePath()));
         }
