@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -33,20 +32,21 @@ public class Embedder {
      * Initialize and start the embedded OSGi framework instance. When this method returns,
      * all the configured bundles will be installed at the specified start levels and the start
      * level will be the maximum start level for any bundle in the configuration.
-     * <p>
-     * TODO: don't return until everything's started.
      */
     public BundleContext start() {
+        StartupWatcher watcher;
+        SortedMap<Integer, Collection<InstallableBundle>> byStartLevel =
+            partition(configuration.getBundlesToInstall());
+
         try {
             framework = frameworkFactory.newFramework(configuration.getFrameworkProperties());
             framework.init();
+            watcher = createWatcher(byStartLevel.lastKey());
+            framework.getBundleContext().addFrameworkListener(watcher);
+
             framework.start();
 
-            StartLevel startLevelService = getStartLevelService();
-
-            Map<Integer, Collection<InstallableBundle>> byStartLevel =
-                partition(configuration.getBundlesToInstall());
-
+            StartLevel startLevelService = getStartLevelService(framework.getBundleContext());
             for (Integer startLevel : byStartLevel.keySet()) {
                 installAndStartOneLevel(startLevelService, startLevel, byStartLevel.get(startLevel));
             }
@@ -54,17 +54,23 @@ public class Embedder {
             throw new StudyCalendarSystemException("Could not start embedded OSGi layer", be);
         }
 
+        watcher.waitForStart(30 * 1000);
         return framework.getBundleContext();
     }
 
-    private StartLevel getStartLevelService() {
+    // package level for overrides when testing
+    StartupWatcher createWatcher(int expectedStartLevel) {
+        return new StartupWatcher(expectedStartLevel);
+    }
+
+    private static StartLevel getStartLevelService(BundleContext bundleContext) {
         ServiceReference ref =
-            framework.getBundleContext().getServiceReference(StartLevel.class.getName());
+            bundleContext.getServiceReference(StartLevel.class.getName());
         if (ref == null) {
             throw new StudyCalendarSystemException(
                 "Could not get a reference to an instance of the start level service");
         }
-        return (StartLevel) framework.getBundleContext().getService(ref);
+        return (StartLevel) bundleContext.getService(ref);
     }
 
     private void installAndStartOneLevel(
@@ -121,4 +127,5 @@ public class Embedder {
     public void setFrameworkFactory(FrameworkFactory frameworkFactory) {
         this.frameworkFactory = frameworkFactory;
     }
+
 }

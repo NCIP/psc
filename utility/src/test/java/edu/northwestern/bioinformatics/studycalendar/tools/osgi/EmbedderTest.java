@@ -7,18 +7,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
-import org.springframework.osgi.mock.MockBundle;
-import org.springframework.osgi.mock.MockBundleContext;
-import org.springframework.osgi.mock.MockServiceReference;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.easymock.EasyMock.*;
@@ -50,7 +43,14 @@ public class EmbedderTest {
         expect(frameworkFactory.newFramework((Map) notNull())).andStubReturn(framework);
 
         configuration = new StaticEmbedderConfiguration();
-        embedder = new Embedder();
+        embedder = new Embedder() {
+            @Override
+            StartupWatcher createWatcher(int expectedStartLevel) {
+                return new StartupWatcher(expectedStartLevel) {
+                    @Override public void waitForStart(long timeoutMilliseconds) { }
+                };
+            }
+        };
         embedder.setConfiguration(configuration);
         embedder.setFrameworkFactory(frameworkFactory);
     }
@@ -113,6 +113,7 @@ public class EmbedderTest {
 
     @Test
     public void providedConfigurationPropertiesAreUsed() throws Exception {
+        configuration.getBundlesToInstall().add(new InstallableBundleImpl(1, "file://example", false));
         configuration.getFrameworkProperties().put("something", "here");
 
         expect(frameworkFactory.newFramework(configuration.getFrameworkProperties())).
@@ -126,63 +127,6 @@ public class EmbedderTest {
         mocks.replayMocks();
         embedder.start();
         mocks.verifyMocks();
-    }
-
-    private static class RecordingMockBundle extends MockBundle {
-        private Integer startFlags;
-
-        private RecordingMockBundle(String symName, BundleContext context) {
-            super(symName, null, context);
-        }
-
-        @Override
-        public void start(int options) throws BundleException {
-            startFlags = options;
-        }
-
-        public boolean isStarted() {
-            return startFlags != null;
-        }
-
-        public Integer getStartFlags() {
-            return startFlags;
-        }
-    }
-
-    private static class InstallingMockBundleContext extends MockBundleContext {
-        private List<RecordingMockBundle> bundles = new ArrayList<RecordingMockBundle>();
-        private StartLevel startLevelService;
-
-        private InstallingMockBundleContext(StartLevel startLevelService) {
-            this.startLevelService = startLevelService;
-        }
-
-        public List<RecordingMockBundle> bundlesInstalled() {
-            return bundles;
-        }
-
-        @Override
-        public Bundle installBundle(String location) throws BundleException {
-            RecordingMockBundle installed = new RecordingMockBundle("The bundle from " + location, this);
-            installed.setLocation(location);
-            bundles.add(installed);
-            return installed;
-        }
-
-        @Override
-        public ServiceReference getServiceReference(String clazz) {
-            if (clazz.equals(StartLevel.class.getName())) {
-                return new MockServiceReference();
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public Object getService(ServiceReference reference) {
-            if (reference == null) throw new NullPointerException("Try again");
-            return startLevelService;
-        }
     }
 
     private static class MockFramework extends RecordingMockBundle implements Framework {
@@ -209,42 +153,4 @@ public class EmbedderTest {
         }
     }
 
-    private static class MockStartLevel implements StartLevel {
-        private Map<Bundle, Integer> bundleStartLevels = new IdentityHashMap<Bundle, Integer>();
-        private int initialBundleStartLevel = 1;
-        private int startLevel = 1;
-
-        public int getBundleStartLevel(Bundle bundle) {
-            Integer actual = bundleStartLevels.get(bundle);
-            return actual == null ? getInitialBundleStartLevel() : actual;
-        }
-
-        public void setBundleStartLevel(Bundle bundle, int i) {
-            bundleStartLevels.put(bundle, i);
-        }
-
-        public int getInitialBundleStartLevel() {
-            return initialBundleStartLevel;
-        }
-
-        public void setInitialBundleStartLevel(int i) {
-            this.initialBundleStartLevel = i;
-        }
-
-        public int getStartLevel() {
-            return startLevel;
-        }
-
-        public void setStartLevel(int i) {
-            startLevel = i;
-        }
-
-        public boolean isBundlePersistentlyStarted(Bundle bundle) {
-            throw new UnsupportedOperationException("isBundlePersistentlyStarted not implemented");
-        }
-
-        public boolean isBundleActivationPolicyUsed(Bundle bundle) {
-            throw new UnsupportedOperationException("isBundleActivationPolicyUsed not implemented");
-        }
-    }
 }
