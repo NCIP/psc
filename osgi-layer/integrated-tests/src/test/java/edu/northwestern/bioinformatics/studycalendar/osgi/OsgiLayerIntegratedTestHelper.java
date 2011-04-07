@@ -3,12 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.osgi;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StaticApplicationContextHelper;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextBuilder;
+import edu.northwestern.bioinformatics.studycalendar.tools.osgi.Embedder;
+import edu.northwestern.bioinformatics.studycalendar.tools.osgi.EmbedderConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.osgi.EmbedderFilesystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.osgi.FrameworkFactoryFinder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import org.apache.commons.lang.StringUtils;
-import org.dynamicjava.osgi.da_launcher.Launcher;
-import org.dynamicjava.osgi.da_launcher.LauncherFactory;
-import org.dynamicjava.osgi.da_launcher.LauncherSettings;
-import org.dynamicjava.osgi.da_launcher.web.DaLauncherWebConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,19 +36,18 @@ public class OsgiLayerIntegratedTestHelper {
     private static BundleContext bundleContext;
     private static File projectRoot;
 
-    public static void registerBundleContext(ServletContext servletContext) throws IOException {
-        servletContext.setAttribute(DaLauncherWebConstants.ServletContextAttributes.BUNDLE_CONTEXT_KEY, getBundleContext());
-    }
-
     public static synchronized BundleContext getBundleContext() throws IOException {
         if (bundleContext == null) {
             System.setProperty("catalina.base",
                 getModuleRelativeDirectory("osgi-layer:integrated-tests", "tmp").getAbsolutePath());
-            LauncherSettings settings = new LauncherSettings(
-                getModuleRelativeDirectory("osgi-layer", "target/test/da-launcher").getAbsolutePath());
-            Launcher launcher = new LauncherFactory(settings).createLauncher();
-            launcher.launch();
-            bundleContext = launcher.getOsgiFramework().getBundleContext();
+
+            EmbedderConfiguration configuration = new EmbedderFilesystemConfiguration(
+                getModuleRelativeDirectory("osgi-layer", "target/test/embedder").getAbsoluteFile());
+            Embedder embedder = new Embedder();
+            embedder.setConfiguration(configuration);
+            embedder.setFrameworkFactory(FrameworkFactoryFinder.getFrameworkFactory());
+
+            bundleContext = embedder.start();
         }
         return bundleContext;
     }
@@ -145,6 +143,7 @@ public class OsgiLayerIntegratedTestHelper {
             }
         }
 
+        @Override
         protected ApplicationContext createApplicationContext() {
             ClassPathXmlApplicationContext ctxt = new ClassPathXmlApplicationContext(createBundleContextApplicationContext());
             ctxt.setConfigLocations(StudyCalendarApplicationContextBuilder.DEPLOYED_CONFIG_LOCATIONS);
