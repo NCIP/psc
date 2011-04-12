@@ -68,21 +68,32 @@ public class StartupWatcherTest {
         Thread watching = new Thread(new Runnable() {
             public void run() {
                 long start = System.currentTimeMillis();
-                watcher.waitForStart(3000L);
+                watcher.waitForStart(10000L);
                 waitDuration[0] = System.currentTimeMillis() - start;
             }
         }, "watching");
         watching.start();
 
-        Thread.sleep(250L);
+        pauseFor(250L);
         changeStartLevel(EXPECTED_START_LEVEL - 1);
 
-        Thread.sleep(250L);
+        pauseFor(250L);
         changeStartLevel(EXPECTED_START_LEVEL);
 
         watching.join();
         assertThat(waitDuration[0], is(greaterThan(400L)));
-        assertThat(waitDuration[0], is(lessThan(2800L)));
+        assertThat(waitDuration[0], is(lessThan(9900L)));
+    }
+
+    private void pauseFor(long milliseconds) throws InterruptedException {
+        long timeRemaining = milliseconds;
+        long start, elapsed;
+        while (timeRemaining > 0) {
+            start = System.currentTimeMillis();
+            Thread.sleep(timeRemaining);
+            elapsed = System.currentTimeMillis() - start;
+            timeRemaining -= elapsed;
+        }
     }
 
     @Test
