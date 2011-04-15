@@ -33,12 +33,13 @@
             <unzip dest="${download}" src="${jruby.dist.local}" />
           </sequential>
         </retry>
-        <echo message="Downloaded JRuby sucessfully"/>
+        <echo message="Downloaded &amp; extracted JRuby sucessfully"/>
         <exec executable="chmod" os="${unixfamily}" failonerror="true">
             <arg value="u+x"/>
             <arg value="${jruby.local.script}"/>
         </exec>
         <delete dir="${jruby.dest.file}"/>
+        <jruby line="--version"/>
     </target>
 
     <macrodef name="jruby" description="Executes a command using the jruby script">
