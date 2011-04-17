@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A {@link SchemaInitializer} which ensures that any rows in the designated
@@ -18,13 +17,14 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class RowPreservingInitializer extends EmptySchemaInitializer {
+    public static final String PK_RECORD_TABLE_NAME = "__integration_preserve_keys";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final String DEFAULT_PRIMARY_KEY_NAME = "id";
 
     private String tableName;
     private List<String> primaryKeyNames;
-    private List<Map<String, Object>> idsToPreserve;
 
     public RowPreservingInitializer(String tableName) {
         this(tableName, DEFAULT_PRIMARY_KEY_NAME);
@@ -40,58 +40,56 @@ public class RowPreservingInitializer extends EmptySchemaInitializer {
     }
 
     @Override
+    public void oneTimeSetup(ConnectionSource connectionSource) {
+        super.oneTimeSetup(connectionSource);
+        connectionSource.currentJdbcTemplate().
+            execute(new RowPreservationTableCreator(
+                primaryKeyNames.size(), connectionSource.currentJdbcTemplate()));
+    }
+
+    @Override
     @SuppressWarnings({ "unchecked" })
     public void beforeAll(ConnectionSource connectionSource) {
-        String sql = String.format(
-            "SELECT %s FROM %s", StringUtils.join(getPrimaryKeyNames().iterator(), ", "), getTableName());
-        log.debug("Identifying rows to preserve using SQL: {}", sql);
-        idsToPreserve = connectionSource.currentJdbcTemplate().queryForList(sql);
-        log.debug("Found {} rows to preserve", idsToPreserve.size());
-        if (!idsToPreserve.isEmpty()) log.trace("  - {}", idsToPreserve);
+        String clearSql = String.format(
+            "DELETE FROM %s WHERE table_name='%s'", PK_RECORD_TABLE_NAME, getTableName());
+        log.debug("Purging old record of saved PKs: {}", clearSql);
+        int ct = connectionSource.currentJdbcTemplate().update(clearSql);
+        log.debug(" - {} records removed", ct);
+
+        String copySql = String.format(
+            "INSERT INTO %s (table_name, %s) SELECT '%s', %s FROM %s",
+            PK_RECORD_TABLE_NAME,
+            StringUtils.join(keyColumns(), ", "),
+            getTableName(),
+            StringUtils.join(getPrimaryKeyNames(), ", "),
+            getTableName()
+        );
+        log.debug("Noting PK values to save: {}", copySql);
+        ct = connectionSource.currentJdbcTemplate().update(copySql);
+        log.debug(" - {} found to preserve", ct);
+    }
+
+    private List<String> keyColumns() {
+        List<String> keys = new ArrayList<String>(getPrimaryKeyNames().size());
+        for (int i = 0 ; i < getPrimaryKeyNames().size() ; i++) {
+            keys.add("key" + i);
+        }
+        return keys;
     }
 
     @Override
     public void afterEach(ConnectionSource connectionSource) {
-        String sql;
-        Object[] params;
-        if (idsToPreserve == null || idsToPreserve.isEmpty()) {
-            sql = String.format("DELETE FROM %s", getTableName());
-            params = null;
-        } else {
-            List<String> expressions = primaryKeyExpressions(idsToPreserve.size());
-            sql = String.format("DELETE FROM %s WHERE NOT ((%s))",
-                getTableName(), StringUtils.join(expressions.iterator(), ") OR ("));
-            params = primaryKeyExpressionParams();
-        }
+        String sql = String.format(
+            "DELETE FROM %s WHERE (%s) NOT IN (SELECT %s FROM %s WHERE table_name='%s')",
+            getTableName(),
+            "CAST (" + StringUtils.join(getPrimaryKeyNames(), " AS VARCHAR(32)), CAST (") + " AS VARCHAR(32))",
+            StringUtils.join(keyColumns(), ", "),
+            PK_RECORD_TABLE_NAME,
+            getTableName()
+        );
         log.debug("Clearing added rows using SQL: {}", sql);
-        if (params != null && log.isTraceEnabled()) {
-            log.trace(" - with params {}", Arrays.asList(params));
-        }
-        connectionSource.currentJdbcTemplate().update(sql, params);
-    }
-
-    private List<String> primaryKeyExpressions(int count) {
-        StringBuilder expression = new StringBuilder();
-        for (Iterator<String> pkIt = primaryKeyNames.iterator(); pkIt.hasNext();) {
-            String pkName = pkIt.next();
-            expression.append(pkName).append("=?");
-            if (pkIt.hasNext()) expression.append(" AND ");
-        }
-        List<String> expressions = new ArrayList<String>(count);
-        while (expressions.size() < count) {
-            expressions.add(expression.toString());
-        }
-        return expressions;
-    }
-
-    private Object[] primaryKeyExpressionParams() {
-        List<Object> params = new ArrayList<Object>(idsToPreserve.size() * primaryKeyNames.size());
-        for (Map<String, Object> ids : idsToPreserve) {
-            for (String pkName : primaryKeyNames) {
-                params.add(ids.get(pkName));
-            }
-        }
-        return params.toArray();
+        int ct = connectionSource.currentJdbcTemplate().update(sql);
+        log.debug(" - {} cleared", ct);
     }
 
     ////// BEAN PROPERTIES
