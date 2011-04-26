@@ -113,21 +113,25 @@
 
         function addNewActivityType() {
             var activityTypeName = $('addActivityTypeName').value
-            var href = '<c:url value="/pages/activities/addNewActivityType"/>'
-            var data="";
+            //TODO: this page will be re-written to use yui data table and resource --
+            // make sure to do check on empty activity type in the resource.
+            if (activityTypeName.trim().length == 0){
+                $('errors').innerHTML ="Activity Type can not be empty";
+            } else {
+                $('errors').innerHTML =""
 
-            data = data+"action=add&";
-            data= data+"activityTypeName="+activityTypeName+"&"
-            href=href+"?"+data
-            var newActivityReques = new Ajax.Request(href,
-            {
-                method: 'post'
-//                ,
-//                onComplete: function(t) {
-//                    $('addActivityTypeName').value ="";
-//                }
-            });
+                var href = '<c:url value="/pages/activities/addNewActivityType"/>'
+                var data="";
 
+                data = data+"action=add&";
+                data= data+"activityTypeName="+activityTypeName+"&"
+                href=href+"?"+data
+                var newActivityReques = new Ajax.Request(href,
+                {
+                    method: 'post'
+
+                });
+            }
             return true;
         }
 
