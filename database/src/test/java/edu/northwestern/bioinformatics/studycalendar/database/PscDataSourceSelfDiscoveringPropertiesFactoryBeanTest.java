@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.database;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.util.Properties;
 
-import edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Saurabh Agrawal
@@ -101,5 +103,10 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBeanTest extends TestC
         bean.computeProperties();
 
         assertEquals("Config name not taken from csm datasource prop", context, properties.getProperty("csm.application.context"));
+    }
+
+    public void testSearchDirectoriesStartWithSystemPropertyPathIfSpecified() throws Exception {
+        System.setProperty("psc.config.path", "/foo/baz");
+        assertThat(bean.searchDirectories().get(0), is(new File("/foo/baz")));
     }
 }

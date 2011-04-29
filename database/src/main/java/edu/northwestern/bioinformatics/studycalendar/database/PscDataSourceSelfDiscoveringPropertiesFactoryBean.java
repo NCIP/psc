@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.database;
 
 import gov.nih.nci.cabig.ctms.tools.DataSourceSelfDiscoveringPropertiesFactoryBean;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * Note: the dynamic computation of the various authentication properties in here is
  * temporary for 1.5.  In 2.0, we will add a separate configuration system (design
@@ -11,6 +14,7 @@ import gov.nih.nci.cabig.ctms.tools.DataSourceSelfDiscoveringPropertiesFactoryBe
  */
 public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourceSelfDiscoveringPropertiesFactoryBean {
     private static final String DATASOURCE_SYSTEM_PROPERTY = "psc.config.datasource";
+    private static final String PATH_SYSTEM_PROPERTY = "psc.config.path";
 
     private static final String DIALECT_PROPERTY_NAME = "datasource.dialect";
 
@@ -71,6 +75,18 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
         setPropertyDefault(CSM_PASSWORD_PROPERTY_NAME, getProperties().getProperty(PASSWORD_PROPERTY_NAME));
         setPropertyDefault(CSM_DIALECT_PROPERTY_NAME, getProperties().getProperty(DIALECT_PROPERTY_NAME));
         setPropertyDefault(CSM_APPLICATION_CONTEXT_PROPERTY_NAME, CSM_APPLICATION_CONTEXT_VALUE);
+    }
+
+    @Override
+    protected List<File> searchDirectories() {
+        List<File> dirs = super.searchDirectories();
+        String property = System.getProperty(PATH_SYSTEM_PROPERTY);
+        if (property == null) {
+            log.debug("{} not set -- will not search", property);
+        } else {
+            dirs.add(0, new File(property));
+        }
+        return dirs;
     }
 
     private void setPropertyDefault(String propertyName, String defaultValue) {
