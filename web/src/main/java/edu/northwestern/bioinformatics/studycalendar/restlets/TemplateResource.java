@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
@@ -82,9 +81,6 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
             throw new ResourceException(e);
-        } catch (StudyCalendarUserException e) {
-            log.error("Error PUTting study", e);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
         getResponse().setEntity(createXmlRepresentation(out));
         if (getRequestedObject() == null) {
