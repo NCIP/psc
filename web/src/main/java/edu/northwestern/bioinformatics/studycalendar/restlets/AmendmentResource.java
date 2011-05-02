@@ -113,12 +113,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    protected void validateEntity(final Representation entity) throws ResourceException {
-        super.validateEntity(entity);
-    }
-
-
-    @Override
     public void store(final Amendment amendment) {
         if (study.getDevelopmentAmendment() != null) {
             templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
