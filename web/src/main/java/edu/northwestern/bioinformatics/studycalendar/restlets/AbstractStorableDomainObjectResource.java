@@ -45,7 +45,8 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
 
             return null;
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+            throw new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + entity.getMediaType());
         }
     }
 
