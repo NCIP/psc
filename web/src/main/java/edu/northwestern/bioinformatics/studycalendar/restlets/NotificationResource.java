@@ -111,8 +111,9 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
     }
 
     @Override
-    public void store(Notification notification) throws ResourceException {
+    public Notification store(Notification notification) throws ResourceException {
         notificationDao.save(notification);
+        return notification;
     }
 
     public void setNotificationDao(NotificationDao notificationDao) {

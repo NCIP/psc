@@ -113,12 +113,13 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    public void store(final Amendment amendment) {
+    public Amendment store(final Amendment amendment) {
         if (study.getDevelopmentAmendment() != null) {
             templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
         }
         study.setDevelopmentAmendment(amendment);
         studyService.save(study);
+        return amendment;
     }
 
     protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
