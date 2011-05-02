@@ -343,14 +343,22 @@ public class StudySiteService {
     }
 
     public StudySite resolveStudySite(StudySite studySite) {
-        Study study = studyDao.getByAssignedIdentifier(studySite.getStudy().getAssignedIdentifier());
+        String studyIdent = studySite.getStudy().getAssignedIdentifier();
+        if (studyIdent == null) {
+            throw new StudyCalendarValidationException("No study identifier specified.");
+        }
+        Study study = studyDao.getByAssignedIdentifier(studyIdent);
         if (study == null) {
-          throw new StudyCalendarValidationException("Study '%s' not found. Please define a study that exists.", studySite.getStudy().getAssignedIdentifier());
+            throw new StudyCalendarValidationException("Study %s not found.", studyIdent);
         }
 
-        Site site  = siteService.getByAssignedIdentifier(studySite.getSite().getAssignedIdentifier());
+        String siteIdent = studySite.getSite().getAssignedIdentifier();
+        if (siteIdent == null) {
+            throw new StudyCalendarValidationException("No site identifier specified");
+        }
+        Site site  = siteService.getByAssignedIdentifier(siteIdent);
         if (site == null) {
-          throw new StudyCalendarValidationException("Site '%s' not found. Please define a site that exists.", studySite.getSite().getAssignedIdentifier());
+            throw new StudyCalendarValidationException("Site %s not found.", siteIdent);
         }
 
         StudySite existingStudySite = study.getStudySite(site);
