@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlParsingException;
 import org.dom4j.DocumentException;
@@ -94,6 +95,13 @@ public class PscStatusServiceTest extends RestletTestCase {
             new DocumentException("Missing an angle bracket somewhere.")));
     }
 
+    public void testGetStatusTreatsAnyUserExceptionsAsBadRequests() throws Exception {
+        Status actual = doGetStatus(new StudyCalendarUserException("Boop") { });
+
+        assertEquals("Wrong code", 400, actual.getCode());
+        assertEquals("Wrong description", "Boop", actual.getDescription());
+    }
+
     public void testGetStatusTreatsXmlParseExceptionsAsBadRequests() throws Exception {
         Status actual =
             doGetStatus(new StudyCalendarXmlParsingException(
@@ -103,6 +111,14 @@ public class PscStatusServiceTest extends RestletTestCase {
         assertEquals("Wrong description",
             "Could not parse the provided XML: Missing an angle bracket somewhere.",
             actual.getDescription());
+    }
+
+    public void testGetStatusTreatsValidationExceptionsAsUnprocessable() throws Exception {
+        Status actual =
+            doGetStatus(new StudyCalendarValidationException("Don't like it someway."));
+
+        assertEquals("Wrong code", 422, actual.getCode());
+        assertEquals("Wrong description", "Don't like it someway.", actual.getDescription());
     }
 
     public void testGetStatusLogsOtherExceptionsAsErrors() throws Exception {

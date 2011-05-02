@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlParsingException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
@@ -61,8 +62,12 @@ public class PscStatusService extends StatusService {
      * However, for cross-cutting concerns (e.g., deserialization problems) it's reasonable to add
      * another entry here.
      */
+    @SuppressWarnings( { "ChainOfInstanceofChecks" })
     private Throwable translate(Throwable throwable) {
-        if (throwable instanceof StudyCalendarXmlParsingException) {
+        if (throwable instanceof StudyCalendarValidationException) {
+            return new ResourceException(
+                Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, throwable.getMessage(), throwable);
+        } else if (throwable instanceof StudyCalendarUserException) {
             return new ResourceException(
                 Status.CLIENT_ERROR_BAD_REQUEST, throwable.getMessage(), throwable);
         } else {
