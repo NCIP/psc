@@ -20,8 +20,8 @@ import static org.easymock.classextension.EasyMock.expect;
  */
 public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteResource> {
     private static final String STUDY_IDENTIFIER = "ETC";
-    private static final String SITE_IDENTIFIER = "Northwestern University";
-    private static final String SITE_IDENTIFIER_ENCODED = "Northwestern%20University";
+    private static final String SITE_IDENTIFIER = "NU 1368";
+    private static final String SITE_IDENTIFIER_ENCODED = "NU%201368";
 
     private StudyDao studyDao;
     private SiteDao siteDao;
@@ -37,7 +37,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         super.setUp();
         study = createBasicTemplate();
         study.setAssignedIdentifier(STUDY_IDENTIFIER);
-        site = createNamedInstance(SITE_IDENTIFIER, Site.class);
+        site = createSite(null, SITE_IDENTIFIER);
 
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
@@ -46,7 +46,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER_ENCODED);
-        request.setResourceRef("studies/ETC/sites/Northwestern+University");
+        request.setResourceRef("studies/ETC/sites/NU%201368");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         doGet();
 
-        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND, "No site matching " + SITE_IDENTIFIER);
     }
 
     public void testGetWhenSiteExistsButNotStudy() throws Exception {
@@ -106,7 +106,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         doGet();
 
-        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND, "No study matching " + STUDY_IDENTIFIER);
     }
 
     public void testGetWhenNeitherSiteNotStudyExist() throws Exception {

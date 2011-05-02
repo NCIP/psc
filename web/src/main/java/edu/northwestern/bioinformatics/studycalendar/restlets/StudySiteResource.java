@@ -8,10 +8,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import org.restlet.data.Method;
 import org.restlet.Request;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -54,7 +53,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    protected StudySite loadRequestedObject(Request request) {
+    protected StudySite loadRequestedObject(Request request) throws ResourceException {
         String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
 
@@ -65,21 +64,14 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         study = studyDao.getByAssignedIdentifier(studyIdentifier);
         site = siteDao.getByAssignedIdentifier(siteIdentifier);
 
-        if (study == null || site == null) {
-            return null;
-        } else {
-            return studySite;
-        }
-    }
-
-    @Override
-    protected void validateEntity(Representation entity) throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "No study matching " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()));
+                "No study matching " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()));
         } else if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "No site named " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
+                "No site matching " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
+        } else {
+            return studySite;
         }
     }
 

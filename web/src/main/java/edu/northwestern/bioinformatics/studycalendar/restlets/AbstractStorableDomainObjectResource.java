@@ -27,7 +27,6 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
     @SuppressWarnings({"unchecked"})
     public Representation put(Representation entity, Variant variant) throws ResourceException {
         if (entity.getMediaType().includes(MediaType.TEXT_XML)) {
-            validateEntity(entity);
             D read;
             try {
                 read = getXmlSerializer().readDocument(entity.getStream());
@@ -51,5 +50,4 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
     }
 
     public abstract void store(D instance) throws ResourceException;
-    protected void validateEntity(Representation entity) throws ResourceException {}
 }
