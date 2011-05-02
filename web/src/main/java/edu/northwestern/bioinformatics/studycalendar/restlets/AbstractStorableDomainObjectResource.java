@@ -27,15 +27,15 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
     @SuppressWarnings({"unchecked"})
     public Representation put(Representation entity, Variant variant) throws ResourceException {
         if (entity.getMediaType().includes(MediaType.TEXT_XML)) {
-            D read;
+            D stored;
             try {
-                read = getXmlSerializer().readDocument(entity.getStream());
-                store(read);
+                D read = getXmlSerializer().readDocument(entity.getStream());
+                stored = store(read);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
             }
-            getResponse().setEntity(createXmlRepresentation(read));
+            getResponse().setEntity(createXmlRepresentation(stored));
             if (getRequestedObject() == null) {
                 getResponse().setStatus(Status.SUCCESS_CREATED);
             } else {
@@ -49,5 +49,5 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
         }
     }
 
-    public abstract void store(D instance) throws ResourceException;
+    public abstract D store(D instance) throws ResourceException;
 }

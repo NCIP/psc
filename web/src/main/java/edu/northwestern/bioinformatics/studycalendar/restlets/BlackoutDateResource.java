@@ -68,9 +68,9 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
     }
 
     @Override
-    public void store(final BlackoutDate blackoutDate) {
-        // throw new Exception("Store not implemented");
-
+    public BlackoutDate store(final BlackoutDate blackoutDate) {
+        throw new UnsupportedOperationException(
+            "PUT is explicitly not supported.  This code should be unreachable.");
     }
 
     @Override

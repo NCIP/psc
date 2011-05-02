@@ -76,7 +76,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    public void store(StudySite studySite) throws ResourceException {
+    public StudySite store(StudySite studySite) throws ResourceException {
         try {
             if (getRequestedObject() == null) {
                 StudySite resolvedStudySite = studySiteService.resolveStudySite(studySite);
@@ -85,6 +85,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         } catch (StudyCalendarValidationException scve) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
         }
+        return studySite;
     }
 
     @Override

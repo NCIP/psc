@@ -78,13 +78,14 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     }
 
     @Override
-    public void store(Source source) throws ResourceException {
+    public Source store(Source source) throws ResourceException {
         if (getRequestedObject() == null) {
             sourceDao.save(source);
         } else {
             Source existingSource = getRequestedObject();
             sourceService.updateSource(source,existingSource);
         }
+        return source;
     }
 
     @Required

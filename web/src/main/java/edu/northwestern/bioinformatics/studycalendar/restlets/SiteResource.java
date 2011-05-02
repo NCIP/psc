@@ -46,8 +46,10 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     }
 
     @Override
-    public void store(final Site site) {
+    public Site store(final Site site) {
         siteService.createOrMergeSites(getRequestedObject(), site);
+        // TODO: returning the result of the above call would probably make more sense
+        return site;
     }
 
     @Override

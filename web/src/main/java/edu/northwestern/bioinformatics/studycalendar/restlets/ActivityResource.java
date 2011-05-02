@@ -62,7 +62,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     }
 
     @Override
-    public void store(Activity activity) throws ResourceException {
+    public Activity store(Activity activity) throws ResourceException {
         if (getRequestedObject() == null) {
             activityService.saveActivity(activity);
         } else {
@@ -73,6 +73,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
             existingActivity.setDescription(activity.getDescription());
             activityService.saveActivity(existingActivity);
         }
+        return activity;
     }
 
     @Override
