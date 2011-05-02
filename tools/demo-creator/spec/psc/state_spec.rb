@@ -220,7 +220,23 @@ describe Psc::State do
     end
 
     def do_apply
-      state.apply(connection)
+      Psc::StateApplier.new(state, QuietOutput.new).apply(connection)
+    end
+
+    class QuietOutput
+      def messages
+        @messages ||= []
+      end
+
+      def monitor(msg)
+        messages << msg
+        yield
+        nil
+      end
+
+      def trace(msg)
+        messages << msg
+      end
     end
 
     describe "when importing sites" do

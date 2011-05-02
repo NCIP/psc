@@ -1,15 +1,14 @@
 require 'faraday'
 require 'nokogiri'
 require 'builder'
+require 'highline'
 
 module Psc
   class State
     attr_accessor :sites, :templates, :registrations
 
     def apply(connection)
-      (sites || []).each { |s| s.apply(connection) }
-      (templates || []).each { |t| t.apply(connection) }
-      (registrations || []).each { |r| r.apply(connection, self) }
+      StateApplier.new(self).apply(connection)
     end
 
     def template(ident)
@@ -301,6 +300,76 @@ module Psc
           'start-date' => start.to_s,
           'mode' => mode
         ))
+    end
+  end
+
+  class StateApplier
+    def initialize(state, out=DefaultOutput.new)
+      @state = state
+      @out = out
+    end
+
+    def apply(connection)
+      c = ConnectionProxy.new(connection, @out)
+      puts (@state.sites || []).collect { |s|
+        @out.monitor("Adding site #{s.assigned_identifier}") { s.apply(c) }
+      }.compact.tap { |result| return false if result.size > 0 }
+
+      (@state.templates || []).collect { |t|
+        @out.monitor("Adding template #{t.assigned_identifier}") { t.apply(c) }
+      }.compact.tap { |result| return false if result.size > 0 }
+
+      (@state.registrations || []).collect { |r|
+        @out.monitor("Registering #{r.subject.first_name} #{r.subject.last_name}") {
+          r.apply(c, @state)
+        }
+      }.compact.tap { |result| return false if result.size > 0 }
+    end
+
+    class ConnectionProxy
+      def initialize(conn, out)
+        @conn = conn
+        @out = out
+      end
+
+      def make_request(method, *args)
+        @out.trace("#{method.to_s.upcase} #{args.first}")
+        resp = @conn.send(method, *args)
+        if resp.respond_to?(:status) && resp.status > 299
+          raise resp.body
+        end
+        resp
+      end
+
+      def method_missing(m, *args)
+        if %w(get put post delete patch).include?(m.to_s)
+          make_request(m, *args)
+        else
+          super
+        end
+      end
+    end
+
+    class DefaultOutput
+      def initialize
+        @hl = HighLine.new
+        HighLine.color_scheme = HighLine::SampleColorScheme.new
+      end
+
+      def monitor(msg)
+        @hl.say("<%= color('*', :info) %> #{msg}")
+        begin
+          yield
+          nil
+        rescue => e
+          @hl.say("<%= color(' -', :error) %> #{e}")
+          false
+        end
+      end
+
+      def trace(msg)
+        @hl.say("<%= color(' +', :info) %> #{msg}")
+      end
     end
   end
 
