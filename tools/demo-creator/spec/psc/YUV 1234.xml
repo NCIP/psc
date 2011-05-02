@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="YUV 1234" last-modified-date="2010-10-01T13:40:08.36Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="84b52b6a-4e04-44a1-9b95-bd2c0367cf26"/>
+  <amendment name="Empty" date="2010-10-01" mandatory="true" released-date="2010-10-01T13:40:08.36Z" previous-amendment-key="2008-01-28~[Original]"/>
+  <amendment name="[Original]" date="2008-01-28" mandatory="true" updated-date="2008-03-18T23:50:03.243Z">
+    <planned-calendar-delta id="8695fd04-6c87-425b-8f7e-2678c8aea1d6" node-id="84b52b6a-4e04-44a1-9b95-bd2c0367cf26">
+      <add id="bebc1db6-780f-4c65-a578-572a3de27c6f" index="0">
+        <epoch id="5439115a-9453-4492-96d9-ac5d7a5153de" name="Treatment">
+          <study-segment id="9f500df8-3400-4589-98a6-bda41036f15d" name="Regimen A">
+            <period id="04fed30f-3cda-4843-936a-b5d9d9d07492" name="Cycle" repetitions="6" start-day="1" duration-quantity="28" duration-unit="day">
+              <planned-activity id="d058a7f1-f414-4544-b5cc-01e0850743fe" day="1">
+                <activity-reference code="CBC" source="NU Sample Activities"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="a6c9a1ef-1cc7-4194-abf7-358d8b76b565" name="Regimen B">
+            <period id="a7b4ce77-013b-4b69-a651-b642a91d9feb" name="Cycle" repetitions="6" start-day="1" duration-quantity="28" duration-unit="day">
+              <planned-activity id="4d6e2690-c517-4011-85d4-6d04988306c7" details="Orally" day="3">
+                <activity-reference code="10002" source="PSC - Manual Activity Creation - 5e9fcce3-efc3-4d62-8100-16222f1044d0"/>
+              </planned-activity>
+              <planned-activity id="81789eb1-4176-47d4-8913-a3553a06cbbc" details="Orally" day="10">
+                <activity-reference code="10002" source="PSC - Manual Activity Creation - 5e9fcce3-efc3-4d62-8100-16222f1044d0"/>
+              </planned-activity>
+              <planned-activity id="c245a947-4506-4bf4-bd67-d2cdd752b3b2" details="Subcutaneously" day="1">
+                <activity-reference code="100001" source="PSC - Manual Activity Creation - 5e9fcce3-efc3-4d62-8100-16222f1044d0"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="13359864-4a19-4b1d-8f4f-87edf4d62f95" index="1">
+        <epoch id="bdf71c34-fb06-471a-918d-fb43b26a1056" name="Follow up">
+          <study-segment id="540926c7-391e-4aa8-984e-68434d241f8a" name="Short term">
+            <period id="b6d033c3-8bc4-4bce-b6fe-9f19cd4f8a10" name="Physical exams" repetitions="24" start-day="1" duration-quantity="30" duration-unit="day">
+              <planned-activity id="24388f83-0abf-4880-808a-7ad2607122d7" day="1">
+                <activity-reference code="PhysicalExam" source="NU Sample Activities"/>
+              </planned-activity>
+              <planned-activity id="f3763cfb-cabc-40a3-9727-5e85879f4b27" day="1">
+                <activity-reference code="CBC" source="NU Sample Activities"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="97f34c10-41f3-4ca1-81d5-328cea34ee2a" name="Long term">
+            <period id="26c183d7-4e1d-4c1e-ba39-df0211d6a110" repetitions="5" start-day="1" duration-quantity="365" duration-unit="day">
+              <planned-activity id="eb04902d-92b3-4dc9-9f2c-04e77abbfaf7" day="1">
+                <activity-reference code="ElectronicTelephoneDiary" source="NU Sample Activities"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </amendment>
+  <development-amendment name="new" date="2010-11-04" mandatory="true"/>
+  <sources>
+    <source name="PSC - Manual Activity Creation - 5e9fcce3-efc3-4d62-8100-16222f1044d0">
+      <activity name="MS-275" code="10002" description="" type="Intervention"/>
+      <activity name="Azacitidine" code="100001" description="" type="Intervention"/>
+    </source>
+    <source name="NU Sample Activities">
+      <activity name="Electronic Telephone Diary" code="ElectronicTelephoneDiary" description="to test the user" type="Other">
+        <property namespace="URI" name="0.template" value="test"/>
+        <property namespace="URI" name="0.text" value="test"/>
+      </activity>
+      <activity name="Physical Exam" code="PhysicalExam" description="" type="Procedure"/>
+      <activity name="CBC" code="CBC" description="" type="Lab Test"/>
+    </source>
+  </sources>
+</study>

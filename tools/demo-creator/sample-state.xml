@@ -1,0 +1,64 @@
+<psc-state>
+  <!--
+      General note: Anywhere a date is specified, the value may either
+      be a date string in the form yyyy-mm-dd or an integer. An
+      integer indicates a date relative to today (negative, before
+      today; positive, after today).
+  -->
+
+  <site name="Northwestern University" assigned-identifier="IL036"/>
+  <site name="University of Pittsburgh" assigned-identifier="PA015"/>
+
+  <!--
+      The assigned-identifier attribute for template is mandatory;
+      file is optional. If the file is omitted, it is assumed to be a
+      file named [assigned-identifier].xml in the same directory as
+      this state XML file.
+  -->
+  <template assigned-identifier="ABC 1234" file="foo/1234.xml">
+    <!--
+        approval indicates whether the template should be marked as
+        approved for use by the site. It can be either a date or
+        false; the default is 0 (i.e., today). All released amendments
+        will have the same approval status.
+    -->
+    <participating-site assigned-identifier="IL036" approval="false"/>
+    <participating-site assigned-identifier="PA015" approval="2010-01-02"/>
+  </template>
+  <template assigned-identifier="ABC 2345">
+    <participating-site assigned-identifier="IL036"/>
+  </template>
+
+  <registration>
+    <subject
+        first-name="Jo"
+        last-name="Fredricksson"
+        gender="Female"
+        birth-date="1950-06-01"
+        person-id="XC56700077"
+        >
+      <subject-property name="Hat size" value="7"/>
+    </subject>
+    <!-- template-identifier and site-identifier are mandatory attributes -->
+    <study-site
+        template="ABC 1234"
+        site="IL036"
+        primary-coordinator="sam"
+        study-subject-identifier="A0001"
+        desired-assignment-identifier="EXT-4563">
+      <!--
+          * segment is either the ID for the segment or its "epoch: segment" name (mandatory).
+          * start is the start date for the segment (default: 0 for the first segment;
+            the end of the previous for subsequent). [TODO: the second part isn't implemented yet]
+          * mode is the transition mode for the segment (default: per-protocol).
+      -->
+      <scheduled-segment segment="Run-in" start="14"/>
+      <scheduled-segment segment="Treatment: A" mode="per-protocol"/>
+      <scheduled-segment segment="Followup" start="56" mode="immediate"/>
+    </study-site>
+
+    <!-- multiple study-sites allowed per registration to reuse the same subject -->
+  </registration>
+
+  <!-- multiple registrations allowed -->
+</psc-state>
