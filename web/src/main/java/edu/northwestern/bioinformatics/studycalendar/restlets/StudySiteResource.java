@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
@@ -76,16 +75,32 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    public StudySite store(StudySite studySite) throws ResourceException {
-        try {
-            if (getRequestedObject() == null) {
-                StudySite resolvedStudySite = studySiteService.resolveStudySite(studySite);
-                studySiteDao.save(resolvedStudySite);
-            }
-        } catch (StudyCalendarValidationException scve) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
+    public StudySite store(StudySite fromEntity) throws ResourceException {
+        if (getRequestedObject() == null) {
+            StudySite fromUri = new StudySite(study, site);
+            checkUriPutEntityMismatch(
+                fromUri.getSite().getAssignedIdentifier(),
+                fromEntity.getSite().getAssignedIdentifier(),
+                "sites"
+            );
+            checkUriPutEntityMismatch(
+                fromUri.getStudy().getAssignedIdentifier(),
+                fromEntity.getStudy().getAssignedIdentifier(),
+                "studies"
+            );
+            StudySite resolvedStudySite = studySiteService.resolveStudySite(fromUri);
+            studySiteDao.save(resolvedStudySite);
+            return resolvedStudySite;
+        } else {
+            return fromEntity;
         }
-        return studySite;
+    }
+
+    private void checkUriPutEntityMismatch(String identifierFromUri, String identifierFromEntity, String kind) {
+        if (identifierFromEntity != null && !identifierFromEntity.equals(identifierFromUri)) {
+            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+                "Entity- and URI-designated " + kind + " do not match. Either make them match or omit the one in the entity.");
+        }
     }
 
     @Override

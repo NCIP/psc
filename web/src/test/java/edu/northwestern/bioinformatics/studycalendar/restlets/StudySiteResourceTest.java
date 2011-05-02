@@ -154,6 +154,62 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         assertResponseIsCreatedXml();
     }
 
+    public void testPutCreatesTheStudySiteIfItDoesNotExistWhenTheEntityIsMissingTheSiteIdentifier() throws Exception {
+        StudySite deserialized = createUnlinkedStudySite(study, new Site());
+        StudySite unlinkedSS = createUnlinkedStudySite();
+
+        expectResolvedStudyAndSite(study, site);
+        expect(studySiteService.resolveStudySite(unlinkedSS)).andReturn(unlinkedSS);
+        expectDeserializeEntity(deserialized);
+        expectSaveNewStudySite(unlinkedSS);
+        expectObjectXmlized(unlinkedSS);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
+        assertResponseIsCreatedXml();
+    }
+
+    public void testPutCreatesTheStudySiteIfItDoesNotExistWhenTheEntityIsMissingTheStudyIdentifier() throws Exception {
+        StudySite deserialized = createUnlinkedStudySite(new Study(), site);
+        StudySite unlinkedSS = createUnlinkedStudySite();
+
+        expectResolvedStudyAndSite(study, site);
+        expect(studySiteService.resolveStudySite(unlinkedSS)).andReturn(unlinkedSS);
+        expectDeserializeEntity(deserialized);
+        expectSaveNewStudySite(unlinkedSS);
+        expectObjectXmlized(unlinkedSS);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
+        assertResponseIsCreatedXml();
+    }
+
+    public void testPutFailsIfTheEntitySiteDoesNotMatchTheUriSite() throws Exception {
+        StudySite deserialized = createUnlinkedStudySite(study, createSite(null, "AV 1206"));
+
+        expectResolvedStudyAndSite(study, site);
+        expectDeserializeEntity(deserialized);
+
+        doPut();
+
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Entity- and URI-designated sites do not match. Either make them match or omit the one in the entity.");
+    }
+
+    public void testPutFailsIfTheEntityStudyDoesNotMatchTheUriStudy() throws Exception {
+        StudySite deserialized = createUnlinkedStudySite(createBasicTemplate("ETC4"), site);
+
+        expectResolvedStudyAndSite(study, site);
+        expectDeserializeEntity(deserialized);
+
+        doPut();
+
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+            "Entity- and URI-designated studies do not match. Either make them match or omit the one in the entity.");
+    }
+
     public void testPutDoesNothingIfStudySiteAlreadyExists() throws Exception {
         StudySite unlinkedSS = createUnlinkedStudySite();
 
@@ -169,14 +225,14 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     public void testPut404sWhenStudyDoesNotExist() throws Exception {
-        expectRequestHasIgnoredEntity();
+        expectDeserializeEntity(createUnlinkedStudySite());
         expectResolvedStudyAndSite(null, site);
         doPut();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testPut404sWhenSiteDoesNotExist() throws Exception {
-        expectRequestHasIgnoredEntity();
+        expectDeserializeEntity(createUnlinkedStudySite());
         expectResolvedStudyAndSite(study, null);
         doPut();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -225,6 +281,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     private void expectDeserializeEntity(StudySite studySite) throws Exception {
+        request.setEntity(MOCK_XML_REP);
         expect(xmlSerializer.readDocument(MOCK_XML_REP.getStream())).andReturn(studySite);
     }
 
@@ -246,9 +303,13 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     private StudySite createUnlinkedStudySite() {
+        return createUnlinkedStudySite(study, site);
+    }
+
+    private StudySite createUnlinkedStudySite(Study st, Site si) {
         StudySite unlinkedSS = new StudySite();
-        unlinkedSS.setStudy(study);
-        unlinkedSS.setSite(site);
+        unlinkedSS.setStudy(st);
+        unlinkedSS.setSite(si);
         return unlinkedSS;
     }
 }
