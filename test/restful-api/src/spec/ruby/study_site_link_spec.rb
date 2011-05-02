@@ -32,6 +32,27 @@ describe "/studies/{study-identifier}/sites/{site-identifier}" do
       response.xml_elements('//study-site-link').should have(1).elements
     end
 
+    it "allows creating a study-site-link without specifying the linked refs in the body" do
+      put "/studies/NU480/sites/IL036", psc_xml('study-site-link'), :as => :juno
+      response.status_code.should == 201
+    end
+
+    it "prevents creating a study-site-link where the body study doesn't match the URL" do
+      put "/studies/NU480/sites/IL036",
+        psc_xml('study-site-link', 'study-identifier' => 'ECOG170'), :as => :juno
+      response.status_code.should == 422
+      response.entity.should =~
+        %r{Entity- and URI-designated studies do not match. Either make them match or omit the one in the entity.}
+    end
+
+    it "prevents creating a study-site-link where the body site doesn't match the URL" do
+      put "/studies/NU480/sites/IL036",
+        psc_xml('study-site-link', 'site-identifier' => 'PA015'), :as => :juno
+      response.status_code.should == 422
+      response.entity.should =~
+        %r{Entity- and URI-designated sites do not match. Either make them match or omit the one in the entity.}
+    end
+
     it "forbids creating a study-site-link using a non-existing site" do
       put "/studies/NU480/sites/AAAA12", @valid_study_invalid_site_link_xml, :as => :juno
       response.status_code.should == 404
@@ -42,20 +63,6 @@ describe "/studies/{study-identifier}/sites/{site-identifier}" do
       put "/studies/NU000/sites/IL036", @invalid_study_valid_site_link_xml, :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
-    end
-
-    it "gives 400 if study from xml is not exists in system" do
-      put "/studies/NU480/sites/IL036", @invalid_study_valid_site_link_xml, :as => :juno
-      response.status_code.should == 400
-      response.status_message.should == "Bad Request"
-      response.entity =~ %r(Study 'NU000' not found. Please define a study that exists.)
-    end
-
-    it "gives 400 if site from xml is not exists in system" do
-      put "/studies/NU480/sites/IL036", @valid_study_invalid_site_link_xml, :as => :juno
-      response.status_code.should == 400
-      response.status_message.should == "Bad Request"
-      response.entity =~ %r(Site 'AAAA12' not found. Please define a site that exists.)
     end
   end
 
