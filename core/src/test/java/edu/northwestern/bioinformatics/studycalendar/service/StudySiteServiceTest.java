@@ -360,7 +360,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
             service.resolveStudySite(nu_nu123);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Study 'NU123' not found. Please define a study that exists.", scve.getMessage());
+            assertEquals("Study NU123 not found.", scve.getMessage());
         }
     }
 
@@ -372,7 +372,31 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
             service.resolveStudySite(nu_nu123);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Site 'NU' not found. Please define a site that exists.", scve.getMessage());
+            assertEquals("Site NU not found.", scve.getMessage());
+        }
+    }
+
+    public void testResolveStudySiteWhenNoStudyIdentifier() throws Exception {
+        nu123.setAssignedIdentifier(null);
+        replayMocks();
+        try {
+            service.resolveStudySite(nu_nu123);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("No study identifier specified.", scve.getMessage());
+        }
+    }
+
+    public void testResolveStudySiteWhenNoSiteIdentifier() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
+        nu.setName(null);
+        nu.setAssignedIdentifier(null);
+        replayMocks();
+        try {
+            service.resolveStudySite(nu_nu123);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("No site identifier specified", scve.getMessage());
         }
     }
 
