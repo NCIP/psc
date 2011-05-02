@@ -153,17 +153,19 @@ module Psc
 
     def apply(connection)
       connection.put "sites/#{assigned_identifier}",
-        Psc.xml('site', :name => name, 'assigned-identifier' => assigned_identifier).to_s
+        Psc.xml('site', 'site-name' => name, 'assigned-identifier' => assigned_identifier).to_s,
+          'Content-Type' => 'text/xml'
     end
   end
 
   class Template < Struct.new(:assigned_identifier)
     include BulkSettable
 
-    attr_accessor :assigned_identifer, :filename, :participating_sites
+    attr_accessor :filename, :participating_sites
 
     def apply(connection)
-      connection.put "studies/#{assigned_identifier}/template", File.read(filename)
+      connection.put "studies/#{assigned_identifier}/template", File.read(filename),
+        'Content-Type' => 'text/xml'
       (participating_sites || []).each do |ps|
         ps.apply(connection, self)
       end
@@ -214,7 +216,7 @@ module Psc
 
     def apply(connection, template)
       study_site_path = "studies/#{template.assigned_identifier}/sites/#{assigned_identifier}"
-      connection.put study_site_path, "<study-site-link/>"
+      connection.put study_site_path, "<study-site-link/>", 'Content-Type' => 'text/xml'
       if approval
         template.document.css('amendment').
           collect { |am_elt| [am_elt['date'], am_elt['name']].compact }.

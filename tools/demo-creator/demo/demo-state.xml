@@ -1,0 +1,26 @@
+<psc-state>
+  <site name="Northwestern University" assigned-identifier="IL036"/>
+  <site name="Thomas Jefferson University" assigned-identifier="PA121"/>
+
+  <template assigned-identifier="NU-Cycles1">
+    <participating-site assigned-identifier="IL036"/>
+    <participating-site assigned-identifier="PA121"/>
+  </template>
+
+  <registration>
+    <subject
+        first-name="Jo"
+        last-name="Fredricksson"
+        gender="Female"
+        birth-date="1950-06-01"
+        person-id="XC56700077"
+        />
+    <study-site
+        template="NU-Cycles1"
+        site="IL036"
+        study-subject-identifier="NU0009"
+        >
+      <scheduled-segment segment="Treatment: Regimen A" start="-28"/>
+    </study-site>
+  </registration>
+</psc-state>

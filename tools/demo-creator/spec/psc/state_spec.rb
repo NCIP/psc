@@ -248,7 +248,7 @@ describe Psc::State do
 
       it "includes the name" do
         a_request(:put, File.join(base_url, '/sites/IL036')).
-          with(:body => %r{<site[^>]*name="Northwestern"}).
+          with(:body => %r{<site[^>]*site-name="Northwestern"}).
           should have_been_made.once
       end
 
