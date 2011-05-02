@@ -8,12 +8,11 @@ describe "/studies/{study-identifier}/sites/{site-identifier}" do
     ]
     @studies.each do |s|
       application_context['studyService'].save(s)
-
-    @study_site_link_xml = psc_xml("study-site-link", 'study-name' => "NU480", 'site-name' => "IL036")
-    @valid_study_invalid_site_link_xml = psc_xml("study-site-link", 'study-name' => "NU480", 'site-name' => "AAAA12")
-    @invalid_study_valid_site_link_xml = psc_xml("study-site-link", 'study-name' => "NU000", 'site-name' => "IL036")
-
     end
+
+    @study_site_link_xml = psc_xml("study-site-link", 'study-identifier' => "NU480", 'site-identifier' => "IL036")
+    @valid_study_invalid_site_link_xml = psc_xml("study-site-link", 'study-identifier' => "NU480", 'site-identifier' => "AAAA12")
+    @invalid_study_valid_site_link_xml = psc_xml("study-site-link", 'study-identifier' => "NU000", 'site-identifier' => "IL036")
   end
 
   describe "PUT" do
@@ -28,8 +27,8 @@ describe "/studies/{study-identifier}/sites/{site-identifier}" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      response.xml_attributes("study-site-link", "study-name").should include("NU480")
-      response.xml_attributes("study-site-link", "site-name").should include("Northwestern University Robert H. Lurie Comprehensive Cancer Center")
+      response.xml_attributes("study-site-link", "study-identifier").should include("NU480")
+      response.xml_attributes("study-site-link", "site-identifier").should include("Northwestern University Robert H. Lurie Comprehensive Cancer Center")
       response.xml_elements('//study-site-link').should have(1).elements
     end
 
@@ -58,7 +57,6 @@ describe "/studies/{study-identifier}/sites/{site-identifier}" do
       response.status_message.should == "Bad Request"
       response.entity =~ %r(Site 'AAAA12' not found. Please define a site that exists.)
     end
-
   end
 
   describe "GET" do

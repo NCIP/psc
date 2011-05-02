@@ -368,8 +368,8 @@
     <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
 
     <xsd:complexType name="StudySiteLink">
-        <xsd:attribute name="study-name" type="xsd:string" use="required"/>
-        <xsd:attribute name="site-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="study-identifier" type="xsd:string"/>
+        <xsd:attribute name="site-identifier" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="sites" type="psc:sites"/>
