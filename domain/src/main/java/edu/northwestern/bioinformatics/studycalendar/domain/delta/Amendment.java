@@ -319,7 +319,7 @@ public class Amendment
                 Delta amendmentMatchingDelta = amendment.getMatchingDelta(
                     delta.getGridId(), delta.getNode().getGridId(), delta.getClass());
                 if (amendmentMatchingDelta != null) {
-                    Differences deltaDifferences = amendmentMatchingDelta.deepEquals(delta);
+                    Differences deltaDifferences = delta.deepEquals(amendmentMatchingDelta);
                     if (deltaDifferences.hasDifferences()) {
                         differences.addChildDifferences(delta.getBriefDescription(), deltaDifferences);
                     }
