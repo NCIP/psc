@@ -319,7 +319,7 @@ public class AmendmentTest extends DomainTestCase {
             PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
         Differences differences = a1.deepEquals(a2);
         assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Amendment are Equals", "number of deltas 1 does not match 2", differences.getMessages().get(0));
+        assertEquals("Amendment are Equals", "number of deltas does not match: 1 != 2", differences.getMessages().get(0));
     }
 
     public void testDeepEqualsWhenNoDeltaFoundInAmendment() throws Exception {
@@ -361,9 +361,9 @@ public class AmendmentTest extends DomainTestCase {
         a2.addDelta(delta2);
         Differences differences = a1.deepEquals(a2);
         assertFalse(differences.getChildDifferences().isEmpty());
-        String actualMessage =  differences.getChildDifferences().
-            get("delta for epoch GridId1").getChildDifferences().
-            get("Change property").getMessages().get(0);
-        assertEquals("new value B differs to C", actualMessage);
+
+        assertChildDifferences(differences,
+            new String[] { "delta for epoch GridId1", "property change for name" },
+            "new value \"B\" does not match \"C\"");
     }
 }

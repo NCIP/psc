@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.DeepComparable;
+import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -35,7 +37,7 @@ import java.util.List;
 @DiscriminatorColumn(name="action", discriminatorType = DiscriminatorType.STRING)
 public abstract class Change
     extends AbstractMutableDomainObject
-    implements Cloneable, TransientCloneable<Change>
+    implements Cloneable, TransientCloneable<Change>, DeepComparable<Change>, NaturallyKeyed
 {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -58,7 +60,7 @@ public abstract class Change
     public abstract boolean isNoop();
 
     @Transient
-    public abstract Differences deepEquals(Object o);
+    public abstract Differences deepEquals(Change o);
 
     /**
      * Integrate the change embodied in this object into the given {@link Delta}.

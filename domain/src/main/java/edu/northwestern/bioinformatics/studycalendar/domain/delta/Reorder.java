@@ -106,7 +106,7 @@ public class Reorder extends ChildrenChange {
         this.oldIndex = oldIndex;
     }
 
-    public Differences deepEquals(Object o) {
+    public Differences deepEquals(Change o) {
         Differences differences =  new Differences();
         if (this == o) return differences;
         if (o == null || getClass() != o.getClass()) {
@@ -123,15 +123,10 @@ public class Reorder extends ChildrenChange {
             }
         }
 
-        if (newIndex != null ? !newIndex.equals(reorder.newIndex) : reorder.newIndex != null) {
-            differences.addMessage(String.format("newIndex %d differs to %d", newIndex, reorder.newIndex));
-        }
-
-        if (oldIndex != null ? !oldIndex.equals(reorder.oldIndex) : reorder.oldIndex != null) {
-            differences.addMessage(String.format("oldIndex %d differs to %d", oldIndex, reorder.oldIndex));
-        }
-
-        return differences;
+        return differences.
+            registerValueDifference("new index", this.getNewIndex(), reorder.getNewIndex()).
+            registerValueDifference("old index", this.getOldIndex(), reorder.getOldIndex())
+            ;
     }
 
     ////// OBJECT METHODS

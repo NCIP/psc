@@ -1,23 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
-import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
+
 /**
  * @author Rhett Sutphin
  */
-public class ReorderTest extends TestCase {
+public class ReorderTest extends DomainTestCase {
     private static final Date NOW = DateTools.createDate(2009, Calendar.APRIL, 5);
 
     private Reorder reorder;
@@ -312,65 +310,42 @@ public class ReorderTest extends TestCase {
     }
 
     public void testEqualsWhenOldIndexAndNewIndexAreEquals() throws Exception {
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,1);
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        Reorder reorder1 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 1);
+        Reorder reorder2 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 1);
         assertEquals("Reorders are not equals", reorder1, reorder2);
     }
     
     public void testEqualsWhenIndexesAreNotEquals() throws Exception {
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,3);
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        Reorder reorder1 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 3);
+        Reorder reorder2 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 1);
         assertNotEquals("Reorders are equals", reorder1, reorder2);
     }
 
     public void testEqualsWhenChildNameAreDifferent() throws Exception {
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,1);
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment2", StudySegment.class), 2,1);
+        Reorder reorder1 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 1);
+        Reorder reorder2 = Reorder.create(createNamedInstance("Segment2", StudySegment.class), 2, 1);
         assertNotEquals("Reorders are equals", reorder1, reorder2);
     }
 
     public void testEqualsWhenChildNodesAreDifferent() throws Exception {
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,1);
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Epoch1", Epoch.class), 2,1);
+        Reorder reorder1 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 1);
+        Reorder reorder2 = Reorder.create(createNamedInstance("Epoch1", Epoch.class), 2, 1);
         assertNotEquals("Reorders are equals", reorder1, reorder2);
     }
     
     public void testDeepEqualsWhenIndexAreNotEquals() throws Exception {
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 2,3);
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
-                createNamedInstance("Segment1", StudySegment.class), 1,2);
-        Differences differences = reorder1.deepEquals(reorder2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("newIndex 3 differs to 2", differences.getMessages().get(0));
-        assertEquals("oldIndex 2 differs to 1", differences.getMessages().get(1));
+        Reorder reorder1 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 2, 3);
+        Reorder reorder2 = Reorder.create(createNamedInstance("Segment1", StudySegment.class), 1, 2);
+
+        assertDifferences(reorder1.deepEquals(reorder2),
+            "new index does not match: 3 != 2",
+            "old index does not match: 2 != 1");
     }
 
     public void testDeepEqualsWhenChildNodeAreNotEquals() throws Exception {
-        Epoch e1 = Epoch.create("E1","S1","S2");
-        e1.setGridId("e1");
-        Reorder reorder1 =  createReorderWithProperties(new Reorder(), e1, 1,2);
-        Epoch e2 = Epoch.create("E2","S1","S2");
-        e1.setGridId("e2");
-        Reorder reorder2 =  createReorderWithProperties(new Reorder(), e2, 1,2);
-        Differences differences = reorder1.deepEquals(reorder2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("for different child", differences.getMessages().get(0));
-    }
+        Reorder reorder1 = Reorder.create(setGridId("e1", Epoch.create("E1")), 1, 2);
+        Reorder reorder2 = Reorder.create(setGridId("e2", Epoch.create("E2", "S1", "S2")), 1, 2);
 
-    private Reorder createReorderWithProperties(Reorder reorder, Child<?> child, int oldId, int newId) {
-        reorder.setChild(child);
-        reorder.setOldIndex(oldId);
-        reorder.setNewIndex(newId);
-        return reorder;
+        assertDifferences(reorder1.deepEquals(reorder2), "for different child");
     }
-
 }

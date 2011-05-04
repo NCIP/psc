@@ -60,6 +60,11 @@ public class PropertyChange extends Change {
         return new PropertyMergeLogic(delta, updateTime);
     }
 
+    @Transient
+    public String getNaturalKey() {
+        return String.format("property change for %s", getPropertyName());
+    }
+
     ////// BEAN PROPERTIES
 
     @Column(name="old_value")
@@ -100,7 +105,8 @@ public class PropertyChange extends Change {
             .toString();
     }
 
-    public Differences deepEquals(Object o) {
+    @Override
+    public Differences deepEquals(Change o) {
         Differences differences =  new Differences();
         if (this == o) return differences;
         if (o == null || getClass() != o.getClass()) {
@@ -110,18 +116,11 @@ public class PropertyChange extends Change {
 
         PropertyChange that = (PropertyChange) o;
 
-        if (newValue != null ? !newValue.equals(that.newValue) : that.newValue != null) {
-            differences.addMessage(String.format("new value %s differs to %s", newValue, that.newValue));
-        }
-
-        if (oldValue != null ? !oldValue.equals(that.oldValue) : that.oldValue != null) {
-            differences.addMessage(String.format("old value %s differs to %s", oldValue, that.oldValue));
-        }
-
-        if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) {
-            differences.addMessage(String.format("property %s differs to %s", propertyName, that.propertyName));
-        }
-        return differences;
+        return differences.
+            registerValueDifference("property", this.getPropertyName(), that.getPropertyName()).
+            registerValueDifference("new value", this.getNewValue(), that.getNewValue()).
+            registerValueDifference("old value", this.getOldValue(), that.getOldValue())
+            ;
     }
 
     public boolean equals(Object o) {

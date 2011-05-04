@@ -32,13 +32,17 @@ public class ChangeTest extends TestCase {
         }
 
         @Override
-        public Differences deepEquals(Object o) {
+        public Differences deepEquals(Change o) {
             throw new UnsupportedOperationException("deepEquals not implemented");
         }
 
         @Override
         protected MergeLogic createMergeLogic(Delta<?> delta, Date updateTime) {
             throw new UnsupportedOperationException("createMergeLogic not implemented");
+        }
+
+        public String getNaturalKey() {
+            throw new UnsupportedOperationException("getNaturalKey not implemented");
         }
     }
 }

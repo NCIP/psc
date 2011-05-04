@@ -102,7 +102,8 @@ public class Add extends ChildrenChange {
         return true;
     }
 
-    public Differences deepEquals(Object o) {
+    @Override
+    public Differences deepEquals(Change o) {
         Differences differences =  new Differences();
         if (this == o) return differences;
         if (o == null || getClass() != o.getClass()) {
@@ -112,16 +113,11 @@ public class Add extends ChildrenChange {
 
         Add add = (Add) o;
 
-        if (index != null ? !index.equals(add.index) : add.index != null) {
-            differences.addMessage(String.format("index %d differs to %d", index, add.index));
+        differences.registerValueDifference("index", getIndex(), add.getIndex());
+        if (getChild() != null) {
+            differences.recurseDifferences("child", getChild(), add.getChild());
         }
 
-        if (getChild() != null) {
-            Differences childDifferences = getChild().deepEquals(add.getChild());
-            if (childDifferences.hasDifferences()) {
-                differences.addChildDifferences("child", childDifferences);
-            }
-        }
         return differences;
     }
 
