@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,5 +43,14 @@ public abstract class DomainTestCase extends TestCase {
 
     protected MockRegistry getMocks() {
         return mocks;
+    }
+
+    public void assertDifferences(Differences actual, String... expectedMessages) {
+        assertEquals("Wrong number of differences: " + actual.getMessages(),
+            expectedMessages.length, actual.getMessages().size());
+        for (int i = 0; i < expectedMessages.length; i++) {
+            String expectedMessage = expectedMessages[i];
+            assertEquals("Message mismatch at " + i, expectedMessage, actual.getMessages().get(i));
+        }
     }
 }

@@ -1,11 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSource;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -108,7 +109,7 @@ public class ActivityTest extends TestCase {
         Activity a2 = Fixtures.createActivity("A2");
         Differences differences = a1.deepEquals(a2);
         assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy is not different", "Activity name A1 differs to A2", differences.getMessages().get(0));
+        assertEquals("Activiy is not different", "activity name \"A1\" does not match \"A2\"", differences.getMessages().get(0));
     }
 
     public void testDeepEqualsForDifferentActivityCode() throws Exception {
@@ -118,7 +119,17 @@ public class ActivityTest extends TestCase {
         a2.setCode("a2");
         Differences differences = a1.deepEquals(a2);
         assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy is not different", "Activity code a1 differs to a2", differences.getMessages().get(0));
+        assertEquals("Activiy is not different", "activity code \"a1\" does not match \"a2\"", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentActivityDescription() throws Exception {
+        Activity a1 = Fixtures.createActivity("A");
+        a1.setDescription("foo");
+        Activity a2 = Fixtures.createActivity("A");
+        a2.setDescription("bar");
+        Differences differences = a1.deepEquals(a2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Activiy is not different", "activity description \"foo\" does not match \"bar\"", differences.getMessages().get(0));
     }
 
     public void testDeepEqualsForDifferentSource() throws Exception {

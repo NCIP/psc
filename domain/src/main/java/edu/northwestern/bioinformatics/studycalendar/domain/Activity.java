@@ -187,17 +187,10 @@ public class Activity extends AbstractMutableDomainObject
         }
         Activity activity = (Activity) o;
 
-        if (name != null ? !name.equals(activity.name) : activity.name != null) {
-            differences.addMessage(String.format("Activity name %s differs to %s", name, activity.name));
-        }
-
-        if (code != null ? !code.equals(activity.code) : activity.code != null) {
-            differences.addMessage(String.format("Activity code %s differs to %s", code, activity.code));
-        }
-
-        if (description != null ? !description.equals(activity.description) : activity.description != null) {
-            differences.addMessage(String.format("Activity description %s differs %s", description, activity.description));
-        }
+        differences.registerValueDifference("activity name", getName(), activity.getName());
+        differences.registerValueDifference("activity code", getCode(), activity.getCode());
+        differences.registerValueDifference(
+            "activity description", getDescription(), activity.getDescription());
 
         String prefix = String.format("Activity %s", name);
 

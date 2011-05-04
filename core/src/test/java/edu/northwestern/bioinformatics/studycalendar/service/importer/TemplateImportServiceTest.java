@@ -63,6 +63,8 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
     private DynamicMockDaoFinder daoFinder;
     private TemplateImportService service;
     private DaoTools daoTools;
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
@@ -93,7 +95,6 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         service.setTemplateDevelopmentService(templateDevelopmentService);
         service.setTemplateService(templateService);
         service.setDaoTools(daoTools);
-
     }
 
     @Override
@@ -169,8 +170,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            String expectedMessage = "Amendment 04/06/2007 (Amendment1) differs to Amendment 04/06/2007 (Amendment)[amendment name Amendment1 does not match to Amendment;]";
-            assertEquals(expectedMessage, scve.getMessage());
+            assertEquals(
+                "Existing released amendment 04/06/2007 (Amendment1) differs from released amendment 04/06/2007 (Amendment) in imported template:\n* amendment name \"Amendment1\" does not match \"Amendment\"",
+                scve.getMessage());
         }
     }
 

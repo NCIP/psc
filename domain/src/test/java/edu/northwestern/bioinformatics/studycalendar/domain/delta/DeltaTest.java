@@ -1,11 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
 /**
  * @author Rhett Sutphin
@@ -195,4 +209,22 @@ public class DeltaTest extends DomainTestCase {
         assertEquals("Deltas are equals", "for different node", actualMessage);
     }
 
+    public void testGetBriefDescription() throws Exception {
+        StudySegment e = setGridId("3342", new StudySegment());
+        assertEquals("delta for study segment 3342", Delta.createDeltaFor(e).getBriefDescription());
+    }
+
+    public void testGetNodeTypeDescriptionForEpoch() throws Exception {
+        assertEquals("epoch", Delta.createDeltaFor(new Epoch()).getNodeTypeDescription());
+    }
+
+    public void testGetNodeTypeDescriptionForPC() throws Exception {
+        assertEquals("planned calendar",
+            Delta.createDeltaFor(new PlannedCalendar()).getNodeTypeDescription());
+    }
+
+    public void testGetNodeTypeDescriptionForPlannedActivityLabel() throws Exception {
+        assertEquals("planned activity label",
+            Delta.createDeltaFor(new PlannedActivityLabel()).getNodeTypeDescription());
+    }
 }

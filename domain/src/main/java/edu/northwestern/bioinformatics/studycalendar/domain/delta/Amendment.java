@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.domain.DeepComparable;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
@@ -45,9 +46,11 @@ import java.util.Calendar;
         @Parameter(name = "sequence", value = "seq_amendments_id")
     }
 )
+@SuppressWarnings( { "JavadocReference" })
 public class Amendment
     extends AbstractMutableDomainObject 
-    implements Revision, NaturallyKeyed, Cloneable, TransientCloneable<Amendment>
+    implements Revision, NaturallyKeyed, Cloneable, TransientCloneable<Amendment>,
+        DeepComparable<Amendment>
 {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
 
@@ -300,37 +303,28 @@ public class Amendment
         return result;
     }
 
-    public Differences deepEquals(Object o) {
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
+    public Differences deepEquals(Amendment amendment) {
         Differences differences = new Differences();
-        if (this == o) return differences;
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("object is not an instance of Amendment");
-            return differences;
-        }
-        Amendment amendment = (Amendment) o;
 
-        if (getDate() != null ? !date.equals(amendment.getDate()) : amendment.getDate() != null) {
-            differences.addMessage("amendment date " + getDate() +" does not match to " +amendment.getDate());
-        }
-
-        if (name != null ? !name.equals(amendment.name) : amendment.name != null) {
-            differences.addMessage("amendment name " + name +" does not match to " +amendment.name);
-        }
+        differences.registerValueDifference("amendment date", getDate(), amendment.getDate());
+        differences.registerValueDifference("amendment name", getName(), amendment.getName());
 
         if (deltas.size() != amendment.getDeltas().size()) {
-            differences.addMessage("No. of deltas " +deltas.size()+" do not match to " +amendment.getDeltas().size());
+            differences.registerValueDifference("number of deltas", getDeltas().size(), amendment.getDeltas().size());
         } else {
-            int index = 0;
-            for (Delta delta: amendment.getDeltas()) {
-                Delta matchingDelta = getMatchingDelta(delta.getGridId(), delta.getNode().getGridId(), delta.getClass());
-                if (matchingDelta != null) {
-                    Differences deltaDifferences = matchingDelta.deepEquals(delta);
+            for (Delta delta : getDeltas()) {
+                Delta amendmentMatchingDelta = amendment.getMatchingDelta(
+                    delta.getGridId(), delta.getNode().getGridId(), delta.getClass());
+                if (amendmentMatchingDelta != null) {
+                    Differences deltaDifferences = amendmentMatchingDelta.deepEquals(delta);
                     if (deltaDifferences.hasDifferences()) {
-                        differences.addChildDifferences(delta.getClass().getSimpleName(), deltaDifferences);
+                        differences.addChildDifferences(delta.getBriefDescription(), deltaDifferences);
                     }
-                    index++;
                 } else {
-                differences.addMessage("No matching delta found in released amendment");
+                    differences.addMessage("no delta for %s %s found",
+                        delta.getNodeTypeDescription(),
+                        delta.getNode().getGridId());
                 }
             }
         }
