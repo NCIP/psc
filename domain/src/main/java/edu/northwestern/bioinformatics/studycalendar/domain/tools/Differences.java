@@ -9,7 +9,6 @@ import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,7 +31,7 @@ public class Differences {
     };
 
     private List<String> messages = new ArrayList<String>();
-    private Map<String, Differences> childDifferences = new HashMap<String, Differences>();
+    private Map<String, Differences> childDifferences = new LinkedHashMap<String, Differences>();
 
     public void addChildDifferences(String prefix, Differences differences) {
         childDifferences.put(prefix, differences);
