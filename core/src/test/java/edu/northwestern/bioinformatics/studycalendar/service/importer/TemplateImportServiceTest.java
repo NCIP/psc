@@ -170,9 +170,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals(
-                "Existing released amendment 04/06/2007 (Amendment1) differs from released amendment 04/06/2007 (Amendment) in imported template:\n* amendment name \"Amendment1\" does not match \"Amendment\"",
-                scve.getMessage());
+            assertTrue("Wrong message: " + scve.getMessage(),
+                scve.getMessage().
+                    startsWith("Existing released amendment 04/06/2007 (Amendment1) differs from released amendment 04/06/2007 (Amendment) in imported template:"));
         }
     }
 
@@ -252,8 +252,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         Study newStudy = createReleasesStudy();
         Study existingStudy = createReleasesStudy();
         Add add = (Add)newStudy.getAmendment().getDeltas().get(0).getChanges().get(0);
-        Epoch epoch = (Epoch)add.getChild();
-        epoch.setGridId("existingGRidId");
+        add.setGridId("foom");
 
         InputStream target = registerMockFor(InputStream.class);
         expectStudyLoadedFromXml(newStudy, target);
@@ -531,7 +530,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         Delta<PlannedCalendar> delta = Delta.createDeltaFor(cal);
         delta.setGridId("pc-delta");
         Epoch epoch = Epoch.create("Treatment", "A", "B");
-        epoch.setGridId("epoch");
+        assignIds(epoch, 3);
         Add add = Add.create(epoch, 0);
         add.setGridId("add");
         add.setChild(epoch);
