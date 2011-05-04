@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
@@ -13,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
@@ -364,6 +366,20 @@ public class AmendmentTest extends DomainTestCase {
 
         assertChildDifferences(differences,
             new String[] { "delta for epoch GridId1", "property change for name" },
-            "new value \"B\" does not match \"C\"");
+            "new value \"C\" does not match \"B\"");
+    }
+
+    public void testDeepEqualsWithMismatchedChanges() throws Exception {
+        Amendment a = new Amendment();
+        a.getDeltas().add(setGridId("D1", Delta.createDeltaFor(
+            setGridId("PC1", new PlannedCalendar()),    Add.create(setGridId("E1", new Epoch())))
+        ));
+        Amendment b = new Amendment();
+        b.getDeltas().add(setGridId("D1", Delta.createDeltaFor(
+            setGridId("PC1", new PlannedCalendar()), Remove.create(setGridId("E1", new Epoch())))
+        ));
+
+        assertChildDifferences(a.deepEquals(b), new String[] { "delta for planned calendar PC1" },
+            "add of epoch:E1 replaced by remove of epoch:E1");
     }
 }
