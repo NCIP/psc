@@ -53,6 +53,7 @@ public class Amendment
         DeepComparable<Amendment>
 {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
+    private static final String NATURAL_KEY_DATE_FORMAT_STR = "yyyy-MM-dd";
 
     private boolean memoryOnly;
     private Amendment previousAmendment;
@@ -103,7 +104,7 @@ public class Amendment
     }
 
     public static DateFormat createNaturalKeyDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd");
+        return new SimpleDateFormat(NATURAL_KEY_DATE_FORMAT_STR);
     }
 
     @Transient
@@ -267,6 +268,7 @@ public class Amendment
         return amendmentApprovals;
     }
 
+    @SuppressWarnings( { "UnusedDeclaration" }) // used by hibernate
     public void setAmendmentApprovals(List<AmendmentApproval> amendmentApprovals) {
         this.amendmentApprovals = amendmentApprovals;
     }
@@ -371,13 +373,7 @@ public class Amendment
 
     public static final class Key {
         private Date date;
-        private Date dateNext;
         private String name;
-        public Key(Date date, String name, Date dateNext) {
-            this.date = date;
-            this.name = name;
-            this.dateNext = dateNext;
-        }
 
         public Key(Date date, String name) {
             this.date = date;
@@ -394,16 +390,13 @@ public class Amendment
             } else {
                 dateStr = keyStr;
             }
-//            String[] dateValue = dateStr.split("\\-");
-//            String dateNextStr = dateValue[0].concat("-").concat(dateValue[1]).concat("-").concat(String.valueOf(Integer.parseInt(dateValue[2])+1));
             Date date;
-//            Date dateNext;
             try {
                 date = createNaturalKeyDateFormat().parse(dateStr);
-//                dateNext = createNaturalKeyDateFormat().parse(dateNextStr);
             } catch (ParseException e) {
                 throw new StudyCalendarValidationException(
-                        "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
+                    "Date is not correct format for amendment key (should be %s): %s", e,
+                    NATURAL_KEY_DATE_FORMAT_STR, dateStr);
             }
             return new Key(date, name);
         }
@@ -424,15 +417,13 @@ public class Amendment
             this.name = name;
         }
 
+        // TODO: this is not the responsibility of the key --
+        // the next date has no meaning in the semantics of the amendment
         public Date getDateNext() {
             Calendar c1 = Calendar.getInstance();
             c1.setTime(getDate());
             c1.add(Calendar.DATE, 1);
             return c1.getTime();
-        }
-
-        public void setDateNext(Date dateNext) {
-            this.dateNext = dateNext;
         }
 
         @Override
@@ -445,5 +436,4 @@ public class Amendment
             return sb.toString();
         }
     }
-
 }
