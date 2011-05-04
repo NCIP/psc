@@ -8,8 +8,10 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @author Rhett Sutphin
  * @param <P> parent class
  */
-public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
-        implements Child<P>, Cloneable {
+public abstract class PlanTreeNode<P extends DomainObject>
+    extends AbstractMutableDomainObject
+    implements Child<P>, Cloneable
+{
     private P parent;
     private boolean memoryOnly;
 

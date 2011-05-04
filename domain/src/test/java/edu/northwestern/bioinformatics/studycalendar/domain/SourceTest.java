@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import junit.framework.TestCase;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class SourceTest extends TestCase {
+public class SourceTest extends DomainTestCase {
     private Source source = createSource("Test-o");
 
     public void testTransientClone() throws Exception {
@@ -33,12 +33,11 @@ public class SourceTest extends TestCase {
         assertTrue("Activiy source is different", differences.getMessages().isEmpty());
     }
 
-    public void testDeepEqualsForDifferentActivityTypeName() throws Exception {
+    public void testDeepEqualsForDifferentSourceName() throws Exception {
         Source source1 = createSource("Source1");
         Source source2 = createSource("Source2");
-        Differences differences = source1.deepEquals(source2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy source is not different", "Source name Source1 differs to Source2", differences.getMessages().get(0));
+
+        assertDifferences(source1.deepEquals(source2), "name \"Source1\" does not match \"Source2\"");
     }
 
     public void testIsManualActivityTargetTracksManualFlag() throws Exception {

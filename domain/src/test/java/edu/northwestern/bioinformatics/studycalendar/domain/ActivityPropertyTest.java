@@ -1,54 +1,42 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import junit.framework.TestCase;
 
 
 /**
  * @author Jalpa Patel
  */
-public class ActivityPropertyTest extends TestCase {
+public class ActivityPropertyTest extends DomainTestCase {
     private ActivityProperty ap1, ap2;
     
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        ap1 = Fixtures.createActivityProperty("NS", "N", "V");
+        ap2 = Fixtures.createActivityProperty("NS", "N", "V");
+    }
+
     public void testDeepEqualsForDifferentNameSpace() throws Exception {
-        ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ap2 = Fixtures.createActivityProperty("namespace1","name","value");
-        Differences differences = ap1.deepEquals(ap2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy Property is not different", "ActivityProperty namespace namespace differs to namespace1", differences.getMessages().get(0));
+        ap1.setNamespace("Bat");
+        assertDifferences(ap1.deepEquals(ap2), "namespace \"Bat\" does not match \"NS\"");
     }
 
     public void testDeepEqualsForDifferentValue() throws Exception {
-        ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ap2 = Fixtures.createActivityProperty("namespace1","name","value1");
-        Differences differences = ap1.deepEquals(ap2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy Property is not different", "ActivityProperty value value differs to value1", differences.getMessages().get(0));
+        ap2.setValue("11");
+        assertDifferences(ap1.deepEquals(ap2), "value \"V\" does not match \"11\"");
     }
 
     public void testDeepEqualsForDifferentName() throws Exception {
-        ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ap2 = Fixtures.createActivityProperty("namespace","name1","value");
-        Differences differences = ap1.deepEquals(ap2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy Property is not different", "ActivityProperty name name differs to name1", differences.getMessages().get(0));
-    }
-
-    public void testDeepEqualsForAllDifferentValue() throws Exception {
-        ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ap2 = Fixtures.createActivityProperty("namespace1","name1","value1");
-        Differences differences = ap1.deepEquals(ap2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals(3, differences.getMessages().size());
-        assertEquals("Activiy Property is not different", "ActivityProperty name name differs to name1", differences.getMessages().get(0));
-        assertEquals("Activiy Property is not different", "ActivityProperty value value differs to value1", differences.getMessages().get(1));
-        assertEquals("Activiy Property is not different", "ActivityProperty namespace namespace differs to namespace1", differences.getMessages().get(2));
+        ap2.setName("G");
+        assertDifferences(ap1.deepEquals(ap2), "name \"N\" does not match \"G\"");
     }
 
     public void testDeepEqualsForSameActivityProperty() throws Exception {
-        ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ap2 = Fixtures.createActivityProperty("namespace","name","value");
         Differences differences = ap1.deepEquals(ap2);
-        assertTrue("Activity Properties are different", differences.getMessages().isEmpty());
+        assertFalse("Activity Properties are different", differences.hasDifferences());
+    }
+
+    public void testNaturalKeyCombinesAllElements() throws Exception {
+        assertEquals("NS:N:V", ap1.getNaturalKey());
     }
 }

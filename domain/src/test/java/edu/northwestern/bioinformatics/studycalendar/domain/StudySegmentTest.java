@@ -156,37 +156,26 @@ public class StudySegmentTest extends DomainTestCase {
     }
 
     public void testDeepEqualsForDifferentName() throws Exception {
-        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
-        StudySegment s2 = createNamedInstance("Segment2", StudySegment.class);
-        Differences differences =  s1.deepEquals(s2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("StudySegments are equals", "StudySegment name Segment1 differs to Segment2", differences.getMessages().get(0));
+        StudySegment s1 = createNamedInstance("S1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("S2", StudySegment.class);
+
+        assertDifferences(s1.deepEquals(s2), "name \"S1\" does not match \"S2\"");
     }
 
-    public void testDeepEqualsForDifferentNoOfPeriods() throws Exception {
-        Period p1 = createPeriod("P1", 4, 7, 1);
-        Period p2 = createPeriod("P2", 4, 7, 1);
-        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
-        StudySegment s2 = createNamedInstance("Segment1", StudySegment.class);
+    public void testDeepEqualsForDifferentPeriodSets() throws Exception {
+        Period p1 = setGridId("G-P1", createPeriod("P1", 4, 7, 1));
+        Period p2_0 = setGridId("G-P2", createPeriod("P2", 4, 7, 1));
+        Period p2_1 = setGridId("G-P2", createPeriod("P2", 4, 11, 1));
+        StudySegment s1 = createNamedInstance("S1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("S1", StudySegment.class);
         s1.addPeriod(p1);
-        s2.addPeriod(p1);
-        s2.addPeriod(p2);
-        Differences differences =  s1.deepEquals(s2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("StudySegments are equals", "total no.of periods 1 differs to 2", differences.getMessages().get(0));
-    }
+        s1.addPeriod(p2_0);
+        s2.addPeriod(p2_1);
 
-    public void testDeepEqualsForDifferentPeriod() throws Exception {
-        Period p1 = createPeriod("P1", 4, 7, 1);
-        Period p2 = createPeriod("P2", 4, 7, 1);
-        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
-        StudySegment s2 = createNamedInstance("Segment1", StudySegment.class);
-        s1.addPeriod(p1);
-        s2.addPeriod(p2);
-        Differences differences =  s1.deepEquals(s2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("StudySegments are equals", "Period name P1 differs to P2",
-                differences.getChildDifferences().get("StudySegment Segment1").getMessages().get(0));
+        Differences actual = s1.deepEquals(s2);
+        assertDifferences(actual, "missing period G-P1");
+        assertChildDifferences(actual, new String[] { "period G-P2", "duration" },
+            "quantity does not match: 7 != 11");
     }
 
     public void testDefaultName() throws Exception {

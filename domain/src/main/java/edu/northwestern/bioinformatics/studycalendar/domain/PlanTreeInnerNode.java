@@ -15,7 +15,8 @@ import java.util.SortedSet;
  * @param <G> type of the collection of children (will be either List or SortedSet)
  */
 public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTreeNode, G extends Collection<C>>
-	extends PlanTreeNode<P> implements Parent<C, G>, Changeable {
+	extends PlanTreeNode<P> implements Parent<C, G>, Changeable
+{
 	private G children;
 
 	protected PlanTreeInnerNode() {

@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
-import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class ActivityTypeTest extends TestCase {
+public class ActivityTypeTest extends DomainTestCase {
     private ActivityType t1, t4;
 
     @Override
@@ -37,7 +37,6 @@ public class ActivityTypeTest extends TestCase {
         ActivityType type1 = Fixtures.createActivityType("DISEASE_MEASURE");
         ActivityType type2 = Fixtures.createActivityType("PROCEDURE");
         Differences differences = type1.deepEquals(type2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy type is not different", "ActivityType name DISEASE_MEASURE differs to PROCEDURE", differences.getMessages().get(0));
+        assertDifferences(differences, "name \"DISEASE_MEASURE\" does not match \"PROCEDURE\"");
     }
 }

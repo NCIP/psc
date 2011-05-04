@@ -18,14 +18,23 @@ import javax.persistence.*;
         @Parameter(name = "sequence", value = "seq_activity_properties_id")
                 }
 )
-public class ActivityProperty extends AbstractMutableDomainObject implements Cloneable {
+public class ActivityProperty extends AbstractMutableDomainObject
+    implements Cloneable, DeepComparable<ActivityProperty>, NaturallyKeyed
+{
     private String namespace;
     private String name;
     private String value;
     private Activity activity;
     private boolean memoryOnly;
 
-    //BEAN PROPERTIES
+    ////// LOGIC
+
+    @Transient
+    public String getNaturalKey() {
+        return String.format("%s:%s:%s", getNamespace(), getName(), getValue());
+    }
+
+    ////// BEAN PROPERTIES
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id", nullable = false)
@@ -63,6 +72,8 @@ public class ActivityProperty extends AbstractMutableDomainObject implements Clo
         this.value = value;
     }
 
+    ////// OBJECT METHODS
+
     @Override
     public ActivityProperty clone() {
         try {
@@ -76,28 +87,10 @@ public class ActivityProperty extends AbstractMutableDomainObject implements Clo
         }
     }
 
-    public Differences deepEquals(Object o) {
-        Differences differences =  new Differences();
-        if (this == o) return differences;
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("not an instance of activity property");
-            return differences;
-        }
-
-        ActivityProperty activityProperty = (ActivityProperty) o;
-
-        if (name != null ? !name.equals(activityProperty.name) : activityProperty.name != null) {
-            differences.addMessage(String.format("ActivityProperty name %s differs to %s", name, activityProperty.name));
-        }
-
-        if (value != null ? !value.equals(activityProperty.value) : activityProperty.value != null) {
-            differences.addMessage(String.format("ActivityProperty value %s differs to %s", value, activityProperty.value));
-        }
-
-        if (namespace != null ? !namespace.equals(activityProperty.namespace) : activityProperty.namespace != null) {
-            differences.addMessage(String.format("ActivityProperty namespace %s differs to %s", namespace, activityProperty.namespace));
-        }
-
-        return differences;
+    public Differences deepEquals(ActivityProperty that) {
+        return new Differences().
+            registerValueDifference("name", this.getName(), that.getName()).
+            registerValueDifference("value", this.getValue(), that.getValue()).
+            registerValueDifference("namespace", this.getNamespace(), that.getNamespace());
     }
 }

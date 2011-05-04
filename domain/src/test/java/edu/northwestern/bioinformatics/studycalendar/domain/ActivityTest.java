@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import junit.framework.TestCase;
 
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 /**
  * @author Rhett Sutphin
  */
-public class ActivityTest extends TestCase {
+public class ActivityTest extends DomainTestCase {
     private Activity a0, a1, reconsent;
 
     protected void setUp() throws Exception {
@@ -98,77 +97,57 @@ public class ActivityTest extends TestCase {
     }
 
     public void testDeepEqualsForSameActivity() throws Exception {
-        Activity a1 = Fixtures.createActivity("A1");
-        Activity a2 = Fixtures.createActivity("A1");
-        Differences differences = a1.deepEquals(a2);
+        Activity a = Fixtures.createActivity("A1");
+        Activity b = Fixtures.createActivity("A1");
+        Differences differences = a.deepEquals(b);
         assertTrue("ACtivities are different", differences.getMessages().isEmpty());
     }
 
     public void testDeepEqualsForDifferentActivityName() throws Exception {
-        Activity a1 = Fixtures.createActivity("A1");
-        Activity a2 = Fixtures.createActivity("A2");
-        Differences differences = a1.deepEquals(a2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy is not different", "activity name \"A1\" does not match \"A2\"", differences.getMessages().get(0));
+        Activity a = Fixtures.createActivity("A1", "A");
+        Activity b = Fixtures.createActivity("A2", "A");
+
+        assertDifferences(a.deepEquals(b), "name \"A1\" does not match \"A2\"");
     }
 
     public void testDeepEqualsForDifferentActivityCode() throws Exception {
-        Activity a1 = Fixtures.createActivity("A");
-        a1.setCode("a1");
-        Activity a2 = Fixtures.createActivity("A");
-        a2.setCode("a2");
-        Differences differences = a1.deepEquals(a2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy is not different", "activity code \"a1\" does not match \"a2\"", differences.getMessages().get(0));
+        Activity a = Fixtures.createActivity("A", "a1");
+        Activity b = Fixtures.createActivity("A", "a2");
+
+        assertDifferences(a.deepEquals(b), "code \"a1\" does not match \"a2\"");
     }
 
     public void testDeepEqualsForDifferentActivityDescription() throws Exception {
-        Activity a1 = Fixtures.createActivity("A");
-        a1.setDescription("foo");
-        Activity a2 = Fixtures.createActivity("A");
-        a2.setDescription("bar");
-        Differences differences = a1.deepEquals(a2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Activiy is not different", "activity description \"foo\" does not match \"bar\"", differences.getMessages().get(0));
+        Activity a = Fixtures.createActivity("A");
+        a.setDescription("foo");
+        Activity b = Fixtures.createActivity("A");
+        b.setDescription("bar");
+
+        assertDifferences(a.deepEquals(b), "description \"foo\" does not match \"bar\"");
     }
 
     public void testDeepEqualsForDifferentSource() throws Exception {
-        Source source1 = createSource("Source1");
-        Source source2 = createSource("Source2");
-        Activity a1 = Fixtures.createActivity("A");
-        Activity a2 = Fixtures.createActivity("A");
-        a1.setSource(source1);
-        a2.setSource(source2);
-        Differences differences = a1.deepEquals(a2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("Activiy is not different", "Source name Source1 differs to Source2", differences.getChildDifferences().get("Activity A").getMessages().get(0));
+        Activity a = Fixtures.createActivity("A", "A", createSource("The Sea"), null);
+        Activity b = Fixtures.createActivity("A", "A", createSource("The Sky"), null);
+
+        assertDifferences(a.deepEquals(b), "source The Sea does not match The Sky");
     }
 
     public void testDeepEqualsForDifferentType() throws Exception {
-        ActivityType type1 = Fixtures.createActivityType("DISEASE_MEASURE");
-        ActivityType type2 = Fixtures.createActivityType("PROCEDURE");
-        Activity a1 = Fixtures.createActivity("A");
-        Activity a2 = Fixtures.createActivity("A");
-        a1.setType(type1);
-        a2.setType(type2);
-        Differences differences = a1.deepEquals(a2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("Activiy is not different", "ActivityType name DISEASE_MEASURE differs to PROCEDURE", differences.getChildDifferences().get("Activity A").getMessages().get(0));
+        Activity a = Fixtures.createActivity("A", Fixtures.createActivityType("DISEASE_MEASURE"));
+        Activity b = Fixtures.createActivity("A", Fixtures.createActivityType("PROCEDURE"));
+
+        assertDifferences(a.deepEquals(b), "type DISEASE_MEASURE does not match PROCEDURE");
     }
 
     public void testDeepEqualsForActivityProperty() throws Exception {
-        Activity a1 = Fixtures.createActivity("A");
-        Activity a2 = Fixtures.createActivity("A");
-        ActivityProperty ap1 = Fixtures.createActivityProperty("namespace","name","value");
-        ActivityProperty ap2 = Fixtures.createActivityProperty("namespace1","name1","value");
-        a1.addProperty(ap1);
-        a2.addProperty(ap2);
-        Differences differences = a1.deepEquals(a2);
-        Differences childDifferences = differences.getChildDifferences().get("Activity A");
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("Activiy is not different", "ActivityProperty name name differs to name1",
-                childDifferences.getMessages().get(0));
-        assertEquals("Activiy is not different", "ActivityProperty namespace namespace differs to namespace1",
-                childDifferences.getMessages().get(1));
+        Activity a = Fixtures.createActivity("A");
+        Activity b = Fixtures.createActivity("A");
+        Fixtures.addActivityProperty(a, "namespace", "name", "value");
+        Fixtures.addActivityProperty(b, "namespace1", "name1", "value");
+
+        assertDifferences(a.deepEquals(b),
+            "missing property namespace:name:value",
+            "extra property namespace1:name1:value");
     }
 }

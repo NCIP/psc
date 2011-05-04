@@ -219,9 +219,18 @@ public class Fixtures {
         return pal;
     }
 
-    public static PlannedActivityLabel createPlannedActivityLabel(PlannedActivity activity, String label, Integer repetitionNumber) {
+    @Deprecated // less descriptive name
+    public static PlannedActivityLabel createPlannedActivityLabel(
+        PlannedActivity activity, String label, Integer repetitionNumber
+    ) {
+        return addPlannedActivityLabel(activity, label, repetitionNumber);
+    }
+
+    public static PlannedActivityLabel addPlannedActivityLabel(
+        PlannedActivity activity, String label, Integer repetitionNumber
+    ) {
         PlannedActivityLabel paLabel = createPlannedActivityLabel(label, repetitionNumber);
-        paLabel.setPlannedActivity(activity);
+        activity.addPlannedActivityLabel(paLabel);
         return paLabel;
     }
 
@@ -413,6 +422,10 @@ public class Fixtures {
         return createActivity(name, DEFAULT_ACTIVITY_TYPE);
     }
 
+    public static Activity createActivity(String name, String code) {
+        return createActivity(name, code, DEFAULT_ACTIVITY_SOURCE, DEFAULT_ACTIVITY_TYPE);
+    }
+
     public static ActivityType createActivityType(final String name) {
         return createNamedInstance(name, ActivityType.class);
     }
@@ -432,12 +445,14 @@ public class Fixtures {
         return activity;
     }
 
+    @Deprecated // less descriptive name
     public static ActivityProperty createActivityProperty(Activity activity, String namespace, String name, String value) {
-        ActivityProperty activityProperty = new ActivityProperty();
-        activityProperty.setNamespace(namespace);
-        activityProperty.setName(name);
-        activityProperty.setValue(value);
-        activityProperty.setActivity(activity);
+        return addActivityProperty(activity, namespace, name, value);
+    }
+
+    public static ActivityProperty addActivityProperty(Activity activity, String namespace, String name, String value) {
+        ActivityProperty activityProperty = createActivityProperty(namespace, name, value);
+        activity.addProperty(activityProperty);
         return activityProperty;
     }
 

@@ -27,7 +27,8 @@ import java.util.regex.Pattern;
     }
 )
 public class Activity extends AbstractMutableDomainObject
-    implements Comparable<Activity>, Named, NaturallyKeyed, UniquelyKeyed, Cloneable, TransientCloneable<Activity>
+    implements Comparable<Activity>, Named, NaturallyKeyed, UniquelyKeyed, Cloneable,
+        TransientCloneable<Activity>, DeepComparable<Activity>
 {
     private static final Pattern ESCAPED_PIPE = Pattern.compile("\\\\\\|");
     private static final Pattern PIPE = Pattern.compile("\\|");
@@ -178,52 +179,15 @@ public class Activity extends AbstractMutableDomainObject
         this.properties = properties;
     }
 
-    public Differences deepEquals(Object o) {
-        Differences differences =  new Differences();
-        if (this == o) return differences;
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("not an instance of activity");
-            return differences;
-        }
-        Activity activity = (Activity) o;
-
-        differences.registerValueDifference("activity name", getName(), activity.getName());
-        differences.registerValueDifference("activity code", getCode(), activity.getCode());
-        differences.registerValueDifference(
-            "activity description", getDescription(), activity.getDescription());
-
-        String prefix = String.format("Activity %s", name);
-
-        if (source != null && activity.getSource()!= null) {
-            Differences sourceDifferences = source.deepEquals(activity.getSource());
-            if (sourceDifferences.hasDifferences()) {
-                differences.addChildDifferences(prefix, sourceDifferences);
-            }
-        }
-
-        if (activityType !=null && activity.getType() != null) {
-            Differences typeDifferences = activityType.deepEquals(activity.getType());
-            if (typeDifferences.hasDifferences()) {
-                differences.addChildDifferences(prefix, typeDifferences);
-            }
-        }
-
-        if (getProperties() != null && activity.getProperties() != null) {
-            if (getProperties().size() != activity.getProperties().size()) {
-                differences.addMessage(String.format("total no. of activity properties %d differs to %d",
-                        getProperties().size(), activity.getProperties().size()));
-            } else {
-                for (int i=0; i<getProperties().size(); i++) {
-                    ActivityProperty ap1 =  getProperties().get(i);
-                    ActivityProperty ap2 = activity.getProperties().get(i);
-                    Differences propertyDifferences = ap1.deepEquals(ap2);
-                    if (propertyDifferences.hasDifferences()) {
-                        differences.addChildDifferences(prefix, propertyDifferences);
-                    }
-                }
-            }
-        }
-        return differences;
+    public Differences deepEquals(Activity activity) {
+        return new Differences().
+            registerValueDifference("name", getName(), activity.getName()).
+            registerValueDifference("code", getCode(), activity.getCode()).
+            registerValueDifference("description", getDescription(), activity.getDescription()).
+            registerValueDifference("source", getSource(), activity.getSource()).
+            registerValueDifference("type", getType(), activity.getType()).
+            recurseDifferences("property",
+                this.getProperties(), activity.getProperties());
     }
 
     ////// OBJECT METHODS
