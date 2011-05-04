@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import org.easymock.EasyMock;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
 /**
@@ -80,7 +80,7 @@ public class EpochTest extends DomainTestCase {
 
     public void testIndexOfNonChildThrowsException() throws Exception {
         Epoch e = Epoch.create("E", "A1", "A2");
-        StudySegment other = Fixtures.createNamedInstance("A7", StudySegment.class);
+        StudySegment other = createNamedInstance("A7", StudySegment.class);
         try {
             e.indexOf(other);
             fail("Exception not thrown");
@@ -112,27 +112,22 @@ public class EpochTest extends DomainTestCase {
     }
 
     public void testDeepEqualsWhenDifferentName() throws Exception {
-        Epoch e1 = Epoch.create("E1", "A1", "A2");
-        Epoch e2 = Epoch.create("E2", "A3", "A4");
-        Differences differences = e1.deepEquals(e2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Epoch name E1 differs to E2", differences.getMessages().get(0));
+        Epoch e1 = Epoch.create("E1");
+        Epoch e2 = Epoch.create("E2");
+
+        assertDifferences(e1.deepEquals(e2), "name \"E1\" does not match \"E2\"");
     }
     
-    public void testDeepEqualsForDifferentNoOfStudySegments() throws Exception {
-        Epoch e1 = Epoch.create("E1", "A1", "A2");
-        Epoch e2 = Epoch.create("E1", "A1");
-        Differences differences = e1.deepEquals(e2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("total no. of StudySegment 2 differs to 1", differences.getMessages().get(0));
-    }
-
     public void testDeepEqualsForDifferentStudySegments() throws Exception {
         Epoch e1 = Epoch.create("E1", "A1", "A2");
         Epoch e2 = Epoch.create("E1", "A1", "A4");
-        Differences differences = e1.deepEquals(e2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("StudySegment name A2 differs to A4", differences.getChildDifferences().get("Epoch E1").getMessages().get(0));
+        setGridId("G-A1", e1.getStudySegments().get(0));
+        setGridId("G-A2", e1.getStudySegments().get(1));
+        setGridId("G-A1", e2.getStudySegments().get(0));
+        setGridId("G-A2", e2.getStudySegments().get(1));
+
+        assertChildDifferences(e1.deepEquals(e2),
+            "study segment G-A2", "name \"A2\" does not match \"A4\"");
     }
 
     public void testDefaultName() throws Exception {
@@ -144,6 +139,6 @@ public class EpochTest extends DomainTestCase {
     }
 
     public void testHasTemporaryNameWhenDoesNot() throws Exception {
-        assertFalse(Fixtures.createNamedInstance("Foo", Epoch.class).getHasTemporaryName());
+        assertFalse(createNamedInstance("Foo", Epoch.class).getHasTemporaryName());
     }
 }

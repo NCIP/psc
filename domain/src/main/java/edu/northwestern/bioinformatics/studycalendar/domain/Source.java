@@ -20,7 +20,8 @@ import java.util.List;
         }
 )
 public class Source extends AbstractMutableDomainObject
-        implements Named, NaturallyKeyed, TransientCloneable<Source> {
+    implements Named, NaturallyKeyed, TransientCloneable<Source>, DeepComparable<Source>
+{
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
     private boolean memoryOnly;
@@ -89,20 +90,9 @@ public class Source extends AbstractMutableDomainObject
         this.activities = activities;
     }
 
-    public Differences deepEquals(Object o) {
-        Differences differences =  new Differences();
-        if (this == o) return differences;
-
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("not an instance of source");
-        }
-
-        Source source = (Source) o;
-
-        if (name != null ? !name.equals(source.name) : source.name != null) {
-            differences.addMessage(String.format("Source name %s differs to %s", name, source.name));
-        }
-
+    public Differences deepEquals(Source other) {
+        Differences differences = new Differences();
+        differences.registerValueDifference("name", getName(), other.getName());
         return differences;
     }
 

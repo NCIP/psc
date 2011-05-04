@@ -45,12 +45,31 @@ public abstract class DomainTestCase extends TestCase {
         return mocks;
     }
 
-    public void assertDifferences(Differences actual, String... expectedMessages) {
+    public static void assertDifferences(Differences actual, String... expectedMessages) {
         assertEquals("Wrong number of differences: " + actual.getMessages(),
             expectedMessages.length, actual.getMessages().size());
         for (int i = 0; i < expectedMessages.length; i++) {
             String expectedMessage = expectedMessages[i];
-            assertEquals("Message mismatch at " + i, expectedMessage, actual.getMessages().get(i));
+            assertEquals("Message " + i + " mismatch", expectedMessage, actual.getMessages().get(i));
         }
+    }
+
+    public static void assertChildDifferences(
+        Differences actual, String[] childKeys, String... expectedMessages
+    ) {
+        Differences child = actual;
+        for (String childKey : childKeys) {
+            if (!child.getChildDifferences().containsKey(childKey)) {
+                fail("No child \"" + childKey + "\": " + child.getChildDifferences().keySet());
+            }
+            child = child.getChildDifferences().get(childKey);
+        }
+        assertDifferences(child, expectedMessages);
+    }
+
+    public static void assertChildDifferences(
+        Differences actual, String childKey, String... expectedMessages
+    ) {
+        assertChildDifferences(actual, new String[] { childKey }, expectedMessages);
     }
 }

@@ -25,7 +25,7 @@ import java.util.Comparator;
     }
 )
 public class PlannedActivityLabel extends AbstractMutableDomainObject
-    implements Cloneable, Child<PlannedActivity>, Comparable<PlannedActivityLabel>
+    implements Cloneable, Child<PlannedActivity>, Comparable<PlannedActivityLabel>, NaturallyKeyed
 {
     private Comparator<PlannedActivityLabel> COMPARATOR
         = new BeanPropertyListComparator<PlannedActivityLabel>().
@@ -54,6 +54,12 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
 
     public int compareTo(PlannedActivityLabel o) {
         return COMPARATOR.compare(this, o);
+    }
+
+    @Transient
+    public String getNaturalKey() {
+        return String.format(
+            "%s on %s", getLabel(), isAllRepetitions() ? "all" : getRepetitionNumber());
     }
 
     ////// IMPLEMENTATION OF Child
@@ -117,21 +123,12 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
 
     public Differences deepEquals(Object o) {
         Differences differences =  new Differences();
-        if (this == o) return differences;
-        if (o == null || !(o instanceof PlannedActivityLabel)) {
-            differences.addMessage("not an instance of PlannedActivityLabel");
-            return differences;
-        }
-
         PlannedActivityLabel that = (PlannedActivityLabel) o;
 
-        if (label != null ? !label.equals(that.label) : that.label != null) {
-            differences.addMessage(String.format("label %s differs to %s", label, that.label));
-        }
-
-        if (repetitionNumber != null ? !repetitionNumber.equals(that.repetitionNumber) : that.repetitionNumber != null) {
-            differences.addMessage(String.format("label repetition number %d differs to %d", repetitionNumber, that.repetitionNumber));
-        }
+        differences.registerValueDifference(
+            "text", this.getLabel(), that.getLabel());
+        differences.registerValueDifference(
+            "repetition number", this.getRepetitionNumber(), that.getRepetitionNumber());
 
         return differences;
     }
@@ -159,8 +156,6 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
         PlannedActivityLabel that = (PlannedActivityLabel) o;
 
         if (label != null ? !label.equals(that.getLabel()) : that.getLabel() != null) return false;
-        if (plannedActivity != null ? !plannedActivity.equals(that.getPlannedActivity()) : that.getPlannedActivity() != null)
-            return false;
         if (repetitionNumber != null ? !repetitionNumber.equals(that.getRepetitionNumber()) : that.getRepetitionNumber() != null)
             return false;
 
@@ -170,8 +165,7 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
     @Override
     public int hashCode() {
         int result;
-        result = (plannedActivity != null ? plannedActivity.hashCode() : 0);
-        result = 31 * result + (repetitionNumber != null ? repetitionNumber.hashCode() : 0);
+        result = (repetitionNumber != null ? repetitionNumber.hashCode() : 0);
         result = 31 * result + (label != null ? label.hashCode() : 0);
         return result;
     }

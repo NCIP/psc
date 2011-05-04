@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.*;
-import junit.framework.TestCase;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-public class DurationTest extends TestCase {
+public class DurationTest extends DomainTestCase {
     public void testToString() {
         assertEquals("null (null unit)s", new Duration().toString());
         assertEquals("5 days", new Duration(5, day).toString());
@@ -57,5 +56,21 @@ public class DurationTest extends TestCase {
         Duration sevenDays1 = new Duration(7, day);
         Duration sevenDays2 = new Duration(7, day);
         assertEquals(sevenDays1.hashCode(), sevenDays2.hashCode());
+    }
+
+    public void testDeepEqualsIsEqualForSame() throws Exception {
+        assertFalse(new Duration(8, week).deepEquals(new Duration(8, week)).hasDifferences());
+    }
+
+    public void testDeepEqualsWithDifferentUnits() throws Exception {
+        Duration a = new Duration(4, week);
+        Duration b = new Duration(4, fortnight);
+        assertDifferences(a.deepEquals(b), "unit week does not match fortnight");
+    }
+
+    public void testDeepEqualsWithDifferentQuantities() throws Exception {
+        Duration a = new Duration(9, fortnight);
+        Duration b = new Duration(4, fortnight);
+        assertDifferences(a.deepEquals(b), "quantity does not match: 9 != 4");
     }
 }

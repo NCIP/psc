@@ -23,7 +23,9 @@ import java.util.Set;
 		@Parameter(name = "sequence", value = "seq_populations_id")
 	}
 )
-public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed, Child<Study>, Comparable<Population>, Cloneable {
+public class Population extends AbstractMutableDomainObject
+    implements Named, NaturallyKeyed, Child<Study>, Comparable<Population>, Cloneable
+{
     private Study study;
     private String name;
     private String abbreviation;
@@ -105,15 +107,8 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 
         Population that = (Population) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) {
-            differences.addMessage(String.format("Population name %s differs to %s", name, that.name));
-        }
-
-        if (abbreviation != null ? !abbreviation.equals(that.abbreviation) : that.abbreviation != null) {
-            differences.addMessage(String.format("Population abbreviation %s differs to %s", abbreviation, that.abbreviation));
-        }
-
-        return differences;
+        return differences.registerValueDifference("name", getName(), that.getName()).
+            registerValueDifference("abbreviation", getAbbreviation(), that.getAbbreviation());
     }
 
     @Override

@@ -13,7 +13,7 @@ import javax.persistence.Transient;
  * @author Rhett Sutphin
  */
 @Embeddable
-public class Duration implements Comparable<Duration>, Cloneable {
+public class Duration implements Comparable<Duration>, Cloneable, DeepComparable<Duration> {
     public static enum Unit {
         day(1), week(7), fortnight(14), month(28), quarter(91);
         private int inDays;
@@ -70,23 +70,10 @@ public class Duration implements Comparable<Duration>, Cloneable {
        this.unit = unit;
     }
 
-    public Differences deepEquals(Object o) {
-        Differences differences = new Differences();
-        if (this == o) return differences;
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("not valid duration");
-            return differences;
-        }
-
-        final Duration duration = (Duration) o;
-
-        if (quantity != null ? !quantity.equals(duration.quantity) : duration.quantity != null) {
-            differences.addMessage(String.format("duration quantity %d differs to %d", quantity, duration.quantity));
-        }
-        if (unit != duration.unit) {
-            differences.addMessage(String.format("duration unit %s differs to %s", unit, duration.unit));
-        }
-        return differences;
+    public Differences deepEquals(Duration that) {
+        return new Differences().
+            registerValueDifference("unit", getUnit(), that.getUnit()).
+            registerValueDifference("quantity", getQuantity(), that.getQuantity());
     }
 
     // Object methods

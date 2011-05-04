@@ -30,7 +30,9 @@ import java.util.*;
         @Parameter(name="sequence", value="seq_study_segments_id")
     }
 )
-public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
+public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>>
+    implements Named
+{
     public static final String TEMPORARY_NAME = "[Unnamed study segment]";
 
     private String name = TEMPORARY_NAME;
@@ -138,31 +140,10 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
             return differences;
         }
 
-        StudySegment studySegment = (StudySegment) o;
-        if (name != null ? !name.equals(studySegment.name) : studySegment.name != null) {
-            differences.addMessage(String.format("StudySegment name %s differs to %s", name, studySegment.name));
-        }
+        StudySegment that = (StudySegment) o;
 
-
-        if (getPeriods() != null && studySegment.getPeriods() != null) {
-            if (getPeriods().size() != studySegment.getPeriods().size()) {
-                differences.addMessage(String.format("total no.of periods %d differs to %d",
-                        getPeriods().size(), studySegment.getPeriods().size()));
-            } else {
-                Iterator iterator1 = getPeriods().iterator();
-                Iterator iterator2 = studySegment.getPeriods().iterator();
-                while (iterator1.hasNext() && iterator2.hasNext()) {
-                    Period period1 = (Period)iterator1.next();
-                    Period period2 = (Period)iterator2.next();
-                    Differences periodDifferences = period1.deepEquals(period2);
-                    if (periodDifferences.hasDifferences()) {
-                        differences.addChildDifferences(String.format("StudySegment %s", name), periodDifferences);
-                    }
-                }
-            }
-        }
-
-        return differences; 
+        return differences.registerValueDifference("name", this.getName(), that.getName()).
+            recurseDifferences("period", getPeriods(), that.getPeriods());
     }
 
     @Override

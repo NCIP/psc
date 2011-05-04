@@ -37,7 +37,8 @@ import java.util.List;
     }
 )
 public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivity>
-        implements Named, Comparable<Period> {
+    implements Named, Comparable<Period>
+{
     private static final int DEFAULT_REPETITIONS = 1;
     private static final int DEFAULT_START_DAY = 1;
     private static final int DEFAULT_DURATION_QUANTITY = 1;
@@ -208,44 +209,15 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
             return differences;
         }
 
-        Period period = (Period) o;
+        Period that = (Period) o;
 
-        if (repetitions != period.repetitions) {
-            differences.addMessage(String.format("Period repetitions %d differs to %d", repetitions, period.repetitions));
-        }
-
-        if (name != null ? !name.equals(period.name) : period.name != null){
-            differences.addMessage(String.format("Period name %s differs to %s", name, period.name));
-        }
-
-        if (startDay != null ? !startDay.equals(period.startDay) : period.startDay != null) {
-            differences.addMessage(String.format("Period start day %d differs to %d", startDay, period.startDay));
-        }
-        String prefix = String.format("Period %s", name);
-        if (duration != null && period.duration != null) {
-            Differences durationDifferences = duration.deepEquals(period.duration);
-            if (durationDifferences.hasDifferences()) {
-               differences.addChildDifferences(prefix, durationDifferences);
-            }
-        }
-
-        if (getPlannedActivities() != null && period.getPlannedActivities() != null) {
-            if (getPlannedActivities().size() != period.getPlannedActivities().size()) {
-                differences.addMessage(String.format("total no.of planned actvities %d differs to %d",
-                        getPlannedActivities().size(), period.getPlannedActivities().size()));
-            } else {
-                for (int i=0; i<getPlannedActivities().size(); i++) {
-                    PlannedActivity pa1 = getPlannedActivities().get(i);
-                    PlannedActivity pa2 = period.getPlannedActivities().get(i);
-                    Differences paDifferences = pa1.deepEquals(pa2);
-                    if (paDifferences.hasDifferences()) {
-                        differences.addChildDifferences(prefix, paDifferences);
-                    }
-                }
-            }
-        }
-
-        return differences;
+        return differences.recurseDifferences("duration", this.getDuration(), that.getDuration()).
+            registerValueDifference("name", this.getName(), that.getName()).
+            registerValueDifference("repetition", this.getRepetitions(), that.getRepetitions()).
+            registerValueDifference("start day", this.getStartDay(), that.getStartDay()).
+            recurseDifferences("planned activity",
+                this.getPlannedActivities(), that.getPlannedActivities())
+        ;
     }
 
     ////// OBJECT METHODS

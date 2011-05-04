@@ -1,16 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
-import junit.framework.TestCase;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class PopulationTest extends TestCase {
+public class PopulationTest extends DomainTestCase {
     private Study study = new Study();
     private final Set<Population> populations = new HashSet<Population>();
 
@@ -78,16 +76,14 @@ public class PopulationTest extends TestCase {
     public void testDeepEqualsForDifferentName() throws Exception {
         Population p1 = Fixtures.createPopulation("N", "name1");
         Population p2 = Fixtures.createPopulation("N", "name2");
-        Differences differences = p1.deepEquals(p2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Population is not different", "Population name name1 differs to name2", differences.getMessages().get(0));
+
+        assertDifferences(p1.deepEquals(p2), "name \"name1\" does not match \"name2\"");
     }
 
     public void testDeepEqualsForDifferentAbbreviation() throws Exception {
         Population p1 = Fixtures.createPopulation("N1", "name");
         Population p2 = Fixtures.createPopulation("N2", "name");
-        Differences differences = p1.deepEquals(p2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Population is not different", "Population abbreviation N1 differs to N2", differences.getMessages().get(0));
+
+        assertDifferences(p1.deepEquals(p2), "abbreviation \"N1\" does not match \"N2\"");
     }
 }

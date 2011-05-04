@@ -23,7 +23,8 @@ import javax.persistence.Transient;
     }
 )
 public class ActivityType extends AbstractMutableDomainObject
-        implements Named, NaturallyKeyed, Comparable<ActivityType> {
+    implements Named, NaturallyKeyed, Comparable<ActivityType>, DeepComparable<ActivityType>
+{
 
     private String name;
 
@@ -62,21 +63,9 @@ public class ActivityType extends AbstractMutableDomainObject
         this.name = name;
     }
 
-    public Differences deepEquals(Object o) {
+    public Differences deepEquals(ActivityType other) {
         Differences differences =  new Differences();
-        if (this == o) return differences;
-
-        if (o == null || getClass() != o.getClass()) {
-            differences.addMessage("not an instance of activity type");
-            return differences;
-        }
-
-        ActivityType activityType = (ActivityType) o;
-
-        if (name != null ? !name.equals(activityType.name) : activityType.name != null) {
-            differences.addMessage(String.format("ActivityType name %s differs to %s", name, activityType.name));
-        }
-
+        differences.registerValueDifference("name", getName(), other.getName());
         return differences;
     }
 

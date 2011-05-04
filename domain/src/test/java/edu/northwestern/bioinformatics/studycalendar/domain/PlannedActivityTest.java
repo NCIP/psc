@@ -1,11 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
-import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +11,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-public class PlannedActivityTest extends TestCase {
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+
+public class PlannedActivityTest extends DomainTestCase {
     private PlannedActivity pa0, pa1;
 
     protected void setUp() throws Exception {
@@ -294,61 +293,54 @@ public class PlannedActivityTest extends TestCase {
     }
 
     public void testDeepEqualsForDifferentActivity() throws Exception {
-        PlannedActivity pa1 = createPlannedActivity("a1", 1);
-        PlannedActivity pa2 = createPlannedActivity("a2", 1);
-        Differences differences = pa1.deepEquals(pa2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("PlannedActivity is not different", "Activity name a1 differs to a2",
-                differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+        PlannedActivity a = createPlannedActivity(createActivity("a1", "A"), 1);
+        PlannedActivity b = createPlannedActivity(createActivity("a2", "A"), 1);
+
+        assertChildDifferences(a.deepEquals(b), "activity", "name \"a1\" does not match \"a2\"");
     }
 
     public void testDeepEqualsForDifferentDay() throws Exception {
-        PlannedActivity pa1 = createPlannedActivity("A", 1);
-        PlannedActivity pa2 = createPlannedActivity("A", 2);
-        Differences differences = pa1.deepEquals(pa2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("PlannedActivity is not different", "PlannedActivity day 1 differs to 2", differences.getMessages().get(0));
+        PlannedActivity a = createPlannedActivity("A", 1);
+        PlannedActivity b = createPlannedActivity("A", 2);
+
+        assertDifferences(a.deepEquals(b), "day does not match: 1 != 2");
+    }
+
+    public void testDeepEqualsForDifferentWeight() throws Exception {
+        PlannedActivity a = createPlannedActivity("A", 1, 8);
+        PlannedActivity b = createPlannedActivity("A", 1, 10);
+
+        assertDifferences(a.deepEquals(b), "weight does not match: 8 != 10");
+    }
+
+    public void testDeepEqualsForDifferentDetailsAndCondition() throws Exception {
+        PlannedActivity a = createPlannedActivity("A", 1, "Every time", null);
+        PlannedActivity b = createPlannedActivity("A", 1, "Sometimes", "When the coin flip is tails");
+
+        assertDifferences(a.deepEquals(b),
+            "details \"Every time\" does not match \"Sometimes\"",
+            "condition <null> does not match \"When the coin flip is tails\"");
     }
 
     public void testDeepEqualsForDifferentLabels() throws Exception {
-        PlannedActivity pa1 = createPlannedActivity("A", 1);
-        PlannedActivity pa2 = createPlannedActivity("A", 1);
-        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label", 5);
-        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label", 3);
-        pa1.addPlannedActivityLabel(pal1);
-        pa2.addPlannedActivityLabel(pal2);
-        Differences differences = pa1.deepEquals(pa2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("PlannedActivity is not different","label repetition number 5 differs to 3",
-                differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+        PlannedActivity a = createPlannedActivity("A", 1);
+        PlannedActivity b = createPlannedActivity("A", 1);
+        Fixtures.addPlannedActivityLabel(a, "rb", 5);
+        Fixtures.addPlannedActivityLabel(b, "bit", null);
+
+        Differences differences = a.deepEquals(b);
+        assertDifferences(differences,
+            "missing label rb on 5",
+            "extra label bit on all");
     }
 
-    public void testDeepEqualsForDifferentNoOfLabels() throws Exception {
-        PlannedActivity pa1 = createPlannedActivity("A", 1);
-        PlannedActivity pa2 = createPlannedActivity("A", 1);
-        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label1", 5);
-        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label2", 3);
-        PlannedActivityLabel pal3 = Fixtures.createPlannedActivityLabel("Label3", 3);
-        pa1.addPlannedActivityLabel(pal1);
-        pa2.addPlannedActivityLabel(pal2);
-        pa2.addPlannedActivityLabel(pal3);
-        Differences differences = pa1.deepEquals(pa2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("PlannedActivity is not different","total no. of planned activity labels 1 differs to 2",
-                differences.getMessages().get(0));
-    }
-    
     public void testDeepEqualsForDifferentPopulation() throws Exception {
-        PlannedActivity pa1 = createPlannedActivity("A", 1);
-        PlannedActivity pa2 = createPlannedActivity("A", 1);
+        PlannedActivity a = createPlannedActivity("A", 1);
+        PlannedActivity b = createPlannedActivity("A", 1);
         Population p1 = Fixtures.createPopulation("N1", "name");
-        Population p2 = Fixtures.createPopulation("N2", "name");
-        pa1.setPopulation(p1);
-        pa2.setPopulation(p2);
-        Differences differences = pa1.deepEquals(pa2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("PlannedActivity is not different", "Population abbreviation N1 differs to N2", differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+        a.setPopulation(p1);
 
+        assertDifferences(a.deepEquals(b), "population N1 does not match <null>");
     }
 
     private PlannedActivity createPlannedActivityInPeriod(int periodStartDay, int paDay) {

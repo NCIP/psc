@@ -136,31 +136,10 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
             return differences;
         }
 
-        Epoch epoch = (Epoch) o;
+        Epoch that = (Epoch) o;
 
-        if (name != null ? !name.equals(epoch.name) : epoch.name != null) {
-            differences.addMessage(String.format("Epoch name %s differs to %s", name, epoch.name));
-        }
-
-        if (getStudySegments() != null &&
-                epoch.getStudySegments() != null) {
-            if (getStudySegments().size() != epoch.getStudySegments().size()) {
-                differences.addMessage(String.format("total no. of StudySegment %d differs to %d",
-                        getStudySegments().size(), epoch.getStudySegments().size()));
-            } else {
-                for (int i=0; i<getStudySegments().size(); i++) {
-                    StudySegment ss1 =  getStudySegments().get(i);
-                    StudySegment ss2 =  epoch.getStudySegments().get(i);
-                    Differences segmentDifferences = ss1.deepEquals(ss2);
-                    if (segmentDifferences.hasDifferences()) {
-                       differences.addChildDifferences(String.format("Epoch %s", name),
-                               segmentDifferences);
-                    }
-                }
-            }
-
-        }
-        return differences;
+        return differences.registerValueDifference("name", this.getName(), that.getName()).
+            recurseDifferences("study segment", this.getStudySegments(), that.getStudySegments());
     }
 
     //Object methods

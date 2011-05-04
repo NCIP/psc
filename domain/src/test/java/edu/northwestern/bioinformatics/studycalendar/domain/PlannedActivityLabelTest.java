@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertOrder;
-import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class PlannedActivityLabelTest extends TestCase {
+public class PlannedActivityLabelTest extends DomainTestCase {
     private PlannedActivityLabel pal0, pal1;
     private PlannedActivity pa;
 
@@ -15,8 +13,8 @@ public class PlannedActivityLabelTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         pa = Fixtures.createPlannedActivity("EKG", 2);
-        pal0 = Fixtures.createPlannedActivityLabel(pa, "okay", 5);
-        pal1 = Fixtures.createPlannedActivityLabel(pa, "okay", 3);
+        pal0 = Fixtures.addPlannedActivityLabel(pa, "okay", 5);
+        pal1 = Fixtures.addPlannedActivityLabel(pa, "okay", 3);
     }
     
     public void testLabelsAreAlwaysLowerCase() throws Exception {
@@ -100,19 +98,25 @@ public class PlannedActivityLabelTest extends TestCase {
     }
 
     public void testDeepEqualsForDifferentLabel() throws Exception {
-        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label1", 5);
-        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label2", 5);
-        Differences differences = pal1.deepEquals(pal2);
-        assertNotNull(differences.getMessages());
-        assertEquals("Planned Activity Labels are equals", "label label1 differs to label2", differences.getMessages().get(0));
+        PlannedActivityLabel a = Fixtures.createPlannedActivityLabel("J", 5);
+        PlannedActivityLabel b = Fixtures.createPlannedActivityLabel("K", 5);
+
+        assertDifferences(a.deepEquals(b), "text \"j\" does not match \"k\"");
     }
 
     public void testDeepEqualsForDifferentRepetitionNo() throws Exception {
-        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label", 5);
-        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label", 8);
-        Differences differences = pal1.deepEquals(pal2);
-        assertNotNull(differences.getMessages());
-        assertEquals("Planned Activity Labels are equals", "label repetition number 5 differs to 8", differences.getMessages().get(0));
+        PlannedActivityLabel a = Fixtures.createPlannedActivityLabel("L", 5);
+        PlannedActivityLabel b = Fixtures.createPlannedActivityLabel("L", 8);
+
+        assertDifferences(a.deepEquals(b), "repetition number does not match: 5 != 8");
     }
 
+    public void testNaturalKeyForParticularRep() throws Exception {
+        assertEquals("okay on 5", pal0.getNaturalKey());
+    }
+
+    public void testNaturalKeyForAllReps() throws Exception {
+        pal0.setRepetitionNumber(null);
+        assertEquals("okay on all", pal0.getNaturalKey());
+    }
 }
