@@ -119,9 +119,10 @@ public class TemplateImportService {
                 Amendment newVersion = newVersionList.get(oldVersionList.indexOf(amendment));
                 Differences differences = amendment.deepEquals(newVersion);
                 if (differences.hasDifferences()) {
-                    sb.append("Amendment ").append(amendment.getDisplayName()).append(" differs to ")
-                            .append("Amendment ").append(newVersion.getDisplayName());
-                    sb.append("[").append(differences.toString()).append("]");
+                    sb.append("Existing released amendment ").append(amendment.getDisplayName()).
+                        append(" differs from released amendment ").
+                        append(newVersion.getDisplayName()).
+                        append(" in imported template:\n").append(differences.toTreeString());
                 }
             }
 

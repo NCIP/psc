@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.DeepComparable;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -49,7 +50,7 @@ import java.util.ListIterator;
 @DiscriminatorColumn(name="node_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Delta<T extends Changeable>
     extends AbstractMutableDomainObject
-    implements Cloneable, TransientCloneable<Delta<T>>
+    implements Cloneable, TransientCloneable<Delta<T>>, DeepComparable<Delta<T>>
 {
     private List<Change> changes;
     private T node;
@@ -125,6 +126,16 @@ public abstract class Delta<T extends Changeable>
     @Transient
     public List<Change> getChanges() {
         return Collections.unmodifiableList(getChangesInternal());
+    }
+
+    @Transient
+    public String getBriefDescription() {
+        return String.format("delta for %s %s", getNodeTypeDescription(), getNode().getGridId());
+    }
+
+    @Transient
+    public String getNodeTypeDescription() {
+        return getNode().getClass().getSimpleName().replaceAll("([A-Z])", " $1").trim().toLowerCase();
     }
 
     ////// IMPLEMENTATION OF TransientCloneable
@@ -204,15 +215,9 @@ public abstract class Delta<T extends Changeable>
         }
     }
 
-    public Differences deepEquals(Object o) {
+    public Differences deepEquals(Delta<T> delta) {
         Differences differences =  new Differences();
-        if (this == o) return differences;
-        if (!(o instanceof Delta)) {
-            differences.addMessage("object is not instance of " +getClass());
-            return differences;
-        }
 
-        Delta delta = (Delta) o;
         if (getNode() != null && delta.getNode() != null) {
             if (getNode().getGridId() != null ? !getNode().getGridId().equals(delta.getNode().getGridId())
                     : delta.getNode().getGridId() != null) {
