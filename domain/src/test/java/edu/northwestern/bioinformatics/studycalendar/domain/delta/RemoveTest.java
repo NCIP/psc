@@ -1,23 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
-import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
+
 /**
  * @author Rhett Sutphin
  */
-public class RemoveTest extends TestCase {
+public class RemoveTest extends DomainTestCase {
     private static final Date NOW = DateTools.createDate(2010, Calendar.JANUARY, 1);
 
     private Remove remove;
@@ -143,44 +141,27 @@ public class RemoveTest extends TestCase {
     }
 
     public void testEqualsWhenRemoveHasSameChild() throws Exception {
-        Remove remove1 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Segment1", StudySegment.class));
-        Remove remove2 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Segment1", StudySegment.class));
+        Remove remove1 = Remove.create(createNamedInstance("Segment1", StudySegment.class));
+        Remove remove2 = Remove.create(createNamedInstance("Segment1", StudySegment.class));
         assertEquals("Removes are not equals", remove1, remove2);
     }
 
     public void testEqualsWhenRemoveHasDifferentChildName() throws Exception {
-        Remove remove1 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Segment1", StudySegment.class));
-        Remove remove2 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Segment2", StudySegment.class));
+        Remove remove1 = Remove.create(createNamedInstance("Segment1", StudySegment.class));
+        Remove remove2 = Remove.create(createNamedInstance("Segment2", StudySegment.class));
         assertNotEquals("Removes are equals", remove1, remove2);
     }
 
     public void testEqualsWhenRemoveHasDifferentChild() throws Exception {
-        Remove remove1 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Epoch1", Epoch.class));
-        Remove remove2 = createRemoveWithAttribute(new Remove(),
-                    createNamedInstance("Segment2", StudySegment.class));
+        Remove remove1 = Remove.create(createNamedInstance("Epoch1", Epoch.class));
+        Remove remove2 = Remove.create(createNamedInstance("Segment2", StudySegment.class));
         assertNotEquals("Removes are equals", remove1, remove2);
     }
 
     public void testDeepEqualsWhenRemoveHasDifferentChild() throws Exception {
-        Epoch e1 = Epoch.create("E1","S1","S2");
-        e1.setGridId("e1");
-        Remove remove1 = createRemoveWithAttribute(new Remove(), e1);
-        Epoch e2 = Epoch.create("E2","S1","S2");
-        e1.setGridId("e2");
-        Remove remove2 = createRemoveWithAttribute(new Remove(), e2);
-        Differences differences = remove1.deepEquals(remove2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("for different child", differences.getMessages().get(0));
-    }
+        Remove remove1 = Remove.create(setGridId("e1", Epoch.create("E1")));
+        Remove remove2 = Remove.create(setGridId("e2", Epoch.create("E2")));
 
-    //Helper method
-    private Remove createRemoveWithAttribute(Remove remove, Child<?> child) {
-        remove.setChild(child);
-        return remove;
+        assertDifferences(remove1.deepEquals(remove2), "for different child");
     }
 }

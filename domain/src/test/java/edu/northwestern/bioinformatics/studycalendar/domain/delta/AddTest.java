@@ -1,22 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
-import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
+
 /**
  * @author Rhett Sutphin
  */
-public class AddTest extends TestCase {
+public class AddTest extends DomainTestCase {
     private static final Date NOW = DateTools.createDate(2009, Calendar.MARCH, 15);
 
     private static final int EPOCH_ID = 5;
@@ -394,32 +395,18 @@ public class AddTest extends TestCase {
     }
 
     public void testDeepEqualsForDifferentIndex() throws Exception {
-        Add add1 = new Add();
-        Epoch epoch1 = Epoch.create("E1", "S1", "S2");
-        add1.setChild(epoch1);
-        add1.setIndex(1);
-        Add add2 = new Add();
-        Epoch epoch2 = Epoch.create("E1", "S1", "S2");
-        add2.setChild(epoch2);
-        add2.setIndex(2);
+        Add add1 = Add.create(Epoch.create("E1"), 1);
+        Add add2 = Add.create(Epoch.create("E1"), 2);
 
         Differences differences = add1.deepEquals(add2);
-        assertFalse(differences.getMessages().isEmpty());
-        assertEquals("Add are equals", "index 1 differs to 2", differences.getMessages().get(0));
+        assertDifferences(differences, "index does not match: 1 != 2");
     }
 
-    public void testDeepEqualsForDifferentChildName() throws Exception {
-        Add add1 = new Add();
-        Epoch epoch1 = Epoch.create("E1", "S1", "S2");
-        add1.setChild(epoch1);
-        add1.setIndex(1);
-        Add add2 = new Add();
-        Epoch epoch2 = Epoch.create("E2", "S1", "S2");
-        add2.setChild(epoch2);
-        add2.setIndex(1);
+    public void testDeepEqualsForDifferentChild() throws Exception {
+        Add add1 = Add.create(setGridId("G-E1", Epoch.create("E1")));
+        Add add2 = Add.create(setGridId("G-E1", Epoch.create("E2")));
 
-        Differences differences = add1.deepEquals(add2);
-        assertFalse(differences.getChildDifferences().isEmpty());
-        assertEquals("Add are equals", "Epoch name E1 differs to E2", differences.getChildDifferences().get("child").getMessages().get(0));
+        assertChildDifferences(add1.deepEquals(add2),
+            "child", "name \"E1\" does not match \"E2\"");
     }
 }

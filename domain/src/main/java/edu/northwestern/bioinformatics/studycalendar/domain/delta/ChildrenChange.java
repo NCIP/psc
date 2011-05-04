@@ -7,6 +7,8 @@ import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import static edu.northwestern.bioinformatics.studycalendar.tools.StringTools.humanizeClassName;
+
 /**
  * @author Rhett Sutphin
  */
@@ -83,6 +85,14 @@ public abstract class ChildrenChange extends Change {
         if (getChild() != null) {
             getChild().setMemoryOnly(memoryOnly);
         }
+    }
+
+    @Transient
+    public String getNaturalKey() {
+        return String.format("%s of %s:%s",
+            humanizeClassName(getClass().getSimpleName()),
+            humanizeClassName(getChild().getClass().getSimpleName()),
+            getChild().getGridId());
     }
 
     ////// BEAN PROPERTIES

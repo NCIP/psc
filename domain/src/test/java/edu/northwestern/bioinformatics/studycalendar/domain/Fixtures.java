@@ -445,9 +445,11 @@ public class Fixtures {
         return activity;
     }
 
-    @Deprecated // less descriptive name
+    @Deprecated // should be the same as addActivityProperty but isn't in some tests
     public static ActivityProperty createActivityProperty(Activity activity, String namespace, String name, String value) {
-        return addActivityProperty(activity, namespace, name, value);
+        ActivityProperty activityProperty = createActivityProperty(namespace, name, value);
+        activityProperty.setActivity(activity);
+        return activityProperty;
     }
 
     public static ActivityProperty addActivityProperty(Activity activity, String namespace, String name, String value) {

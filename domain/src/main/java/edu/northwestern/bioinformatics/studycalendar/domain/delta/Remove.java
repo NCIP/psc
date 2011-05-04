@@ -34,7 +34,7 @@ public class Remove extends ChildrenChange {
         return false;
     }
 
-    public Differences deepEquals(Object o) {
+    public Differences deepEquals(Change o) {
         Differences differences =  new Differences();
         if (this == o) return differences;
         if (o == null || getClass() != o.getClass()) {

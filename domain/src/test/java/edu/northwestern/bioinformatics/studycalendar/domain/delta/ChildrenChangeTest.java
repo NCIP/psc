@@ -2,10 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import junit.framework.TestCase;
 
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 
 /**
  * @author Rhett Sutphin
@@ -24,6 +27,11 @@ public class ChildrenChangeTest extends TestCase {
         assertTrue(src.getChild().isMemoryOnly());
     }
 
+    public void testNaturalKey() throws Exception {
+        assertEquals("hide of planned activity:PA-567",
+            new Hide(setGridId("PA-567", new PlannedActivity())).getNaturalKey());
+    }
+
     private static class Hide extends ChildrenChange {
         private Hide(Child<?> child) {
             setChild(child);
@@ -39,7 +47,8 @@ public class ChildrenChangeTest extends TestCase {
             throw new UnsupportedOperationException("isNoop not implemented");
         }
 
-        public Differences deepEquals(Object o) {
+        @Override
+        public Differences deepEquals(Change o) {
             throw new UnsupportedOperationException("deepEquals not implemented"); 
         }
 

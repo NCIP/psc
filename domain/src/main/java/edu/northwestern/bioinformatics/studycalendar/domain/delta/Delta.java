@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -135,7 +136,7 @@ public abstract class Delta<T extends Changeable>
 
     @Transient
     public String getNodeTypeDescription() {
-        return getNode().getClass().getSimpleName().replaceAll("([A-Z])", " $1").trim().toLowerCase();
+        return StringTools.humanizeClassName(getNode().getClass().getSimpleName());
     }
 
     ////// IMPLEMENTATION OF TransientCloneable
@@ -215,32 +216,38 @@ public abstract class Delta<T extends Changeable>
         }
     }
 
-    public Differences deepEquals(Delta<T> delta) {
+    public Differences deepEquals(Delta<T> that) {
         Differences differences =  new Differences();
 
-        if (getNode() != null && delta.getNode() != null) {
-            if (getNode().getGridId() != null ? !getNode().getGridId().equals(delta.getNode().getGridId())
-                    : delta.getNode().getGridId() != null) {
+        if (getNode() != null && that.getNode() != null) {
+            if (getNode().getGridId() != null ? !getNode().getGridId().equals(that.getNode().getGridId())
+                    : that.getNode().getGridId() != null) {
                 differences.addMessage("for different node");
             }
         }
 
-        if (getChanges().size() != delta.getChanges().size()) {
-            differences.addMessage(String.format("total no. of changes of delta %d differs to %d",
-                        getChanges().size(), delta.getChanges().size()));
-        } else {
-            for (int i=0; i<getChanges().size(); i++) {
-                Change change =  getChanges().get(i);
-                Change matchingChange = (Change)delta.getChanges().get(i);
-                Differences changeDifferences = change.deepEquals(matchingChange);
-                if (changeDifferences.hasDifferences()) {
-                    differences.addChildDifferences(change.getAction().getDisplayName(), changeDifferences);
-                }
+        for (int i = 0; i < Math.max(that.getChanges().size(), getChanges().size()); i++) {
+            Change left =  getOrNull(this.getChanges(), i);
+            Change right = getOrNull(that.getChanges(), i);
+            if (left == null) {
+                differences.recurseDifferences(right.getNaturalKey(), null, right);
+            } else if (right == null) {
+                differences.recurseDifferences(left.getNaturalKey(), left, null);
+            } else if (left.getNaturalKey().equals(right.getNaturalKey())) {
+                differences.recurseDifferences(left.getNaturalKey(), left, right);
+            } else {
+                differences.addMessage(
+                    "%s replaced by %s", left.getNaturalKey(), right.getNaturalKey());
             }
         }
+
         return differences;
     }
-    
+
+    private <T> T getOrNull(List<T> l, int i) {
+        return i < l.size() ? l.get(i) : null;
+    }
+
     //Object Methods
 
     @Override
