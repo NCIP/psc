@@ -1194,6 +1194,11 @@ define "psc" do
       Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
       Java.java.lang.System.setProperty("psc.logging.debug", ENV['PSC_DEBUG'] || "true")
 
+      if ENV['PAUSE_BEFORE_DEPLOYMENT']
+        puts "Press return to continue with deployment"
+        $stdin.gets
+      end
+
       jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
 
