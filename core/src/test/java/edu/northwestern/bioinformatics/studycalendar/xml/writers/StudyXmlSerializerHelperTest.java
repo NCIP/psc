@@ -2,16 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static java.util.Arrays.asList;
 
 public class StudyXmlSerializerHelperTest extends StudyCalendarTestCase {
@@ -62,4 +68,33 @@ public class StudyXmlSerializerHelperTest extends StudyCalendarTestCase {
         assertTrue("Should be transient", actualNa.getActivities().get(1).isMemoryOnly());
     }
 
+    public void testResolvingActivityReferencesResolvesMultipleEquivalentActivities() throws Exception {
+        Activity f;
+        Source source = createSource("Some Things To Do", f = createActivity("Fly", "f"));
+
+        Period p = createPeriod(1, 7, 4);
+        p.addChild(Fixtures.createPlannedActivity(buildRef(f), 2));
+        p.addChild(Fixtures.createPlannedActivity(buildRef(f), 6));
+
+        Study in = Fixtures.createInDevelopmentTemplate("A");
+        Add firstEpochAdd = (Add) in.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
+        StudySegment aSegment = ((Epoch) firstEpochAdd.getChild()).getChildren().get(0);
+        aSegment.addChild(p);
+
+        helper.replaceActivityReferencesWithCorrespondingDefinitions(in, Arrays.asList(source));
+
+        assertEquals("Did not resolve first",
+            "Fly", p.getPlannedActivities().get(0).getActivity().getName());
+        assertEquals("Did not resolve second",
+            "Fly", p.getPlannedActivities().get(1).getActivity().getName());
+    }
+
+    private Activity buildRef(Activity a) {
+        Activity ref = a.clone();
+        ref.setName(null);
+        ref.setDescription(null);
+        ref.setType(null);
+        ref.setSource(createSource(a.getSource().getName()));
+        return ref;
+    }
 }

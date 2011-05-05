@@ -110,6 +110,12 @@ public class Source extends AbstractMutableDomainObject
         return (name != null ? name.hashCode() : 0);
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[name=").append(getName()).append(']').
+            toString();
+    }
 
     /**
      * DO NOT CALLL THIS METHOD DIRECTLY. instead use SourceService#updateSource
