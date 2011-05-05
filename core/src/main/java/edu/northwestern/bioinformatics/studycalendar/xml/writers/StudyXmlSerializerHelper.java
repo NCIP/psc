@@ -1,7 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import org.dom4j.Element;
 
@@ -9,20 +14,22 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class StudyXmlSerializerHelper {
 
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
 
     public Element generateSourcesElementWithActivities(Study study) {
-        Collection<Activity> activities = findAllActivities(study);
+        Collection<Activity> activities = findDistinctActivities(study);
         Collection<Source> sources = groupActivitiesBySource(activities);
         return activitySourceXmlSerializer.createElement(sources);
     }
 
-    protected Collection<Activity> findAllActivities(Study study) {
-        Collection<Activity> result = new HashSet<Activity>();
+    protected List<Activity> findAllActivities(Study study) {
+        List<Activity> result = new LinkedList<Activity>();
         for (PlannedActivity a : TemplateTraversalHelper.findChildren(study.getPlannedCalendar(), PlannedActivity.class)) {
             result.add(a.getActivity());
         }
@@ -34,6 +41,10 @@ public class StudyXmlSerializerHelper {
         }
 
         return result;
+    }
+
+    protected Set<Activity> findDistinctActivities(Study study) {
+        return new HashSet<Activity>(findAllActivities(study));
     }
 
     protected Collection<Source> groupActivitiesBySource(Collection<Activity> all) {
@@ -53,23 +64,27 @@ public class StudyXmlSerializerHelper {
         if (eSource != null) {
             Collection<Source> sources = activitySourceXmlSerializer.readCollectionElement(eSource);
 
-            Collection<Activity> activityRefs = findAllActivities(study);
-            for (Activity ref : activityRefs) {
-                if (ref.getSource() == null) {
-                    throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
-                }
+            replaceActivityReferencesWithCorrespondingDefinitions(study, sources);
+        }
+    }
 
-                Source foundSource = ref.getSource().findSourceWhichHasSameName(sources);
-                Activity foundActivityDef = ref.findActivityInCollectionWhichHasSameCode(foundSource.getActivities());
+    protected void replaceActivityReferencesWithCorrespondingDefinitions(Study study, Collection<Source> sources) {
+        Collection<Activity> activityRefs = findAllActivities(study);
+        for (Activity ref : activityRefs) {
+            if (ref.getSource() == null) {
+                throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
+            }
 
-                if (foundActivityDef == null) {
-                    throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
-                }
-                ref.updateActivity(foundActivityDef);
-                ref.setProperties(new ArrayList<ActivityProperty>());
-                for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
-                    ref.addProperty(p.clone());
-                }
+            Source foundSource = ref.getSource().findSourceWhichHasSameName(sources);
+            Activity foundActivityDef = ref.findActivityInCollectionWhichHasSameCode(foundSource.getActivities());
+
+            if (foundActivityDef == null) {
+                throw new StudyCalendarValidationException(MessageFormat.format("Problem resolving activity reference [code={0}; source={1}]", ref.getCode(), ref.getSource().getName()));
+            }
+            ref.updateActivity(foundActivityDef);
+            ref.setProperties(new ArrayList<ActivityProperty>());
+            for (ActivityProperty p : (new ArrayList<ActivityProperty>(foundActivityDef.getProperties()))) {
+                ref.addProperty(p.clone());
             }
         }
     }

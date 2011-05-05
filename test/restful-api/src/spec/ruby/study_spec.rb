@@ -285,4 +285,12 @@ describe "/studies/{study-identifier}/template" do
     end
   end
 
+  it "accepts the same template twice (#1442)" do
+    new = PscTest.template('NU-Cycles1')
+    put '/studies/NU-Cycles1/template', new, :as => :juno
+    response.status_code.should == 201 # created
+
+    put '/studies/NU-Cycles1/template', new, :as => :juno
+    response.status_code.should == 200 # OK (replaced)
+  end
 end

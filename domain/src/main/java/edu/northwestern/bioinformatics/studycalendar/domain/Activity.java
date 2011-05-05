@@ -224,8 +224,10 @@ public class Activity extends AbstractMutableDomainObject
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
                 .append("[id=").append(getId())
+                .append("; code=").append(getCode())
                 .append("; name=").append(getName())
                 .append("; type=").append(getType())
+                .append("; source=").append(getSource())
                 .append(']')
                 .toString();
     }
