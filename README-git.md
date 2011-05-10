@@ -7,5 +7,5 @@ repository][psc-mirror] at github. There are notes on [how to use the
 git repo][developer-notes] in PSC's developer wiki.
 
 [psc-main]: https://ncisvn.nci.nih.gov/svn/psc/
-[psc-mirror]: https://github.com/rsutphin/psc-mirror
+[psc-mirror]: https://github.com/NUBIC/psc-mirror
 [developer-notes]: https://code.bioinformatics.northwestern.edu/issues/wiki/psc/VersionControl
