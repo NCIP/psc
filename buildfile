@@ -27,7 +27,7 @@ APPLICATION_SHORT_NAME = 'psc'
 ###### Jetty config
 
 # enable JSP support in Jetty
-Java.classpath.concat([
+::Java.classpath.concat([
   #"org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
   #"org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
 
@@ -194,7 +194,7 @@ define "psc" do
     end
 
     task :create_hsqldb => :clean_hsqldb do |t|
-       psc_dir = "#{Java.java.lang.System.getProperty("user.home")}/.psc"
+       psc_dir = "#{::Java.java.lang.System.getProperty("user.home")}/.psc"
        mkdir_p psc_dir
        File.open("#{psc_dir}/#{db_name}.properties", 'w') do |f|
          f.puts( (<<-PROPERTIES).split(/\n/).collect { |row| row.strip }.join("\n") )
@@ -1148,7 +1148,7 @@ define "psc" do
       # set temp directory to something without +++ in it
       tmpdir = _('target/java-tmp')
       mkdir_p tmpdir
-      Java.java.lang.System.setProperty('java.io.tmpdir', tmpdir)
+      ::Java.java.lang.System.setProperty('java.io.tmpdir', tmpdir)
 
       task(:jetty_deploy_exploded).invoke
 
@@ -1190,9 +1190,9 @@ define "psc" do
     directory _('tmp/logs')
 
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
-      Java.java.lang.System.setProperty("catalina.base", _('tmp').to_s)
-      Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
-      Java.java.lang.System.setProperty("psc.logging.debug", ENV['PSC_DEBUG'] || "true")
+      ::Java.java.lang.System.setProperty("catalina.base", _('tmp').to_s)
+      ::Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
+      ::Java.java.lang.System.setProperty("psc.logging.debug", ENV['PSC_DEBUG'] || "true")
 
       if ENV['PAUSE_BEFORE_DEPLOYMENT']
         puts "Press return to continue with deployment"
@@ -1308,7 +1308,7 @@ define "psc" do
 
     desc "One-time setup for the RESTful API integrated tests"
     task :setup => [:set_db, :'test:compile', :wipe_db, project('psc:database').task('migrate')] do
-      Java::Commands.java(
+      ::Java::Commands.java(
         'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._,
         :classpath => test.compile.dependencies,
         :properties => { "psc.config.datasource" => db_name })

@@ -1,4 +1,4 @@
-if Gem::Version.new(Buildr::VERSION) < Gem::Version.new("1.3.5")
+if Gem::Version.new(Buildr::VERSION.dup) < Gem::Version.new("1.3.5")
   require 'facets/dictionary'
   require 'buildr/java/bdd'
 

@@ -1,4 +1,8 @@
-require 'md5'
+begin
+  require 'md5'
+rescue LoadError
+  require 'digest/md5'
+end
 
 # Takes a set of OSGi bundle jars and looks for unresolved dependencies.
 # The implementation is somewhat naive.

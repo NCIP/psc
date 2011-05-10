@@ -12,7 +12,7 @@ def set_db_name(name)
     info "#{$db_name ? 'Switching' : 'Setting'} datasource configuration name to #{name.inspect}"
   end
   $db_name = name
-  Java.java.lang.System.setProperty("psc.config.datasource", $db_name)
+  ::Java.java.lang.System.setProperty("psc.config.datasource", $db_name)
   $db_name
 end
 
@@ -72,7 +72,7 @@ def tomcat_hostname
 end
 
 def java6?
-  Java.java.lang.System.getProperty("java.specification.version").split('.')[1].to_i > 5
+  ::Java.java.lang.System.getProperty("java.specification.version").split('.')[1].to_i > 5
 end
 
 def user_settings
