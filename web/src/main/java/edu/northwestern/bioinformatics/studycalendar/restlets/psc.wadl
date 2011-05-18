@@ -2067,6 +2067,46 @@
               </method>
           </resource>
       </resource>
+        <resource path="system-status">
+            <method name="GET">
+                <doc>
+                    <html:p>
+                        A document describing the state of PSC's internals. For each monitored
+                        component, the document contains a flag indicating whether it is behaving
+                        correctly and a brief message describing the status. (If a component isn't
+                        working correctly, more details will be available in the application log on
+                        the server.)
+                    </html:p>
+                    <html:p>
+                        If a component doesn't respond properly, the reponse status will be 500
+                        (internal error). Otherwise, the status will be 200 (OK).
+                    </html:p>
+                    <html:p>
+                        This resource does not require authentication. It is intended for use with
+                        an automated system monitoring tool.
+                    </html:p>
+                </doc>
+                <response>
+                    <representation mediaType="application/json"/>
+                    <doc>
+<html:pre class="example">
+{
+    "system-status": {
+        "datasource": {
+            "ok": true,
+            "message": "Domain query successful"
+        },
+        "authorization": {
+            "ok": false,
+            "message": "Connection reset"
+        }
+    }
+}
+</html:pre>
+                    </doc>
+                </response>
+            </method>
+        </resource>
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
