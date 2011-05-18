@@ -24,7 +24,7 @@
     </bean>
 
     <bean name="authenticator" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticator">
-        <property name="except" value="docs.*"/>
+        <property name="except" value="docs.*|system-status.*"/>
         <property name="next" ref="router"/>
     </bean>
 
@@ -310,6 +310,11 @@
 
      <bean name="/user-actions/{user-action-identifier}" id="userActionResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.UserActionResource" />
+
+    <bean name="/system-status" id="systemStatusResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SystemStatusResource">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
 
     <!-- AUXILIARIES -->
 
