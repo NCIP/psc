@@ -314,6 +314,7 @@
     <bean name="/system-status" id="systemStatusResource" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SystemStatusResource">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="csmHelper" ref="suiteCsmHelper"/>
     </bean>
 
     <!-- AUXILIARIES -->
