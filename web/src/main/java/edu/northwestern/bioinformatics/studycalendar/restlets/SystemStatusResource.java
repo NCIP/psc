@@ -1,6 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteAuthorizationAccessException;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -27,6 +31,7 @@ import java.util.Map;
 public class SystemStatusResource extends ServerResource {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private JdbcTemplate jdbcTemplate;
+    private CsmHelper csmHelper;
 
     @Override
     protected void doInit() throws ResourceException {
@@ -38,8 +43,8 @@ public class SystemStatusResource extends ServerResource {
 
     @Override
     protected Representation get(Variant variant) throws ResourceException {
-        Collection<StatusCheck> checks = Arrays.<StatusCheck>asList(
-            new DataSourceCheck()
+        Collection<StatusCheck> checks = Arrays.asList(
+            new DataSourceCheck(), new CsmCheck()
         );
         boolean okay = true;
         Map<String, JSONObject> statusDoc = new LinkedHashMap<String, JSONObject>();
@@ -62,6 +67,11 @@ public class SystemStatusResource extends ServerResource {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Required
+    public void setCsmHelper(CsmHelper csmHelper) {
+        this.csmHelper = csmHelper;
+    }
+
     ////// CHECK IMPLEMENTATIONS
 
     private abstract class StatusCheck {
@@ -79,14 +89,12 @@ public class SystemStatusResource extends ServerResource {
         public final void doCheck() {
             try {
                 message = check();
-                log.debug("System status check %s succeeded", getClass().getSimpleName());
+                log.debug("System status check {} succeeded", getClass().getSimpleName());
             } catch (Exception e) {
                 okay = false;
                 message = e.getMessage();
                 log.error(
-                    String.format("System status check %s failed: %s",
-                        getClass().getSimpleName(), e.getMessage()),
-                    e);
+                    String.format("System status check %s failed", getClass().getSimpleName()), e);
             }
         }
 
@@ -110,6 +118,28 @@ public class SystemStatusResource extends ServerResource {
         @Override
         protected String name() {
             return "datasource";
+        }
+    }
+
+    /**
+     * Checks that CSM is able to make queries by searching for a known record. Unfortunately,
+     * CSM eats those exceptions, so the only we can only emit a generic failure message.
+     * (That's also why we use CsmHelper instead of the AuthorizationManager directly.)
+     */
+    private class CsmCheck extends StatusCheck {
+        @Override
+        protected String check() throws Exception {
+            try {
+                csmHelper.getRoleCsmGroup(SuiteRole.DATA_READER);
+            } catch (SuiteAuthorizationAccessException e) {
+                throw new StudyCalendarSystemException("CSM data not available", e);
+            }
+            return "CSM available";
+        }
+
+        @Override
+        protected String name() {
+            return "csm";
         }
     }
 }

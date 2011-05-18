@@ -22,16 +22,14 @@ describe 'GET /system-status' do
     end
   end
 
-  describe 'authorization' do
-    before { pending }
-
+  describe 'csm' do
     it 'has a ok/not-ok flag' do
-      response.json['system-status']['authorization']['ok'].should == true
+      response.json['system-status']['csm']['ok'].should == true
     end
 
     it 'has a message' do
-      response.json['system-status']['authorization']['message'].
-        should == 'Authorization query successful'
+      response.json['system-status']['csm']['message'].
+        should == 'CSM available'
     end
   end
 end
