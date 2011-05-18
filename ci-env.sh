@@ -5,10 +5,10 @@
 RUBY=ruby-1.8.7-p330
 GEMSET=psc
 
-set +x
+set +xe
 . ~/.rvm/scripts/rvm
 rvm use "${RUBY}@${GEMSET}"
-set -x
+set -xe
 ruby install_gems.rb
 
 export JAVA_OPTS="-Xmx256M -XX:MaxPermSize=128M"
