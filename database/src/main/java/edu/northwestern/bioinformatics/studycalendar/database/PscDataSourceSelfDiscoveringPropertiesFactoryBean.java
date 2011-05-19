@@ -80,11 +80,11 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
     @Override
     protected List<File> searchDirectories() {
         List<File> dirs = super.searchDirectories();
-        String property = System.getProperty(PATH_SYSTEM_PROPERTY);
-        if (property == null) {
-            log.debug("{} not set -- will not search", property);
+        String configuredPath = System.getProperty(PATH_SYSTEM_PROPERTY);
+        if (configuredPath == null) {
+            log.debug("{} not set -- will not search", PATH_SYSTEM_PROPERTY);
         } else {
-            dirs.add(0, new File(property));
+            dirs.add(0, new File(configuredPath));
         }
         return dirs;
     }
