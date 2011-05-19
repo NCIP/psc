@@ -85,7 +85,7 @@ class RequestLoggerFormatter < Spec::Runner::Formatter::BaseTextFormatter
   def start_proxy
     formatter = self
     server = TransparentHttpProxy.new(
-      7201, # TODO: externalize
+      ENV['JETTY_PORT'] ? ENV['JETTY_PORT'].to_i + 1 : 7201,
       Proc.new do |req, res|
         formatter.record_http_cycle(req, res)
       end
