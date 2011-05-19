@@ -1,13 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import static org.easymock.classextension.EasyMock.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer.PK_RECORD_TABLE_NAME;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -19,97 +15,76 @@ public class RowPreservingInitializerTest extends SchemaInitializerTestCase {
         assertEquals(Arrays.asList("id"), new RowPreservingInitializer("something").getPrimaryKeyNames());
     }
 
+    public void testOneTimeSetupCreatesRowRecordTempTableIfItDoesNotExist() throws Exception {
+        expect(jdbc.execute(new RowPreservationTableCreator(3, jdbc))).andReturn(null);
+        replayMocks();
+        new RowPreservingInitializer(TABLE_NAME, Arrays.asList("a_id", "b_id", "c_id")).
+            oneTimeSetup(connectionSource);
+        verifyMocks();
+    }
+
     public void testRowQueryRunBeforeAll() throws Exception {
-        expectInitialRowQuery(Collections.<Integer>emptyList());
+        expect(jdbc.update("DELETE FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners'")).
+            andReturn(0);
+        expect(jdbc.update("INSERT INTO " + PK_RECORD_TABLE_NAME +
+            " (table_name, key0) SELECT 'diners', id FROM diners")).andReturn(2);
         replayMocks();
         new RowPreservingInitializer(TABLE_NAME).beforeAll(connectionSource);
         verifyMocks();
     }
 
     public void testRowQueryUsesPkIfSet() throws Exception {
-        expect(jdbc.queryForList("SELECT some_id FROM diners")).
-            andReturn(Collections.emptyList());
+        expect(jdbc.update("DELETE FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners'")).
+            andReturn(0);
+        expect(jdbc.update("INSERT INTO " + PK_RECORD_TABLE_NAME +
+            " (table_name, key0) SELECT 'diners', some_id FROM diners")).andReturn(2);
         replayMocks();
         new RowPreservingInitializer(TABLE_NAME, "some_id").beforeAll(connectionSource);
         verifyMocks();
     }
 
     public void testRowQueryUsesMultiplePksIfSet() throws Exception {
-        expect(jdbc.queryForList("SELECT a_id, b_id FROM diners")).
-            andReturn(Collections.emptyList());
+        expect(jdbc.update("DELETE FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners'")).
+            andReturn(0);
+        expect(jdbc.update("INSERT INTO " + PK_RECORD_TABLE_NAME +
+            " (table_name, key0, key1) SELECT 'diners', a_id, b_id FROM diners")).
+            andReturn(3);
         replayMocks();
         new RowPreservingInitializer(TABLE_NAME, Arrays.asList("a_id", "b_id")).beforeAll(connectionSource);
         verifyMocks();
     }
 
     public void testAfterEachWipesAllExceptInitiallyPresentRows() throws Exception {
-        expectInitialRowQuery(Arrays.asList(1, 5, 7, 3));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT ((id=?) OR (id=?) OR (id=?) OR (id=?))"),
-            aryEq(new Object[] { 1, 5, 7, 3 })
+            "DELETE FROM diners WHERE (CAST (id AS VARCHAR(32))) NOT IN " +
+                "(SELECT key0 FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners')"
         )).andReturn(4);
         replayMocks();
         RowPreservingInitializer init = new RowPreservingInitializer(TABLE_NAME);
-        init.beforeAll(connectionSource);
         init.afterEach(connectionSource);
         verifyMocks();
     }
 
     public void testAfterEachDeleteUsesPkIfSet() throws Exception {
-        expect(jdbc.queryForList("SELECT some_id FROM diners")).
-            andReturn(Arrays.asList(
-                Collections.singletonMap("some_id", 3),
-                Collections.singletonMap("some_id", 7),
-                Collections.singletonMap("some_id", 12),
-                Collections.singletonMap("some_id", 88)
-            ));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT ((some_id=?) OR (some_id=?) OR (some_id=?) OR (some_id=?))"),
-            aryEq(new Object[] { 3, 7, 12, 88 })
+            "DELETE FROM diners WHERE (CAST (some_id AS VARCHAR(32))) NOT IN " +
+                "(SELECT key0 FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners')"
         )).andReturn(4);
         replayMocks();
         RowPreservingInitializer init = new RowPreservingInitializer(TABLE_NAME, "some_id");
-        init.beforeAll(connectionSource);
         init.afterEach(connectionSource);
         verifyMocks();
     }
 
     public void testAfterEachDeleteUsesMultiplePksIfSet() throws Exception {
-        expect(jdbc.queryForList("SELECT a_id, b_id FROM diners")).
-            andReturn(Arrays.asList(
-                new MapBuilder<String, Integer>().put("a_id", 3).put("b_id", 4).toMap(),
-                new MapBuilder<String, Integer>().put("b_id", 7).put("a_id", 4).toMap()
-            ));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT ((a_id=? AND b_id=?) OR (a_id=? AND b_id=?))"),
-            aryEq(new Object[] { 3, 4, 4, 7 })
-        )).andReturn(2);
+            "DELETE FROM diners WHERE (CAST (a_id AS VARCHAR(32)), CAST (b_id AS VARCHAR(32))) NOT IN " +
+                "(SELECT key0, key1 FROM " + PK_RECORD_TABLE_NAME + " WHERE table_name='diners')"
+        )).andReturn(4);
         replayMocks();
         RowPreservingInitializer init = new RowPreservingInitializer(
             TABLE_NAME, Arrays.asList("a_id", "b_id"));
-        init.beforeAll(connectionSource);
         init.afterEach(connectionSource);
         verifyMocks();
-    }
-
-    public void testAfterEachDeletesEverythingIfThereAreNoIdsToPreserve() throws Exception {
-        expectInitialRowQuery(Collections.<Integer>emptyList());
-        expect(jdbc.update("DELETE FROM diners", (Object[]) null)).andReturn(1);
-        replayMocks();
-        RowPreservingInitializer init = new RowPreservingInitializer(TABLE_NAME);
-        init.beforeAll(connectionSource);
-        init.afterEach(connectionSource);
-        verifyMocks();
-    }
-
-    private void expectInitialRowQuery(List<Integer> expectedIds) {
-        List<Map<String, Integer>> expectedResult = new ArrayList<Map<String, Integer>>();
-        for (Integer id : expectedIds) {
-            expectedResult.add(
-                Collections.singletonMap("id", id)
-            );
-        }
-        expect(jdbc.queryForList("SELECT id FROM diners")).
-            andReturn(expectedResult);
     }
 }

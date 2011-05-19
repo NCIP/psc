@@ -18,7 +18,7 @@ public abstract class SchemaInitializerTestCase extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        jdbc = registerMockFor(JdbcTemplate.class);
+        jdbc = registerNiceMockFor(JdbcTemplate.class);
         connectionSource = new MockConnectionSource(jdbc);
     }
 

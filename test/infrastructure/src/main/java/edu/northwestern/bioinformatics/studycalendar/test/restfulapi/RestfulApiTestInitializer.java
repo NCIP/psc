@@ -27,7 +27,8 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final Collection<String> NO_INITIALIZER_TABLES = Arrays.asList(
-        "authentication_system_conf", "bering_version", "change_actions", "delta_node_types");
+        "authentication_system_conf", "bering_version", "change_actions", "delta_node_types",
+        RowPreservingInitializer.PK_RECORD_TABLE_NAME);
     private static final Map<String, List<String>> ALTERNATE_PK_TABLES
         = new MapBuilder<String, List<String>>().
             put("csm_user_pe", Arrays.asList("user_protection_element_id")).

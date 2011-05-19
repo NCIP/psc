@@ -97,6 +97,12 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of initializers", 0, actualInitializers.size());
     }
 
+    public void testNoInitializerCreatedForRowPreservingKeyTrackerTable() throws Exception {
+        metadata.solo(RowPreservingInitializer.PK_RECORD_TABLE_NAME);
+        List<SchemaInitializer> actualInitializers = initializer.getInitializerSeries();
+        assertEquals("Wrong number of initializers", 0, actualInitializers.size());
+    }
+
     private static void assertRowPreservingInitializer(String expectedTable, String expectedPk, SchemaInitializer actual) {
         assertRowPreservingInitializer(expectedTable, Arrays.asList(expectedPk), actual);
     }
