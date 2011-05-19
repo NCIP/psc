@@ -317,6 +317,11 @@
         <property name="csmHelper" ref="suiteCsmHelper"/>
     </bean>
 
+    <bean name="/system-version" id="systemVersionResource" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SystemVersionResource">
+        <property name="buildInfo" ref="buildInfo"/>
+    </bean>
+
     <!-- AUXILIARIES -->
 
     <bean id="resourceFreemarkerConfiguration"

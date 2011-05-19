@@ -2107,6 +2107,25 @@
                 </response>
             </method>
         </resource>
+        <resource path="system-version">
+            <method name="GET">
+                <doc>
+                    <html:p>
+                        A document giving PSC's version number.
+                    </html:p>
+                </doc>
+                <response>
+                    <representation mediaType="application/json"/>
+                    <doc>
+<html:pre class="example">
+{
+    "psc_version": "3.9.4.RELEASE"
+}
+</html:pre>
+                    </doc>
+                </response>
+            </method>
+        </resource>
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
