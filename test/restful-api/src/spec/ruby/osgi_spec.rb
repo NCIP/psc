@@ -92,7 +92,7 @@ describe "/osgi/bundles" do
 
       describe "PUT" do
         it "starts a non-started bundle" do
-          installed = @bundles.find { |b| b['symbolic_name'] =~ /felix.shell.remote/ }
+          installed = @bundles.find { |b| b['symbolic_name'] =~ /psc-providers-mock/ }
           installed.should_not be_nil
           installed['state'].should == 'INSTALLED'
           put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }",
@@ -129,6 +129,8 @@ describe "/osgi/bundles" do
                 :as => :zelda, 'Content-Type' => 'application/json'
               response.status_code.should == 200
               response.json['state'].should == unputtable_state
+            else
+              pending "There is no bundle in the #{unputtable_state} state for testing"
             end
           end
         end
