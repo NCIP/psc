@@ -8,6 +8,8 @@
 
 <html>
 <head>
+    <title>Edit ${activity.name} (${activity.code} in ${activity.source.name})</title>
+
     <tags:javascriptLink name="scriptaculous/scriptaculous"/>
     <tags:javascriptLink name="activity-property/activity-property" />
     <style type="text/css">
@@ -82,7 +84,7 @@
         </div>
     </c:forEach>
 </laf:box>
-<laf:box title="${action} Activity" id="activity-input">
+<laf:box title="Edit Activity" id="activity-input">
     <laf:division>
            <form:form id="activity-form">
             <div style="height:10px;padding-bottom:20px; width:40em; color:red;">

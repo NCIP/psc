@@ -183,11 +183,11 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
     </bean>
 
-    <bean name="/advancedEditActivity" id="advancedEditActivityController" autowire="byName"
+    <bean name="/activities/edit" id="advancedEditActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Advanced Edit Activity"/>
+                <property name="name" value="Edit activity"/>
                 <property name="parent">
                     <ref local="activityController"/>
                 </property>

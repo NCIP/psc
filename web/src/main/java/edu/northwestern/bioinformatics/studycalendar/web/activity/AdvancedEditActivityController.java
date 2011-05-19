@@ -1,22 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.service.GeneratedUriTemplateVariable;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.springframework.validation.Errors;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.beans.factory.annotation.Required;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
@@ -29,7 +32,6 @@ public class AdvancedEditActivityController extends PscSimpleFormController impl
     private ActivityTypeDao activityTypeDao;
     private ActivityPropertyDao activityPropertyDao;
     public AdvancedEditActivityController() {
-        setSuccessView("/template/ajax/activities");
         setFormView("advancedEditActivity");
         setSuccessView("viewActivity");
         setBindOnNewForm(true);
@@ -60,7 +62,7 @@ public class AdvancedEditActivityController extends PscSimpleFormController impl
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         refdata.put("existingList",((AdvancedEditActivityCommand) command).getExistingUri());
-        refdata.put("action", "Advanced Edit");
+        refdata.put("action", "Edit");
         refdata.put("activityTypes", activityTypeDao.getAll());
         refdata.put("variables", GeneratedUriTemplateVariable.values());
         if(activity.getType()!=null)

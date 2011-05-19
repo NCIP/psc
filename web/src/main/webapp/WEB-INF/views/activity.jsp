@@ -355,7 +355,7 @@
             }
 
             function advancedEdit(activityId, action){
-                var href = '<c:url value="/pages/advancedEditActivity"/>'
+                var href = '<c:url value="/pages/activities/edit"/>'
                 var data = "?activityId=" + activityId;
                 location.href = href+data;
             }
