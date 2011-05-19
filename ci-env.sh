@@ -12,3 +12,5 @@ set -xe
 ruby install_gems.rb
 
 export JAVA_OPTS="-Xmx256M -XX:MaxPermSize=128M"
+# For the integration test request report
+export REQUEST_LOG_INCLUDE_ALL=true
