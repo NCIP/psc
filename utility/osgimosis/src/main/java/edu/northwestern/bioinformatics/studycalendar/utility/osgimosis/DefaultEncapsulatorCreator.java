@@ -22,13 +22,17 @@ import java.util.SortedSet;
 public class DefaultEncapsulatorCreator {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private Membrane membrane;
+    private DefaultMembrane membrane;
     private Class farClass;
     private ClassLoader nearClassLoader;
     private ClassLoader farClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
-    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader, ClassLoader farClassLoader, Map<String, Object[]> proxyConstructorParams) {
+    public DefaultEncapsulatorCreator(
+        DefaultMembrane membrane, Class farClass,
+        ClassLoader nearClassLoader, ClassLoader farClassLoader,
+        Map<String, Object[]> proxyConstructorParams
+    ) {
         this.membrane = membrane;
         this.farClass = farClass;
         this.nearClassLoader = nearClassLoader;

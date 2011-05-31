@@ -13,7 +13,7 @@ public abstract class EncapsulatedCollectionTestCase extends OsgimosisTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        membrane = new Membrane(defaultClassLoader(),
+        membrane = new DefaultMembrane(defaultClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
     }
 

@@ -22,7 +22,7 @@ public class MembraneLeak {
         ClassLoader b = new FileClassLoader("B", root());
 
         List<Object> people = createPeopleOnCL(a);
-        Membrane membrane = new Membrane(b, Person.class.getPackage().getName());
+        Membrane membrane = new DefaultMembrane(b, Person.class.getPackage().getName());
 
         for (Object aPerson : people) {
             Object bPerson = membrane.farToNear(aPerson);

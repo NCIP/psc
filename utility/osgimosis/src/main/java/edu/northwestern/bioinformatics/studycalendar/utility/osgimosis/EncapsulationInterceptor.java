@@ -31,7 +31,7 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
     public Object invoke(Object proxy, Method nearMethod, Object[] nearArgs) throws Throwable {
         Method farMethod = getEncapsulator().findFarMethod(nearMethod, far.getClass());
         if (farMethod != null) {
-            Membrane.pushMDC();
+            DefaultMembrane.pushMDC();
             try {
                 log.trace("Bridging method {} with args {} in {}",
                     new Object[] { nearMethod, nearArgs == null ? "<none>" : Arrays.asList(nearArgs), proxy.getClass() });
@@ -55,7 +55,7 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
                         proxyTargetClassLoader(proxy));
                 }
             } finally {
-                Membrane.popMDC();
+                DefaultMembrane.popMDC();
             }
         } else {
             throw new MembraneException(

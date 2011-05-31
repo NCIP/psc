@@ -8,7 +8,7 @@
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
     >
-    <bean id="membrane" class="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane">
+    <bean id="membrane" class="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.DefaultMembrane">
         <property name="nearClassLoader">
             <bean class="edu.northwestern.bioinformatics.studycalendar.core.osgi.ContextClassLoaderFactoryBean"/>
         </property>

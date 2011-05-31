@@ -20,7 +20,7 @@ public class ArrayEncapsulatorTest extends OsgimosisTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        aMembrane = new Membrane(loaderA, "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
+        aMembrane = new DefaultMembrane(loaderA, "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
         personA = classFromLoader(Person.class, loaderA);
         defaultPersonA = classFromLoader(DefaultPerson.class, loaderA);
         aInstance = defaultPersonA.newInstance();

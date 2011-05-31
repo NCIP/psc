@@ -24,13 +24,13 @@ import java.util.SortedSet;
 /**
  * @author Rhett Sutphin
  */
-public class MembraneTest extends OsgimosisTestCase {
-    private Membrane membrane;
+public class DefaultMembraneTest extends OsgimosisTestCase {
+    private DefaultMembrane membrane;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        membrane = new Membrane(defaultClassLoader(),
+        membrane = new DefaultMembrane(defaultClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
     }
 

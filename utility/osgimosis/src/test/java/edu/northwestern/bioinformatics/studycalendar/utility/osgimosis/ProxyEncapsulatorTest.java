@@ -17,7 +17,7 @@ public class ProxyEncapsulatorTest extends OsgimosisTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        aMembrane = new Membrane(loaderA,
+        aMembrane = new DefaultMembrane(loaderA,
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
         aInstance = classFromLoader(DefaultPerson.class, loaderA).newInstance();
         personB = classFromLoader(Person.class, loaderB);
