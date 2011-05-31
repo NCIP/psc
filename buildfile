@@ -246,7 +246,7 @@ define "psc" do
     desc "Interfaces and base classes for PSC's simplified authorization plugin mechanism"
     define "plugin-api" do
       project.iml.id = 'authorization-plugin-api'
-      
+
       bnd.wrap!
       bnd.name = "PSC Authorization Plugin API"
       compile.with SLF4J.api, SECURITY.suite_authorization, SPRING,
@@ -259,7 +259,7 @@ define "psc" do
     desc "The adapter that converts an authorization plugin into a CSM AuthorizationManager"
     define "socket" do
       project.iml.id = 'authorization-socket'
-      
+
       bnd.wrap!
       bnd.name = "PSC Authorization Plugin Socket"
       package(:jar)
@@ -276,7 +276,7 @@ define "psc" do
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       project.iml.id = 'authentication-plugin-api'
-      
+
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
       compile.with project('utility'), project('authorization:definitions'),
@@ -293,7 +293,7 @@ define "psc" do
     desc "PSC's framework for using the authentication plugins"
     define "socket" do
       project.iml.id = 'authentication-socket'
-      
+
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth Socket"
       bnd.import_packages <<
@@ -763,8 +763,8 @@ define "psc" do
       ## 1093 task
        FileUtils.mkdir_p _('target/work')
        filter.from(wsrf_dir+"/WEB-INF/etc/globus_wsrf_core").into(_('target/work')).include("server-config.wsdd").using(
-           :xml, :xpath => "/deployment/globalConfiguration", 
-	   :insert_type => :under, 
+           :xml, :xpath => "/deployment/globalConfiguration",
+	   :insert_type => :under,
 	   :xml_content => "<parameter name=\"disableDNS\" value=\"true\"/>
                             <parameter name=\"logicalHost\" value=\"" + tomcat_hostname + "\"/>"
        ).run
