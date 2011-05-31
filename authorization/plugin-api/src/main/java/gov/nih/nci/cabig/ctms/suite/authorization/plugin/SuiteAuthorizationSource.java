@@ -43,6 +43,7 @@ public interface SuiteAuthorizationSource {
 
     /**
      * Returns those users whose user details match all the given criteria.
+     * If the criteria are all null, return all users.
      */
     Collection<SuiteUser> searchUsers(SuiteUserSearchOptions criteria);
 }

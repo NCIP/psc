@@ -264,8 +264,9 @@ define "psc" do
       bnd.name = "PSC Authorization Plugin Socket"
       package(:jar)
 
-      compile.with project('plugin-api'), SECURITY.csm
-      test.with UNIT_TESTING
+      compile.with project('plugin-api').and_dependencies, project('utility'), SLF4J.api,
+        SECURITY.csm, SECURITY.suite_authorization, CTMS_COMMONS.base, JAKARTA_COMMONS.lang
+      test.with UNIT_TESTING, LOGBACK
     end
   end
 
