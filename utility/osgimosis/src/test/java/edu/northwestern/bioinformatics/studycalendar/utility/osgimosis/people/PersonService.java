@@ -31,4 +31,6 @@ public interface PersonService {
     Color hatColor(Person person);
 
     boolean equals(Person p1, Person p2);
+
+    Collection<Person> findByType(Class kind);
 }

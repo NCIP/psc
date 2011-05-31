@@ -41,7 +41,9 @@ public class DefaultEncapsulatorCreator {
     }
 
     public Encapsulator create() {
-        if (List.class.isAssignableFrom(farClass)) {
+        if (Class.class.isAssignableFrom(farClass)) {
+            return new ClassObjectEncapsulator(nearClassLoader);
+        } else if (List.class.isAssignableFrom(farClass)) {
             return new ListEncapsulator(membrane, nearClassLoader);
         } else if (SortedSet.class.isAssignableFrom(farClass)) {
             return new SortedSetEncapsulator(membrane, nearClassLoader);

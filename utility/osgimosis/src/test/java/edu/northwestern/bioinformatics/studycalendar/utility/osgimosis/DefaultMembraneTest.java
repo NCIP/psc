@@ -253,6 +253,11 @@ public class DefaultMembraneTest extends OsgimosisTestCase {
             get.invoke(inAFromDefault, 0).getClass().getClassLoader().getParent());
     }
 
+    public void testBridgingAClassResultsInTheFarVersionOfTheClassOnTheFarSide() throws Exception {
+        Collection<Person> found = bridgedPersonService().findByType(DefaultPerson.class);
+        assertEquals("Wrong number of people found: " + found, 1, found.size());
+    }
+
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Object far = classFromLoader(PersonServiceImpl.class, loaderA).newInstance();
         return (PersonService) membrane.farToNear(far);

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl;
 
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PeopleByName;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
@@ -8,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,6 +92,14 @@ public class PersonServiceImpl implements PersonService {
 
     public boolean equals(Person p1, Person p2) {
         return p1.equals(p2);
+    }
+
+    public Collection<Person> findByType(Class kind) {
+        if (kind.isAssignableFrom(DefaultPerson.class)) {
+            return Collections.<Person>singleton(new DefaultPerson("Chuck", "Dead"));
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     private static class PrivateInvestigator extends AbstractPerson {
