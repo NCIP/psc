@@ -581,8 +581,8 @@ define "psc" do
         project('core').and_dependencies
 
       task :run => [:build_test_embedder, 'psc:osgi-layer:console:compile'] do
+        mkdir_p _('tmp/logs')
         cd _("target/classes") do
-          mkdir_p _('tmp/logs')
           deps = project.test.dependencies.collect { |p| p.to_s }
           if ENV['WEBAPP_SIM']
             deps = [deps, project('psc:web').and_dependencies].flatten.uniq
@@ -591,7 +591,8 @@ define "psc" do
           classpath = deps.collect { |d| d.to_s }.join(':')
           puts "Classpath:\n- #{deps.join("\n- ")}"
           cmd = [
-            'java', "-Dcatalina.home=#{_('tmp')}",
+            'rlwrap',
+            'java', "-Dcatalina.base=#{_('tmp')}",
             '-cp', classpath,
             'edu.northwestern.bioinformatics.studycalendar.osgi.console.EmbedderConsole',
             project('osgi-layer')._('target', 'test', 'embedder')
