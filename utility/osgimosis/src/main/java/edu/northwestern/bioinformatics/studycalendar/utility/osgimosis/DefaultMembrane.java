@@ -18,6 +18,7 @@ import java.util.Map;
 public class DefaultMembrane implements Membrane {
     private static final String DEPTH_MDC_KEY = "depth";
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger locationLog = LoggerFactory.getLogger(getClass().getName() + ".locations");
 
     private Collection<String> sharedPackages;
     private Map<EncapsulatorCacheKey, Encapsulator> encapsulators;
@@ -86,12 +87,12 @@ public class DefaultMembrane implements Membrane {
 
             log.trace(" - Into {}", newCounterpartClassLoader);
             log.trace("   (using {} as the reverse)", newCounterpartReverseClassLoader);
-            if (log.isTraceEnabled()) {
+            if (locationLog.isTraceEnabled()) {
                 StackTraceElement[] stacktrace;
                 try { throw new RuntimeException(); } catch (RuntimeException re) { stacktrace = re.getStackTrace(); }
-                log.trace(" - At {}", stacktrace[0]);
+                locationLog.trace(" - At {}", stacktrace[0]);
                 for (int i = 1; i < stacktrace.length; i++) {
-                    log.trace("      {}", stacktrace[i]);
+                    locationLog.trace("      {}", stacktrace[i]);
                 }
             }
             if (cache.get(object) == null) {

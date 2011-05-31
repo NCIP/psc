@@ -88,6 +88,7 @@
 
     <logger name="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol"><level value="debug"/></logger>
     <logger name="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis"><level value="debug"/></logger>
+    <logger name="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.DefaultMembrane.locations"><level value="debug"/></logger>
 
     <logger name="org.apache.commons.digester"><level value="info"/></logger>
     <logger name="org.apache.catalina">        <level value="info"/></logger>
