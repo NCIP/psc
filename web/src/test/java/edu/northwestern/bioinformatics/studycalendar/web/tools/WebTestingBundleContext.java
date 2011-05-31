@@ -7,18 +7,22 @@ import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.StubAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.csm.internal.DefaultCsmAuthorizationManagerFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
+import gov.nih.nci.security.AuthorizationManager;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+
+import javax.sql.DataSource;
 
 /**
  * @author Rhett Sutphin
 */
-public class WebTestingBundleContext extends PscTestingBundleContext {
-    public WebTestingBundleContext() {
-        reset();
-    }
+public class WebTestingBundleContext extends PscTestingBundleContext implements InitializingBean {
+    private DataSource dataSource;
 
     public void reset() {
         testingDetails.clear();
@@ -27,5 +31,18 @@ public class WebTestingBundleContext extends PscTestingBundleContext {
         addService(PscUserDetailsService.class, new PscUserService());
         addService(ConfigurationAdmin.class, new MockConfigurationAdmin());
         addService(CompleteAuthenticationSystem.class, new CompleteAuthenticationSystemImpl());
+        addService(AuthorizationManager.class,
+            new DefaultCsmAuthorizationManagerFactory(dataSource).create());
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        reset();
+    }
+
+    ////// CONFIGURATION
+
+    @Required
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }

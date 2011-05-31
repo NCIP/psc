@@ -47,8 +47,11 @@
     </bean>
 
     <bean name="/reports/scheduled-activities"
-          id="reportsResource" autowire="byName" scope="prototype"
+          id="reportsResource" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityReportResource">
+        <property name="activityTypeDao" ref="activityTypeDao"/>
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
+        <property name="reportService" ref="reportService"/>
     </bean>
 
     <bean name="/studies"

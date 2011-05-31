@@ -755,6 +755,7 @@ define "psc" do
     test.with UNIT_TESTING, project('domain').test.compile.target,
       project('database').test_dependencies,
       project('mocks').and_dependencies,
+      project('authorization:default-csm').and_dependencies,
       BERING
 
     package(:jar)
@@ -1084,7 +1085,8 @@ define "psc" do
 
     test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
-      project('authentication:socket').test_dependencies
+      project('authentication:socket').test_dependencies,
+      project('authorization:default-csm').and_dependencies
     test.using :java_args => [ '-Xmx512M', '-Dcom.sun.management.jmxremote' ]
 
     package(:war, :file => _('target/psc.war')).tap do |war|
