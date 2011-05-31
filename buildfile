@@ -242,6 +242,31 @@ define "psc" do
       test.with UNIT_TESTING, project('domain').test_dependencies
       package(:jar)
     end
+
+    desc "Interfaces and base classes for PSC's simplified authorization plugin mechanism"
+    define "plugin-api" do
+      project.iml.id = 'authorization-plugin-api'
+      
+      bnd.wrap!
+      bnd.name = "PSC Authorization Plugin API"
+      compile.with SLF4J.api, SECURITY.suite_authorization, SPRING,
+        CTMS_COMMONS.base, CTMS_COMMONS.core
+      test.with UNIT_TESTING, LOGBACK, CTMS_COMMONS.lang
+
+      package(:jar)
+    end
+
+    desc "The adapter that converts an authorization plugin into a CSM AuthorizationManager"
+    define "socket" do
+      project.iml.id = 'authorization-socket'
+      
+      bnd.wrap!
+      bnd.name = "PSC Authorization Plugin Socket"
+      package(:jar)
+
+      compile.with project('plugin-api'), SECURITY.csm
+      test.with UNIT_TESTING
+    end
   end
 
   desc "Pluggable authentication definition and included plugins"
@@ -250,6 +275,8 @@ define "psc" do
 
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
+      project.iml.id = 'authentication-plugin-api'
+      
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
       compile.with project('utility'), project('authorization:definitions'),
@@ -265,6 +292,8 @@ define "psc" do
 
     desc "PSC's framework for using the authentication plugins"
     define "socket" do
+      project.iml.id = 'authentication-socket'
+      
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth Socket"
       bnd.import_packages <<
