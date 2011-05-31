@@ -227,16 +227,21 @@ define "psc" do
   end # database
 
   define "authorization" do
-    bnd.wrap!
-    bnd.name = "PSC Authorization Implementation"
-    bnd.import_packages <<
-      "org.acegisecurity" <<
-      "org.springframework.core" <<
-      "gov.nih.nci.cabig.ctms.domain"
-    compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm, SECURITY.clm,
-      SECURITY.suite_authorization
-    test.with UNIT_TESTING, project('domain').test_dependencies
-    package(:jar)
+    project.no_iml
+
+    desc "PSC-specific specialization of suite authorization"
+    define "definitions" do
+      bnd.wrap!
+      bnd.name = "PSC Authorization Definitions"
+      bnd.import_packages <<
+        "org.acegisecurity" <<
+        "org.springframework.core" <<
+        "gov.nih.nci.cabig.ctms.domain"
+      compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm, SECURITY.clm,
+        SECURITY.suite_authorization
+      test.with UNIT_TESTING, project('domain').test_dependencies
+      package(:jar)
+    end
   end
 
   desc "Pluggable authentication definition and included plugins"
@@ -245,7 +250,7 @@ define "psc" do
     define "plugin-api" do
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
-      compile.with project('utility'), project('authorization'),
+      compile.with project('utility'), project('authorization:definitions'),
         SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
         CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
         SECURITY.suite_authorization
@@ -420,7 +425,7 @@ define "psc" do
           "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('psc:providers:coppa:common').and_dependencies,
-          CIH, GLOBUS_UNDUPLICABLE, project('authorization')
+          CIH, GLOBUS_UNDUPLICABLE, project('authorization:definitions')
         test.using(:junit).with UNIT_TESTING
         package(:jar)
       end
@@ -561,7 +566,7 @@ define "psc" do
         "edu.northwestern.bioinformatics.studycalendar.domain"
 
       compile.with project('utility').and_dependencies,
-        project('authorization'), SECURITY.acegi, OSGI, FELIX.configadmin
+        project('authorization:definitions'), SECURITY.acegi, OSGI, FELIX.configadmin
       test.using(:junit).with UNIT_TESTING,
         project('domain').and_dependencies, project('domain').test_dependencies
 
@@ -644,7 +649,7 @@ define "psc" do
     ).exclude "**/.DS_Store"
 
     compile.with project('domain').and_dependencies,
-      project('authorization').and_dependencies,
+      project('authorization:definitions').and_dependencies,
       project('providers:api').and_dependencies,
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
