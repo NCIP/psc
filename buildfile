@@ -298,6 +298,7 @@ define "psc" do
       bnd.wrap!
       bnd.name = 'PSC Default CSM Authorization Manager'
       bnd['Bundle-Activator'] = 'edu.northwestern.bioinformatics.studycalendar.security.csm.Activator'
+      bnd['DynamicImport-Package'] = '*' # For JDBC drivers
       package(:jar)
 
       compile.with project('utility'), project('database'), CTMS_COMMONS.core,
@@ -748,15 +749,14 @@ define "psc" do
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
       project('psc:osgi-layer:host-services').and_dependencies,
-      XML, RESTLET.framework, FREEMARKER, CSV, CORE_COMMONS,
+      XML, RESTLET.framework, FREEMARKER, CSV, CORE_COMMONS, BERING,
       QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target,
       project('database').test_dependencies,
       project('mocks').and_dependencies,
-      project('authorization:default-csm').and_dependencies,
-      BERING
+      project('authorization:default-csm').and_dependencies
 
     package(:jar)
     package(:sources)

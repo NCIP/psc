@@ -10,11 +10,14 @@ import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.provisioning.AuthorizationManagerImpl;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.SettingsFactory;
+import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.connection.DatasourceConnectionProvider;
+import org.hibernate.hql.QueryTranslatorFactory;
+import org.hibernate.hql.classic.ClassicQueryTranslatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -121,10 +124,8 @@ public class DefaultCsmAuthorizationManagerFactory {
     }
 
     private SessionFactory createCsmSessionFactory() throws Exception {
-        // Use LocalSessionFactoryBean because hibernate alone doesn't seem to have an option
-        // to use a provided DataSource instance.
-        LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
-        
+        Configuration hibConf = new DefaultCsmHibernateConfiguration();
+
         // these paths are copied straight from CSM's ApplicationSessionFactory
         String[] mappingPaths = {
             "gov/nih/nci/security/authorization/domainobjects/InstanceLevelMappingElement.hbm.xml",
@@ -142,17 +143,36 @@ public class DefaultCsmAuthorizationManagerFactory {
             "gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml",
             "gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml"
         };
-        Resource[] mappingLocations = new Resource[mappingPaths.length];
-        for (int i = 0; i < mappingPaths.length; i++) {
-            String path = mappingPaths[i];
-            mappingLocations[i] = new ClassPathResource(
-                path, AuthorizationManager.class.getClassLoader());
+        for (String mappingPath : mappingPaths) {
+            hibConf.addResource(mappingPath, AuthorizationManager.class.getClassLoader());
         }
-        bean.setMappingLocations(mappingLocations);
 
-        bean.setDataSource(csmDataSource);
+        ClassLoader originalContextCL = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+            return hibConf.buildSessionFactory();
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalContextCL);
+        }
+    }
 
-        bean.afterPropertiesSet();
-        return (SessionFactory) bean.getObject();
+    private class DefaultCsmHibernateConfiguration extends Configuration {
+        private DefaultCsmHibernateConfiguration() {
+            super(new DefaultCsmHibernateSettingsFactory());
+        }
+    }
+
+    private class DefaultCsmHibernateSettingsFactory extends SettingsFactory {
+        @Override
+        protected ConnectionProvider createConnectionProvider(Properties properties) {
+            DatasourceConnectionProvider provider = new DatasourceConnectionProvider();
+            provider.setDataSource(csmDataSource);
+            return provider;
+        }
+
+        @Override
+        protected QueryTranslatorFactory createQueryTranslatorFactory(Properties properties) {
+            return new ClassicQueryTranslatorFactory();
+        }
     }
 }
