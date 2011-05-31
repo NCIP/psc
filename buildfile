@@ -1354,7 +1354,8 @@ define "psc" do
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
       project('core').and_dependencies, project('jdbc-mock'),
-      project('mocks').and_dependencies
+      project('mocks').and_dependencies,
+      project('authorization:default-csm').and_dependencies
     test.with project('core').test_dependencies
     package(:jar)
     package(:sources)

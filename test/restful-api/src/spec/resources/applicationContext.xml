@@ -10,14 +10,17 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <tx:annotation-driven proxy-target-class="true"/>
-    
+
+    <bean id="csmAuthorizationManager"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.DefaultCsmAuthorizationManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
     <bean id="databaseInitializer" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.RestfulApiTestInitializer">
         <property name="dataSource" ref="nonPooledDataSource"/>
     </bean>
 
-    <!-- Autowire of beans into the parent context does not work in Spring 2.5.6 -->
-    
     <bean id="configurationInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.ConfigurationInitializer">
         <property name="yamlResource" value="file:@resources.target@/configuration.yml"/>
