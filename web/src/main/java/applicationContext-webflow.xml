@@ -18,5 +18,9 @@
     </bean>
     <bean id="selectAuthenticationSystemFormAction" class="edu.northwestern.bioinformatics.studycalendar.web.setup.SelectAuthenticationSystemFormAction" autowire="byName"/>
     <bean id="authenticationSystemSetupFormAction" class="edu.northwestern.bioinformatics.studycalendar.web.setup.AuthenticationSystemSetupFormAction" autowire="byName"/>
-    <bean id="adminFormAction" class="edu.northwestern.bioinformatics.studycalendar.web.setup.FirstAdministratorFormAction" autowire="byName"/>
+    <bean id="adminFormAction" class="edu.northwestern.bioinformatics.studycalendar.web.setup.FirstAdministratorFormAction">
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
+        <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
+        <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
+    </bean>
 </beans>

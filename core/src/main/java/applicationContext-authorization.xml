@@ -41,15 +41,23 @@
         <constructor-arg index="1" ref="csmContextName"/>
     </bean>
 
-    <bean id="csmAuthorizationManager"
+    <!-- This authorization manager is exposed in the OSGi layer. No bean configurations should
+         directly reference it; they should use osgiAuthorizationManager instead, which will use
+         either this bean or a plugin (if available) -->
+    <bean id="defaultCsmAuthorizationManager"
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmAuthorizationManagerFactoryBean">
         <property name="applicationName" ref="csmContextName"/>
         <property name="authorizationDao" ref="csmAuthorizationDao"/>
     </bean>
 
+    <bean id="osgiCsmAuthorizationManager"
+          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.OsgiAuthorizationManagerFactoryBean">
+        <property name="osgiLayerTools" ref="osgiLayerTools"/>
+    </bean>
+
     <bean id="provisioningSessionFactory"
           class="gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory">
-        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="siteMapping" ref="authorizationSiteMapping"/>
         <property name="studyMapping" ref="authorizationStudyMapping"/>
@@ -58,14 +66,14 @@
 
     <bean id="suiteRoleMembershipLoader"
           class="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader">
-        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
         <property name="siteMapping" ref="authorizationSiteMapping"/>
         <property name="studyMapping" ref="authorizationStudyMapping"/>
     </bean>
 
     <bean id="suiteCsmHelper"
           class="gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper">
-        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
         <property name="siteMapping" ref="authorizationSiteMapping"/>
         <property name="studyMapping" ref="authorizationStudyMapping"/>
     </bean>

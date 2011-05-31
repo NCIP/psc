@@ -137,12 +137,12 @@
 
     <bean id="assignmentManagerResolverListener"
           class="edu.northwestern.bioinformatics.studycalendar.dao.AssignmentManagerResolverListener">
-        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
     </bean>
 
     <bean id="userActionUserResolverListener"
           class="edu.northwestern.bioinformatics.studycalendar.dao.UserActionUserResolverListener">
-        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
     </bean>
 
     <bean id="authorizationScopeUpdaterListener"

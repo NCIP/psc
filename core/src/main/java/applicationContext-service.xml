@@ -61,7 +61,7 @@
     <bean id="reportService" class="edu.northwestern.bioinformatics.studycalendar.service.ReportService">
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="pscUserService" ref="pscUserService"/>
-        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
         <property name="scheduledActivitiesReportRowDao" ref="scheduledActivitiesReportRowDao"/>
     </bean>
 
@@ -138,7 +138,7 @@
 
     <bean id="pscUserService"
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserService">
-        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="csmHelper" ref="suiteCsmHelper"/>
         <property name="siteDao" ref="siteDao"/>

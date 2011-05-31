@@ -78,6 +78,6 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="pscUserDetailsService" ref="pscUserService"/>
         <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
-        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="defaultCsmAuthorizationManager"/>
     </bean>
 </beans>
