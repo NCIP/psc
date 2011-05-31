@@ -133,7 +133,12 @@ module Bnd
     end
 
     def to_hash
-      Hash[ *BND_TO_ATTR.keys.collect { |k| [ k, self[k] ] }.reject { |k, v| v.nil? || v.empty? }.flatten ].merge(other)
+      Hash[
+        *BND_TO_ATTR.keys.
+        collect { |k| [ k, self[k] ] }.
+        reject { |k, v| v.nil? || v.empty? }.
+        flatten
+      ].merge(other)
     end
 
     def [](k)
@@ -203,7 +208,7 @@ module Bnd
     end
 
     def default_export_packages
-      ["*"]
+      ["*;version=#{version}"]
     end
 
     protected

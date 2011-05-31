@@ -191,13 +191,17 @@ STAX_API = artifact("org.dynamicjava.jsr:stax-api:jar:1.0.1").
   from(static_lib("org.dynamicjava.stax-api-1.0.1.jar"))
 
 HIBERNATE = struct(
-  :main => "org.hibernate:hibernate-core:jar:3.6.4.Final",
+  :main => psc_osgi_artifact('org.hibernate:hibernate-core:jar:3.6.4.Final'),
   # Don't use HCA 3.3.0.ga. It's broken.
-  :annotations_common => 'org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final',
+  :annotations_common => psc_osgi_artifact(
+    'org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final'
+  ),
   :antlr => "org.antlr:com.springsource.antlr:jar:2.7.7",
   :cglib => CGLIB,
   :javax_transaction => "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
-  :javax_persistence => "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.0.Final",
+  :javax_persistence => psc_osgi_artifact(
+    'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.0.Final'
+  ),
   :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga",
   :dom4j => XML.dom4j
 )

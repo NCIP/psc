@@ -116,6 +116,14 @@ module Osgi
       def default_symbolic_name
         [artifact.group, artifact.id].join('.')
       end
+
+      def default_export_packages
+        ["*;version=#{version}"]
+      end
+
+      def default_import_packages
+        ["*;resolution:=optional"]
+      end
     end
   end
 end
