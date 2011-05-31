@@ -6,12 +6,14 @@ import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.Privilege;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rhett Sutphin
@@ -78,6 +80,23 @@ public class OsgiAuthorizationManagerFactoryBeanTest {
         mocks.replayMocks();
         ((AuthorizationManager) factory.getObject()).getUserById("11");
         ((AuthorizationManager) factory.getObject()).getPrivilegeById("12");
+        mocks.verifyMocks();
+    }
+
+    @Test
+    public void createdObjectRethrowsExceptionsFromDelegate() throws Exception {
+        AuthorizationManager found = mocks.registerMockFor(AuthorizationManager.class);
+        expect(osgiLayerTools.getRequiredService(AuthorizationManager.class)).andReturn(found);
+        expect(found.getGroupById("76")).andThrow(new CSObjectNotFoundException("Answer hazy"));
+
+        mocks.replayMocks();
+        AuthorizationManager authorizationManager = (AuthorizationManager) factory.getObject();
+        try {
+            authorizationManager.getGroupById("76");
+            fail("Exception not thrown");
+        } catch (CSObjectNotFoundException o) {
+            assertThat(o.getMessage(), is("Answer hazy"));
+        }
         mocks.verifyMocks();
     }
 }

@@ -37,8 +37,9 @@ def hsqldb
   }
 end
 
-def ant_classpath(proj)
-  [proj.compile.dependencies + LOGBACK.values].flatten.collect { |a| a.to_s }.join(':')
+def ant_classpath(proj, *libs)
+  [proj.compile.dependencies, LOGBACK.values, libs].
+    flatten.collect { |a| Buildr.artifact(a).to_s }.join(':')
 end
 
 # Discovers and loads the datasource properties file into the target ant project

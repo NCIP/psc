@@ -8,6 +8,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -34,7 +35,6 @@ public class OsgiAuthorizationManagerFactoryBean implements FactoryBean {
 
     public Object getObject() throws Exception {
         if (proxy == null) createProxy();
-        log.debug("Returning proxy authorization manager {}", proxy);
         return proxy;
     }
 
@@ -63,9 +63,13 @@ public class OsgiAuthorizationManagerFactoryBean implements FactoryBean {
         }
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return method.invoke(
-                osgiLayerTools.getRequiredService(AuthorizationManager.class),
-                args);
+            try {
+                return method.invoke(
+                    osgiLayerTools.getRequiredService(AuthorizationManager.class),
+                    args);
+            } catch (InvocationTargetException ite) {
+                throw ite.getCause();
+            }
         }
     }
 }

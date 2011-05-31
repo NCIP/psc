@@ -3,14 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import gov.nih.nci.security.AuthorizationManager;
+import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
-import org.apache.felix.cm.PersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.sql.DataSource;
 
@@ -28,7 +27,6 @@ public class HostBeansInitializer implements InitializingBean {
     private DataSource dataSource;
     private PscUserDetailsService userDetailsService;
     private PersistenceManager persistenceManager;
-    private AuthorizationManager authorizationManager;
 
     public void afterPropertiesSet() throws Exception {
         if (bundleContext != null) {
@@ -37,7 +35,6 @@ public class HostBeansInitializer implements InitializingBean {
                 HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
                 beans.setPscUserDetailsService(userDetailsService);
                 beans.setPersistenceManager(persistenceManager);
-                beans.setAuthorizationManager(authorizationManager);
             }
         } else {
             log.debug("No bundleContext set");
@@ -73,8 +70,4 @@ public class HostBeansInitializer implements InitializingBean {
         this.persistenceManager = persistenceManager;
     }
 
-    @Required
-    public void setCsmAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
-    }
 }

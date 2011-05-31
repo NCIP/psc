@@ -138,15 +138,18 @@ define "psc" do
 
   desc "Database configuration and testing"
   define "database" do
+    bnd.wrap!
+    bnd.name = 'PSC Database Module'
+
     # Migrations are resources, too
     resources.enhance([_("src/main/db/migrate")]) do
       filter.from(_("src/main/db/migrate")).
         into(resources.target.to_s + "/db/migrate").run
     end
-    compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS,
+    compile.with SLF4J.api, SLF4J.jcl, SPRING,
       CTMS_COMMONS.base, CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps,
       HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
-    test.with UNIT_TESTING
+    test.with UNIT_TESTING, BERING, CORE_COMMONS
 
     bnd.wrap!
     bnd.name = 'PSC Database Support'
@@ -163,6 +166,7 @@ define "psc" do
     end
 
     task :migrate do
+      cp = ant_classpath(project('database'), BERING, CORE_COMMONS)
       ant('bering') do |ant|
         # Load DS properties from /etc/psc or ~/.psc
         datasource_properties(ant)
@@ -173,7 +177,7 @@ define "psc" do
         ant.property :name => 'bering.dialect', :value => ""
 
         ant.taskdef :resource => "edu/northwestern/bioinformatics/bering/antlib.xml",
-          :classpath => ant_classpath(project('database'))
+          :classpath => cp
         ant.migrate :driver => '${datasource.driver}',
           :dialect => "${bering.dialect}",
           :url => "${datasource.url}",
@@ -181,7 +185,7 @@ define "psc" do
           :password => "${datasource.password}",
           :targetVersion => "${migrate.version}",
           :migrationsDir => _("src/main/db/migrate"),
-          :classpath => ant_classpath(project('database'))
+          :classpath => cp
         if hsqldb?
           # database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
           # released and the tests can reopen it
@@ -190,7 +194,7 @@ define "psc" do
             :userid => "${datasource.username}",
             :password => "${datasource.password}",
             :autocommit => "true",
-            :classpath => ant_classpath(project('database')),
+            :classpath => cp,
             :pcdata => "SHUTDOWN SCRIPT;"
         end
       end
@@ -286,6 +290,19 @@ define "psc" do
 
       compile.with project('plugin-api').and_dependencies, SLF4J.api,
         SECURITY.suite_authorization, OSGI.core, CTMS_COMMONS.base
+      test.with UNIT_TESTING, LOGBACK
+    end
+
+    desc 'The OSGi plugin that configures and exposes the default CSM authorization manager'
+    define 'default-csm' do
+      bnd.wrap!
+      bnd.name = 'PSC Default CSM Authorization Manager'
+      bnd['Bundle-Activator'] = 'edu.northwestern.bioinformatics.studycalendar.security.csm.Activator'
+      package(:jar)
+
+      compile.with project('utility'), project('database'), CTMS_COMMONS.core,
+        OSGI.core, OSGI.compendium, HIBERNATE.main, SLF4J.api, SLF4J.log4j,
+        SPRING, SECURITY.csm, SECURITY.clm, SECURITY.suite_authorization
       test.with UNIT_TESTING, LOGBACK
     end
   end
@@ -600,6 +617,7 @@ define "psc" do
           cmd = [
             'rlwrap',
             'java', "-Dcatalina.base=#{_('tmp')}",
+            '-Dpsc.logging.debug=true',
             '-cp', classpath,
             'edu.northwestern.bioinformatics.studycalendar.osgi.console.EmbedderConsole',
             project('osgi-layer')._('target', 'test', 'embedder')
@@ -730,13 +748,14 @@ define "psc" do
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
       project('psc:osgi-layer:host-services').and_dependencies,
-      XML, RESTLET.framework, FREEMARKER, CSV,
+      XML, RESTLET.framework, FREEMARKER, CSV, CORE_COMMONS,
       QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target,
       project('database').test_dependencies,
-      project('mocks').and_dependencies
+      project('mocks').and_dependencies,
+      BERING
 
     package(:jar)
     package(:sources)

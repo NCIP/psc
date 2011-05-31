@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import gov.nih.nci.security.AuthorizationManager;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -29,7 +28,7 @@ public class HostBeansImpl implements HostBeans {
     private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
 
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        PscUserDetailsService.class, PersistenceManager.class, AuthorizationManager.class
+        PscUserDetailsService.class, PersistenceManager.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -67,10 +66,6 @@ public class HostBeansImpl implements HostBeans {
 
     public void setPersistenceManager(PersistenceManager persistenceManager) {
         invokers.get(PersistenceManager.class).setBean(persistenceManager);
-    }
-
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        invokers.get(AuthorizationManager.class).setBean(authorizationManager);
     }
 
     private static class DeferredBeanInvoker implements InvocationHandler {

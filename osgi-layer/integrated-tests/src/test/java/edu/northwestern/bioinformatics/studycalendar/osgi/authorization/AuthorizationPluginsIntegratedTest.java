@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.authorization;
 import edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestCase;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource;
 import gov.nih.nci.security.AuthorizationManager;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -22,13 +21,6 @@ import static org.junit.Assert.assertThat;
 public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestCase {
     private static final String MOCK_PLUGIN_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-mock-plugin";
-
-    @Before
-    public void before() throws Exception {
-        // ensure that app context is loaded so that the deferred
-        // default authorization manager is available
-        getApplicationContext();
-    }
 
     @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerByDefault() throws Exception {

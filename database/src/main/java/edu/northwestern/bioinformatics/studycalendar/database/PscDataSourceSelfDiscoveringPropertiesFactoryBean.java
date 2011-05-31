@@ -47,6 +47,10 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
             WEBSSO_CAS_URL_PROPERTY, WEBSSO_SERVER_URL_PROPERTY, WEBSSO_SERVER_CERT_PROPERTY
     };
 
+    public PscDataSourceSelfDiscoveringPropertiesFactoryBean() {
+        setApplicationDirectoryName("psc"); // the default
+    }
+
     @Override
     public String getDatabaseConfigurationName() {
         String fromSys = System.getProperty(DATASOURCE_SYSTEM_PROPERTY);

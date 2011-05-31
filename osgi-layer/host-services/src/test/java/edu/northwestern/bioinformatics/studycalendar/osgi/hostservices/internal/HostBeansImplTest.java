@@ -3,12 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
-import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import junit.framework.TestCase;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
 
@@ -31,7 +28,6 @@ public class HostBeansImplTest extends TestCase {
     private HostBeansImpl impl;
     private PscUserDetailsService pscUserDetailsService;
     private PersistenceManager persistenceManager;
-    private AuthorizationManager authorizationManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -53,7 +49,6 @@ public class HostBeansImplTest extends TestCase {
         impl.registerServices(bundleContext);
         pscUserDetailsService = mockRegistry.registerMockFor(PscUserDetailsService.class);
         persistenceManager = mockRegistry.registerMockFor(PersistenceManager.class);
-        authorizationManager = mockRegistry.registerMockFor(AuthorizationManager.class);
     }
 
     public void testProxyServiceRegisteredForUserDetailsService() throws Exception {
@@ -93,29 +88,11 @@ public class HostBeansImplTest extends TestCase {
         mockRegistry.verifyMocks();
     }
 
-    public void testAuthorizationManagerDelegatesToAuthorizationManagerBean() throws Exception {
-        AuthorizationManager actual = getActualService(AuthorizationManager.class);
-        impl.setAuthorizationManager(authorizationManager);
-
-        User expected = new User();
-        expect(authorizationManager.getUserById("15")).andReturn(expected);
-        mockRegistry.replayMocks();
-        assertSame(expected, actual.getUserById("15"));
-        mockRegistry.verifyMocks();
-    }
-
-    public void testRegisteredAuthorizationManagerIsLowestPriority() throws Exception {
-        Dictionary authorizationManagerProperties =
-            registeredServiceProperties.get(AuthorizationManager.class.getName());
-        assertEquals(Integer.MIN_VALUE,
-            authorizationManagerProperties.get(Constants.SERVICE_RANKING));
-    }
-
     public void testProxiesRespondToToString() throws Exception {
-        impl.setAuthorizationManager(authorizationManager);
+        impl.setPscUserDetailsService(pscUserDetailsService);
         mockRegistry.replayMocks();
-        assertEquals("DeferredBean for EasyMock for interface gov.nih.nci.security.AuthorizationManager",
-            getActualService(AuthorizationManager.class).toString());
+        assertEquals("DeferredBean for EasyMock for interface edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService",
+            getActualService(PscUserDetailsService.class).toString());
     }
 
     @SuppressWarnings( { "unchecked" })

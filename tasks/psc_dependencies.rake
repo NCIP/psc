@@ -119,13 +119,13 @@ CTMS_COMMONS = struct(
 )
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
-XML = [
-  "org.dom4j:com.springsource.org.dom4j:jar:1.5.2",
+XML = struct(
+  :dom4j => "org.dom4j:com.springsource.org.dom4j:jar:1.6.1",
   # "org.jdom:com.springsource.org.jdom:jar:1.0.0", # unused?
   # Saxon 9 isn't in the maven repo for some reason
-  artifact("net.sf.saxon:saxon:jar:9").from(static_lib('saxon9.jar')),
-  artifact("net.sf.saxon:saxon-dom:jar:9").from(static_lib('saxon9-dom.jar'))
-]
+  :saxon => artifact("net.sf.saxon:saxon:jar:9").from(static_lib('saxon9.jar')),
+  :saxon_dom => artifact("net.sf.saxon:saxon-dom:jar:9").from(static_lib('saxon9-dom.jar'))
+)
 
 CSV = [
   "net.sourceforge.javacsv:javacsv:jar:2.0"
@@ -200,7 +200,7 @@ HIBERNATE = struct(
   :javax_transaction => "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
   :javax_persistence => "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
   :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga",
-  :dom4j => "org.dom4j:com.springsource.org.dom4j:jar:1.6.1",
+  :dom4j => XML.dom4j,
   :stax => STAX_API,
   :jgroups => "org.jgroups:com.springsource.org.jgroups:jar:2.5.1"
 )
@@ -475,8 +475,8 @@ BND = artifact("biz.aQute:bnd:jar:0.0.313").from(static_lib('bnd-0.0.313.jar'))
 
 DB = struct(
   :hsqldb => "org.hsqldb:com.springsource.org.hsqldb:jar:1.8.0.9",
-  :postgresql => eponym("postgresql", "8.2-504.jdbc3"),
-  :oracle => "com.oracle:ojdbc14:jar:10.2.0.2.0"
+  :postgresql => "org.postgresql:com.springsource.org.postgresql.jdbc3:jar:8.3.603",
+  :oracle => "com.oracle:ojdbc14:jar:10.2.0.2.0" # TODO: wrap this for OSGi
 )
 
 ADVERSE_EVENT_CONSUMER_GRID = struct(

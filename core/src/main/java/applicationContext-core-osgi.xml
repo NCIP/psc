@@ -23,7 +23,9 @@
                 <value>edu.northwestern.bioinformatics.studycalendar</value>
                 <value>org.springframework.validation</value>
                 <value>gov.nih.nci.cabig.ctms.tools.configuration</value>
+
                 <value>gov.nih.nci.security</value>
+                <value>gov.nih.nci.security.dao</value>
                 <value>gov.nih.nci.security.authorization.domainobjects</value>
 
                 <value>org.acegisecurity</value>
@@ -77,6 +79,5 @@
         <property name="membrane" ref="membrane"/>
         <property name="pscUserDetailsService" ref="pscUserService"/>
         <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
-        <property name="csmAuthorizationManager" ref="defaultCsmAuthorizationManager"/>
     </bean>
 </beans>

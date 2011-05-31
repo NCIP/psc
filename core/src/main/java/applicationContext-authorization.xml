@@ -1,54 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    This applicationContext contains security-related beans
+    This applicationContext contains security-related beans. See also the authorization/default-csm
+    module.
 -->
 
 <beans
     xmlns="http://www.springframework.org/schema/beans"
-    xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
     default-lazy-init="true"
     >
-    <bean id="csmContextName" class="java.lang.String">
-        <constructor-arg value="${csm.application.context}"/>
-    </bean>
-
-    <bean id="csmAuthorizationDao"
-          class="gov.nih.nci.cabig.ctms.suite.authorization.csmext.FasterAuthorizationDao"
-          >
-        <constructor-arg index="0">
-            <bean class="gov.nih.nci.security.system.ApplicationSessionFactory"
-                  factory-method="getSessionFactory">
-                <constructor-arg index="0" ref="csmContextName"/>
-                <constructor-arg index="1">
-                    <bean class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmHibernatePropertiesFactoryBean">
-                        <property name="properties">
-                            <map>
-                                <entry key="hibernate.connection.url" value="${csm.datasource.url}"/>
-                                <entry key="hibernate.connection.driver_class" value="${csm.datasource.driver}"/>
-                                <entry key="hibernate.connection.username" value="${csm.datasource.username}"/>
-                                <entry key="hibernate.connection.password" value="${csm.datasource.password}"/>
-                                <entry key="hibernate.dialect" value="${csm.datasource.dialect}"/>
-                            </map>
-                        </property>
-                    </bean>
-                </constructor-arg>
-            </bean>
-        </constructor-arg>
-        <constructor-arg index="1" ref="csmContextName"/>
-    </bean>
-
-    <!-- This authorization manager is exposed in the OSGi layer. No bean configurations should
-         directly reference it; they should use osgiAuthorizationManager instead, which will use
-         either this bean or a plugin (if available) -->
-    <bean id="defaultCsmAuthorizationManager"
-          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmAuthorizationManagerFactoryBean">
-        <property name="applicationName" ref="csmContextName"/>
-        <property name="authorizationDao" ref="csmAuthorizationDao"/>
-    </bean>
 
     <bean id="osgiCsmAuthorizationManager"
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.OsgiAuthorizationManagerFactoryBean">
