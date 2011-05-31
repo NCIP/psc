@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
+import gov.nih.nci.security.AuthorizationManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +28,7 @@ public class HostBeansInitializer implements InitializingBean {
     private DataSource dataSource;
     private PscUserDetailsService userDetailsService;
     private PersistenceManager persistenceManager;
+    private AuthorizationManager authorizationManager;
 
     public void afterPropertiesSet() throws Exception {
         if (bundleContext != null) {
@@ -36,6 +38,7 @@ public class HostBeansInitializer implements InitializingBean {
                 beans.setDataSource(dataSource);
                 beans.setPscUserDetailsService(userDetailsService);
                 beans.setPersistenceManager(persistenceManager);
+                beans.setAuthorizationManager(authorizationManager);
             }
         } else {
             log.debug("No bundleContext set");
@@ -69,5 +72,10 @@ public class HostBeansInitializer implements InitializingBean {
     @Required
     public void setPersistenceManager(PersistenceManager persistenceManager) {
         this.persistenceManager = persistenceManager;
+    }
+
+    @Required
+    public void setCsmAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
 }

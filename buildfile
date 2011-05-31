@@ -613,10 +613,15 @@ define "psc" do
       bnd.name = "PSC OSGi Layer Access to Host Services"
       bnd.import_packages <<
         "org.acegisecurity.userdetails" <<
-        "edu.northwestern.bioinformatics.studycalendar.domain"
+        "edu.northwestern.bioinformatics.studycalendar.domain" <<
+        "javax.security.auth" <<
+        "gov.nih.nci.security.authorization.jaas" <<
+        "gov.nih.nci.security.authorization.domainobjects" <<
+        "gov.nih.nci.security.exceptions" <<
+        "gov.nih.nci.security.dao"
 
       compile.with project('utility').and_dependencies,
-        project('authorization:definitions'), SECURITY.acegi, OSGI, FELIX.configadmin
+        project('authorization:definitions'), SECURITY.acegi, OSGI, FELIX.configadmin, SECURITY.csm
       test.using(:junit).with UNIT_TESTING,
         project('domain').and_dependencies, project('domain').test_dependencies
 

@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.authorization;
 import edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestCase;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource;
 import gov.nih.nci.security.AuthorizationManager;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -23,10 +23,17 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
     private static final String MOCK_PLUGIN_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-mock-plugin";
 
-    @Test @Ignore
+    @Before
+    public void before() throws Exception {
+        // ensure that app context is loaded so that the deferred
+        // default authorization manager is available
+        getApplicationContext();
+    }
+
+    @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerByDefault() throws Exception {
-        assertThat(getCurrentAuthorizationManager().getClass().getName(),
-            is("gov.nih.nci.security.provisioning.AuthorizationManagerImpl"));
+        assertThat(getCurrentAuthorizationManager().toString(),
+            containsString("gov.nih.nci.security.provisioning.AuthorizationManagerImpl"));
     }
 
     @Test
@@ -37,13 +44,13 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
             is("gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.SuiteAuthorizationSocket"));
     }
 
-    @Test @Ignore
+    @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerIfAllAuthorizationPluginsAreDisabled() throws Exception {
         startBundle(MOCK_PLUGIN_SYMBOLIC_NAME, SuiteAuthorizationSource.class.getName());
         stopBundle(MOCK_PLUGIN_SYMBOLIC_NAME);
 
-        assertThat(getCurrentAuthorizationManager().getClass().getName(),
-            is("gov.nih.nci.security.provisioning.AuthorizationManagerImpl"));
+        assertThat(getCurrentAuthorizationManager().toString(),
+            containsString("gov.nih.nci.security.provisioning.AuthorizationManagerImpl"));
     }
 
     private Object getCurrentAuthorizationManager() throws IOException {

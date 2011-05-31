@@ -2,8 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import gov.nih.nci.security.AuthorizationManager;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +30,7 @@ public class HostBeansImpl implements HostBeans {
     private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
 
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        DataSource.class, PscUserDetailsService.class, PersistenceManager.class
+        DataSource.class, PscUserDetailsService.class, PersistenceManager.class, AuthorizationManager.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -47,7 +50,8 @@ public class HostBeansImpl implements HostBeans {
     public void registerServices(BundleContext context) {
         for (Class<?> serviceInterface : invokers.keySet()) {
             context.registerService(
-                serviceInterface.getName(), createDeferredBeanProxy(serviceInterface), null);
+                serviceInterface.getName(), createDeferredBeanProxy(serviceInterface),
+                new MapBuilder<String, Object>().put(Constants.SERVICE_RANKING, Integer.MIN_VALUE).toDictionary());
         }
     }
 
@@ -70,6 +74,10 @@ public class HostBeansImpl implements HostBeans {
         invokers.get(PersistenceManager.class).setBean(persistenceManager);
     }
 
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        invokers.get(AuthorizationManager.class).setBean(authorizationManager);
+    }
+
     private static class DeferredBeanInvoker implements InvocationHandler {
         private String className;
         private Object bean;
@@ -79,7 +87,9 @@ public class HostBeansImpl implements HostBeans {
         }
 
         public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (bean == null) {
+            if ("toString".equals(method.getName())) {
+                return String.format("DeferredBean for %s", bean);
+            } else if (bean == null) {
                 Object rv = defaultReturnValue(method);
                 log.debug(
                     "Cannot invoke method {} on host bean {} because it is not available yet.  Returning default value {}.",
