@@ -120,7 +120,8 @@ CTMS_COMMONS = struct(
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = struct(
-  :dom4j => "org.dom4j:com.springsource.org.dom4j:jar:1.6.1",
+  # Note that DOM4J 1.6.1 has classloader incompatibilties with OSGi
+  :dom4j => "org.dom4j:com.springsource.org.dom4j:jar:1.5.2",
   # "org.jdom:com.springsource.org.jdom:jar:1.0.0", # unused?
   # Saxon 9 isn't in the maven repo for some reason
   :saxon => artifact("net.sf.saxon:saxon:jar:9").from(static_lib('saxon9.jar')),
