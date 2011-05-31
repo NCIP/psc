@@ -29,7 +29,7 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
             is("gov.nih.nci.security.provisioning.AuthorizationManagerImpl"));
     }
 
-    @Test @Ignore
+    @Test
     public void pluginLayerGivesAnAuthorizationSocketIfAnAuthorizationPluginIsAvailable() throws Exception {
         startBundle(MOCK_PLUGIN_SYMBOLIC_NAME, SuiteAuthorizationSource.class.getName());
 
