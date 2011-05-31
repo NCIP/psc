@@ -1300,7 +1300,7 @@ define "psc" do
 
   desc "Shared mocks for external libraries (exc. JDBC)"
   define "mocks", :base_dir => _('test/mock') do
-    compile.using(:javac).with OSGI, SPRING_OSGI_MOCKS
+    compile.using(:javac).with SLF4J.api, OSGI, SPRING_OSGI_MOCKS
     package(:jar)
   end
 

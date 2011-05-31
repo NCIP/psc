@@ -1,21 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.mocks.osgi;
 
-import org.springframework.osgi.mock.MockBundleContext;
-import org.springframework.osgi.mock.MockServiceReference;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.osgi.mock.MockBundleContext;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 public class PscTestingBundleContext extends MockBundleContext {
-    protected Map<String, TestingBundleDetails> testingDetails;
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    protected Map<String, List<TestingBundleDetails>> testingDetails;
 
     public PscTestingBundleContext() {
-        testingDetails = new HashMap<String, TestingBundleDetails>();
+        testingDetails = new HashMap<String, List<TestingBundleDetails>>();
     }
 
     /**
@@ -26,15 +33,33 @@ public class PscTestingBundleContext extends MockBundleContext {
      * @param instance
      */
     public void addService(Class<?> serviceInterface, Object instance) {
-        testingDetails.put(
-            serviceInterface.getName(), new TestingBundleDetails(serviceInterface, instance));
+        registerService(serviceInterface.getName(), instance, null);
+    }
+
+    @Override
+    @SuppressWarnings( { "RawUseOfParameterizedType" })
+    public ServiceRegistration registerService(
+        String[] clazzes, Object service, Dictionary properties
+    ) {
+        ServiceRegistration reg = super.registerService(clazzes, service, properties);
+
+        for (String interfaze : clazzes) {
+            if (!testingDetails.containsKey(interfaze)) {
+                testingDetails.put(interfaze, new ArrayList<TestingBundleDetails>());
+            }
+            testingDetails.get(interfaze).add(new TestingBundleDetails(reg, service));
+        }
+        return reg;
     }
 
     @Override
     public ServiceReference getServiceReference(String s) {
-        TestingBundleDetails details = testingDetails.get(s);
-        if (details != null) {
-            return details.getServiceReference();
+        List<TestingBundleDetails> allBundles = testingDetails.get(s);
+        if (allBundles != null) {
+            if (allBundles.size() > 1) {
+                log.info("There are multiple {} services registered. Returning the first one.", s);
+            }
+            return allBundles.get(0).getServiceReference();
         } else {
             return null;
         }
@@ -42,36 +67,35 @@ public class PscTestingBundleContext extends MockBundleContext {
 
     @Override
     public Object getService(ServiceReference serviceReference) {
-        for (TestingBundleDetails details : testingDetails.values()) {
-            if (details.getServiceReference() == serviceReference) return details.instance;
+        for (List<TestingBundleDetails> services : testingDetails.values()) {
+            for (TestingBundleDetails service : services) {
+                if (service.getServiceReference() == serviceReference) return service.instance;
+            }
         }
         return null;
     }
 
     @Override
     public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-        TestingBundleDetails details = testingDetails.get(clazz);
+        List<TestingBundleDetails> details = testingDetails.get(clazz);
         if (details == null) {
             return null;
         } else {
-            return new ServiceReference[] { details.getServiceReference() };
+            ServiceReference[] refs = new ServiceReference[details.size()];
+            for (int i = 0; i < refs.length; i++) {
+                refs[i] = details.get(i).getServiceReference();
+            }
+            return refs;
         }
     }
 
     protected static class TestingBundleDetails {
-        private String serviceName;
         private Object instance;
-        private ServiceReference serviceReference;
+        private ServiceRegistration serviceRegistration;
 
-        private TestingBundleDetails(Class<?> serviceInterface, Object instance) {
-            this.serviceName = serviceInterface.getName();
+        private TestingBundleDetails(ServiceRegistration registration, Object instance) {
             this.instance = instance;
-            this.serviceReference = new MockServiceReference(
-                new String[] { serviceName });
-        }
-
-        public String getServiceName() {
-            return serviceName;
+            this.serviceRegistration = registration;
         }
 
         public Object getInstance() {
@@ -79,7 +103,7 @@ public class PscTestingBundleContext extends MockBundleContext {
         }
 
         public ServiceReference getServiceReference() {
-            return serviceReference;
+            return serviceRegistration.getReference();
         }
     }
 }

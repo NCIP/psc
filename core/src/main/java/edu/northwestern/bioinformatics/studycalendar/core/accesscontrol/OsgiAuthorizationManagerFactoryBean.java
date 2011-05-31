@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import gov.nih.nci.security.AuthorizationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -16,6 +18,8 @@ import java.lang.reflect.Proxy;
  * @author Rhett Sutphin
  */
 public class OsgiAuthorizationManagerFactoryBean implements FactoryBean {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private OsgiLayerTools osgiLayerTools;
     private AuthorizationManager proxy;
 
@@ -30,6 +34,7 @@ public class OsgiAuthorizationManagerFactoryBean implements FactoryBean {
 
     public Object getObject() throws Exception {
         if (proxy == null) createProxy();
+        log.debug("Returning proxy authorization manager {}", proxy);
         return proxy;
     }
 
