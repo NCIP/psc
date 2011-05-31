@@ -268,6 +268,20 @@ define "psc" do
         SECURITY.csm, SECURITY.suite_authorization, CTMS_COMMONS.base, JAKARTA_COMMONS.lang
       test.with UNIT_TESTING, LOGBACK
     end
+
+    desc 'A sample plugin that authorizes a single, statically-defined user'
+    define 'mock-plugin' do
+      bnd.wrap!
+      bnd.name = 'PSC Authorization Mock Plugin'
+      bnd.autostart = false
+      bnd['Bundle-Activator'] =
+        'gov.nih.nci.cabig.ctms.suite.authorization.plugins.mock.Activator'
+      package(:jar)
+
+      compile.with project('plugin-api').and_dependencies, SLF4J.api,
+        SECURITY.suite_authorization, OSGI.core, CTMS_COMMONS.base
+      test.with UNIT_TESTING, LOGBACK
+    end
   end
 
   desc "Pluggable authentication definition and included plugins"
