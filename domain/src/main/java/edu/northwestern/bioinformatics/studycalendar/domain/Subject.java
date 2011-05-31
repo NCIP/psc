@@ -1,13 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

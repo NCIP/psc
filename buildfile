@@ -129,7 +129,7 @@ define "psc" do
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections,
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
-      SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE, HIBERNATE_ANNOTATIONS
+      SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE
     test.with(UNIT_TESTING)
 
     package(:jar)
@@ -148,7 +148,7 @@ define "psc" do
     end
     compile.with SLF4J.api, SLF4J.jcl, SPRING,
       CTMS_COMMONS.base, CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps,
-      HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
+      HIBERNATE, EHCACHE
     test.with UNIT_TESTING, BERING, CORE_COMMONS
 
     bnd.wrap!

@@ -14,15 +14,19 @@ import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.EntityMode;
 import org.hibernate.collection.PersistentCollection;
 import org.hibernate.engine.CollectionEntry;
-import org.hibernate.type.AbstractComponentType;
 import org.hibernate.type.CollectionType;
+import org.hibernate.type.CompositeType;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Jalpa Patel
@@ -78,7 +82,7 @@ public class AuditEventFactory {
         if (ignoreCurrentStateForType(propertyType) || propertyName.indexOf(HIBERNATE_BACK_REF_STRING) > 0) {
             return;
         } else if (propertyType.isComponentType()) {
-            addComponentValues(event, (AbstractComponentType) propertyType, propertyName, previousState, currentState);
+            addComponentValues(event, (CompositeType) propertyType, propertyName, previousState, currentState);
         } else {
             if (ignoreStates(previousState, currentState)) {
                 return;
@@ -93,7 +97,7 @@ public class AuditEventFactory {
         }
     }
 
-    private void addComponentValues(AuditEvent event, AbstractComponentType propertyType,
+    private void addComponentValues(AuditEvent event, CompositeType propertyType,
                                   String propertyName, Object previousState, Object currentState) {
         Object[] componentPrevState = getComponentState(propertyType, previousState);
         Object[] componentCurState = getComponentState(propertyType, currentState);
@@ -119,7 +123,7 @@ public class AuditEventFactory {
         }
     }
 
-    private Object[] getComponentState(AbstractComponentType propertyType, Object state) {
+    private Object[] getComponentState(CompositeType propertyType, Object state) {
         return state == null ? null : propertyType.getPropertyValues(state,
                 ENTITY_MODE);
     }
@@ -176,7 +180,7 @@ public class AuditEventFactory {
         while (it.hasNext()) {
             Object obj  = it.next();
             if (elementType != null && elementType.isComponentType()) {
-                Object[] componentObj = getComponentState((AbstractComponentType) elementType, obj);
+                Object[] componentObj = getComponentState((CompositeType) elementType, obj);
                 objValue = scalarCollectionValue(Arrays.asList(componentObj), null);
             }  else {
                 objValue = scalarValue(obj);

@@ -7,10 +7,12 @@ import gov.nih.nci.cabig.ctms.dao.AbstractDomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.AbstractImmutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.Cache;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
+import org.hibernate.TypeHelper;
 import org.hibernate.classic.Session;
 import org.hibernate.engine.FilterDefinition;
 import org.hibernate.metadata.ClassMetadata;
@@ -247,6 +249,18 @@ public class SpringDaoFinderTest extends StudyCalendarTestCase {
 
         public Reference getReference() throws NamingException {
             throw new UnsupportedOperationException("getReference not implemented");
+        }
+
+        public Cache getCache() {
+            throw new UnsupportedOperationException("getCache not implemented");
+        }
+
+        public boolean containsFetchProfileDefinition(String s) {
+            throw new UnsupportedOperationException("containsFetchProfileDefinition not implemented");
+        }
+
+        public TypeHelper getTypeHelper() {
+            throw new UnsupportedOperationException("getTypeHelper not implemented");
         }
     }
 }

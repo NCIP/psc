@@ -41,14 +41,14 @@ public class AuthorizationScopeUpdaterListenerTest extends StudyCalendarTestCase
         fireEvent(new PostUpdateEvent(new Study(), 14,
             new Object[] { "Foo", "411", "G" },
             new Object[] { "Bar", "114", "G" },
-            studyPersister, null));
+            new int[0], studyPersister, null));
     }
 
     public void testDoesNothingWhenWhenStudyAssignedIdentifierNotChanged() throws Exception {
         fireEvent(new PostUpdateEvent(new Study(), 14,
             new Object[] { "Foo", "114", "G" },
             new Object[] { "Bar", "114", "G" },
-            studyPersister, null));
+            new int[0], studyPersister, null));
     }
 
     public void testUpdatesSiteScopeWhenSiteAssignedIdentifierChanged() throws Exception {
@@ -57,14 +57,14 @@ public class AuthorizationScopeUpdaterListenerTest extends StudyCalendarTestCase
         fireEvent(new PostUpdateEvent(new Site(), 9,
             new Object[] { "1220", "G", "F" },
             new Object[] { "0309", "G", "C" },
-            sitePersister, null));
+            new int[0], sitePersister, null));
     }
 
     public void testDoesNothingWhenSiteAssignedIdentifierNotChanged() throws Exception {
         fireEvent(new PostUpdateEvent(new Site(), 9,
             new Object[] { "0309", "G", "F" },
             new Object[] { "0309", "G", "C" },
-            sitePersister, null));
+            new int[0], sitePersister, null));
     }
 
     // this shouldn't happen, but does
@@ -72,7 +72,7 @@ public class AuthorizationScopeUpdaterListenerTest extends StudyCalendarTestCase
         fireEvent(new PostUpdateEvent(new Site(), 9,
             new Object[] { "0309", "G", "F" },
             null,
-            sitePersister, null));
+            new int[0], sitePersister, null));
     }
 
     private void fireEvent(PostUpdateEvent event) {

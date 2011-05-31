@@ -158,7 +158,7 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
     }
 
     public void testGetManagerCsmIds() throws Exception {
-        Map<Integer, Integer> actual = getDao().getManagerCsmUserIdCounts();
+        Map<Integer, Long> actual = getDao().getManagerCsmUserIdCounts();
 
         assertEquals("Wrong number of map entries found: " + actual, 2, actual.size());
         assertEquals("Wrong count for -67: " + actual, 1, actual.get(-67).intValue());

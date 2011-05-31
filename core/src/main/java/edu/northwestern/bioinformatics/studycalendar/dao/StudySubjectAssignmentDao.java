@@ -113,15 +113,15 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
      * an assignment.
      */
     @SuppressWarnings({"unchecked"})
-    public Map<Integer, Integer> getManagerCsmUserIdCounts() {
+    public Map<Integer, Long> getManagerCsmUserIdCounts() {
         String idField = "managerCsmUserId";
         List<Object[]> counts = getHibernateTemplate().findByCriteria(
             criteria().setProjection(
                 projectionList().add(count(idField)).add(groupProperty(idField))
                 ).add(Restrictions.isNotNull(idField)));
-        Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+        Map<Integer, Long> result = new HashMap<Integer, Long>();
         for (Object[] item : counts) {
-            result.put((Integer) item[1], (Integer) item[0]);
+            result.put((Integer) item[1], (Long) item[0]);
         }
         return result;
     }

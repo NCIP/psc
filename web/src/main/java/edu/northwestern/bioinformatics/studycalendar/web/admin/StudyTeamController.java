@@ -51,7 +51,7 @@ public class StudyTeamController extends PscAbstractController implements PscAut
     }
 
     private JSONArray buildTeam(PscUser teamAdmin) {
-        Map<Integer, Integer> managerIds = studySubjectAssignmentDao.getManagerCsmUserIdCounts();
+        Map<Integer, Long> managerIds = studySubjectAssignmentDao.getManagerCsmUserIdCounts();
         Collection<PscUser> teamUsers = pscUserService.getTeamMembersFor(teamAdmin);
         JSONArray team = new JSONArray();
         for (PscUser user : teamUsers) {
@@ -101,9 +101,9 @@ public class StudyTeamController extends PscAbstractController implements PscAut
 
     public static class TeamMember {
         private PscUser user;
-        private Integer managedCalendarCount;
+        private Number managedCalendarCount;
 
-        public TeamMember(PscUser user, Integer managedCalendarCount) {
+        public TeamMember(PscUser user, Number managedCalendarCount) {
             this.user = user;
             this.managedCalendarCount = managedCalendarCount;
         }
@@ -112,7 +112,7 @@ public class StudyTeamController extends PscAbstractController implements PscAut
             return this.user.getMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER) != null;
         }
 
-        public Integer getManagedCalendarCount() {
+        public Number getManagedCalendarCount() {
             return managedCalendarCount;
         }
 

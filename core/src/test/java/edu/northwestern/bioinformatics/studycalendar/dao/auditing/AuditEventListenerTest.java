@@ -49,7 +49,8 @@ public class AuditEventListenerTest extends StudyCalendarTestCase {
     public void testUpdateEventWhenStudyLongTitleChanged() throws Exception {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 14,
             new Object[] { "Foo", "114", "G" },
-            new Object[] { "Bar", "114", "G" }, studyPersister, null);
+            new Object[] { "Bar", "114", "G" },
+            new int[0], studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
         expect(auditEventFactory.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
         auditEventFactory.appendEventValues(event, types[0], "longTitle", "Bar", "Foo");
@@ -63,7 +64,8 @@ public class AuditEventListenerTest extends StudyCalendarTestCase {
     public void testUpdateEventWhenStudyIdentifierChanged() throws Exception {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 14,
             new Object[] { "Foo", "114", "G" },
-            new Object[] { "Foo", "141", "G" }, studyPersister, null);
+            new Object[] { "Foo", "141", "G" },
+            new int[0], studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
         expect(auditEventFactory.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
         auditEventFactory.appendEventValues(event, types[0], "longTitle", "Foo", "Foo");
@@ -77,7 +79,8 @@ public class AuditEventListenerTest extends StudyCalendarTestCase {
     public void testUpdateEventWhenStudyGridIdChanged() throws Exception {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 14,
             new Object[] { "Foo", "114", "G" },
-            new Object[] { "Foo", "114", "Grid1" }, studyPersister, null);
+            new Object[] { "Foo", "114", "Grid1" },
+            new int[0], studyPersister, null);
         AuditEvent event = new AuditEvent(study, Operation.UPDATE, DataAuditInfo.copy(info));
         expect(auditEventFactory.createAuditEvent(study, Operation.UPDATE)).andReturn(event);
         auditEventFactory.appendEventValues(event, types[0], "longTitle", "Foo", "Foo");
@@ -91,7 +94,8 @@ public class AuditEventListenerTest extends StudyCalendarTestCase {
     public void testUpdateEventWhenEventIsNull() throws Exception {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 14,
             new Object[] { "Foo", "114", "G" },
-            new Object[] { "Foo", "114", "G" }, studyPersister, null);
+            new Object[] { "Foo", "114", "G" },
+            new int[0], studyPersister, null);
         expect(auditEventFactory.createAuditEvent(study, Operation.UPDATE)).andReturn(null);
 
         firePostUpdateEvent(postUpdateEvent);
@@ -100,7 +104,8 @@ public class AuditEventListenerTest extends StudyCalendarTestCase {
     public void testUpdateEventDoesNothingWhenOldStateUnknown() throws Exception {
         PostUpdateEvent postUpdateEvent = new PostUpdateEvent(study, 9,
             new Object[] { "0309", "G", "F" },
-            null, studyPersister, null);
+            null,
+            new int[0], studyPersister, null);
         firePostUpdateEvent(postUpdateEvent);
     }
 

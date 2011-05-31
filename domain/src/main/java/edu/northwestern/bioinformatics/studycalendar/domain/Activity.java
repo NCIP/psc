@@ -1,18 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.*;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
