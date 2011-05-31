@@ -75,7 +75,6 @@
     <bean id="hostBeansInitializer" class="edu.northwestern.bioinformatics.studycalendar.core.osgi.HostBeansInitializer" autowire="byName">
         <!-- The bundle context is not resolveable when in the core, so we rely on autowiring -->
         <property name="membrane" ref="membrane"/>
-        <property name="dataSource" ref="dataSource"/>
         <property name="pscUserDetailsService" ref="pscUserService"/>
         <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
         <property name="csmAuthorizationManager" ref="defaultCsmAuthorizationManager"/>

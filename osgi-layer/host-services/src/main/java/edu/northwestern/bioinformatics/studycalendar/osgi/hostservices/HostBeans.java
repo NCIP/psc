@@ -10,7 +10,6 @@ import javax.sql.DataSource;
  * @author Rhett Sutphin
  */
 public interface HostBeans {
-    void setDataSource(DataSource dataSource);
     void setPscUserDetailsService(PscUserDetailsService userDetailsService);
     void setPersistenceManager(PersistenceManager persistenceManager);
 

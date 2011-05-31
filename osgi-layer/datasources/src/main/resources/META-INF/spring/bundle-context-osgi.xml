@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/osgi
+        http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        ">
+
+    <osgi:service id="pscDataSourceRegistration" ref="pscDataSource">
+        <osgi:interfaces>
+            <value>javax.sql.DataSource</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="service.ranking" value="1"/>
+            <entry key="service.pid" value="edu.northwestern.bioinformatics.studycalendar.database.PSC_DATASOURCE"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+    <osgi:service id="csmDataSourceRegistration" ref="csmDataSource">
+        <osgi:interfaces>
+            <value>javax.sql.DataSource</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <!-- rank 0 so that the PSC data source is provided for plain DataSource requests -->
+            <entry key="service.ranking" value="0"/>
+            <entry key="service.pid" value="edu.northwestern.bioinformatics.studycalendar.database.CSM_DATASOURCE"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+</beans>

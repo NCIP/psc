@@ -10,7 +10,6 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,7 +29,7 @@ public class HostBeansImpl implements HostBeans {
     private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
 
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        DataSource.class, PscUserDetailsService.class, PersistenceManager.class, AuthorizationManager.class
+        PscUserDetailsService.class, PersistenceManager.class, AuthorizationManager.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -60,10 +59,6 @@ public class HostBeansImpl implements HostBeans {
             getClass().getClassLoader(),
             new Class[] { serviceInterface },
             invokers.get(serviceInterface));
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        invokers.get(DataSource.class).setBean(dataSource);
     }
 
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {

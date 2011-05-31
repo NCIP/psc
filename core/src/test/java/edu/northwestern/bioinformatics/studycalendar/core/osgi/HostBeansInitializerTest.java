@@ -5,11 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import org.apache.felix.cm.PersistenceManager;
-import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
-import javax.sql.DataSource;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -31,18 +30,6 @@ public class HostBeansInitializerTest extends StudyCalendarTestCase {
 
         initializer.setBundleContext(bundleContext);
         initializer.setMembrane(membrane);
-    }
-
-    public void testDataSourcePassedOnOnInit() throws Exception {
-        DataSource dataSource = registerMockFor(DataSource.class);
-        initializer.setDataSource(dataSource);
-
-        expectGetHostBeansFromBundleContext();
-        hostBeans.setDataSource(dataSource); // expect
-
-        replayMocks();
-        initializer.afterPropertiesSet();
-        verifyMocks();
     }
 
     public void testUserDetailsServicePassedOnOnInit() throws Exception {

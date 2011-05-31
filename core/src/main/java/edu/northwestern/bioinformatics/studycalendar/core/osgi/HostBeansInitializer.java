@@ -35,7 +35,6 @@ public class HostBeansInitializer implements InitializingBean {
             ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
             if (ref != null) {
                 HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
-                beans.setDataSource(dataSource);
                 beans.setPscUserDetailsService(userDetailsService);
                 beans.setPersistenceManager(persistenceManager);
                 beans.setAuthorizationManager(authorizationManager);

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       ">
+    <bean id="dsBundlePropertyConfigurer" class="gov.nih.nci.cabig.ctms.tools.spring.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
+                <property name="applicationDirectoryName" value="psc"/>
+            </bean>
+        </property>
+        <property name="useNullForUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <bean id="dataSourceTemplate" abstract="true" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="maxActive"                     value="5"/>
+        <property name="maxIdle"                       value="2"/>
+        <property name="maxWait"                       value="180000"/>
+        <property name="removeAbandoned"               value="true"/>
+        <property name="removeAbandonedTimeout"        value="300"/>
+        <property name="logAbandoned"                  value="true"/>
+        <property name="validationQuery"               value="SELECT 1 FROM bering_version"/>
+        <property name="testWhileIdle"                 value="true"/>
+        <property name="testOnReturn"                  value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+        <property name="minEvictableIdleTimeMillis"    value="600000"/>
+    </bean>
+
+    <bean id="pscDataSource" parent="dataSourceTemplate">
+        <property name="url"             value="${datasource.url}"/>
+        <property name="username"        value="${datasource.username}"/>
+        <property name="password"        value="${datasource.password}"/>
+        <property name="driverClassName" value="${datasource.driver}"/>
+    </bean>
+
+    <bean id="csmDataSource" parent="dataSourceTemplate">
+        <property name="url"             value="${csm.datasource.url}"/>
+        <property name="username"        value="${csm.datasource.username}"/>
+        <property name="password"        value="${csm.datasource.password}"/>
+        <property name="driverClassName" value="${csm.datasource.driver}"/>
+    </bean>
+</beans>

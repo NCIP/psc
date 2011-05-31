@@ -148,6 +148,9 @@ define "psc" do
       HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
     test.with UNIT_TESTING
 
+    bnd.wrap!
+    bnd.name = 'PSC Database Support'
+
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
     test.enhance hsqldb[:files]
@@ -506,12 +509,13 @@ define "psc" do
         [ project('osgi-layer:log-configuration').packages.first ]
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_bundles =
-        bundle_projects.select { |p| p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
-      application_optional =
-        bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
       application_infrastructure =
-        [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
+        [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API, Buildr::project('psc:database'), Buildr::project('psc:osgi-layer:datasources') ].
+        collect { |a| Buildr::Project === a ? a.package(:jar) : artifact(a) }
+      application_bundles =
+        bundle_projects.select { |p| p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles - application_infrastructure
+      application_optional =
+        bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles - application_infrastructure
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
@@ -603,6 +607,21 @@ define "psc" do
           exec cmd
         end
       end
+    end
+
+    desc 'An OSGi bundle that exports DataSources configured for PSC'
+    define 'datasources' do
+      bnd.wrap!
+      bnd.name = 'PSC Data Sources'
+      bnd['DynamicImport-Package'] = '*' # For JDBC drivers
+      bnd.import_packages <<
+        'edu.northwestern.bioinformatics.studycalendar.database' <<
+        'org.apache.commons.dbcp' <<
+        'gov.nih.nci.cabig.ctms.tools.spring' <<
+        'javax.sql'
+
+      compile.with project('database'), CTMS_COMMONS.core, db_deps
+      package(:jar)
     end
 
     desc "Advertises host-configured services to the OSGi layer"

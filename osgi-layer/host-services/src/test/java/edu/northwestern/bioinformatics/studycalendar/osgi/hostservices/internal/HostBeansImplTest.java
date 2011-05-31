@@ -12,7 +12,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
 
-import javax.sql.DataSource;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -30,7 +29,6 @@ public class HostBeansImplTest extends TestCase {
     private Map<String,Dictionary> registeredServiceProperties;
 
     private HostBeansImpl impl;
-    private DataSource dataSource;
     private PscUserDetailsService pscUserDetailsService;
     private PersistenceManager persistenceManager;
     private AuthorizationManager authorizationManager;
@@ -53,17 +51,9 @@ public class HostBeansImplTest extends TestCase {
 
         impl = new HostBeansImpl();
         impl.registerServices(bundleContext);
-        dataSource = mockRegistry.registerMockFor(DataSource.class);
         pscUserDetailsService = mockRegistry.registerMockFor(PscUserDetailsService.class);
         persistenceManager = mockRegistry.registerMockFor(PersistenceManager.class);
         authorizationManager = mockRegistry.registerMockFor(AuthorizationManager.class);
-    }
-
-    public void testProxyServiceRegisteredForDataSource() throws Exception {
-        assertTrue("Missing service", registeredServices.containsKey("javax.sql.DataSource"));
-        Object service = registeredServices.get("javax.sql.DataSource");
-        assertNotNull(service);
-        assertTrue(service instanceof DataSource);
     }
 
     public void testProxyServiceRegisteredForUserDetailsService() throws Exception {
@@ -76,20 +66,9 @@ public class HostBeansImplTest extends TestCase {
 
     @SuppressWarnings({ "EqualsBetweenInconvertibleTypes" })
     public void testDeferredProxyServicesUseDefaultsIfCalledEarly() throws Exception {
-        DataSource proxied = (DataSource) registeredServices.get("javax.sql.DataSource");
-        assertNull(proxied.getConnection());
-        assertEquals(0, proxied.getLoginTimeout());
-        assertFalse(proxied.equals("anything"));
-    }
-
-    public void testDataSourceDelegatesToDataSourceBean() throws Exception {
-        DataSource actual = (DataSource) registeredServices.get("javax.sql.DataSource");
-        impl.setDataSource(dataSource);
-
-        expect(dataSource.getLoginTimeout()).andReturn(923);
-        mockRegistry.replayMocks();
-        assertEquals(923, actual.getLoginTimeout());
-        mockRegistry.verifyMocks();
+        PersistenceManager proxied = (PersistenceManager) registeredServices.get(PersistenceManager.class.getName());
+        assertNull(proxied.load("foo"));
+        assertFalse(proxied.exists("bar"));
     }
 
     public void testUserDetailsServiceDelegatesToPscUserDetailsServiceBean() throws Exception {
