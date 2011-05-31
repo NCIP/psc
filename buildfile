@@ -677,7 +677,9 @@ define "psc" do
         project('web').and_dependencies,
         project('web').test_dependencies,
         project('authentication:plugin-api').test_dependencies,
-        project('providers:mock')
+        project('providers:mock'),
+        project('authorization:plugin-api').test_dependencies,
+        project('authorization:mock-plugin')
       test.enhance([:build_test_embedder, _('tmp/logs')])
     end
   end
