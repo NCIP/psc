@@ -108,21 +108,6 @@ public class PscUserService implements PscUserDetailsService {
     }
 
     /**
-     * Returns a list of all the users in the system.  For performance reasons, their role
-     * memberships are not included.
-     */
-    @SuppressWarnings({"unchecked"})
-    public List<PscUser> getAllUsers() {
-        List<User> allCsmUsers = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
-        List<PscUser> users = new ArrayList<PscUser>(allCsmUsers.size());
-        for (User csmUser : allCsmUsers) {
-            users.add(createRolelessUser(csmUser));
-        }
-        Collections.sort(users);
-        return users;
-    }
-
-    /**
      * Returns a list of CSM users whose names match the given text.  Matching is against username
      * and first & last names.  It is case-sensitive due to limitations in CSM.
      * <p>

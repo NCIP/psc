@@ -25,11 +25,9 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.easymock.classextension.EasyMock;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,7 +40,7 @@ import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 public class PscUserServiceTest extends StudyCalendarTestCase {
     private PscUserService service;
@@ -242,23 +240,6 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertTrue("Should have return no users", actual.isEmpty());
-    }
-
-    public void testAllUsersAreReturnedInNaturalOrder() throws Exception {
-        expect(csmAuthorizationManager.getObjects(EasyMock.isA(UserSearchCriteria.class))).
-            andReturn(Arrays.asList(
-                AuthorizationObjectFactory.createCsmUser("b"),
-                AuthorizationObjectFactory.createCsmUser("C"),
-                AuthorizationObjectFactory.createCsmUser("A")));
-
-        replayMocks();
-        Collection<PscUser> actual = service.getAllUsers();
-        verifyMocks();
-
-        Iterator<PscUser> it = actual.iterator();
-        assertEquals("A", it.next().getUsername());
-        assertEquals("b", it.next().getUsername());
-        assertEquals("C", it.next().getUsername());
     }
 
     public void testGetPscUsersFromCsmUsers() throws Exception {
