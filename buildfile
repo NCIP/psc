@@ -246,6 +246,8 @@ define "psc" do
 
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
+    project.no_iml
+
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
