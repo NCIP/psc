@@ -89,16 +89,15 @@ public class OsgiLayerIntegratedTestHelper {
     }
 
     public static void startBundle(String bundleName, String withService) throws BundleException, IOException, InterruptedException {
-        Bundle bundle = startBundle(bundleName);
-        while (bundle.getRegisteredServices() == null || bundle.getRegisteredServices().length == 0) {
-            log.debug("Waiting for service registration");
-            Thread.sleep(100);
-        }
-
-        waitForService(bundle, withService);
+        waitForService(startBundle(bundleName), withService);
     }
 
     private static void waitForService(Bundle bundle, String withService) throws InterruptedException {
+        while (bundle.getRegisteredServices() == null || bundle.getRegisteredServices().length == 0) {
+            log.debug("Waiting for any service registration");
+            Thread.sleep(100);
+        }
+
         SEARCH: while (true) {
             for (ServiceReference ref : bundle.getRegisteredServices()) {
                 String[] interfaces = (String[]) ref.getProperty("objectClass");
