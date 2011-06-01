@@ -24,6 +24,8 @@ import static org.junit.Assert.assertThat;
 public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestCase {
     private static final String MOCK_PLUGIN_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-mock-plugin";
+    private static final String SOCKET_SYMBOLIC_NAME =
+        "edu.northwestern.bioinformatics.psc-authorization-socket";
 
     @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerByDefault() throws Exception {
@@ -34,6 +36,7 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
     @Test
     public void pluginLayerGivesAnAuthorizationSocketIfAnAuthorizationPluginIsAvailable() throws Exception {
         startBundle(MOCK_PLUGIN_SYMBOLIC_NAME, SuiteAuthorizationSource.class.getName());
+        waitForService(SOCKET_SYMBOLIC_NAME, AuthorizationManager.class.getName());
 
         assertThat(getCurrentAuthorizationManager().getClass().getName(),
             is("gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.SuiteAuthorizationSocket"));
@@ -51,6 +54,7 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
     @Test
     public void anAuthorizationPluginCanBeQueriedForUsers() throws Exception {
         startBundle(MOCK_PLUGIN_SYMBOLIC_NAME, SuiteAuthorizationSource.class.getName());
+        waitForService(SOCKET_SYMBOLIC_NAME, AuthorizationManager.class.getName());
 
         assertThat(
             getWrappedAuthorizationManager().getObjects(new UserSearchCriteria(new User())).size(),

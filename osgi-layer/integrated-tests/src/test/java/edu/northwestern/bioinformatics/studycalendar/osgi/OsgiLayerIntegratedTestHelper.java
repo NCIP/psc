@@ -95,6 +95,10 @@ public class OsgiLayerIntegratedTestHelper {
             Thread.sleep(100);
         }
 
+        waitForService(bundle, withService);
+    }
+
+    private static void waitForService(Bundle bundle, String withService) throws InterruptedException {
         SEARCH: while (true) {
             for (ServiceReference ref : bundle.getRegisteredServices()) {
                 String[] interfaces = (String[]) ref.getProperty("objectClass");
@@ -109,12 +113,21 @@ public class OsgiLayerIntegratedTestHelper {
         }
     }
 
+    public static void waitForService(String bundleName, String withService) throws IOException, InterruptedException {
+        waitForService(findBundle(bundleName), withService);
+    }
+
     public static void stopBundle(String bundleName) throws IOException, BundleException {
         findBundle(bundleName).stop();
     }
 
     private static Bundle findBundle(String bundleName) throws IOException {
         for (Bundle candidate : getBundleContext().getBundles()) {
+            if (candidate.getSymbolicName() == null) {
+                throw new NullPointerException(
+                    String.format("Bundle %s (%s) has no symbolic name",
+                        candidate, candidate.getBundleId()));
+            }
             if (candidate.getSymbolicName().equals(bundleName)) {
                 return candidate;
             }
