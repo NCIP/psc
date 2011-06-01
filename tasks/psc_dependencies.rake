@@ -474,7 +474,9 @@ BND = artifact("biz.aQute:bnd:jar:0.0.313").from(static_lib('bnd-0.0.313.jar'))
 DB = struct(
   :hsqldb => "org.hsqldb:com.springsource.org.hsqldb:jar:1.8.0.9",
   :postgresql => "org.postgresql:com.springsource.org.postgresql.jdbc3:jar:8.3.603",
-  :oracle => "com.oracle:ojdbc14:jar:10.2.0.2.0" # TODO: wrap this for OSGi
+  :oracle => psc_osgi_artifact(
+    "com.oracle:ojdbc14:jar:10.2.0.2.0", {},
+    :version => '10.2.020.PSC001')
 )
 
 ADVERSE_EVENT_CONSUMER_GRID = struct(

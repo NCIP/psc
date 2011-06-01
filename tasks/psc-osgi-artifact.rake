@@ -7,10 +7,12 @@
 # This may not be necessary with buildr-1.3.5
 load File.expand_path(File.dirname(__FILE__) + "/bnd.rake")
 
-def psc_osgi_artifact(spec, bnd_props = { }, &src_mod)
+def psc_osgi_artifact(spec, bnd_props={}, dst_spec_overrides={}, &src_mod)
   src_spec = Artifact.to_hash(spec)
   # wrapped id per SpringSource repo model
-  dst_spec = src_spec.merge( :id => "edu.northwestern.bioinformatics.osgi.#{src_spec[:id]}" )
+  dst_spec = src_spec.
+    merge(:id => "edu.northwestern.bioinformatics.osgi.#{src_spec[:id]}").
+    merge(dst_spec_overrides)
   unless task = Artifact.lookup(dst_spec)
     src = artifact(src_spec)
     if block_given?

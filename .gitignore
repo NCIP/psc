@@ -17,3 +17,4 @@ osgi/bnd-tmp
 *.pickle
 .rvmrc
 felix-cache
+osgi/bundled-lib/com/oracle
