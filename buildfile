@@ -1390,6 +1390,7 @@ define "psc" do
       with(
         project('test-infrastructure'),
         project('test-infrastructure').compile.dependencies,
+        project('test-infrastructure').test.compile.target,
         project('test-infrastructure').test.compile.dependencies
       ).using(
         :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '>1.1.3', 'icalendar' => '1.1.0', 'haml' => '~>2.2.0' },
@@ -1410,10 +1411,10 @@ define "psc" do
     }
 
     desc "One-time setup for the RESTful API integrated tests"
-    task :setup => [:set_db, :'test:compile', :wipe_db, project('psc:database').task('migrate')] do
+    task :setup => [:set_db, :'test:compile', :'psc:test-infrastructure:test:compile', :wipe_db, project('psc:database').task('migrate')] do
       ::Java::Commands.java(
         'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._,
-        :classpath => test.compile.dependencies,
+        :classpath => project.test.compile.dependencies,
         :properties => { "psc.config.datasource" => db_name })
     end
   end
