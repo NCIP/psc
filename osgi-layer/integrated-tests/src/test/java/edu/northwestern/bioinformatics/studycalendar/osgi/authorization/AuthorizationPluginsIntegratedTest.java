@@ -6,6 +6,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSourc
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -26,6 +27,11 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
         "edu.northwestern.bioinformatics.psc-authorization-mock-plugin";
     private static final String SOCKET_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-socket";
+
+    @Before
+    public void before() throws Exception {
+
+    }
 
     @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerByDefault() throws Exception {
@@ -64,10 +70,10 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
     private Object getCurrentAuthorizationManager() throws IOException {
         ServiceReference sr = getBundleContext().
             getServiceReference(AuthorizationManager.class.getName());
-        assertThat("No registered service", sr, is(not(nullValue())));
+        assertThat("No AuthorizationManager registered", sr, is(not(nullValue())));
 
         Object service = getBundleContext().getService(sr);
-        assertThat("Service not found", service, is(not(nullValue())));
+        assertThat("AuthorizationManager ref not resolvable", service, is(not(nullValue())));
         return service;
     }
 

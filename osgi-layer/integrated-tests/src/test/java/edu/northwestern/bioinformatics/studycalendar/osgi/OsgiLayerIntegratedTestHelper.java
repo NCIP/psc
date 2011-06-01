@@ -36,6 +36,8 @@ public class OsgiLayerIntegratedTestHelper {
     private static BundleContext bundleContext;
     private static File projectRoot;
 
+    private static final int TIMEOUT_MS = 30 * 1000;
+
     public static synchronized BundleContext getBundleContext() throws IOException {
         if (bundleContext == null) {
             System.setProperty("catalina.base",
@@ -93,12 +95,17 @@ public class OsgiLayerIntegratedTestHelper {
     }
 
     private static void waitForService(Bundle bundle, String withService) throws InterruptedException {
-        while (bundle.getRegisteredServices() == null || bundle.getRegisteredServices().length == 0) {
+        long start = System.currentTimeMillis();
+
+        while (
+            !timedOut(start) &&
+            (bundle.getRegisteredServices() == null || bundle.getRegisteredServices().length == 0)
+        ) {
             log.debug("Waiting for any service registration");
             Thread.sleep(100);
         }
 
-        SEARCH: while (true) {
+        SEARCH: while (!timedOut(start)) {
             for (ServiceReference ref : bundle.getRegisteredServices()) {
                 String[] interfaces = (String[]) ref.getProperty("objectClass");
                 if (interfaces != null) {
@@ -109,6 +116,15 @@ public class OsgiLayerIntegratedTestHelper {
             }
             log.debug("Waiting for service {} registration", withService);
             Thread.sleep(100);
+        }
+    }
+
+    // side effect is the important bit
+    private static boolean timedOut(long startTime) {
+        if (System.currentTimeMillis() - startTime > TIMEOUT_MS) {
+            throw new StudyCalendarSystemException("Wait for service timed out");
+        } else {
+            return true;
         }
     }
 
