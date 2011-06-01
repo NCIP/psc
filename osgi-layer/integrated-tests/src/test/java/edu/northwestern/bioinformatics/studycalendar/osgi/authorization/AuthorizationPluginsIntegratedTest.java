@@ -27,10 +27,12 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
         "edu.northwestern.bioinformatics.psc-authorization-mock-plugin";
     private static final String SOCKET_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-socket";
+    private static final String DEFAULT_CSM_SYMBOLIC_NAME =
+        "edu.northwestern.bioinformatics.psc-authorization-default-csm";
 
     @Before
     public void before() throws Exception {
-
+        waitForService(DEFAULT_CSM_SYMBOLIC_NAME, AuthorizationManager.class.getName());
     }
 
     @Test

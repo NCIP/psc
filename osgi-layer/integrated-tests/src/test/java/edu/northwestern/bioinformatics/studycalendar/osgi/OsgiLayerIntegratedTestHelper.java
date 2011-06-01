@@ -36,7 +36,7 @@ public class OsgiLayerIntegratedTestHelper {
     private static BundleContext bundleContext;
     private static File projectRoot;
 
-    private static final int TIMEOUT_MS = 30 * 1000;
+    private static final int TIMEOUT_MS = 300 * 1000;
 
     public static synchronized BundleContext getBundleContext() throws IOException {
         if (bundleContext == null) {
@@ -95,13 +95,15 @@ public class OsgiLayerIntegratedTestHelper {
     }
 
     private static void waitForService(Bundle bundle, String withService) throws InterruptedException {
+        log.debug("Beginning wait for {} in {}", withService, bundle);
+
         long start = System.currentTimeMillis();
 
         while (
             !timedOut(start) &&
             (bundle.getRegisteredServices() == null || bundle.getRegisteredServices().length == 0)
         ) {
-            log.debug("Waiting for any service registration");
+            log.debug("- waiting for any service registration");
             Thread.sleep(100);
         }
 
@@ -114,9 +116,11 @@ public class OsgiLayerIntegratedTestHelper {
                     }
                 }
             }
-            log.debug("Waiting for service {} registration", withService);
+            log.debug("- waiting for service {} registration", withService);
             Thread.sleep(100);
         }
+
+        log.debug("- {} became available after {}ms", withService, System.currentTimeMillis() - start);
     }
 
     // side effect is the important bit
@@ -124,7 +128,7 @@ public class OsgiLayerIntegratedTestHelper {
         if (System.currentTimeMillis() - startTime > TIMEOUT_MS) {
             throw new StudyCalendarSystemException("Wait for service timed out");
         } else {
-            return true;
+            return false;
         }
     }
 
