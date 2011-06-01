@@ -1,6 +1,7 @@
 # Dependency groups used by PSC's buildfile
 
 load File.dirname(__FILE__) + "/psc-osgi-artifact.rake"
+load File.dirname(__FILE__) + "/helper_functions.rake"
 
 ###### REPOS
 
