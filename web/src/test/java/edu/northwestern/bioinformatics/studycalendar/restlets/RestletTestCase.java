@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
@@ -12,6 +13,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -61,6 +63,7 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         request = new HttpRequest(context, servletCall);
         request.setRootRef(new Reference(ROOT_URI));
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
+        request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, new Form());
         response = new HttpResponse(servletCall, request);
 
         // Most of the tests expect XML to be the most-preferred variant.

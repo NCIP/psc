@@ -16,7 +16,10 @@ import java.io.IOException;
  */
 public class PscAuthenticatorHelper extends AuthenticatorHelper implements InitializingBean {
     public PscAuthenticatorHelper() {
-        super(PscAuthenticator.HTTP_PSC_TOKEN, false, true);
+        // This helper claims to be a client-side helper even though it is only used on a server
+        // because Restlet's AuthenticatorUtils requires this behavior to avoid a useless warning.
+        // See #1467 for more info.
+        super(PscAuthenticator.HTTP_PSC_TOKEN, true, true);
     }
 
     @Override
