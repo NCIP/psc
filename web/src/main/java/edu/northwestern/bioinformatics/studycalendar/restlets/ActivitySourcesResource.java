@@ -89,14 +89,12 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             Integer limit = extractLimit();
             int total = activityDao.getCount();
-            Integer offset = extractOffset(total, limit);
+            Integer offset = extractOffset(total) != null ? extractOffset(total) : 0;
             List<Activity> current;
             if (limit != null && offset != null) {
                 current = activityDao.getAllWithLimitAndOffset(limit, offset);
-            } else if (limit != null) {
-                current = activityDao.getAllWithLimit(limit);
             } else {
-                current = activityDao.getAll();
+                current = activityDao.getAllWithOffset(offset);
             }
             List<ActivityType> types = activityTypeDao.getAll();
             return new ActivitySourcesJsonRepresentation(current, total, offset, limit, types);
@@ -122,13 +120,9 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         }
     }
 
-    private Integer extractOffset(int total, Integer limit) throws ResourceException {
+    private Integer extractOffset(int total) throws ResourceException {
         String offsetS = QueryParameters.OFFSET.extractFrom(getRequest());
         if (offsetS == null) return 0;
-        if (limit == null) {
-            throw new ResourceException(
-                CLIENT_ERROR_BAD_REQUEST, "Offset does not make sense without limit.");
-        }
         try {
             Integer offset = new Integer(offsetS);
             if (offset < 0) {
