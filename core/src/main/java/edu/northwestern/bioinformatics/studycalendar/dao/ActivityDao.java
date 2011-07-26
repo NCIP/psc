@@ -7,6 +7,7 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -139,5 +140,15 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
         getHibernateTemplate().deleteAll(t);
         //have to flush, otherwise it's failing to add a new activity in the same session.
         getSession().flush();
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Activity> getAllWithLimit(int limit) {
+        return getSession().createCriteria(Activity.class)
+                .setMaxResults(limit)
+                .createCriteria("type")
+                    .addOrder(Order.asc("name"))
+                .addOrder(Order.asc("name"))
+                .list();
     }
 }
