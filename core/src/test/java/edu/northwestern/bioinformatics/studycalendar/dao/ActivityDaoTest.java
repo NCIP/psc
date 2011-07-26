@@ -151,4 +151,8 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong order", -96, (int) actual.get(0).getId());
         assertEquals("Wrong order", -98, (int) actual.get(1).getId());
     }
+
+    public void testCount() {
+         assertEquals("Wrong size", 5, (int) dao.getCount());
+    }
 }

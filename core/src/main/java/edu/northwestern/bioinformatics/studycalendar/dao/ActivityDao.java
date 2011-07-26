@@ -8,6 +8,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -150,5 +151,13 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
                     .addOrder(Order.asc("name"))
                 .addOrder(Order.asc("name"))
                 .list();
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public Integer getCount() {
+        return  (Integer) CollectionUtils.firstElement(getSession().createCriteria(Activity.class)
+                .setProjection( Projections.projectionList()
+                .add( Projections.rowCount() ))
+                .list());
     }
 }
