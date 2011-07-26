@@ -147,8 +147,7 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     public List<Activity> getAllWithLimit(int limit) {
         return getSession().createCriteria(Activity.class)
                 .setMaxResults(limit)
-                .createCriteria("type")
-                    .addOrder(Order.asc("name"))
+                .createCriteria("type").addOrder(Order.asc("name"))
                 .addOrder(Order.asc("name"))
                 .list();
     }
@@ -159,5 +158,15 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
                 .setProjection( Projections.projectionList()
                 .add( Projections.rowCount() ))
                 .list());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Activity> getAllWithLimitAndOffset(int limit, int offset) {
+        return getSession().createCriteria(Activity.class)
+                .setMaxResults(limit)
+                .setFirstResult(offset)
+                .createCriteria("type").addOrder(Order.asc("name"))
+                .addOrder(Order.asc("name"))
+                .list();
     }
 }
