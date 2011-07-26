@@ -148,8 +148,18 @@ public class ActivityDaoTest extends DaoTestCase {
     public void testGetAllWithLimit() {
         List<Activity> actual = dao.getAllWithLimit(2);
         assertEquals("Wrong size", 2, actual.size());
-        assertEquals("Wrong order", -96, (int) actual.get(0).getId());
-        assertEquals("Wrong order", -98, (int) actual.get(1).getId());
+        assertEquals("Wrong order", "Administer Drug L", actual.get(0).getName());
+        assertEquals("Wrong order", "CT Screen", actual.get(1).getName());
+    }
+
+    public void testGetAllWithLimitSortOrder() {
+        List<Activity> actual = dao.getAllWithLimit(100);
+        assertEquals("Wrong order", "Administer Drug L", actual.get(0).getName());
+        assertEquals("Wrong order", "CT Screen", actual.get(1).getName());
+        assertEquals("Wrong order", "Screening Activity", actual.get(2).getName());
+        assertEquals("Wrong order", "Administer Drug A", actual.get(3).getName());
+        assertEquals("Wrong order", "Administer Drug Z", actual.get(4).getName());
+
     }
 
     public void testCount() {
@@ -159,7 +169,7 @@ public class ActivityDaoTest extends DaoTestCase {
     public void testGetAllWithLimitAndOffset() {
         List<Activity> actual = dao.getAllWithLimitAndOffset(2, 1);
         assertEquals("Wrong size", 2, actual.size());
-        assertEquals("Wrong order", -98, (int) actual.get(0).getId());
-        assertEquals("Wrong order", -100, (int) actual.get(1).getId());
+        assertEquals("Wrong order", "CT Screen", actual.get(0).getName());
+        assertEquals("Wrong order", "Screening Activity", actual.get(1).getName());
     }
 }
