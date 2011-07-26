@@ -11,6 +11,15 @@
         id="3"
         name="PROCEDURE"/>
 
+    <ACTIVITY_TYPES
+        id="4"
+        name="DISEASE_MEASURE"/>
+
+    <SOURCES
+        id="-202"
+        version="0"
+        name="ICD12"/>
+
     <SOURCES
         id="-201"
         version="0"
@@ -20,6 +29,22 @@
         id="-200"
         version="0"
         name="ICD9"/>
+
+    <ACTIVITIES
+        id="-200"
+        name="X-ray: Colon"
+        description="Description of X-ray activity"
+        activity_type_id="4"
+        code="XC"
+        source_id="-202"/>
+
+    <ACTIVITIES
+        id="-202"
+        name="PSA"
+        description="Description of PSA activity"
+        activity_type_id="4"
+        code="PSA"
+        source_id="-202"/>
 
     <ACTIVITIES
         id="-100"

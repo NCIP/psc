@@ -144,30 +144,31 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     @SuppressWarnings({ "unchecked" })
-    public List<Activity> getAllWithLimit(int limit) {
-        return defaultCriteria().setMaxResults(limit).list();
-    }
-
-    @SuppressWarnings({ "unchecked" })
     public Integer getCount() {
         return  (Integer) CollectionUtils.firstElement(
                 getSession().createCriteria(Activity.class)
                     .setProjection( Projections.projectionList()
-                    .add( Projections.rowCount() ))
+                    .add(Projections.rowCount()))
                     .list());
     }
 
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getAllWithLimitAndOffset(int limit, int offset) {
-        return defaultCriteria()
+        return  defaultCriteria()
                 .setMaxResults(limit)
                 .setFirstResult(offset)
                 .list();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Activity> getAllWithOffset(Integer offset) {
+        return defaultCriteria().setFirstResult(offset).list();
+    }
+
     private Criteria defaultCriteria() {
-        return getSession().createCriteria(Activity.class)
-                .createCriteria("type").addOrder(Order.asc("name"))
-                .addOrder(Order.asc("name"));
+        Criteria base = getSession().createCriteria(Activity.class);
+        base.createCriteria("type").addOrder(Order.asc("name").ignoreCase());
+        base.addOrder(Order.asc("name").ignoreCase());
+        return base;
     }
 }
