@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,13 +112,23 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
                 String dateString = activityState.get("date").toString();
                 ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
                 if (newMode != null) {
-                    Date date;
                     try {
-                        date = getApiDateFormat().parse(dateString);
+                        Date date = getApiDateFormat().parse(dateString);
+
+                        if (!activityState.isNull("time")) {
+                            String time = activityState.get("time").toString();
+                            try {
+                                date = DateFormat.generateDateTime(date, time);
+                                newState = newMode.createStateInstance(date, reason, true);
+                            } catch (ParseException pe) {
+                                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable time:" + time);
+                            }
+                        } else {
+                            newState = newMode.createStateInstance(date, reason);
+                        }
                     } catch (ParseException pe) {
                         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Problem parsing date " + dateString);
                     }
-                    newState = newMode.createStateInstance(date, reason);
                 }
             } catch (JSONException e) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable entity", e);

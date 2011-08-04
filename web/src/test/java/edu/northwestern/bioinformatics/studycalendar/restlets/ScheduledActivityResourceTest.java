@@ -214,12 +214,45 @@ public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<Sc
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
+    public void testActivityUpdateWithValidTime() throws Exception {
+        expectGetScheduledActivity();
+        setJsonRequestEntityWithTime("scheduled", "2007-03-04", "Change timing for activity", "16:20");
+        scheduledActivityDao.save(scheduledActivity);
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
+        assertEquals(ScheduledActivityMode.SCHEDULED, scheduledActivity.getCurrentState().getMode());
+        assertDayOfDate("Wrong date", 2007, Calendar.MARCH, 04, scheduledActivity.getCurrentState().getDate());
+        assertEquals("Change timing for activity", scheduledActivity.getCurrentState().getReason());
+        assertTimeOfDate("Wrong time", 16, 20, 0, 0, scheduledActivity.getCurrentState().getDate());
+    }
+
+    public void testActivityUpdateWithInvalidTime() throws Exception {
+        expectGetScheduledActivity();
+        setJsonRequestEntityWithTime("scheduled", "2007-03-04", "Change timing for activity", "wrong format");
+        doPost();
+
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable time:wrong format");
+    }
+
     private JSONObject setJsonRequestEntity(String state, String date, String reason) throws Exception {
         JSONObject entity  = new JSONObject();
         JSONObject activityState = new JSONObject();
         activityState.put("reason", reason);
         activityState.put("state", state);
         activityState.put("date", date);
+        entity.put(scheduledActivity.getGridId(), activityState);
+        request.setEntity(new JsonRepresentation(entity));
+        return activityState;
+    }
+
+    private JSONObject setJsonRequestEntityWithTime(String state, String date, String reason, String time) throws Exception {
+        JSONObject entity  = new JSONObject();
+        JSONObject activityState = new JSONObject();
+        activityState.put("reason", reason);
+        activityState.put("state", state);
+        activityState.put("date", date);
+        activityState.put("time", time);
         entity.put(scheduledActivity.getGridId(), activityState);
         request.setEntity(new JsonRepresentation(entity));
         return activityState;

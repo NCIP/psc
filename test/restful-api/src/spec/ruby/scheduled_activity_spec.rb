@@ -60,14 +60,14 @@ describe "/studies/{study-identifier}/schedules/{assignment-identifier}/activiti
       response.xml_elements('//scheduled-activity').should have(2).elements
       response.xml_attributes("scheduled-activity", "ideal-date").should include("2008-12-29")
     end
-
+  
     it "returns the details for the scheduled activity" do
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
     end
-
+  
     it "forbids access to a scheduled activity to an unauthorized user" do
       get "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}", :as => nil
       response.status_code.should == 401
@@ -78,22 +78,36 @@ describe "/studies/{study-identifier}/schedules/{assignment-identifier}/activiti
     it "updates the scheduled activity state with XML request" do
       #xml request to update scheduled activity state
       @scheduled_activity_state_xml = psc_xml("scheduled-activity-state", 'state' => "canceled", 'date' => "2008-12-29", 'reason' => "Just canceled")
-
+    
       post "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}", @scheduled_activity_state_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.meta['location'].should =~ %r{api/v1/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}$}
     end
-
+    
     it "updates the scheduled activity state with JSON request" do
       #json request to update scheduled activity state
       @scheduled_activity_state_json = "{#{@scheduled_activity.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 }}"
-
+    
       post "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}", @scheduled_activity_state_json,
            :as => :erin, 'Content-Type' => 'application/json'
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.meta['location'].should =~ %r{api/v1/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}$}
+    end
+    
+    it "updates the scheduled activity state with time with JSON request" do
+      #json request to update scheduled activity state
+      @scheduled_activity_state_json = "{#{@scheduled_activity.gridId} : { state : scheduled, reason : Delay by two days and change the time , date : 2009-12-30, time : '14:20' }}"
+      post "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}", @scheduled_activity_state_json,
+           :as => :erin, 'Content-Type' => 'application/json'
+      response.status_code.should == 201
+      response.status_message.should == "Created"
+      response.meta['location'].should =~ %r{api/v1/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activity.gridId}$}
+      
+      sa = application_context['scheduledActivityDao'].getByGridId(@scheduled_activity.gridId)
+      sa.currentState.withTime.should == true
+      sa.currentState.date.to_s.should == "2009-12-30 14:20:00.0"
     end
   end
 
