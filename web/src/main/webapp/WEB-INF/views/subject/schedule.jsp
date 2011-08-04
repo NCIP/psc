@@ -175,6 +175,12 @@
         .legend-row {
             list-style-type:none;
         }
+
+        ul li label span.time {
+         display: inline-block;
+         width: 60px;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -210,8 +216,11 @@
     <tags:resigTemplate id="list_day_sa_entry">
         <li class="[#= stateClasses() #] [#= mineClass() #] ">
             <label>
+                [# if (hasMixedTime()) { #]
+                    <span title="Time" class="time">[# if (withTime()) { #] [#= scheduledTime() #][# } #]</span>
+                [# } #]
                 [# if (hasId() && canUpdateSchedule()) { #]
-                  <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
+                <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 [# if(hasAssignment()) { #]

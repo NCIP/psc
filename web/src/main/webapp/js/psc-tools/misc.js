@@ -60,6 +60,17 @@ psc.tools.Dates = (function () {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY + this.ONE_DAY / 2);
     },
 
+    timeIntoAmPm: function (time) {
+      var times = time.split(':');
+      var hour = parseInt(times[0]);
+      var ap = "AM" ;
+      if (hour > 11) { ap = "PM";}
+      if (hour > 12) { hour = hour - 12;}
+      if (hour == 0) { hour = 12;}
+      var timeString = hour + ":" ;
+      return timeString.concat(times[1]).concat(" ").concat(ap);
+    },
+
     shiftByDays: function (d, dayCount) {
       var newD = new Date();
       newD.setTime(d.getTime() +  dayCount * this.ONE_DAY);

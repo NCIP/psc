@@ -11,7 +11,7 @@ psc.subject.isToday = function (date) {
 psc.subject.Schedule = function (scheduleApiResponse) {
   var days = [];
 
-  function enhanceScheduledActivity(sa) {
+  function enhanceScheduledActivity(sa, mixedTime) {
     jQuery.extend(sa, {
       stateClasses: function () {
         var classes = ["scheduled-activity"];
@@ -39,6 +39,22 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
       currentDate: function () {
         return psc.tools.Dates.apiDateToUtc(this.current_state.date);
+      },
+
+      hasMixedTime: function () {
+          return mixedTime;
+      },
+
+      withTime: function () {
+        return sa.current_state.time;
+      },
+
+      scheduledTime: function () {
+        if (sa.current_state.time) {
+            return psc.tools.Dates.timeIntoAmPm(sa.current_state.time)
+        } else {
+            return undefined;
+        }
       },
 
       dateClasses: function () {
@@ -202,8 +218,15 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       minDayStr = (minDayStr === null ? date : (minDayStr < date ? minDayStr : date));
       maxDayStr = (maxDayStr === null ? date : (maxDayStr > date ? maxDayStr : date));
       if (dayObject['activities']) {
+        var mixedTime = false;
         jQuery.each(dayObject['activities'], function(index, sa) {
-          enhanceScheduledActivity(sa)
+          if (sa.current_state.time != undefined) {
+            mixedTime = true;
+            return false;
+          }
+        });
+        jQuery.each(dayObject['activities'], function(index, sa) {
+          enhanceScheduledActivity(sa, mixedTime)
         });
       }
       if (dayObject['hidden_activities']) {
