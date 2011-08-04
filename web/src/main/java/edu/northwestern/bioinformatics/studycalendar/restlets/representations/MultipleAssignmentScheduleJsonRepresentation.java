@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.restlets.StudySubjectAssignmentPrivilege;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
@@ -196,6 +197,9 @@ public class MultipleAssignmentScheduleJsonRepresentation extends StreamingJsonR
             JacksonTools.nullSafeWriteStringField(generator, "name", state.getMode().toString());
             if (state.getDate() != null) {
                 JacksonTools.nullSafeWriteStringField(generator, "date", getApiDateFormat().format(state.getDate()));
+                if (state.getWithTime()) {
+                    JacksonTools.nullSafeWritePrimitiveField(generator, "time", DateFormat.generateTimeFromDate(state.getDate()));
+                }
             }
             JacksonTools.nullSafeWriteStringField(generator, "reason", state.getReason());
         generator.writeEndObject();

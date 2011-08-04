@@ -251,6 +251,24 @@ public class MultipleAssignmentScheduleJsonRepresentationTest extends JsonRepres
         assertEquals("current state name incorrect", "scheduled", currentState.get("name"));
     }
 
+    public void testScheduledActivityCurrentStateIncludesTime() throws Exception {
+        sa.getCurrentState().setDate(createDate(2009, Calendar.APRIL, 3, 14, 20, 0));
+        sa.getCurrentState().setWithTime(true);
+        representation.createJSONScheduledActivity(generator, sa);
+        JSONObject jsonSA = outputAsObject();
+        JSONObject currentState = (JSONObject) jsonSA.get("current_state");
+        assertEquals("current state date incorrect", "2009-04-03", currentState.get("date"));
+        assertEquals("current state date time incorrect", "14:20", currentState.get("time"));
+    }
+
+    public void testScheduledActivityCurrentStateIgnoresTime() throws Exception {
+        sa.getCurrentState().setDate(createDate(2009, Calendar.APRIL, 3, 14, 20, 0));
+        representation.createJSONScheduledActivity(generator, sa);
+        JSONObject jsonSA = outputAsObject();
+        JSONObject currentState = (JSONObject) jsonSA.get("current_state");
+        assertTrue(currentState.isNull("time"));
+    }
+
     public void testScheduledActivityStateHistoryContainsAllStates() throws Exception {
         representation.createJSONScheduledActivity(generator, sa);
         JSONObject actual = outputAsObject();
