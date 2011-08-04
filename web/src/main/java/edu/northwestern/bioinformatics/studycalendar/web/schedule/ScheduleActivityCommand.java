@@ -1,22 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
+import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.Errors;
 
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleActivityCommand {
+public class ScheduleActivityCommand implements Validatable {
     private static final Logger log = LoggerFactory.getLogger(ScheduleActivityCommand.class.getName());
 
     private ScheduledActivity event;
@@ -24,6 +29,7 @@ public class ScheduleActivityCommand {
     private String newReason;
     private Date newDate;
     private String newNotes;
+    private String newTime;
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
@@ -48,7 +54,21 @@ public class ScheduleActivityCommand {
     public ScheduledActivityState createState() {
         ScheduledActivityState instance = getNewMode().createStateInstance();
         instance.setReason(getNewReason());
-        instance.setDate(getNewDate());
+        String times = newTime;
+        Date date =  getNewDate();
+        if (times != null) {
+            try {
+                if (times.contains("AM") || times.contains("PM")){
+                    date = DateFormat.generateAmPmDateTime(date, times);
+                } else {
+                    date = DateFormat.generateDateTime(date, times);
+                }
+            } catch (ParseException e) {}
+            instance.setWithTime(true);
+        } else {
+            instance.setWithTime(false);
+        }
+        instance.setDate(date);
 
         return instance;
     }
@@ -112,5 +132,35 @@ public class ScheduleActivityCommand {
 
     public void setNewNotes(String newNotes) {
         this.newNotes = newNotes;
+    }
+
+    public String getNewTime() {
+        if (getEvent().getCurrentState().getWithTime()) {
+            return DateFormat.generateAmPmTimeFromDate(getEvent().getCurrentState().getDate());
+        } else {
+            return null;
+        }
+    }
+
+    public void setNewTime(String newTime) {
+        this.newTime = newTime;
+    }
+
+    public void validate(Errors errors) {
+        String times = newTime;
+        Date date =  getNewDate();
+        if (times != null) {
+            try {
+                if (times.contains("AM") || times.contains("PM")){
+                    DateFormat.generateAmPmDateTime(date, times);
+                } else {
+                    DateFormat.generateDateTime(date, times);
+                }
+            } catch (ParseException e) {
+                String message = times + " is not valid time. Please enter time in 24-hour format or with AM/PM.";
+                errors.reject("error.time.not.valid.format", new String[] {times}, message);
+
+            }
+        }
     }
 }

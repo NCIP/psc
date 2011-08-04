@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivitySta
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.validation.BindException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -70,7 +72,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
     }
 
     public void testChangeState() throws Exception {
-        assertEquals("Unexpeced number of initial states", 1, event.getAllStates().size());
+        assertEquals("Unexpected number of initial states", 1, event.getAllStates().size());
         assertNull(event.getNotes());
 
         command.setNewMode(ScheduledActivityMode.OCCURRED);
@@ -109,5 +111,59 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         assertNotContains("Wrong state available", collection, ScheduledActivityMode.CANCELED);
         assertNotContains("Wrong state available", collection, ScheduledActivityMode.CONDITIONAL);
     }
+
+    public void testChangeTimeWith24HrFormat() throws Exception {
+        assertEquals("Unexpected number of initial states", 1, event.getAllStates().size());
+        assertNull(event.getNotes());
+
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
+        command.setNewTime("19:25");
+        scheduledCalendarDao.save(event.getScheduledStudySegment().getScheduledCalendar());
+
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals("Wrong number of states", 2, event.getAllStates().size());
+        assertEquals("Wrong mode for current state", ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
+        assertEquals("Wrong withTime for current state", (Object) true, event.getCurrentState().getWithTime());
+        assertEquals("Wrong Date for current state", DateUtils.createDate(2003, Calendar.MARCH, 14, 19, 25, 00), event.getCurrentState().getDate());
+    }
+
+    public void testChangeTimeWitAmPmFormat() throws Exception {
+        assertEquals("Unexpected number of initial states", 1, event.getAllStates().size());
+        assertNull(event.getNotes());
+
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
+        command.setNewTime("5:15 AM");
+        scheduledCalendarDao.save(event.getScheduledStudySegment().getScheduledCalendar());
+
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals("Wrong number of states", 2, event.getAllStates().size());
+        assertEquals("Wrong mode for current state", ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
+        assertEquals("Wrong withTime for current state", (Object) true, event.getCurrentState().getWithTime());
+        assertEquals("Wrong Date for current state", DateUtils.createDate(2003, Calendar.MARCH, 14, 5, 15, 00), event.getCurrentState().getDate());
+    }
+
+    public void testValidateTimeInWrongFormat() throws Exception {
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
+        command.setNewTime("515 AM");
+
+        BindException errors = validateAndReturnErrors();
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.time.not.valid.format", errors.getGlobalError().getCode());
+    }
+
+    private BindException validateAndReturnErrors() {
+        replayMocks();
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        return errors;
+    }
+
 
 }

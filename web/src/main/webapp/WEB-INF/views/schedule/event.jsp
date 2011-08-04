@@ -84,6 +84,9 @@
             width: 30%;
             font-style: italic;
         }
+        .time {
+            padding: 4px 1em;
+        }
 
         dl#subject-properties dd {
             float: left;
@@ -123,6 +126,9 @@
 <laf:box title="${modeTitle} activity for ${subject.fullName}">
     <laf:division>
         <form:form>
+            <div style="color:red;">
+                <form:errors path="*"/>
+            </div>
             <c:set var="count" value="0"/>
             <div class="row ${commons:parity(count)}">
                 <div class="label">Activity</div>
@@ -217,6 +223,20 @@
                 </div>
                 <c:set var="count" value="${count + 1}"/>
             </c:if>
+
+            <div class="row ${commons:parity(count)}">
+                <div class="label"><form:label path="newTime">Time</form:label></div>
+                <div class="value">
+                    <c:if test="${!readOnly}">
+                        <form:input path="newTime" id="new-time-input"/>
+                        <label class="time">either in 24-hour format or with AM/PM. E.g. "16:15" or "4:15 PM"</label>
+                    </c:if>
+                    <c:if test="${readOnly}">
+                        ${command.newTime}
+                    </c:if>
+                </div>
+            </div>
+            <c:set var="count" value="${count + 1}"/>
 
             <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>

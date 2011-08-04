@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -48,6 +49,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         setBindOnNewForm(true);
         setCommandClass(ScheduleActivityCommand.class);
         setCrumb(new Crumb());
+        setValidator(new ValidatableValidator());
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
