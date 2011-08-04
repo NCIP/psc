@@ -271,9 +271,46 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
         assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
         JSONObject responseText = new JSONObject(response.getEntity().getText());
         assertEquals("Wrong Status code for first activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(SA1_GRID)).get("Status"));
-        assertEquals("Wrong Status code for secaond activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
+        assertEquals("Wrong Status code for second activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
 
         assertStateContents(CANCELED, 2008, Calendar.MARCH, 2, "Just Canceled", sa1.getCurrentState());
+    }
+
+     public void testActivityUpdateWithValidTime() throws Exception {
+        expectGetActivities();
+        activityState1 = createJSONFormatForRequestWithTime("scheduled", "2007-03-04", "Change timing for activity", "16:20");
+        activityState2 = createJSONFormatForRequestWithTime("scheduled", "2007-03-05", "Move by 1 day", "9:13");
+        entity.put(SA1_GRID, activityState1);
+        entity.put(SA2_GRID, activityState2);
+        request.setEntity(new JsonRepresentation(entity));
+        createResponseMessage(SA1_GRID, Status.SUCCESS_CREATED.getCode());
+        scheduledActivityDao.save(sa1);
+        scheduledActivityDao.save(sa2);
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
+        assertStateContents(SCHEDULED, 2007, Calendar.MARCH, 04, "Change timing for activity", sa1.getCurrentState());
+        assertTimeOfDate("Wrong time", 16, 20, 0, 0, sa1.getCurrentState().getDate());
+        assertStateContents(SCHEDULED, 2007, Calendar.MARCH, 05, "Move by 1 day", sa2.getCurrentState());
+        assertTimeOfDate("Wrong time", 9, 13, 0, 0, sa2.getCurrentState().getDate());
+    }
+
+    public void testActivityUpdateWithInvalidTime() throws Exception {
+        expectGetActivities();
+        activityState1 = createJSONFormatForRequestWithTime("scheduled", "2007-03-04", "Change timing for activity", "wrong");
+        activityState2 = createJSONFormatForRequestWithTime("scheduled", "2007-03-05", "Move by 1 day", "wrong");
+        entity.put(SA1_GRID, activityState1);
+        entity.put(SA2_GRID, activityState2);
+        request.setEntity(new JsonRepresentation(entity));
+        createResponseMessage(SA1_GRID, Status.SUCCESS_CREATED.getCode());
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
+        JSONObject responseText = new JSONObject(response.getEntity().getText());
+        assertEquals("Wrong Status code for first activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(SA1_GRID)).get("Status"));
+        assertEquals("Wrong response message", "Unparseable time", ((JSONObject)responseText.get(SA1_GRID)).get("Message"));
+        assertEquals("Wrong Status code for second activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(SA2_GRID)).get("Status"));
+        assertEquals("Wrong response message", "Unparseable time", ((JSONObject)responseText.get(SA2_GRID)).get("Message"));
     }
 
     private void assertStateContents(
@@ -302,6 +339,15 @@ public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUp
         object.put("reason", reason);
         object.put("state", state);
         object.put("date", date);
+        return object;
+    }
+
+    private JSONObject createJSONFormatForRequestWithTime(String state, String date, String reason, String time) throws Exception {
+        JSONObject object = new JSONObject();
+        object.put("reason", reason);
+        object.put("state", state);
+        object.put("date", date);
+        object.put("time", time);
         return object;
     }
 }

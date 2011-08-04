@@ -3,7 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
@@ -73,26 +75,39 @@ public class BatchUpdatesResource extends AbstractPscResource {
                             String state = activityState.get("state").toString();
                             String reason = activityState.get("reason").toString();
                             String dateString = activityState.get("date").toString();
-                            try {
-                                Date date = getApiDateFormat().parse(dateString);
-                                ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
-                                if (newMode == null) {
-                                    statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
-                                } else {
-                                    scheduledActivity.changeState(newMode.createStateInstance(date, reason));
-                                    String target = store(scheduledActivity);
-                                    statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
-                                    statusMessage.put("Location",getRequest().getRootRef()+target);
-                                }
-                                responseEntity.put(activityId, statusMessage);
-                            } catch (ParseException pe) {
+                            ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
+                            if (newMode == null) {
                                 responseEntity.put(activityId,
-                                   createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date "+dateString));
+                                   createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state));
+                            } else {
+                                try {
+                                    Date date = getApiDateFormat().parse(dateString);
+                                    ScheduledActivityState newState;
+                                    try {
+                                        if (!activityState.isNull("time")) {
+                                            String time = activityState.get("time").toString();
+                                            date = DateFormat.generateDateTime(date, time);
+                                            newState = newMode.createStateInstance(date, reason, true);
+                                        } else {
+                                            newState = newMode.createStateInstance(date, reason);
+                                        }
+                                        scheduledActivity.changeState(newState);
+                                        String target = store(scheduledActivity);
+                                        statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
+                                        statusMessage.put("Location",getRequest().getRootRef()+target);
+                                        responseEntity.put(activityId, statusMessage);
+                                    }  catch (ParseException pe) {
+                                        responseEntity.put(activityId,
+                                            createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable time"));
+                                    }
+                                } catch (ParseException pe) {
+                                    responseEntity.put(activityId,
+                                        createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date "+dateString));
+                                }
                             }
-
                         } else {
                             responseEntity.put(activityId,
-                                   createResponseStatusMessage(Status.CLIENT_ERROR_FORBIDDEN, "Does not have proper credentials to modify the activity "+ scheduledActivity.getGridId()));
+                                createResponseStatusMessage(Status.CLIENT_ERROR_FORBIDDEN, "Does not have proper credentials to modify the activity "+ scheduledActivity.getGridId()));
                         }
                     }
                 }

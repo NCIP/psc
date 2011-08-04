@@ -64,6 +64,22 @@ describe "/subjects/{subject-identifier}/schedules/activities" do
       response.json[@scheduled_activities[1].gridId]["Status"].should == 400
       response.json[@scheduled_activities[0].gridId]["Location"].should =~ %r{api/v1/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{@scheduled_activities[0].gridId}$}
     end
+    
+    it "updates the scheduled activity states wiht time for batch activities" do
+      @JSONentity = "{#{@scheduled_activities[0].gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-28, time : '9:20'},
+                      #{@scheduled_activities[1].gridId} : { state : canceled, reason : Just canceled , date : 2009-12-29, time : '17:00' }}"
+      post "/subjects/ID001/schedules/activities", @JSONentity,
+        :as => :erin , 'Content-Type' => 'application/json'
+      response.status_code.should == 207
+      response.json[@scheduled_activities[0].gridId]["Status"].should == 201
+      response.json[@scheduled_activities[1].gridId]["Status"].should == 201
+      sa1 = application_context['scheduledActivityDao'].getByGridId(@scheduled_activities[0].gridId)
+      sa1.currentState.withTime.should == true
+      sa1.currentState.date.to_s.should == "2009-12-28 09:20:00.0"
+      sa2 = application_context['scheduledActivityDao'].getByGridId(@scheduled_activities[1].gridId)
+      sa2.currentState.withTime.should == true
+      sa2.currentState.date.to_s.should == "2009-12-29 17:00:00.0"
+    end
 
   end
 
