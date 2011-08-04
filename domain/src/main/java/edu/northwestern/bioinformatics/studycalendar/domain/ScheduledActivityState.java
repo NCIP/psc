@@ -10,8 +10,6 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -31,17 +29,32 @@ public class ScheduledActivityState extends AbstractMutableDomainObject implemen
     private ScheduledActivityMode mode;
     private String reason;
     private Date date;
+    private Boolean withTime;
 
     protected ScheduledActivityState() { }
 
     public ScheduledActivityState(ScheduledActivityMode mode) {
         this.mode = mode;
+        this.withTime = false;
+    }
+
+    public ScheduledActivityState(ScheduledActivityMode mode, Boolean withTime) {
+        this.mode = mode;
+        this.withTime = withTime;
     }
 
     public ScheduledActivityState(ScheduledActivityMode mode, Date date, String reason) {
         this.reason = reason;
         this.date = date;
         this.mode = mode;
+        this.withTime = false;
+    }
+
+    public ScheduledActivityState(ScheduledActivityMode mode, Date date, String reason, Boolean withTime) {
+        this.reason = reason;
+        this.date = date;
+        this.mode = mode;
+        this.withTime = withTime;
     }
 
     ////// LOGIC
@@ -89,13 +102,21 @@ public class ScheduledActivityState extends AbstractMutableDomainObject implemen
     }
 
     @Column(name = "actual_date")
-    @Temporal(TemporalType.DATE)
+//    @Temporal(TemporalType.DATE)
     public Date getDate() {
         return date;
     }
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Boolean getWithTime() {
+        return withTime;
+    }
+
+    public void setWithTime(Boolean withTime) {
+        this.withTime = withTime;
     }
 
     ////// OBJECT METHODS

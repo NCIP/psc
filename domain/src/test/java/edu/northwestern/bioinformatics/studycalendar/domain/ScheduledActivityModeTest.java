@@ -7,6 +7,7 @@ import java.util.Calendar;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertTimeOfDate;
 
 public class ScheduledActivityModeTest extends TestCase {
     public void testGetUnscheduleMode() throws Exception {
@@ -65,5 +66,22 @@ public class ScheduledActivityModeTest extends TestCase {
         ScheduledActivityState created =
             NOT_APPLICABLE.createStateInstance(2009, Calendar.APRIL, 6, "Fancier");
         assertEquals("Wrong type", NOT_APPLICABLE, created.getMode());
+    }
+
+    public void testCreateStateWithDateAndReasonDefaultWithTimeFalse() throws Exception {
+        ScheduledActivityState created =
+            CONDITIONAL.createStateInstance(DateTools.createDate(2009, Calendar.APRIL, 6), "Fancy");
+        assertEquals("Wrong withDate", (Object) false, created.getWithTime());
+    }
+
+    public void testCreateStateWithDateAndReasonAndTime() throws Exception {
+        ScheduledActivityState created =
+            CONDITIONAL.createStateInstance(DateTools.createDate(2009, Calendar.APRIL, 6, 9, 15, 0), "Fancy", true);
+
+        assertEquals("Wrong mode", CONDITIONAL, created.getMode());
+        assertDayOfDate("Wrong date", 2009, Calendar.APRIL, 6, created.getDate());
+        assertTimeOfDate("Wrong time", 9, 15, 0, 0, created.getDate());
+        assertEquals("Wrong reason", "Fancy", created.getReason());
+        assertEquals("Wrong withDate", (Object) true, created.getWithTime());
     }
 }

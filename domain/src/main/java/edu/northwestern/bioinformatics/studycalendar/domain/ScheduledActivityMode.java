@@ -56,6 +56,15 @@ public class ScheduledActivityMode extends AbstractControlledVocabularyObject {
         ScheduledActivityState state = createStateInstance();
         state.setDate(date);
         state.setReason(reason);
+        state.setWithTime(false);
+        return state;
+    }
+
+    public ScheduledActivityState createStateInstance(Date date, String reason, Boolean withTime) {
+        ScheduledActivityState state = createStateInstance();
+        state.setDate(date);
+        state.setReason(reason);
+        state.setWithTime(withTime);
         return state;
     }
 

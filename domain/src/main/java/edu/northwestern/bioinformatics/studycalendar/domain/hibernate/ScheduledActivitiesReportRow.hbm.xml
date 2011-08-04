@@ -13,6 +13,7 @@
                 s_actv.current_state_date,
                 s_actv.current_state_reason,
                 s_actv.current_state_mode_id,
+                s_actv.current_state_with_time,
                 s_actv.ideal_date,
                 s_actv.details,
                 s_actv.activity_id,
@@ -59,6 +60,7 @@
                 <column name="current_state_mode_id"/>
                 <column name="current_state_reason"/>
                 <column name="current_state_date"/>
+                <column name="current_state_with_time"/>
             </property>
             <property name="idealDate" column="ideal_date"/>
             <property name="details" column="details"/>

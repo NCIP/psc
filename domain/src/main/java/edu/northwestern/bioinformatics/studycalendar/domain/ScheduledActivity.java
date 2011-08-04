@@ -74,6 +74,10 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     }
 
     public int compareTo(ScheduledActivity other) {
+        if (getCurrentState() != null && other.getCurrentState() != null) {
+            int timeDiff = compareTimeTo(other);
+            if (timeDiff != 0) return timeDiff;
+        }
         if (getPlannedActivity() != null && other.getPlannedActivity() != null) {
             Study thisStudy = getStudy(this);
             Study otherStudy = getStudy(other);
@@ -106,6 +110,17 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
 
         return ComparisonTools.nullSafeCompare(
             getId(), other.getId());
+    }
+
+    private int compareTimeTo(ScheduledActivity other) {
+        if (getCurrentState().getWithTime() && other.getCurrentState().getWithTime()) {
+           return getCurrentState().getDate().compareTo(other.getCurrentState().getDate());
+        } else if (getCurrentState().getWithTime()) {
+           return 1;
+        } else if (other.getCurrentState().getWithTime()) {
+           return -1;
+        }
+        return 0;
     }
 
     // this is not something I want to have as part of the public API for this class,
@@ -239,7 +254,8 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     @Columns(columns = {
         @Column(name = "current_state_mode_id"),
         @Column(name = "current_state_reason"),
-        @Column(name = "current_state_date")
+        @Column(name = "current_state_date"),
+        @Column(name = "current_state_with_time")
     })
     public ScheduledActivityState getCurrentState() {
         return currentState;

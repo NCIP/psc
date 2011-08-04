@@ -85,6 +85,7 @@
         mode_id="1"
         actual_date="2006-10-22"
         reason="Initial input"
+        with_time="0"
         />
     <SCHEDULED_ACTIVITY_STATES
         id="-12"
@@ -93,6 +94,7 @@
         mode_id="3"
         actual_date="2006-10-22"
         reason="Called to cancel"
+        with_time="0"
         />
     <SCHEDULED_ACTIVITY_LABELS
         label="soc test"

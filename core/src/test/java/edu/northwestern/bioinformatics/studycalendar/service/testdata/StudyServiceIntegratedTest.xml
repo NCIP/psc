@@ -61,7 +61,7 @@
     <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
     <SCHEDULED_ACTIVITIES id="-800" scheduled_study_segment_id="-700" planned_activity_id="-2004" activity_id="-1002" source_amendment_id="-220" ideal_date="2010-01-10" current_state_mode_id="1" current_state_date="2010-01-15" current_state_reason="Rescheduled"/>
 
-    <SCHEDULED_ACTIVITY_STATES id="-900" scheduled_activity_id="-800" mode_id="3" actual_date="2010-01-10" list_index="0"/>
+    <SCHEDULED_ACTIVITY_STATES id="-900" scheduled_activity_id="-800" mode_id="3" actual_date="2010-01-10" with_time="0" list_index="0"/>
 
     <CSM_USER user_id="-45" login_name="alice" first_name="Alice" last_name="Wunderland"/>
 

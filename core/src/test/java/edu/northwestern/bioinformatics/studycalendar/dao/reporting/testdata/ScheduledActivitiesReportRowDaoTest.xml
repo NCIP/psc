@@ -82,6 +82,7 @@
         planned_activity_id="-6"
         current_state_mode_id="1"
         current_state_date="2006-10-30"
+        current_state_with_time="0"
         ideal_date="2006-11-02"
         activity_id="-101"
         details="Nice Details!!"
@@ -94,6 +95,7 @@
         planned_activity_id="-6"
         current_state_mode_id="3"
         current_state_date="2006-11-10"
+        current_state_with_time="0"
         ideal_date="2006-11-01"
         activity_id="-102"
         details="Nice Details!!"
@@ -107,6 +109,7 @@
         planned_activity_id="-6"
         current_state_mode_id="4"
         current_state_date="2007-10-20"
+        current_state_with_time="0"
         ideal_date="2007-11-20"
         activity_id="-101"
         details="Some Details!!"
@@ -119,6 +122,7 @@
         planned_activity_id="-6"
         current_state_mode_id="4"
         current_state_date="2007-10-25"
+        current_state_with_time="0"
         ideal_date="2007-11-25"
         activity_id="-102"
         details="Some Other Details!!"
@@ -152,6 +156,7 @@
         mode_id="1"
         actual_date="2006-10-22"
         reason="Initial input"
+        with_time="0"
         />
     <SCHEDULED_ACTIVITY_STATES
         id="-12"
@@ -160,6 +165,7 @@
         mode_id="3"
         actual_date="2006-10-22"
         reason="Called to cancel"
+        with_time="0"
         />
     <SCHEDULED_ACTIVITY_STATES
         id="-13"
@@ -168,6 +174,7 @@
         mode_id="1"
         actual_date="2006-10-25"
         reason="Called to reschedule"
+        with_time="0"
         />
 
     <SCHEDULED_ACTIVITY_STATES
@@ -177,6 +184,7 @@
         mode_id="1"
         actual_date="2006-10-18"
         reason="Called to reschedule"
+        with_time="0"
         />
 
     <CSM_USER user_id="-200" login_name="fred" first_name="Fred" last_name="Jones"/>

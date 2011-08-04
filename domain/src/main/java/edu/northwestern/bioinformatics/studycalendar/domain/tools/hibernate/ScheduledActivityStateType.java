@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -31,11 +32,12 @@ public class ScheduledActivityStateType implements CompositeUserType {
     private static Logger log = HibernateTypeUtils.getLog(ScheduledActivityStateType.class);
     private static final Type MODE_TYPE = Hibernate.custom(ControlledVocabularyObjectType.class, new String[] { "enumClass" }, new String[] { ScheduledActivityMode.class.getName() });
 
-    private static final String[] PROPERTY_NAMES = new String[] { "mode", "reason", "date" };
-    private static final Type[] PROPERTY_TYPES = new Type[] { MODE_TYPE, Hibernate.STRING, Hibernate.TIMESTAMP };
+    private static final String[] PROPERTY_NAMES = new String[] { "mode", "reason", "date", "withTime" };
+    private static final Type[] PROPERTY_TYPES = new Type[] { MODE_TYPE, Hibernate.STRING, Hibernate.TIMESTAMP, Hibernate.BINARY };
     private static final int MODE_INDEX   = 0;
     private static final int REASON_INDEX = 1;
     private static final int DATE_INDEX   = 2;
+    private static final int WITH_TIME_INDEX   = 3;
 
     public String[] getPropertyNames() { return PROPERTY_NAMES; }
 
@@ -92,26 +94,34 @@ public class ScheduledActivityStateType implements CompositeUserType {
         if (loaded == null) return null;
 
         loaded.setReason(rs.getString(names[REASON_INDEX]));
-        loaded.setDate(rs.getDate(names[DATE_INDEX]));
+        loaded.setDate(rs.getTimestamp(names[DATE_INDEX]));
+        loaded.setWithTime(rs.getBoolean(names[WITH_TIME_INDEX]));
 
         return loaded;
     }
 
     public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
         ScheduledActivityState toSet = (ScheduledActivityState) value;
-        java.sql.Date date = null;
+        Timestamp date = null;
         String reason = null;
         ScheduledActivityMode mode = null;
+        Boolean withTime = false;
         if (toSet != null) {
             mode = toSet.getMode();
             reason = toSet.getReason();
 
-                Date dateToSet = toSet.getDate();
-                date = dateToSet == null ? null : new java.sql.Date(dateToSet.getTime());
+            Date dateToSet = toSet.getDate();
+            date = dateToSet == null ? null : new Timestamp(dateToSet.getTime());
+            if (toSet.getWithTime()) {
+                withTime = true;
+            }
         }
 
         HibernateTypeUtils.logBind(log, index + DATE_INDEX, date);
-        st.setDate(index + DATE_INDEX, date);
+        st.setTimestamp(index + DATE_INDEX, date);
+
+        HibernateTypeUtils.logBind(log, index + WITH_TIME_INDEX, withTime);
+        st.setBoolean(index + WITH_TIME_INDEX, withTime);
 
         HibernateTypeUtils.logBind(log, index + REASON_INDEX, reason);
         st.setString(index + REASON_INDEX, reason);

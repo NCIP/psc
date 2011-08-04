@@ -335,4 +335,18 @@ public class ScheduledActivityTest extends TestCase {
         s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(p);
         return pa;
     }
+    
+    public void testNaturalOrderConsidersWithTimeWhenOneSaHasTime() throws Exception {
+        sa0.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17,14, 20, 30), null, true));
+        sa1.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17), null));
+        assertPositive(sa0.compareTo(sa1));
+        assertNegative(sa1.compareTo(sa0));
+    }
+
+    public void testNaturalOrderConsidersWithTimeWhenBothActivityHasTime() throws Exception {
+        sa0.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17,14, 20, 30), null, true));
+        sa1.changeState(ScheduledActivityMode.SCHEDULED.createStateInstance(DateTools.createDate(2008, Calendar.MARCH, 17,16, 25, 12), null, true));
+        assertNegative(sa0.compareTo(sa1));
+        assertPositive(sa1.compareTo(sa0));
+    }
 }
