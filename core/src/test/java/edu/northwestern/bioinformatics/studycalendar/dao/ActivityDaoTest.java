@@ -109,12 +109,12 @@ public class ActivityDaoTest extends DaoTestCase {
     }
 
     public void testGetActivitiesBySearchTextWithType() throws Exception {
-        List<Activity> actual = dao.getActivitiesBySearchText("A", activityTypeDao.getByName("PROCEDURE"), null);
+        List<Activity> actual = dao.getActivitiesBySearchText("A", activityTypeDao.getByName("PROCEDURE"), null, null, null, null, null);
         assertEquals("Wrong activities: " + actual, 2, actual.size());
     }
 
     public void testGetActivitiesBySearchTextWithSource() throws Exception {
-        List<Activity> actual = dao.getActivitiesBySearchText("A", null, icd9);
+        List<Activity> actual = dao.getActivitiesBySearchText("A", null, icd9, null, null, null, null);
         assertEquals("Wrong activities: " + actual, 3, actual.size());
     }
 
@@ -131,7 +131,7 @@ public class ActivityDaoTest extends DaoTestCase {
     }
 
     public void testGetActivitiesBySearchTextWithNoText() throws Exception {
-        List<Activity> actual = dao.getActivitiesBySearchText(null, null, icd11);
+        List<Activity> actual = dao.getActivitiesBySearchText(null, null, icd11, null, null, null, null);
         assertEquals("Wrong activities: " + actual, 1, actual.size());
         assertEquals("Wrong activity", -99, (int) actual.get(0).getId());
     }
