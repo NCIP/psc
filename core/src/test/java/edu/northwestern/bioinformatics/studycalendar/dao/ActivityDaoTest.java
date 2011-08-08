@@ -145,4 +145,10 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong order", "Administer Drug Z", actual.get(4).getName());
     }
 
+    public void testGetAllWithLimit() {
+        List<Activity> actual = dao.getAllWithLimit(2);
+        assertEquals("Wrong size", 2, actual.size());
+        assertEquals("Wrong order", -96, (int) actual.get(0).getId());
+        assertEquals("Wrong order", -98, (int) actual.get(1).getId());
+    }
 }
