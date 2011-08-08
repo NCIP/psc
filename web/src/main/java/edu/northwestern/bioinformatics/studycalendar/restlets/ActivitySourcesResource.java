@@ -87,19 +87,19 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     @Override
     public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            String sourceName = QueryParameters.SOURCE.extractFrom(getRequest());
-            Source source = null;
-            if (sourceName != null) {
-                source = sourceDao.getByName(sourceName);
-            } else {
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format("Provided source is null"));
-            }
-            List<Activity> activities = new ArrayList<Activity>(extractActivities(sourceName));
             Integer limit = extractLimit();
-            Integer offset = extractOffset(activities.size(), limit);
-            List<Activity> toRender = buildRenderableActivities(activities, limit, offset);
+            int total = activityDao.getCount();
+            Integer offset = extractOffset(total, limit);
+            List<Activity> current;
+            if (limit != null && offset != null) {
+                current = activityDao.getAllWithLimitAndOffset(limit, offset);
+            } else if (limit != null) {
+                current = activityDao.getAllWithLimit(limit);
+            } else {
+                current = activityDao.getAll();
+            }
             List<ActivityType> types = activityTypeDao.getAll();
-            return new ActivitySourcesJsonRepresentation(toRender, activities.size(), offset, limit, types);
+            return new ActivitySourcesJsonRepresentation(current, total, offset, limit, types);
         } else {
             return super.get(variant);
         }
@@ -145,17 +145,6 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
             throw new ResourceException(
                 CLIENT_ERROR_BAD_REQUEST, "Offset must be a nonnegative integer.");
         }
-    }
-
-
-    private List<Activity> buildRenderableActivities(List<Activity> activities, Integer limit, Integer offset) {
-        List<Activity> toWrap;
-        if (limit == null) {
-            toWrap = activities;
-        } else {
-            toWrap = activities.subList(offset, Math.min(offset + limit, activities.size()));
-        }
-        return toWrap;
     }
 
     @Override
