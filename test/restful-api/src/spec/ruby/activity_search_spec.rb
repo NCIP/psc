@@ -1,3 +1,10 @@
+START = [
+  "Bone Marrow Aspirate",
+  "Bone Marrow Biopsy (bilateral)",
+  "Bone Marrow Biopsy (unilateral)",
+  "Bone Scan", "Breast exam"
+]
+  
 describe "/activities" do
   describe "GET" do
     it "returns all sources without parameters" do
@@ -74,19 +81,17 @@ describe "/activities" do
       response.status_code.should == 200
       response_activity_count.should == 5
     end
+    
+    it "offsets the activity list with offset=" do
+      get '/activities?offset=2', :as => :alice
+      response.status_code.should == 200
+      activity_names.should_not include( START[0] )
+      activity_names.should_not include( START[1] )
+    end
   end
 end
 
 describe "/activities.json" do
-  before(:all) do
-    @start = [
-      "Bone Marrow Aspirate",
-      "Bone Marrow Biopsy (bilateral)",
-      "Bone Marrow Biopsy (unilateral)",
-      "Bone Scan", "Breast exam"
-    ]
-  end
-
   def activity_names
     response.json['activities'].collect{|a| a['activity_name']}
   end
@@ -106,27 +111,26 @@ describe "/activities.json" do
       get '/activities.json?limit=5', :as => :alice
       response.status_code.should == 200
       response_activity_count.should == 5
-      activity_names.sort.should == @start
+      activity_names.sort.should == START
     end
 
     it "offsets the activity list with offset=" do
       get '/activities.json?offset=2', :as => :alice
       response.status_code.should == 200
-      response_activity_count.should == 1040
-      activity_names.should_not include( @start[0] )
-      activity_names.should_not include( @start[1] )
+      activity_names.should_not include( START[0] )
+      activity_names.should_not include( START[1] )
     end
 
     it "limits and offsets the activity list with limit= & offset=" do
       get '/activities.json?limit=50&offset=2', :as => :alice
       response.status_code.should == 200
       response_activity_count.should == 50
-      activity_names.should_not include( @start[0] )
-      activity_names.should_not include( @start[1] )
+      activity_names.should_not include( START[0] )
+      activity_names.should_not include( START[1] )
     end
 
     it "searches activity codes from q=" do
-      get '/activities.json?q=788'
+      get '/activities.json?q=788', :as => :alice
       response.status_code.should == 200
       response_activity_count.should == 1
       activity_names.first.should == "T3"
