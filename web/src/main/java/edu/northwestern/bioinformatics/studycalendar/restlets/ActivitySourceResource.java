@@ -30,7 +30,6 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     private int total;
     private Integer offset;
     private Integer limit;
-    private ActivityDao activityDao;
 
     public ActivitySourceResource() {
     }
