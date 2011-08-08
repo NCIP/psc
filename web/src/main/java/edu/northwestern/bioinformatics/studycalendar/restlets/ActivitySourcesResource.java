@@ -51,7 +51,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
 
     @Override
     public Representation get(Variant variant) throws ResourceException {
-        ActivitySearchParameters params = new ActivitySearchParameters(getRequest(), activityDao, activityTypeDao);
+        ActivitySearchParameters params = new ActivitySearchParameters(getRequest(), activityDao.getCount(), activityTypeDao);
         List<ActivityType> types = activityTypeDao.getAll();
 
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {

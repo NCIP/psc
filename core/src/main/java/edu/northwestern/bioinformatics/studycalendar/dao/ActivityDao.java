@@ -179,6 +179,15 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
                     .list());
     }
 
+    public int getCountBySource(String source) {
+        return (Integer) CollectionUtils.firstElement(
+                getSession().createCriteria(Activity.class)
+                    .setProjection( Projections.projectionList()
+                    .add(Projections.rowCount()))
+                    .add(Restrictions.eq("source", source))
+                    .list());
+    }
+
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getAllWithLimitAndOffset(int limit, int offset) {
         return  defaultCriteria()
