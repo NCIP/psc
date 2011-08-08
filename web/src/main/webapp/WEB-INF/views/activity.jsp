@@ -351,12 +351,13 @@
                 $.ajax({
                     url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
                     type: 'DELETE',
-                    success : function() { sendRequest () }
+                    success : function() { sendRequest() }
                 });
                 return true;
             }
 
-            function sendRequest (params) {
+            function sendRequest() {
+                var params = dataTableAuxConfig.generateRequest(dataTable.getState(), dataTable);
                 clearErrorMessage()
                 dataSource.sendRequest(params, {
                     success:
@@ -517,6 +518,7 @@
                     $('#sources').val(sourceName);
                 }
                 dataTableAuxConfig.paginator.set('recordOffset', 0);
+                dataTable.initializeTable();
                 clearErrorMessage();
                 enableExportOptions();
                 if (sourceName != "") {
