@@ -184,3 +184,51 @@ describe "/activities/{activity-source-name}" do
     end
   end
 end
+
+describe "/activities/{activity-source-name}.json" do
+  describe "GET" do
+    def activity_names
+      response.json['activities'].collect{|a| a['activity_name']}
+    end
+
+    def response_activity_count
+      activity_names.count
+    end
+
+    it "obeys type= and q= simultaneously" do
+      get '/activities.json?q=bone&type=Lab+Test', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 3
+      activity_names.should include("Bone Marrow Biopsy")
+      activity_names.should include("Bone Marrow Cultures")
+      activity_names.should include("serum bone alkaline phosphatase")
+    end
+
+    it "searches single source activities with activity type=" do
+      get'/activities/Northwestern%20University.json?type=Intervention', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 246
+      response.json['activities'].collect{|a| a['type']}.uniq.should have(1).kind
+    end
+
+    it "searches single source activities with q= and type=" do
+      get'/activities/Northwestern%20University.json?q=HLA&type=Lab+Test',:as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 3
+      response.json['activities'].collect{|a| a['type']}.uniq.should have(1).kind
+    end
+
+    it "searches single source activities and limits results with limit=" do
+      get'/activities/Northwestern%20University.json?limit=10', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 10
+    end
+
+    it "offsets the activity list with offset=" do
+      get '/activities/Northwestern%20University.json?offset=2', :as => :alice
+      response.status_code.should == 200
+      activity_names.should_not include( START[0] )
+      activity_names.should_not include( START[1] )
+    end
+  end
+end

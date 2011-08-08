@@ -4,10 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ActivitySourcesJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
-import org.restlet.data.Method;
 import org.restlet.Request;
+import org.restlet.data.Method;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -26,6 +28,12 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     private SourceService sourceService;
     private ActivityService activityService;
     private ActivityTypeDao activityTypeDao;
+    private int total;
+    private Integer offset;
+    private Integer limit;
+
+    public ActivitySourceResource() {
+    }
 
     @Override
     public void doInit() {
@@ -52,7 +60,9 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         int total = source.getActivities().size();
         Integer offset = extractOffset(total);
         if (q == null && typeId == null && typeName == null && limit== null && offset == null) return source;
-
+        setLimit(limit);
+        setTotal(total);
+        setOffset(offset);
         ActivityType type = null;
         if (typeName != null) {
             type = activityTypeDao.getByName(typeName);
@@ -129,6 +139,38 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         }
     }
 
+    @Override
+    protected Representation createJsonRepresentation(Source object) {
+        return new ActivitySourcesJsonRepresentation(object.getActivities(), getTotal(), getOffset(), getLimit(), activityTypeDao.getAll());
+    }
+
+    // Getters
+    public int getTotal() {
+        return total;
+    }
+
+    public Integer getOffset() {
+        return offset;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    // Setters
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    // Configuration
     @Required
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
@@ -148,4 +190,5 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
     }
+
 }
