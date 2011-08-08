@@ -191,10 +191,8 @@ end
 describe "/activities/{activity-source-name}.json" do
   describe "GET" do
     def self.url
-      '/activities/Northwestern%20University'
+      '/activities/Northwestern%20University.json'
     end
     include ActivitySearch::Examples
   end
 end
-
-
