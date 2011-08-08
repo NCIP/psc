@@ -155,4 +155,11 @@ public class ActivityDaoTest extends DaoTestCase {
     public void testCount() {
          assertEquals("Wrong size", 5, (int) dao.getCount());
     }
+
+    public void testGetAllWithLimitAndOffset() {
+        List<Activity> actual = dao.getAllWithLimitAndOffset(2, 1);
+        assertEquals("Wrong size", 2, actual.size());
+        assertEquals("Wrong order", -98, (int) actual.get(0).getId());
+        assertEquals("Wrong order", -100, (int) actual.get(1).getId());
+    }
 }
