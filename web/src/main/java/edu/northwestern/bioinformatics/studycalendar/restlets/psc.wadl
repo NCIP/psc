@@ -1203,6 +1203,16 @@
                             If specified, will offset the activities returned based on the value given. Activities are sorted based on type name and activity name.
                         </doc>
                     </param>
+                    <param style="query" name="sort" type="xsd:string">
+                        <doc>
+                            If specified, will sort the activities based activity name if 'activity_name' is specified or activity type if 'activity_type' is specified.
+                        </doc>
+                    </param>
+                    <param style="query" name="order" type="xsd:string">
+                        <doc>
+                            If specified, will sort the activities either in ascending if 'asc' is specified or descending order if 'desc' is specified.
+                        </doc>
+                    </param>
                 </request>
                 <response>
                     <representation href="#activity-source-list-xml"/>
@@ -1278,6 +1288,16 @@
                         <param style="query" name="offset" type="xsd:integer">
                             <doc>
                                 If specified, will offset the activities returned based on the value given. Activities are sorted based on type name and activity name.
+                            </doc>
+                        </param>
+                        <param style="query" name="sort" type="xsd:string">
+                            <doc>
+                                If specified, will sort the activities based activity name if 'activity_name' is specified or activity type if 'activity_type' is specified.
+                            </doc>
+                        </param>
+                        <param style="query" name="order" type="xsd:string">
+                            <doc>
+                                If specified, will sort the activities either in ascending if 'asc' is specified or descending order if 'desc' is specified.
                             </doc>
                         </param>
                     </request>
