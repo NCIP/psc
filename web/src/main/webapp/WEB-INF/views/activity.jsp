@@ -210,13 +210,17 @@
             var dataTableAuxConfig = {
                 generateRequest: function (oState, oSelf) {
                     oState = oState || { pagination: null, sortedBy: null };
-                    var sort = (oState.sortedBy) ? oState.sortedBy.key : "myDefaultColumnKey";
+                    var sort = (oState.sortedBy) ? oState.sortedBy.key : null;
                     var dir = (oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC) ? "desc" : "asc";
                     var offset = (oState.pagination) ? oState.pagination.recordOffset : 0;
-                    var limit = (oState.pagination) ? oState.pagination.rowsPerPage : 100;
+                    var limit = (oState.pagination) ? oState.pagination.rowsPerPage : ACTIVITIES_PER_PAGE;
 
                     // Build custom request
-                    return  "sort=" + sort +
+                    var parms = "";
+                    if (sort != null) {
+                        parms += sort;
+                    }
+                    return  parms +
                             "&order=" + dir +
                             "&limit=" + limit +
                             "&offset=" + offset;
