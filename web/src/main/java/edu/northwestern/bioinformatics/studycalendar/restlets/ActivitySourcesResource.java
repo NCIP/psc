@@ -51,7 +51,9 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         String q = QueryParameters.Q.extractFrom(getRequest());
         String typeName = QueryParameters.TYPE.extractFrom(getRequest());
         String typeId = QueryParameters.TYPE_ID.extractFrom(getRequest());
-        if (q == null && typeId == null && typeName == null) {
+        Integer limit = extractLimit();
+        Integer offset = null;
+        if (q == null && typeId == null && typeName == null && limit == null && offset == null) {
             return sourceDao.getAll();
         }
         ActivityType type = null;
@@ -67,7 +69,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "type-id must be an integer");
             }
         }
-        return activityService.getFilteredSources(q, type, null);
+        return activityService.getFilteredSources(q, type, null, limit, null);
     }
 
     @Override
