@@ -170,9 +170,26 @@
         }
 
         (function($){
+            var PSC = { activities: {} };
+            PSC.activities.XHRDataSource = function(oLiveDataCallback, oConfigs) {
+                this.liveDataCallback = oLiveDataCallback || function() {return ""};
+                PSC.activities.XHRDataSource.superclass.constructor.call(this, oLiveDataCallback.call(), oConfigs);
+            };
+            YAHOO.lang.extend(PSC.activities.XHRDataSource, YAHOO.util.XHRDataSource);
+            PSC.activities.XHRDataSource.prototype.makeConnection = function(oRequest, oCallback, oCaller) {
+                this.liveData = this.liveDataCallback.call();
+                PSC.activities.XHRDataSource.superclass.makeConnection.call(this, oRequest, oCallback, oCaller);
+            }
+
             var ACTIVITIES_PER_PAGE = 100;
-            var URL = psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE)
-            var dataSource = new YAHOO.util.XHRDataSource(URL);
+            var DEFAULT = psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE);
+            var dataSource = new PSC.activities.XHRDataSource(function() {
+                if ($('#sources').val() != "" && $('#sources').val() != "selectAll") {
+                    var source = $('#sources').val();
+                    var url = psc.tools.Uris.relative("/api/v1/activities/" + source + ".json?limit=" + ACTIVITIES_PER_PAGE);
+                }
+                return url || DEFAULT;
+            });
             dataSource.responseSchema = {
                 resultsList: "activities",
                 fields: ['activity_name', 'activity_type', 'activity_code', 'activity_description', 'controls', 'activity_id', 'deletable' ],
@@ -184,7 +201,7 @@
 
             var dataTableAuxConfig = {
                 generateRequest: function (oState, oSelf) {
-                    var params = "&offset=" + oState.pagination.recordOffset + "&source=" + jQuery('#sources').val();
+                    var params = "&offset=" + oState.pagination.recordOffset;
 
                     return params;
                 },
@@ -262,7 +279,7 @@
                     type: 'PUT',
                     contentType: 'text/xml',
                     data: element,
-                    success : function() { sendRequest ("&source="+activitySource) },
+                    success : function() { sendRequest() },
                     error: function(response) {
                         displayErrorOnResponse(response)
                     }
@@ -312,7 +329,7 @@
                 $.ajax({
                     url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
                     type: 'DELETE',
-                    success : function() { sendRequest ("&source="+activitySource) }
+                    success : function() { sendRequest () }
                 });
                 return true;
             }
@@ -497,15 +514,9 @@
                 dataTableAuxConfig.paginator.set('recordOffset', 0);
                 clearErrorMessage();
                 enableExportOptions();
-                dataSource.sendRequest("&source=" + sourceName, {
-                    success:
-                        dataTable.onDataReturnInitializeTable,
-                    error: function(request, response, payload){
-                        displayErrorOnResponse(response)
-                    },
-                    scope: dataTable,
-                    argument: dataTable.getState()
-                });
+                if (sourceName != "") {
+                    sendRequest();
+                }
                 return false;
             }
 
