@@ -1193,9 +1193,46 @@
                             <html:strong>Deprecated.  Will be removed in PSC 2.6 or later.</html:strong>
                         </doc>
                     </param>
+                    <param style="query" name="limit" type="xsd:integer">
+                        <doc>
+                            If specified, only the that number of activities will be returned.
+                        </doc>
+                    </param>
+                    <param style="query" name="offset" type="xsd:integer">
+                        <doc>
+                            If specified, will offset the activities returned based on the value given. Activities are sorted based on type name and activity name.
+                        </doc>
+                    </param>
                 </request>
                 <response>
                     <representation href="#activity-source-list-xml"/>
+                    <representation mediaType="application/json"/>
+                    <doc>
+<html:pre class="example">
+{
+   "total":250,
+   "offset":0,
+   "limit":1,
+   "activities":[
+      {
+         "activity_id":"8213",
+         "activity_name":"Contact Patient (First Call)",
+         "activity_type":"Communication",
+         "activity_code":"Contact Patient (First Call)",
+         "activity_description":"Contact Patient (First Call)",
+         "deletable":"false"
+      }
+
+   ],
+   "activity_types":[
+      {
+         "activity_type_id":"13",
+         "activity_type_name":"Communication"
+      }
+   ]
+}
+</html:pre>
+                    </doc>
                 </response>
             </method>
 
@@ -1233,9 +1270,46 @@
                                 <html:strong>Deprecated.  Will be removed in PSC 2.6 or later.</html:strong>
                             </doc>
                         </param>
+                        <param style="query" name="limit" type="xsd:integer">
+                            <doc>
+                                If specified, only the that number of activities will be returned.
+                            </doc>
+                        </param>
+                        <param style="query" name="offset" type="xsd:integer">
+                            <doc>
+                                If specified, will offset the activities returned based on the value given. Activities are sorted based on type name and activity name.
+                            </doc>
+                        </param>
                     </request>
                     <response>
                         <representation href="#activity-source-xml"/>
+                        <representation mediaType="application/json"/>
+                        <doc>
+<html:pre class="example">
+{
+   "total":250,
+   "offset":0,
+   "limit":1,
+   "activities":[
+      {
+         "activity_id":"8213",
+         "activity_name":"Contact Patient (First Call)",
+         "activity_type":"Communication",
+         "activity_code":"Contact Patient (First Call)",
+         "activity_description":"Contact Patient (First Call)",
+         "deletable":"false"
+      }
+
+   ],
+   "activity_types":[
+      {
+         "activity_type_id":"13",
+         "activity_type_name":"Communication"
+      }
+   ]
+}
+</html:pre>
+                        </doc>
                     </response>
                 </method>
                 <method name="PUT">
