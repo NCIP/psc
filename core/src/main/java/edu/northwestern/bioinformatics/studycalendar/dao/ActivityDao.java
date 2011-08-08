@@ -110,20 +110,41 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source) {
         return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Criteria criteria = session.createCriteria(Activity.class);
-                if (searchText != null) {
-                    String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
-                    criteria.add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
-                }
-                if (type != null) {
-                    criteria.add(Restrictions.eq("type", type));
-                }
-                if (source != null) {
-                    criteria.add(Restrictions.eq("source", source));
-                }
+                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, null, null);
                 return criteria.list();
             }
         });
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source, final Integer limit, final Integer offset) {
+        return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, limit, offset);
+                return criteria.list();
+            }
+        });
+    }
+
+    protected Criteria getActivitiesBySearchTextCriteria(final String searchText, final ActivityType type, final Source source, Integer limit, Integer offset) {
+        Criteria criteria = defaultCriteria();
+        if (searchText != null) {
+            String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
+            criteria.add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
+        }
+        if (type != null) {
+            criteria.add(Restrictions.eq("type", type));
+        }
+        if (source != null) {
+            criteria.add(Restrictions.eq("source", source));
+        }
+        if (limit != null) {
+            criteria.setMaxResults(limit);
+        }
+        if (offset != null) {
+            criteria.setFirstResult(offset);
+        }
+        return criteria;
     }
 
     /**
