@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.nwu.bioinformatics.commons.StringUtils;
@@ -15,12 +14,12 @@ import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 public class ActivitySearchParameters implements Pagination, Sortable {
     Request request;
-    private ActivityDao activityDao;
+    private Integer totalActivities;
     private ActivityTypeDao activityTypeDao;
 
-    public ActivitySearchParameters(Request request, ActivityDao activityDao, ActivityTypeDao activityTypeDao) {
+    public ActivitySearchParameters(Request request, Integer totalActivities, ActivityTypeDao activityTypeDao) {
         this.request = request;
-        this.activityDao = activityDao;
+        this.totalActivities = totalActivities;
         this.activityTypeDao = activityTypeDao;
     }
 
@@ -114,7 +113,7 @@ public class ActivitySearchParameters implements Pagination, Sortable {
     }
 
     public Integer getTotal() {
-        return activityDao.getCount();
+        return totalActivities;
     }
 
     public boolean isAllBlank() {
