@@ -68,6 +68,12 @@ describe "/activities" do
       response_activity_count.should == 3
       response.xml_attributes("activity","type").uniq.should have(1).kind
     end
+
+    it "limits the number of activities with limit=" do
+      get '/activities?limit=5', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 5
+    end
   end
 end
 
@@ -85,34 +91,45 @@ describe "/activities.json" do
     response.json['activities'].collect{|a| a['activity_name']}
   end
 
+  def response_activity_count
+    activity_names.count
+  end
+
   describe "GET" do
     it "returns all activities" do
       get '/activities.json', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].should have(1042).records
+      response_activity_count.should == 1042
     end
 
-    it "limits the number of activities" do
+    it "limits the number of activities with limit=" do
       get '/activities.json?limit=5', :as => :alice
       response.status_code.should == 200
-      activity_names.should have(5).records
+      response_activity_count.should == 5
       activity_names.sort.should == @start
     end
 
-    it "offsets the activity list" do
+    it "offsets the activity list with offset=" do
       get '/activities.json?offset=2', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].should have(1040).records
+      response_activity_count.should == 1040
       activity_names.should_not include( @start[0] )
       activity_names.should_not include( @start[1] )
     end
 
-      it "offsets the activity list" do
+    it "limits and offsets the activity list with limit= & offset=" do
       get '/activities.json?limit=50&offset=2', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].should have(50).records
+      response_activity_count.should == 50
       activity_names.should_not include( @start[0] )
       activity_names.should_not include( @start[1] )
+    end
+
+    it "searches activity codes from q=" do
+      get '/activities.json?q=788'
+      response.status_code.should == 200
+      response_activity_count.should == 1
+      activity_names.first.should == "T3"
     end
   end
 end
