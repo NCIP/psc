@@ -100,7 +100,7 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     public List<Activity> getActivitiesBySearchText(String searchText) {
-        return getActivitiesBySearchText(searchText, null, null);
+        return getActivitiesBySearchText(searchText, null, null, null, null, null, null);
     }
 
     /**
@@ -109,16 +109,6 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @param  searchText the text we are searching with
     * @return      a list of activities found based on the search text
     */
-    @SuppressWarnings({ "unchecked" })
-    public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source) {
-        return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, null, null, null, null);
-                return criteria.list();
-            }
-        });
-    }
-
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source, final Integer limit, final Integer offset, final ActivitySearchCriteria sort, final String order) {
         return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {

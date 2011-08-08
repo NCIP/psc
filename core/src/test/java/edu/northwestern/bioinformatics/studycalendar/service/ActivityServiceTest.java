@@ -1,20 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static org.easymock.EasyMock.expect;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.expect;
 
 public class ActivityServiceTest extends StudyCalendarTestCase {
     private ActivityService service;
@@ -83,8 +84,8 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         // an activity that's in one of the matched sources, but not in the search results
         createActivity("Mismatch", "M", other, activityType2);
         assertEquals("Test setup failure", 2, other.getActivities().size());
-        List<Activity> activities = Arrays.asList(b, c, a); // no particular order
-        expect(activityDao.getActivitiesBySearchText("search", null, null)).andReturn(activities);
+        List<Activity> activities = Arrays.asList(a, b, c); // returning ordered from the dao
+        expect(activityDao.getActivitiesBySearchText("search", null, null, null, null, null, null)).andReturn(activities);
 
         replayMocks();
         List<Source> actual = service.getFilteredSources("search", null, null);
@@ -98,7 +99,7 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
     public void testGetFilteredSourcesIgnoresSourcelessActivities() throws Exception {
         Activity a = createActivity("A");
         a.setSource(null);
-        expect(activityDao.getActivitiesBySearchText("search", null, null)).andReturn(Arrays.asList(a));
+        expect(activityDao.getActivitiesBySearchText("search", null, null, null, null, null, null)).andReturn(Arrays.asList(a));
 
         replayMocks();
         List<Source> actual = service.getFilteredSources("search", null, null);
@@ -113,7 +114,7 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         ActivityType expectedType = createActivityType("DISEASE_MEASURE");
         Source expectedSource = Fixtures.DEFAULT_ACTIVITY_SOURCE;
         expect(activityDao.getActivitiesBySearchText(
-            "search", expectedType, expectedSource)).andReturn(Arrays.asList(a));
+            "search", expectedType, expectedSource, null, null, null, null)).andReturn(Arrays.asList(a));
 
         replayMocks();
         service.getFilteredSources("search", expectedType, expectedSource);
