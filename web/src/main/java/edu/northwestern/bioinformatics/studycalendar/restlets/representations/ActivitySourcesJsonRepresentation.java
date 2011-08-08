@@ -58,7 +58,6 @@ public class ActivitySourcesJsonRepresentation extends StreamingJsonRepresentati
 
     public static void writeActivity(JsonGenerator generator, Activity activity) throws IOException {
         generator.writeStartObject();
-            JacksonTools.nullSafeWriteStringField(generator, "activity_id", activity.getId().toString());
             JacksonTools.nullSafeWriteStringField(generator, "activity_name", activity.getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_type", activity.getType().getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_code", activity.getCode());
