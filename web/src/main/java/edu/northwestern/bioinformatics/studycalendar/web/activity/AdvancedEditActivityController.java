@@ -44,11 +44,14 @@ public class AdvancedEditActivityController extends PscSimpleFormController impl
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer activityId = ServletRequestUtils.getIntParameter(request, "activityId");
-        if (activityId == null) {
-            activity = new Activity();
-        } else {
-
+        String code = ServletRequestUtils.getStringParameter(request, "code");
+        String source = ServletRequestUtils.getStringParameter(request, "source");
+        if (activityId != null) {
             activity = activityDao.getById(activityId);
+        } else if(code != null && source != null) {
+            activity = activityDao.getByCodeAndSourceName(code, source);
+        } else {
+            activity = new Activity();
         }
         return new AdvancedEditActivityCommand(activity, activityDao, activityPropertyDao);
     }

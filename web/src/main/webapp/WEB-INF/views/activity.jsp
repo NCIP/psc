@@ -148,7 +148,7 @@
 
         function executeAddSource(input) {
             var newSource = $('addSource').value
-            var url = psc.tools.Uris.relative('/api/v1/activities/' + newSource);
+            var url = psc.tools.Uris.relative('/api/v1/activities/' + encodeURIComponent(newSource));
             jQuery.ajax({
                 url: url,
                 type: 'PUT',
@@ -198,7 +198,6 @@
                     {key: 'activity_code', parser: "string"},
                     {key: 'activity_description', parser: "string"},
                     {key: 'controls'},
-                    {key: 'activity_id'},
                     {key: 'deletable'}
                 ],
                 metaFields: {
@@ -277,24 +276,28 @@
                 return dt;
             }
 
-            function saveActivity(activityId) {
-                //activityId is null for the new activity
-                if (activityId == null) {
-                    activityId = ""
+            function saveActivity(activityRowElement) {
+                if (activityRowElement == null) {
+                    var activityName = $('#new-inputName').val()
+                    var activityTypeName = $('#new-sourceTypes :selected').text();
+                    var activityCode = $('#new-inputCode').val()
+                    var activityDescription = $('#new-inputDescription').val()
+                    var activitySource= $('#sources').val()
+
+                } else {
+                    var activityName = $(activityRowElement).find('.inputName').val()
+                    var activityTypeName = $(activityRowElement).find('.sourceTypes :selected').text();
+                    var activityCode = $(activityRowElement).find('.inputCode').val()
+                    var activityDescription = $(activityRowElement).find('.inputDescription').val()
+                    var activitySource= $('#sources').val()
                 }
-                var activityName = $('#inputName'+activityId).val()
-                var activityTypeId = $('#sourceTypes'+activityId).val();
-                var activityTypeName = $('#sourceTypes'+activityId + ' :selected').text();
-                var activityCode = $('#inputCode'+activityId).val()
-                var activityDescription = $('#inputDescription' + activityId).val()
-                var activitySource= $('#sources').val()
 
                 var element = '<Activity name=\"' + activityName +'\" code=\"' + activityCode +'\" description=\"'
                         + activityName +'\" type=\"'+activityTypeName +'\" source=\"' + activitySource + '\"/>'
 
                 clearErrorMessage();
                 $.ajax({
-                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
                     type: 'PUT',
                     contentType: 'text/xml',
                     data: element,
@@ -306,11 +309,11 @@
             }
 
             function createAndSaveNewActivity() {
-                var activityCode = $('#inputCode').val()
+                var activityCode = $('#new-inputCode').val()
                 var activitySource= $('#sources').val()
 
                 $.ajax({
-                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
                     type: 'GET',
                     success : function(response) {
                         var typeLabel = jQuery('<label id="error"/>').text("The activity with this code already exists for this source. Please specify the different code");
@@ -325,16 +328,16 @@
             }
 
             function clearActivity() {
-                $('#inputName').val("");
-                $('#sourceTypes').val("");
-                $('#inputCode').val("")
-                $('#inputDescription').val("")
+                $('#new-inputName').val("");
+                $('#new-sourceTypes').val("");
+                $('#new-inputCode').val("")
+                $('#new-inputDescription').val("")
             }
 
-            function deleteActivity(activityId) {
-                var activityName = $('#inputName'+activityId).val()
-                var activityTypeName = $('#sourceTypes'+activityId + ' :selected').text();
-                var activityCode = $('#inputCode'+activityId).val()
+            function deleteActivity(activityRowElement) {
+                var activityName = $(activityRowElement).find('.inputName').val()
+                var activityTypeName = $(activityRowElement).find('.sourceTypes :selected').text();
+                var activityCode = $(activityRowElement).find('.inputCode').val()
                 var activitySource= $('#sources').val()
 
                 var confirmMessage = "Are you sure you want to delete activity: [name= " + activityName +", type= " + activityTypeName + ",code= " +
@@ -346,7 +349,7 @@
                 }
                 clearErrorMessage();
                 $.ajax({
-                    url: psc.tools.Uris.relative("/api/v1/activities/"+activitySource+"/"+ activityCode),
+                    url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
                     type: 'DELETE',
                     success : function() { sendRequest () }
                 });
@@ -367,93 +370,80 @@
             }
 
             function editSaveDeleteButtonClicked(e, button) {
-                var buttonId = e.target.id;
+                var buttonClass = $w(e.target.className)[0];
+                var activityRow = $(e.target).closest('tr');
                 var editAction = "edit";
                 var saveAction = "save";
                 var deleteAction = "delete";
                 var advancedEditAction = "advancedEdit";
-                var activityId;
-                if (buttonId.toLowerCase().startsWith(editAction)){
+                if (buttonClass.toLowerCase().startsWith(editAction)){
                     //edit action just displays editable fields for the row
-                    activityId = getActivityIdFromTheButton(buttonId, editAction);
-                    editActivity(activityId)
-                } else if (buttonId.toLowerCase().startsWith(saveAction)) {
-                    activityId = getActivityIdFromTheButton(buttonId, saveAction);
+                    editActivity(activityRow)
+                } else if (buttonClass.toLowerCase().startsWith(saveAction)) {
                     //when save button from the controls is pressed, the action that is performed is edit
-                    saveActivity(activityId);
-                } else if (buttonId.toLowerCase().startsWith(deleteAction)) {
-                    activityId = getActivityIdFromTheButton(buttonId, deleteAction);
-                    deleteActivity(activityId);
-                } else if (buttonId.toLowerCase().startsWith(advancedEditAction.toLowerCase())) {
-                    activityId = getActivityIdFromTheButton(buttonId, advancedEditAction);
-                    advancedEdit(activityId, advancedEditAction);
+                    saveActivity(activityRow);
+                } else if (buttonClass.toLowerCase().startsWith(deleteAction)) {
+                    deleteActivity(activityRow);
+                } else if (buttonClass.toLowerCase().startsWith(advancedEditAction.toLowerCase())) {
+                    advancedEdit(activityRow);
                 }
             }
 
-            function advancedEdit(activityId, action){
+            function advancedEdit(activityRow){
+                var sourceName = $('#sources').val();
+                var activityCode = $(activityRow).find('.code').text();
                 var href = '<c:url value="/pages/activities/edit"/>'
-                var data = "?activityId=" + activityId;
+                var data = "?code=" + encodeURIComponent(activityCode)
+                        + "&source=" + encodeURIComponent(sourceName);
                 location.href = href+data;
-            }
-
-            function getActivityIdFromTheButton (buttonId, action) {
-                return buttonId.substr(action.length, buttonId.length)
             }
 
             function createNewActivity() {
                 if (!clicked) {
-                    var typeInput = $('<select id="sourceTypes" name="sourceTypes">')
+                    var typeInput = $('<select id="new-sourceTypes" name="sourceTypes">')
                     for (var i =0; i < activityTypes.length; i++) {
                         var activityTypeName = activityTypes[i].activity_type_name
-                        var row = $('<option id="type" class="type" value="'+ activityTypeName +'"/>').text(activityTypeName);
+                        var row = $('<option class="type" value="'+ activityTypeName +'"/>').text(activityTypeName);
                         typeInput.append(row);
                     }
 
-                    $('#divType').append(typeInput)
+                    $('#new-divType').append(typeInput)
                     $('#newActivityInfo').show();
                     clicked = true;
                 }
             }
 
-            function editActivity(activityId) {
-                var inputName = '#inputName'+activityId;
-                var labelName = '#name'+activityId;
+            function editActivity(activityRowElement) {
+                var inputName = $(activityRowElement).find('.inputName');
+                var labelName = $(activityRowElement).find('.name');
                 $(inputName).show();
                 $(labelName).hide();
 
-
-//                var inputCode = '#inputCode'+activityId;
-//                var labelCode = '#code'+activityId;
-//                $(inputCode).show();
-//                $(labelCode).hide();
-
-                var inputDescription = '#inputDescription'+activityId;
-                var labelDescription = '#description'+activityId;
+                var inputDescription = activityRowElement.find('.inputDescription');
+                var labelDescription = activityRowElement.find('.description');
                 $(inputDescription).show();
                 $(labelDescription).hide();
 
-                var divType ='#divType'+activityId;
-                var labelType = '#type'+activityId;
+                var divType =activityRowElement.find('.divType');
+                var labelType = activityRowElement.find('.type');
                 $(labelType).hide();
                 $(divType).show();
-                var selectType = '#sourceTypes'+activityId;
 
-                var editButton = '#edit'+activityId;
+                var editButton = activityRowElement.find('.edit');
                 $(editButton).hide();
 
-                var saveButton = '#save'+activityId;
+                var saveButton = activityRowElement.find('.save');
                 $(saveButton).show();
             }
 
             function typeFormatter (elCell, oRecord, oColumn, oData) {
                 var activityType = oRecord.getData('activity_type');
-                var activityId = oRecord.getData('activity_id');
 
                 var container = $('<div class="activityType"/>');
-                var typeLabel = $('<label id="type' + activityId + '"/>').text(activityType);
+                var typeLabel = $('<label class="type"/>').text(activityType);
 
-                var typeDiv = $('<div id="divType'+activityId+'" style="display:none"/>');
-                    var select = $('<select id="sourceTypes'+activityId+'">')
+                var typeDiv = $('<div class="divType'+'" style="display:none"/>');
+                    var select = $('<select class="sourceTypes">')
 
                     for (var i =0; i < activityTypes.length; i++) {
                         var activityTypeName = activityTypes[i].activity_type_name
@@ -491,10 +481,9 @@
                 var record = "activity_"+columnName.toLocaleLowerCase();
                 var className = "activity"+columnName;
                 var activityEltForColumn= oRecord.getData(record);
-                var activityId = oRecord.getData('activity_id');
                 var container = $('<div class="'+className +'"/>');
-                var label = $('<label id="' + columnName.toLowerCase() + activityId + '"/>').text(activityEltForColumn);
-                var input = $('<input id="input' + columnName + activityId + '" type="text" value="' + activityEltForColumn + '" style="display:none"/>');
+                var label = $('<label class="' + columnName.toLowerCase() +'"/>').text(activityEltForColumn);
+                var input = $('<input class="input' + columnName + '" type="text" value="' + activityEltForColumn + '" style="display:none"/>');
                 container.append(label);
                 container.append(input);
                 $(elCell).append(container);
@@ -502,11 +491,10 @@
 
             function controlsFormatter (elCell, oRecord, oColumn, oData) {
                 var container = $('<div class="controls"/>');
-                var activityId = oRecord.getData('activity_id');
 
-                var editButton = $('<input id="edit' + activityId + '" type="button" name="EditButton" value="Edit"/>')
-                var saveButton = $('<input id="save' + activityId + '" type="button" name="SaveButton" value="Save" style="display:none"/>')
-                var advanceEditButton = $('<input id="advancedEdit' + activityId + '" type="button" name="AdvancedEditButton" value="Advanced edit"/>')
+                var editButton = $('<input class="edit" type="button" name="EditButton" value="Edit"/>')
+                var saveButton = $('<input class="save" type="button" name="SaveButton" value="Save" style="display:none"/>')
+                var advanceEditButton = $('<input class="advancedEdit" type="button" name="AdvancedEditButton" value="Advanced edit"/>')
 
                 var isDeletable = oRecord.getData('deletable');
 
@@ -515,7 +503,7 @@
                 container.append(advanceEditButton)
 
                 if (isDeletable == "true") {
-                    var deleteButton = $('<input id="delete' + activityId + '" type="button" name="DeleteButton" value="Delete"/>')
+                    var deleteButton = $('<input class="delete" type="button" name="DeleteButton" value="Delete"/>')
                     container.append(deleteButton);
                 }
                 $(elCell).append(container)
@@ -623,19 +611,19 @@
             <div id="newActivityInfo" style="display:none;">
                 <div class="row">
                     <div class="label">Name</div>
-                    <div class="value"><input id="inputName"/></div>
+                    <div class="value"><input id="new-inputName"/></div>
                 </div>
                 <div class="row">
                     <div class="label">Code</div>
-                    <div class="value"><input id="inputCode"/></div>
+                    <div class="value"><input id="new-inputCode"/></div>
                 </div>
                 <div class="row">
                     <div class="label">Type</div>
-                    <div class="value" id="divType"></div>
+                    <div class="value" id="new-divType"></div>
                 </div>
                 <div class="row">
                     <div class="label">Description</div>
-                    <div class="value"><input  id="inputDescription"/></div>
+                    <div class="value"><input  id="new-inputDescription"/></div>
                 </div>
                 <div class="row">
                     <div class="value">
