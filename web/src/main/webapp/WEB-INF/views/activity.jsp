@@ -218,7 +218,7 @@
                     // Build custom request
                     var parms = "";
                     if (sort != null) {
-                        parms += sort;
+                        parms += "sort=" + sort;
                     }
                     return  parms +
                             "&order=" + dir +
@@ -290,8 +290,7 @@
                 var activitySource= $('#sources').val()
 
                 var element = '<Activity name=\"' + activityName +'\" code=\"' + activityCode +'\" description=\"'
-                        + activityName +'\" type=\"'+activityTypeName+'\" type-id=\"' + activityTypeId +'\" source=\"'
-                        + activitySource + '\"/>'
+                        + activityName +'\" type=\"'+activityTypeName +'\" source=\"' + activitySource + '\"/>'
 
                 clearErrorMessage();
                 $.ajax({
@@ -405,9 +404,8 @@
                 if (!clicked) {
                     var typeInput = $('<select id="sourceTypes" name="sourceTypes">')
                     for (var i =0; i < activityTypes.length; i++) {
-                        var activityTypeId = activityTypes[i].activity_type_id
                         var activityTypeName = activityTypes[i].activity_type_name
-                        var row = $('<option id="type" class="type" value="'+ activityTypeId +'"/>').text(activityTypeName);
+                        var row = $('<option id="type" class="type" value="'+ activityTypeName +'"/>').text(activityTypeName);
                         typeInput.append(row);
                     }
 
@@ -458,14 +456,13 @@
                     var select = $('<select id="sourceTypes'+activityId+'">')
 
                     for (var i =0; i < activityTypes.length; i++) {
-                        var activityTypeId = activityTypes[i].activity_type_id
                         var activityTypeName = activityTypes[i].activity_type_name
 
                         var row;
                         if (activityType == activityTypeName) {
-                            row = $('<option value="'+ activityTypeId +'" selected="selected"/>').text(activityTypeName);
+                            row = $('<option value="'+ activityTypeName +'" selected="selected"/>').text(activityTypeName);
                         } else {
-                            row = $('<option value="'+ activityTypeId +'"/>').text(activityTypeName);
+                            row = $('<option value="'+ activityTypeName +'"/>').text(activityTypeName);
                         }
                         select.append(row);
                     }
