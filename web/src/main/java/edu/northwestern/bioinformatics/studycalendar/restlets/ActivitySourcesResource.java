@@ -46,17 +46,42 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     }
 
     @Override
-    @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Collection<Source> getAllObjects() throws ResourceException {
+        throw new UnsupportedOperationException("This method is not used.");
+    }
+
+    @Override
+    public Representation get(Variant variant) throws ResourceException {
         String q = QueryParameters.Q.extractFrom(getRequest());
         String typeName = QueryParameters.TYPE.extractFrom(getRequest());
         String typeId = QueryParameters.TYPE_ID.extractFrom(getRequest());
         Integer limit = extractLimit();
         int total = activityDao.getCount();
-        Integer offset = extractOffset(total) != null ? extractOffset(total) : 0;
-        if (q == null && typeId == null && typeName == null && limit == null && offset == null) {
-            return sourceDao.getAll();
+        Integer offset = extractOffset(total);
+        ActivityType type = determineActivityType(typeName, typeId);
+        List<ActivityType> types = activityTypeDao.getAll();
+
+        if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
+            if (allParametersNull(q, typeName, typeId, limit, offset)) {
+                return new ActivitySourcesJsonRepresentation(activityDao.getAll(), total, null, null, types);
+            }
+            List<Activity> matches = activityDao.getActivitiesBySearchText(q, type, null, limit, offset);
+            return new ActivitySourcesJsonRepresentation(matches, total, offset, limit, types);
+        } else if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
+            if (allParametersNull(q, typeName, typeId, limit, offset)) {
+                return createXmlRepresentation(sourceDao.getAll());
+            }
+            return createXmlRepresentation(activityService.getFilteredSources(q, type, null, limit, offset));
+        } else {
+            return null;
         }
+    }
+
+    private boolean allParametersNull(String q, String typeName, String typeId, Integer limit, Integer offset) {
+        return q == null && typeId == null && typeName == null && limit == null && offset == null;
+    }
+
+    private ActivityType determineActivityType(String typeName, String typeId) {
         ActivityType type = null;
         if (typeName != null) {
             type = activityTypeDao.getByName(typeName);
@@ -70,42 +95,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "type-id must be an integer");
             }
         }
-        return activityService.getFilteredSources(q, type, null, limit, offset);
-    }
-
-    @Override
-    public Representation get(Variant variant) throws ResourceException {
-        if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            String q = QueryParameters.Q.extractFrom(getRequest());
-            String typeName = QueryParameters.TYPE.extractFrom(getRequest());
-            String typeId = QueryParameters.TYPE_ID.extractFrom(getRequest());
-            Integer limit = extractLimit();
-            int total = activityDao.getCount();
-            Integer offset = extractOffset(total) != null ? extractOffset(total) : 0;
-            List<ActivityType> types = activityTypeDao.getAll();
-
-            if (q == null && typeId == null && typeName == null && limit == null && offset == null) {
-                return new ActivitySourcesJsonRepresentation(activityDao.getAll(), total, null, null, types);
-            }
-            ActivityType type = null;
-            if (typeName != null) {
-                type = activityTypeDao.getByName(typeName);
-                if (type == null) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown activity type: " + typeName);
-                }
-            } else if (typeId != null) {
-                try {
-                    type = activityTypeDao.getById(Integer.parseInt(typeId));
-                } catch (NumberFormatException nfe) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "type-id must be an integer");
-                }
-            }
-
-            List<Activity> matches = activityDao.getActivitiesBySearchText(q, type, null, limit, offset);
-            return new ActivitySourcesJsonRepresentation(matches, total, offset, limit, types);
-        } else {
-            return super.get(variant);
-        }
+        return type;
     }
 
     //need to move implementation to the abstract class of some sort, otherwise, the same as UserResource
