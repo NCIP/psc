@@ -134,6 +134,18 @@ describe "/activities.json" do
       response_activity_count.should == 1
       activity_names.first.should == "T3"
     end
+
+    it "sorts the activities by activity type with sort=" do
+      get '/activities.json?sort=activity_type&order=desc', :as => :alice
+      response.status_code.should == 200
+      response.json['activities'].collect{|a| a['type']}[0] == "Disease Measure"
+    end
+
+    it "controls the sort order with order=" do
+      get '/activities.json?sort=activity_name&order=desc', :as => :alice
+      response.status_code.should == 200
+      activity_names[0].should == "Zoladex"
+    end
   end
 end
 
@@ -229,6 +241,24 @@ describe "/activities/{activity-source-name}.json" do
       response.status_code.should == 200
       activity_names.should_not include( START[0] )
       activity_names.should_not include( START[1] )
+    end
+
+    it "sorts the activities by activity name with sort=" do
+      get '/activities/Northwestern%20University.json?sort=activity_name', :as => :alice
+      response.status_code.should == 200
+      activity_names[0].should == "11-Deoxycortisol (Compound S)"
+    end
+
+    it "sorts the activities by activity type with sort=" do
+      get '/activities/Northwestern%20University.json?sort=activity_type&order=desc', :as => :alice
+      response.status_code.should == 200
+      response.json['activities'].collect{|a| a['type']}[0] == "Disease Measure"
+    end
+
+    it "controls the sort order with order=" do
+      get '/activities/Northwestern%20University.json?sort=activity_name&order=desc', :as => :alice
+      response.status_code.should == 200
+      activity_names[0].should == "Zoladex"
     end
   end
 end

@@ -43,7 +43,7 @@ public class ActivityService {
     }
 
     public List<Source> getFilteredSources(String nameOrCodeSearch, ActivityType desiredType, Source desiredSource) {
-        return getFilteredSources(nameOrCodeSearch, desiredType, desiredSource, null, null);
+        return getFilteredSources(nameOrCodeSearch, desiredType, desiredSource, null, null, null, null);
     }
 
     /**
@@ -51,8 +51,8 @@ public class ActivityService {
      * criteria.  Returns a list of transient Source elements containing just the
      * matching activities.
      */
-    public List<Source> getFilteredSources(String nameOrCodeSearch, ActivityType desiredType, Source desiredSource, Integer limit, Integer offset) {
-        List<Activity> matches = activityDao.getActivitiesBySearchText(nameOrCodeSearch, desiredType, desiredSource, limit, offset);
+    public List<Source> getFilteredSources(String nameOrCodeSearch, ActivityType desiredType, Source desiredSource, Integer limit, Integer offset, ActivityDao.ActivitySearchCriteria sort, String order) {
+        List<Activity> matches = activityDao.getActivitiesBySearchText(nameOrCodeSearch, desiredType, desiredSource, limit, offset, sort, order);
         Map<String, Source> sources = new TreeMap<String, Source>(String.CASE_INSENSITIVE_ORDER);
         for (Activity match : matches) {
             if (match.getSource() == null) continue;
@@ -62,9 +62,6 @@ public class ActivityService {
                 sources.put(newSource.getNaturalKey(), newSource);
             }
             sources.get(key).addActivity(match.transientClone());
-        }
-        for (Source source : sources.values()) {
-            Collections.sort(source.getActivities());
         }
         return new ArrayList<Source>(sources.values());
     }

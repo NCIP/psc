@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -16,6 +17,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author Jaron Sampson
@@ -110,24 +113,37 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source) {
         return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, null, null);
+                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, null, null, null, null);
                 return criteria.list();
             }
         });
     }
 
     @SuppressWarnings({ "unchecked" })
-    public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source, final Integer limit, final Integer offset) {
+    public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source, final Integer limit, final Integer offset, final ActivitySearchCriteria sort, final String order) {
         return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, limit, offset);
+                Criteria criteria = getActivitiesBySearchTextCriteria(searchText, type, source, limit, offset, sort, order);
                 return criteria.list();
             }
         });
     }
 
-    protected Criteria getActivitiesBySearchTextCriteria(final String searchText, final ActivityType type, final Source source, Integer limit, Integer offset) {
-        Criteria criteria = defaultCriteria();
+    protected Criteria getActivitiesBySearchTextCriteria(final String searchText, final ActivityType type, final Source source, Integer limit, Integer offset, ActivitySearchCriteria sort, String order) {
+        Criteria criteria = getSession().createCriteria(Activity.class);
+
+        if (sort != null) {
+            order = (order == null) ? "asc" : order;
+
+            if (asList("asc", "desc").contains(order)) {
+                criteria = sort.getHibernateCriteria(getSession(), order);
+            } else {
+                criteria = defaultCriteria();
+            }
+        } else {
+            criteria = defaultCriteria();
+        }
+
         if (searchText != null) {
             String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
             criteria.add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
@@ -192,4 +208,51 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
         base.addOrder(Order.asc("name").ignoreCase());
         return base;
     }
+
+    public enum ActivitySearchCriteria {
+        ACTIVITY_NAME(Activity.class, "name", null),
+        ACTIVITY_TYPE(ActivityType.class, "name", "type");
+
+        private Class clazz;
+        private String property;
+        private String subCriteria;
+
+        ActivitySearchCriteria(Class clazz, String property, String subCriteria) {
+            this.clazz = clazz;
+            this.property = property;
+            this.subCriteria = subCriteria;
+        }
+
+        public static ActivitySearchCriteria findCriteria(String raw) {
+            if (raw == null) return null ;
+            return valueOf(StringUtils.upperCase(raw));
+        }
+
+        public Criteria getHibernateCriteria(Session session, String order) {
+            Criteria c = session.createCriteria(Activity.class);
+            if (subCriteria != null) {
+                addOrder(c.createCriteria(subCriteria), order);
+            } else {
+                addOrder(c, order);
+            }
+            return c;
+        }
+
+        private void addOrder(Criteria c, String order) {
+            if ("asc".equals(order)) {
+                c.addOrder(Order.asc(property).ignoreCase());
+            } else {
+                c.addOrder(Order.desc(property).ignoreCase());
+            }
+        }
+
+        public Class getClazz() {
+            return clazz;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+    }
+
 }

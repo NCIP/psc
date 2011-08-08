@@ -182,17 +182,25 @@
             }
 
             var ACTIVITIES_PER_PAGE = 100;
-            var DEFAULT = psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE);
+            var DEFAULT = psc.tools.Uris.relative("/api/v1/activities.json?limit=" + ACTIVITIES_PER_PAGE + "&");
             var dataSource = new PSC.activities.XHRDataSource(function() {
                 if ($('#sources').val() != "" && $('#sources').val() != "selectAll") {
                     var source = $('#sources').val();
-                    var url = psc.tools.Uris.relative("/api/v1/activities/" + source + ".json?limit=" + ACTIVITIES_PER_PAGE);
+                    var url = psc.tools.Uris.relative("/api/v1/activities/" + source + ".json?limit=" + ACTIVITIES_PER_PAGE + "&");
                 }
                 return url || DEFAULT;
             });
             dataSource.responseSchema = {
                 resultsList: "activities",
-                fields: ['activity_name', 'activity_type', 'activity_code', 'activity_description', 'controls', 'activity_id', 'deletable' ],
+                fields: [
+                    {key: 'activity_name', parser: "string"},
+                    {key: 'activity_type', parser: "string"},
+                    {key: 'activity_code', parser: "string"},
+                    {key: 'activity_description', parser: "string"},
+                    {key: 'controls'},
+                    {key: 'activity_id'},
+                    {key: 'deletable'}
+                ],
                 metaFields: {
                     totalRecords: "total",
                     activityTypes: "activity_types"
@@ -201,9 +209,17 @@
 
             var dataTableAuxConfig = {
                 generateRequest: function (oState, oSelf) {
-                    var params = "&offset=" + oState.pagination.recordOffset;
+                    oState = oState || { pagination: null, sortedBy: null };
+                    var sort = (oState.sortedBy) ? oState.sortedBy.key : "myDefaultColumnKey";
+                    var dir = (oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC) ? "desc" : "asc";
+                    var offset = (oState.pagination) ? oState.pagination.recordOffset : 0;
+                    var limit = (oState.pagination) ? oState.pagination.rowsPerPage : 100;
 
-                    return params;
+                    // Build custom request
+                    return  "sort=" + sort +
+                            "&order=" + dir +
+                            "&limit=" + limit +
+                            "&offset=" + offset;
                 },
                 paginator: new YAHOO.widget.Paginator({
                     rowsPerPage: ACTIVITIES_PER_PAGE,
