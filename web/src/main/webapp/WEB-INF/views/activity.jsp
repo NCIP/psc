@@ -89,9 +89,9 @@
         function initMethods() {
             var indicator = $('myIndicator')
             indicator.conceal()
-            var input = $('sources').options[$('sources').selectedIndex].value;
-            if (input == null || input == "select") {
-                $('sources').selectedIndex = 0;
+            var val = $('sources').getValue();
+            if (val == null || val == "") {
+                $('sources').setValue("");
             }
             registerEventHandlers();
             enableExportOptions();
@@ -524,8 +524,8 @@
         }(jQuery));
 
         function enableExportOptions(){
-            var selectedSourceId = $('sources').options[$('sources').selectedIndex].value
-            if(selectedSourceId == "select" || selectedSourceId == "selectAll") {
+            var val = $('sources').getValue()
+            if(val == "" || val == "selectAll") {
                 $('exportOptions').style.display = "none"
                 $('exportActivitiesLinkXML').style.display = "none"
                 $('exportActivitiesLinkCSV').style.display = "none"
@@ -558,7 +558,7 @@
                 <img id="myIndicator" src="<c:url value="/images/indicator.white.gif"/>"/>
                 <label for="source">Source:</label>
                 <select id="sources" name="sources">
-                    <option value="select">Select... </option>
+                    <option value="">Select... </option>
                     <c:forEach items="${sources}" var="source">
                         <c:if test="${sourceId == source.id}">
                             <option value="${source.name}" selected="true">${source.name}<c:if test="${source.manualFlag}"> (Manual Target) </c:if></option>
