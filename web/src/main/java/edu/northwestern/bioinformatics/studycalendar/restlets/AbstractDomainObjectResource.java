@@ -34,6 +34,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         super.doInit();
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getAllowedMethods().add(Method.GET);
 
         try {
@@ -73,6 +74,8 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
             return createXmlRepresentation(getRequestedObject());
         } else if (variant.getMediaType() == MediaType.TEXT_CALENDAR) {
             return createCalendarRepresentation(getRequestedObject());
+        } else if (variant.getMediaType() == MediaType.APPLICATION_JSON) {
+            return createJsonRepresentation(getRequestedObject());
         } else {
             return null;
         }
@@ -81,6 +84,10 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     protected Representation createCalendarRepresentation(D object) {
         return null;
 
+    }
+
+    protected Representation createJsonRepresentation(D object) {
+        return null;
     }
 
     protected Representation createXmlRepresentation(D object) throws ResourceException {
