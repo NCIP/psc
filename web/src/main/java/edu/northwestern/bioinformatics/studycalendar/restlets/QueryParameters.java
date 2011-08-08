@@ -38,8 +38,9 @@ public enum QueryParameters {
     ACTIVITY_NAME,
     ACTIVITY_DESCRIPTION,
     ACTIVITY_CODE,
-    ACTIVITY_ID
-    ;
+    ACTIVITY_ID,
+    SORT,
+    ORDER;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();

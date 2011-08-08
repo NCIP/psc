@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -7,15 +8,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ActivitySourcesJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
+import edu.nwu.bioinformatics.commons.StringUtils;
 import org.restlet.Request;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static java.util.Arrays.asList;
 import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 /**
@@ -59,7 +63,9 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         Integer limit = extractLimit();
         int total = source.getActivities().size();
         Integer offset = extractOffset(total);
-        if (q == null && typeId == null && typeName == null && limit== null && offset == null) return source;
+        String sort = extractSort();
+        String order = extractOrder();
+        if (q == null && typeId == null && typeName == null && limit== null && offset == null && sort == null && order == null) return source;
         setLimit(limit);
         setTotal(total);
         setOffset(offset);
@@ -79,7 +85,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
             }
         }
 
-        List<Source> filtered = activityService.getFilteredSources(q, type, source, limit, offset);
+        List<Source> filtered = activityService.getFilteredSources(q, type, source, limit, offset, ActivityDao.ActivitySearchCriteria.findCriteria(sort), order);
 
         if (filtered.size() == 0) {
             Source empty = new Source();
@@ -136,6 +142,30 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         } catch (NumberFormatException nfe) {
             throw new ResourceException(
                 CLIENT_ERROR_BAD_REQUEST, "Offset must be a nonnegative integer.");
+        }
+    }
+
+    private String extractSort() {
+        String sort = QueryParameters.SORT.extractFrom(getRequest());
+        if (sort == null) return null;
+        Collection valid = asList("activity_name", "activity_type");
+        if (valid.contains(sort)) {
+            return sort;
+        } else {
+            throw new ResourceException(
+                CLIENT_ERROR_BAD_REQUEST, "Sort must be " + StringUtils.join(valid, " or ") + ".");
+        }
+    }
+
+    private String extractOrder() {
+        String order = QueryParameters.ORDER.extractFrom(getRequest());
+        if (order == null) return null;
+        Collection valid = asList("asc", "desc");
+        if (valid.contains(order)) {
+            return order;
+        } else {
+            throw new ResourceException(
+                    CLIENT_ERROR_BAD_REQUEST, "Order must be " + StringUtils.join(valid, " or ") + ".");
         }
     }
 

@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ActivitySourcesJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+import edu.nwu.bioinformatics.commons.StringUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static java.util.Arrays.asList;
 import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 /**
@@ -60,18 +62,20 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         Integer offset = extractOffset(total);
         ActivityType type = determineActivityType(typeName, typeId);
         List<ActivityType> types = activityTypeDao.getAll();
+        String sort = extractSort();
+        String order = extractOrder();
 
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             if (allParametersNull(q, typeName, typeId, limit, offset)) {
                 return new ActivitySourcesJsonRepresentation(activityDao.getAll(), total, null, null, types);
             }
-            List<Activity> matches = activityDao.getActivitiesBySearchText(q, type, null, limit, offset);
+            List<Activity> matches = activityDao.getActivitiesBySearchText(q, type, null, limit, offset, ActivityDao.ActivitySearchCriteria.findCriteria(sort), order);
             return new ActivitySourcesJsonRepresentation(matches, total, offset, limit, types);
         } else if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             if (allParametersNull(q, typeName, typeId, limit, offset)) {
                 return createXmlRepresentation(sourceDao.getAll());
             }
-            return createXmlRepresentation(activityService.getFilteredSources(q, type, null, limit, offset));
+            return createXmlRepresentation(activityService.getFilteredSources(q, type, null, limit, offset, ActivityDao.ActivitySearchCriteria.findCriteria(sort), order));
         } else {
             return null;
         }
@@ -133,6 +137,31 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         } catch (NumberFormatException nfe) {
             throw new ResourceException(
                 CLIENT_ERROR_BAD_REQUEST, "Offset must be a nonnegative integer.");
+        }
+    }
+
+
+    private String extractSort() {
+        String sort = QueryParameters.SORT.extractFrom(getRequest());
+        if (sort == null) return null;
+        Collection valid = asList("activity_name", "activity_type");
+        if (valid.contains(sort)) {
+            return sort;
+        } else {
+            throw new ResourceException(
+                CLIENT_ERROR_BAD_REQUEST, "Sort must be " + StringUtils.join(valid, " or ") + ".");
+        }
+    }
+
+    private String extractOrder() {
+        String order = QueryParameters.ORDER.extractFrom(getRequest());
+        if (order == null) return null;
+        Collection valid = asList("asc", "desc");
+        if (valid.contains(order)) {
+            return order;
+        } else {
+            throw new ResourceException(
+                    CLIENT_ERROR_BAD_REQUEST, "Order must be " + StringUtils.join(valid, " or ") + ".");
         }
     }
 

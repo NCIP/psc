@@ -137,12 +137,12 @@ public class ActivityDaoTest extends DaoTestCase {
     }
 
     public void testGetActivitiesBySearchTextWithLimit() throws Exception {
-        List<Activity> actual = dao.getActivitiesBySearchText("A", null, null, 3, null);
+        List<Activity> actual = dao.getActivitiesBySearchText("A", null, null, 3, null, null, null);
         assertEquals("Wrong activities: " + actual, 3, actual.size());
     }
 
     public void testGetActivitiesBySearchTextWithOffset() throws Exception {
-        List<Activity> actual = dao.getActivitiesBySearchText("A", null, null, null, 1);
+        List<Activity> actual = dao.getActivitiesBySearchText("A", null, null, null, 1, null, null);
         assertEquals("Wrong activity", "X-ray: Colon", actual.get(0).getName());
     }
 
@@ -184,5 +184,15 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong size", 2, actual.size());
         assertEquals("Wrong order", "X-ray: Colon", actual.get(0).getName());
         assertEquals("Wrong order", "Administer Drug L", actual.get(1).getName());
+    }
+
+    public void testGetAllWithSortOrderAsc() {
+        List<Activity> actual = dao.getActivitiesBySearchText(null, null, null, null, null, ActivityDao.ActivitySearchCriteria.ACTIVITY_NAME, null);
+        assertEquals("Wrong order", "Administer Drug A", actual.get(0).getName());
+    }
+
+    public void testGetAllWithSortOrderDesc() {
+        List<Activity> actual = dao.getActivitiesBySearchText(null, null, null, null, null, ActivityDao.ActivitySearchCriteria.ACTIVITY_NAME, "desc");
+        assertEquals("Wrong order", "X-ray: Colon", actual.get(0).getName());
     }
 }
