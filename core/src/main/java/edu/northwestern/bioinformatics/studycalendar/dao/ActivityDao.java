@@ -145,28 +145,29 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
 
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getAllWithLimit(int limit) {
-        return getSession().createCriteria(Activity.class)
-                .setMaxResults(limit)
-                .createCriteria("type").addOrder(Order.asc("name"))
-                .addOrder(Order.asc("name"))
-                .list();
+        return defaultCriteria().setMaxResults(limit).list();
     }
 
     @SuppressWarnings({ "unchecked" })
     public Integer getCount() {
-        return  (Integer) CollectionUtils.firstElement(getSession().createCriteria(Activity.class)
-                .setProjection( Projections.projectionList()
-                .add( Projections.rowCount() ))
-                .list());
+        return  (Integer) CollectionUtils.firstElement(
+                getSession().createCriteria(Activity.class)
+                    .setProjection( Projections.projectionList()
+                    .add( Projections.rowCount() ))
+                    .list());
     }
 
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getAllWithLimitAndOffset(int limit, int offset) {
-        return getSession().createCriteria(Activity.class)
+        return defaultCriteria()
                 .setMaxResults(limit)
                 .setFirstResult(offset)
-                .createCriteria("type").addOrder(Order.asc("name"))
-                .addOrder(Order.asc("name"))
                 .list();
+    }
+
+    private Criteria defaultCriteria() {
+        return getSession().createCriteria(Activity.class)
+                .createCriteria("type").addOrder(Order.asc("name"))
+                .addOrder(Order.asc("name"));
     }
 }
