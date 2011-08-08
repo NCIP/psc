@@ -186,13 +186,18 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong order", "Administer Drug L", actual.get(1).getName());
     }
 
-    public void testGetAllWithSortOrderAsc() {
+    public void testGetAllWithSortActivityNameAsc() {
         List<Activity> actual = dao.getActivitiesBySearchText(null, null, null, null, null, ActivityDao.ActivitySearchCriteria.ACTIVITY_NAME, null);
         assertEquals("Wrong order", "Administer Drug A", actual.get(0).getName());
     }
 
-    public void testGetAllWithSortOrderDesc() {
+    public void testGetAllWithSortActivityNameDesc() {
         List<Activity> actual = dao.getActivitiesBySearchText(null, null, null, null, null, ActivityDao.ActivitySearchCriteria.ACTIVITY_NAME, "desc");
         assertEquals("Wrong order", "X-ray: Colon", actual.get(0).getName());
+    }
+
+    public void testGetAllWithSortActivityTypeDesc() {
+        List<Activity> actual = dao.getActivitiesBySearchText(null, null, null, null, null, ActivityDao.ActivitySearchCriteria.ACTIVITY_TYPE, null);
+        assertEquals("Wrong order", "DISEASE_MEASURE", actual.get(0).getType().getName());
     }
 }
