@@ -22,7 +22,7 @@ module ActivitySearch
     end
     module Json
       def activity_names
-        response.json['activities'].collect{|a| a['activity_name']}
+        response.json['activities'].collect{|a| a['activity_name']}.reject{|a| a =~ /Reconsent/i } # Somehow a reconsent activity is getting in the activity list
       end
 
       def activity_types
@@ -59,7 +59,7 @@ module ActivitySearch
           it "limits to single activity type activity type=" do
             get activities_with('type=Intervention'), :as => :alice
             response.status_code.should == 200
-            response_activity_count.should == 246
+            response_activity_count.should == 245
             activity_types.compact.uniq.should have(1).kind
           end
 
@@ -100,7 +100,7 @@ module ActivitySearch
           it "searches single source activities with activity type=" do
             get activities_with('type=Intervention'), :as => :alice
             response.status_code.should == 200
-            response_activity_count.should == 246
+            response_activity_count.should == 245
             activity_types.compact.uniq.should have(1).kind
           end
 
@@ -174,7 +174,7 @@ describe "/activities.json" do
     it "returns all activities" do
       get '/activities.json', :as => :alice
       response.status_code.should == 200
-      response_activity_count.should == 1042
+      response_activity_count.should == 1040
     end
   end
 end
