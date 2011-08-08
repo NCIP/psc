@@ -70,20 +70,6 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         return activityService.getFilteredSources(q, type, null);
     }
 
-
-    private List<Activity> extractActivities(String sourceName) {
-        String selectAll = "selectAll";
-        String select = "select";
-        List<Activity> activities = new ArrayList<Activity>();
-        if (sourceName == null || sourceName.equals(selectAll) || sourceDao.getByName(sourceName) == null) {
-            activities = activityDao.getAll();
-        } else if(!sourceName.equals(select)) {
-            Source source = sourceDao.getByName(sourceName);
-            activities = activityDao.getBySourceId(source.getId());
-        }
-        return activities;
-    }
-
     @Override
     public Representation get(Variant variant) throws ResourceException {
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
