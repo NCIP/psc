@@ -130,7 +130,7 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     protected Criteria getActivitiesBySearchTextCriteria(final String searchText, final ActivityType type, final Source source, Integer limit, Integer offset, ActivitySearchCriteria sort, String order) {
-        Criteria criteria = getSession().createCriteria(Activity.class);
+        Criteria criteria;
 
         if (sort != null) {
             order = (order == null) ? "asc" : order;
@@ -210,15 +210,13 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     public enum ActivitySearchCriteria {
-        ACTIVITY_NAME(Activity.class, "name", null),
-        ACTIVITY_TYPE(ActivityType.class, "name", "type");
+        ACTIVITY_NAME("name", null),
+        ACTIVITY_TYPE("name", "type");
 
-        private Class clazz;
         private String property;
         private String subCriteria;
 
-        ActivitySearchCriteria(Class clazz, String property, String subCriteria) {
-            this.clazz = clazz;
+        ActivitySearchCriteria(String property, String subCriteria) {
             this.property = property;
             this.subCriteria = subCriteria;
         }
@@ -244,10 +242,6 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
             } else {
                 c.addOrder(Order.desc(property).ignoreCase());
             }
-        }
-
-        public Class getClazz() {
-            return clazz;
         }
 
         public String getProperty() {

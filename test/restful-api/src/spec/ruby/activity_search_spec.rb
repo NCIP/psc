@@ -22,10 +22,14 @@ describe "/activities" do
       @response_activity_names ||= response.xml_attributes("activity", "name")
     end
 
+    def activity_types
+      response.xml_attributes("activity", "type")
+    end
+
     it "limits to a single activity type with type=" do
       get '/activities?type=Other', :as => :alice
       response.status_code.should == 200
-      response.xml_attributes("activity", "type").uniq.should have(1).kind
+      activity_types.uniq.should have(1).kind
     end
 
     it "does not match partial activity types with type=" do
@@ -64,12 +68,28 @@ describe "/activities" do
       activity_names.should_not include( START[0] )
       activity_names.should_not include( START[1] )
     end
+
+    it "sorts the activities by activity type with sort=" do
+      get '/activities?sort=activity_type&order=asc', :as => :alice
+      response.status_code.should == 200
+      activity_types[0].should == "Disease Measure"
+    end
+
+    it "controls the sort order with order=" do
+      get '/activities?sort=activity_name&order=desc', :as => :alice
+      response.status_code.should == 200
+      activity_names[0].should == "Zoladex"
+    end
   end
 end
 
 describe "/activities.json" do
   def activity_names
     response.json['activities'].collect{|a| a['activity_name']}
+  end
+
+  def activity_types
+    response.json['activities'].collect{|a| a['activity_type']}
   end
 
   def response_activity_count
@@ -80,7 +100,7 @@ describe "/activities.json" do
     it "limits to a single activity type with type=" do
       get '/activities.json?type=Other', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].collect{|a| a['type']}.uniq.should have(1).kind
+      activity_types.compact.uniq.should have(1).kind
     end
 
     it "does not match partial activity types with type=" do
@@ -136,9 +156,9 @@ describe "/activities.json" do
     end
 
     it "sorts the activities by activity type with sort=" do
-      get '/activities.json?sort=activity_type&order=desc', :as => :alice
+      get '/activities.json?sort=activity_type&order=asc', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].collect{|a| a['type']}[0] == "Disease Measure"
+      activity_types[0].should == "Disease Measure"
     end
 
     it "controls the sort order with order=" do
@@ -157,6 +177,10 @@ describe "/activities/{activity-source-name}" do
 
     def activity_names
       @response_activity_names ||= response.xml_attributes("activity", "name")
+    end
+
+    def activity_types
+      response.xml_attributes("activity", "type")
     end
 
     it "obeys type= and q= simultaneously" do
@@ -194,6 +218,18 @@ describe "/activities/{activity-source-name}" do
       activity_names.should_not include( START[0] )
       activity_names.should_not include( START[1] )
     end
+
+    it "sorts the activities by activity type with sort=" do
+      get '/activities?sort=activity_type&order=asc', :as => :alice
+      response.status_code.should == 200
+      activity_types[0].should == "Disease Measure"
+    end
+
+    it "controls the sort order with order=" do
+      get '/activities?sort=activity_name&order=desc', :as => :alice
+      response.status_code.should == 200
+      activity_names[0].should == "Zoladex"
+    end
   end
 end
 
@@ -205,6 +241,10 @@ describe "/activities/{activity-source-name}.json" do
 
     def response_activity_count
       activity_names.count
+    end
+
+    def activity_types
+      response.json['activities'].collect{|a| a['activity_type']}
     end
 
     it "obeys type= and q= simultaneously" do
@@ -220,14 +260,14 @@ describe "/activities/{activity-source-name}.json" do
       get'/activities/Northwestern%20University.json?type=Intervention', :as => :alice
       response.status_code.should == 200
       response_activity_count.should == 246
-      response.json['activities'].collect{|a| a['type']}.uniq.should have(1).kind
+      activity_types.compact.uniq.should have(1).kind
     end
 
     it "searches single source activities with q= and type=" do
       get'/activities/Northwestern%20University.json?q=HLA&type=Lab+Test',:as => :alice
       response.status_code.should == 200
       response_activity_count.should == 3
-      response.json['activities'].collect{|a| a['type']}.uniq.should have(1).kind
+      activity_types.compact.uniq.should have(1).kind
     end
 
     it "searches single source activities and limits results with limit=" do
@@ -250,9 +290,9 @@ describe "/activities/{activity-source-name}.json" do
     end
 
     it "sorts the activities by activity type with sort=" do
-      get '/activities/Northwestern%20University.json?sort=activity_type&order=desc', :as => :alice
+      get '/activities/Northwestern%20University.json?sort=activity_type&order=asc', :as => :alice
       response.status_code.should == 200
-      response.json['activities'].collect{|a| a['type']}[0] == "Disease Measure"
+      activity_types[0].should == "Disease Measure"
     end
 
     it "controls the sort order with order=" do
