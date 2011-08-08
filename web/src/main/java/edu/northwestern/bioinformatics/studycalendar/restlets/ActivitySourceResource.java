@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import org.restlet.Request;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
@@ -73,15 +74,13 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         if (typeName != null) {
             type = activityTypeDao.getByName(typeName);
             if (type == null) {
-                setClientErrorReason("Unknown activity type: " + typeName);
-                return null;
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown activity type: " + typeName);
             }
         } else if (typeId != null) {
             try {
                 type = activityTypeDao.getById(Integer.parseInt(typeId));
             } catch (NumberFormatException nfe) {
-                setClientErrorReason("type-id must be an integer");
-                return null;
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "type-id must be an integer");
             }
         }
 
