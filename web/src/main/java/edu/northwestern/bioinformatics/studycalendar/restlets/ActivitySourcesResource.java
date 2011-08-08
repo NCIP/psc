@@ -66,13 +66,13 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         String order = extractOrder();
 
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            if (allParametersNull(q, typeName, typeId, limit, offset)) {
+            if (allParametersNull(q, typeName, typeId, limit, offset, sort, order)) {
                 return new ActivitySourcesJsonRepresentation(activityDao.getAll(), total, null, null, types);
             }
             List<Activity> matches = activityDao.getActivitiesBySearchText(q, type, null, limit, offset, ActivityDao.ActivitySearchCriteria.findCriteria(sort), order);
             return new ActivitySourcesJsonRepresentation(matches, total, offset, limit, types);
         } else if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-            if (allParametersNull(q, typeName, typeId, limit, offset)) {
+            if (allParametersNull(q, typeName, typeId, limit, offset, sort, order)) {
                 return createXmlRepresentation(sourceDao.getAll());
             }
             return createXmlRepresentation(activityService.getFilteredSources(q, type, null, limit, offset, ActivityDao.ActivitySearchCriteria.findCriteria(sort), order));
@@ -81,8 +81,8 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         }
     }
 
-    private boolean allParametersNull(String q, String typeName, String typeId, Integer limit, Integer offset) {
-        return q == null && typeId == null && typeName == null && limit == null && offset == null;
+    private boolean allParametersNull(String q, String typeName, String typeId, Integer limit, Integer offset, String sort, String order) {
+        return q == null && typeId == null && typeName == null && limit == null && offset == null && sort == null && order == null;
     }
 
     private ActivityType determineActivityType(String typeName, String typeId) {
