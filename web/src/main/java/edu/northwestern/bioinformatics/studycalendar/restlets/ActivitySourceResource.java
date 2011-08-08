@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 /**
  * Resource representing a single {@link Source}.
@@ -47,7 +48,10 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         String q = QueryParameters.Q.extractFrom(request);
         String typeName = QueryParameters.TYPE.extractFrom(getRequest());
         String typeId = QueryParameters.TYPE_ID.extractFrom(request);
-        if (q == null && typeId == null && typeName == null) return source;
+        Integer limit = extractLimit();
+        int total = source.getActivities().size();
+        Integer offset = extractOffset(total);
+        if (q == null && typeId == null && typeName == null && limit== null && offset == null) return source;
 
         ActivityType type = null;
         if (typeName != null) {
@@ -65,7 +69,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
             }
         }
 
-        List<Source> filtered = activityService.getFilteredSources(q, type, source);
+        List<Source> filtered = activityService.getFilteredSources(q, type, source, limit, offset);
 
         if (filtered.size() == 0) {
             Source empty = new Source();
@@ -86,6 +90,43 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
             sourceService.updateSource(source,existingSource);
         }
         return source;
+    }
+
+    private Integer extractLimit() throws ResourceException {
+        String limitS = QueryParameters.LIMIT.extractFrom(getRequest());
+        if (limitS == null) return null;
+        try {
+            Integer limit = new Integer(limitS);
+            if (limit < 1) {
+                throw new ResourceException(
+                    CLIENT_ERROR_BAD_REQUEST, "Limit must be a positive integer.");
+            }
+            return limit;
+        } catch (NumberFormatException nfe) {
+            throw new ResourceException(
+                CLIENT_ERROR_BAD_REQUEST, "Limit must be a positive integer.");
+        }
+    }
+
+    private Integer extractOffset(int total) throws ResourceException {
+        String offsetS = QueryParameters.OFFSET.extractFrom(getRequest());
+        if (offsetS == null) return 0;
+        try {
+            Integer offset = new Integer(offsetS);
+            if (offset < 0) {
+                throw new ResourceException(
+                    CLIENT_ERROR_BAD_REQUEST, "Offset must be a nonnegative integer.");
+            }
+            if (offset >= total && offset > 0) {
+                throw new ResourceException(CLIENT_ERROR_BAD_REQUEST, String.format(
+                    "Offset %d is too large.  There are %d result(s), so the max offset is %d.",
+                    offset, total, Math.max(0, total - 1)));
+            }
+            return offset;
+        } catch (NumberFormatException nfe) {
+            throw new ResourceException(
+                CLIENT_ERROR_BAD_REQUEST, "Offset must be a nonnegative integer.");
+        }
     }
 
     @Required

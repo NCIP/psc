@@ -169,5 +169,18 @@ describe "/activities/{activity-source-name}" do
       response_activity_count.should == 3
       response.xml_attributes("activity","type").uniq.should have(1).kind
     end
+
+    it "searches single source activities and limits results with limit=" do
+      get'/activities/Northwestern%20University?limit=10', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 10
+    end
+
+    it "offsets the activity list with offset=" do
+      get '/activities/Northwestern%20University?offset=2', :as => :alice
+      response.status_code.should == 200
+      activity_names.should_not include( START[0] )
+      activity_names.should_not include( START[1] )
+    end
   end
 end
