@@ -13,11 +13,12 @@ import java.util.List;
  */
 public class ActivitySourcesJsonRepresentation extends StreamingJsonRepresentation  {
     private List<Activity> activities;
-    private Integer limit, offset, total;
+    private Integer limit, offset;
+    Long total;
     private List<ActivityType> activityTypes;
 
     public ActivitySourcesJsonRepresentation(
-            List<Activity> activities, int total, Integer offset, Integer limit, List<ActivityType> activityTypes) {
+            List<Activity> activities, Long total, Integer offset, Integer limit, List<ActivityType> activityTypes) {
         this.activities = activities;
         this.total = total;
         this.offset = offset == null ? 0 : offset;

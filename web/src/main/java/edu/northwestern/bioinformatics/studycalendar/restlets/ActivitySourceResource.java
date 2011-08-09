@@ -27,7 +27,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     private SourceService sourceService;
     private ActivityService activityService;
     private ActivityTypeDao activityTypeDao;
-    private int total;
+    private Long total;
     private Integer offset;
     private Integer limit;
 
@@ -53,7 +53,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
 
         if (source == null) return null;
 
-        ActivitySearchParameters params = new ActivitySearchParameters(getRequest(), source.getActivities().size(), activityTypeDao);
+        ActivitySearchParameters params = new ActivitySearchParameters(getRequest(), (long) source.getActivities().size(), activityTypeDao);
 
         if (params.isAllBlank()) return source;
 
@@ -98,7 +98,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     }
 
     // Getters
-    public int getTotal() {
+    public Long getTotal() {
         return total;
     }
 
@@ -111,7 +111,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     }
 
     // Setters
-    public void setTotal(int total) {
+    public void setTotal(Long total) {
         this.total = total;
     }
 

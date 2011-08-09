@@ -176,7 +176,7 @@ public class ActivityDaoTest extends DaoTestCase {
     }
 
     public void testCount() {
-         assertEquals("Wrong size", 7, (int) dao.getCount());
+         assertEquals("Wrong size", 7, (long) dao.getCount());
     }
 
     public void testGetAllWithLimitAndOffset() {

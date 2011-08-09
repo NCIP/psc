@@ -171,8 +171,8 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     @SuppressWarnings({ "unchecked" })
-    public Integer getCount() {
-        return  (Integer) CollectionUtils.firstElement(
+    public Long getCount() {
+        return (Long) CollectionUtils.firstElement(
                 getSession().createCriteria(Activity.class)
                     .setProjection( Projections.projectionList()
                     .add(Projections.rowCount()))

@@ -14,10 +14,10 @@ import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 public class ActivitySearchParameters implements Pagination, Sortable {
     Request request;
-    private Integer totalActivities;
+    private Long totalActivities;
     private ActivityTypeDao activityTypeDao;
 
-    public ActivitySearchParameters(Request request, Integer totalActivities, ActivityTypeDao activityTypeDao) {
+    public ActivitySearchParameters(Request request, Long totalActivities, ActivityTypeDao activityTypeDao) {
         this.request = request;
         this.totalActivities = totalActivities;
         this.activityTypeDao = activityTypeDao;
@@ -112,7 +112,7 @@ public class ActivitySearchParameters implements Pagination, Sortable {
         }
     }
 
-    public Integer getTotal() {
+    public Long getTotal() {
         return totalActivities;
     }
 
