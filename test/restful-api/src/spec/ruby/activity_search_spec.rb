@@ -9,11 +9,11 @@ module ActivitySearch
   module HelperMethods
     module Xml
       def response_activity_count
-        response.xml_elements('//activity').size
+        activity_names.size
       end
 
       def activity_names
-        @response_activity_names ||= response.xml_attributes("activity", "name")
+        response.xml_attributes("activity", "name").reject{|a| a =~ /Reconsent/i } # Somehow a reconsent activity is getting in the activity list
       end
 
       def activity_types
