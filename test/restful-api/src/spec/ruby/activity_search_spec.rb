@@ -59,7 +59,7 @@ module ActivitySearch
           it "limits to single activity type activity type=" do
             get activities_with('type=Intervention'), :as => :alice
             response.status_code.should == 200
-            response_activity_count.should == 245
+            response_activity_count.should == 246
             activity_types.compact.uniq.should have(1).kind
           end
 
@@ -174,7 +174,7 @@ describe "/activities.json" do
     it "returns all activities" do
       get '/activities.json', :as => :alice
       response.status_code.should == 200
-      response_activity_count.should == 1040
+      response_activity_count.should == 1041
     end
   end
 end

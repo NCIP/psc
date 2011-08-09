@@ -42,9 +42,8 @@ describe "json" do
       response.json["activities"].size.should == 100
     end
 
-    it "[activities][each activity] contains activity_id, activity_code, activity_name" do
+    it "[activities][each activity] contains activity_code, activity_name" do
       get "/activities.json?limit=100&source=Northwestern%20University", :as => :juno, 'Content-Type' => 'application/json'
-      response.json["activities"][0]["activity_id"].should_not be_nil
       response.json["activities"][0]["activity_name"].should_not be_nil
       response.json["activities"][0]["activity_code"].should_not be_nil
     end
