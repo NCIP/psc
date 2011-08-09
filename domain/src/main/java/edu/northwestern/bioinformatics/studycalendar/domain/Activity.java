@@ -43,12 +43,6 @@ public class Activity extends AbstractMutableDomainObject
     private boolean memoryOnly;
     private SortedSet<PlannedActivity> plannedActivities =new TreeSet<PlannedActivity>();
 
-    public Comparator<Activity> ACTIVITY_NAME_COMPARATOR_INSTANCE = new Comparator<Activity>() {
-        public int compare(Activity a1, Activity a2) {
-            return a1.getName().compareTo(a2.getName());
-        }
-    };
-
     ///// LOGIC
 
     public int compareTo(Activity o) {
