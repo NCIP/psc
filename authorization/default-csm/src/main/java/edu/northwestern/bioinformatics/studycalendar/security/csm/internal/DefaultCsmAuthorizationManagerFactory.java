@@ -9,6 +9,7 @@ import gov.nih.nci.security.dao.AuthorizationDAO;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.provisioning.AuthorizationManagerImpl;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
+import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.SettingsFactory;
@@ -16,6 +17,7 @@ import org.hibernate.connection.ConnectionProvider;
 import org.hibernate.connection.DatasourceConnectionProvider;
 import org.hibernate.hql.QueryTranslatorFactory;
 import org.hibernate.hql.classic.ClassicQueryTranslatorFactory;
+import org.hibernate.impl.SessionFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,7 +152,11 @@ public class DefaultCsmAuthorizationManagerFactory {
         ClassLoader originalContextCL = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            return hibConf.buildSessionFactory();
+            // this cast is endorsed by the Hibernate 3.6 Core docs as one of the two mechanisms to
+            // add an entity name resolver.
+            SessionFactoryImpl sessionFactory = (SessionFactoryImpl) hibConf.buildSessionFactory();
+            sessionFactory.registerEntityNameResolver(new CglibProxyEntityNameResolver(), EntityMode.POJO);
+            return sessionFactory;
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextCL);
         }
