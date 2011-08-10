@@ -100,7 +100,7 @@ module ActivitySearch
           it "searches single source activities with activity type=" do
             get activities_with('type=Intervention'), :as => :alice
             response.status_code.should == 200
-            response_activity_count.should == 245
+            response_activity_count.should == 246
             activity_types.compact.uniq.should have(1).kind
           end
 
