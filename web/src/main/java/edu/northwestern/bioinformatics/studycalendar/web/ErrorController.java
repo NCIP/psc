@@ -30,12 +30,14 @@ public class ErrorController extends AbstractController {
         Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
         String message = (String) request.getAttribute("javax.servlet.error.message");
+        String requestPath = (String) request.getAttribute("javax.servlet.error.request_uri");
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("stackTrace", exception == null ? null : ThrowableUtils.createStackTraceHtml(exception));
         model.put("statusCode", statusCode);
         model.put("statusName", getName(statusCode));
         model.put("message", message);
+        model.put("redirectToSwitchboardAfter", redirectToSwitchboardAfter(statusCode, requestPath));
 
         if (exception != null) {
             log.error("Uncaught exception in web stack", exception);
@@ -53,6 +55,14 @@ public class ErrorController extends AbstractController {
         }
 
         return new ModelAndView("error", model);
+    }
+
+    private Integer redirectToSwitchboardAfter(Integer statusCode, String requestPath) {
+        if (statusCode == HttpServletResponse.SC_FORBIDDEN && !requestPath.endsWith("/pages/switchboard")) {
+            return 20;
+        } else {
+            return null;
+        }
     }
 
     private String getName(Integer statusCode) {

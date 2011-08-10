@@ -66,9 +66,30 @@ public class ErrorControllerTest extends ControllerTestCase {
     }
 
     public void testNoMailWhenNoException() throws Exception {
+        ModelAndView mv = doRequest();
+        assertNull(mv.getModel().get("errorNumber"));
+    }
+
+    private ModelAndView doRequest() throws Exception {
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
-        assertNull(mv.getModel().get("errorNumber"));
+        return mv;
+    }
+
+    public void testGoToSwitchboardAfter20SecWhenForbidden() throws Exception {
+        request.setAttribute("javax.servlet.error.request_uri", "/some-psc/pages/secret");
+        request.setAttribute("javax.servlet.error.status_code", 403);
+        request.setAttribute("javax.servlet.error.message", "Uh, no.");
+
+        assertEquals(20, doRequest().getModel().get("redirectToSwitchboardAfter"));
+    }
+
+    public void testDoNotGoToSwitchboardWhenOnSwitchboard() throws Exception {
+        request.setAttribute("javax.servlet.error.request_uri", "/pages/switchboard");
+        request.setAttribute("javax.servlet.error.status_code", 403);
+        request.setAttribute("javax.servlet.error.message", "Uh, no.");
+
+        assertNull(doRequest().getModel().get("redirectToSwitchboardAfter"));
     }
 }

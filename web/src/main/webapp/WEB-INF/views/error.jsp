@@ -12,6 +12,11 @@
                 margin: 1em ;
             }
 
+            #main {
+                margin: auto;
+                max-width: 720px
+            }
+
             .stacktrace {
                 font-family: 'Andale Mono', Monaco, monospace;
             }
@@ -52,6 +57,10 @@
                 })
             })
         </script>
+
+        <c:if test="${not empty redirectToSwitchboardAfter}">
+            <meta http-equiv="Refresh" content="${redirectToSwitchboardAfter}; <c:url value="/pages/switchboard"/>"/>
+        </c:if>
     </head>
     <body>
     <div id="links">
@@ -59,25 +68,42 @@
         | <a href="<c:url value="/auth/logout"/>" id="logout">Log out</a>
     </div>
     <c:set var="showDetail" value="${configuration.map.showFullExceptions}"/>
-    <h1>${statusName}</h1>
-    <p>${message}</p>
+    <div id="main">
+        <h1>${statusName}</h1>
+        <p>${message}</p>
 
-    <c:choose>
-        <c:when test="${notified}">
+        <c:if test="${not empty redirectToSwitchboardAfter}">
             <p>
-                ${showDetail ? 'The following information' : 'Information'} about this error has
-                been mailed to the system administrator(s).  If you can provide any additional
-                context, please contact them.
+                You don't have permission to see the requested page. You will be <strong>returned to your
+                <a href="<c:url value="/pages/switchboard"/>">default page</a></strong> in 20 seconds.
+                Alternatively, you may be able to use your browser's Back button to return to the
+                page you came from.
             </p>
-        </c:when>
-        <c:otherwise>
             <p>
-                If you see this error repeatedly, please contact the system administrators.
+                If you arrived at this page by following a link from within PSC, please contact the
+                system administrators and tell them what roles you have and what page you were trying to
+                access. If you are a system administrator, you can look in PSC's log to see what
+                role is necessary to access this page and which roles PSC thinks you have.
             </p>
-        </c:otherwise>
-    </c:choose>
+        </c:if>
 
-    <a href="#" id="show-details">Show technical details</a>
+        <c:choose>
+            <c:when test="${notified}">
+                <p>
+                    ${showDetail ? 'The following information' : 'Information'} about this error has
+                    been mailed to the system administrator(s).  If you can provide any additional
+                    context, please contact them.
+                </p>
+            </c:when>
+            <c:otherwise>
+                <p>
+                    If you see this error repeatedly, please contact the system administrators.
+                </p>
+            </c:otherwise>
+        </c:choose>
+
+        <a href="#" id="show-details">Show technical details</a>
+    </div>
 
     <div id="error-details" style="display: none">
         ${stackTrace}
