@@ -33,6 +33,7 @@ public enum XsdAttribute {
     PLANNED_ACTIVITY_LABEL_ID("planned-activity-label-id"),
     LABEL_NAME("name"),
     LABEL_REP_NUM("repetition-number"),
+    LABEL_ID("id"),
 
     POPULATION_NAME("name"),
     POPULATION_ABBREVIATION("abbreviation"),

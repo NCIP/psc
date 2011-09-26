@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaNodeType;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -24,11 +25,17 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public DeltaXmlSerializer createXmlSerializer(final Element delta) {
-        String name = delta.getName().replaceAll("-delta", "").replaceAll("-", "_").toUpperCase();
+        XsdElement x;
+        try {
+            x = XsdElement.forElement(delta);
+        } catch (IllegalArgumentException iae) {
+            throw new StudyCalendarError(
+                "Could not build XML serializer for element %s.", delta.getName(), iae);
+        }
 
         DeltaNodeType deltaNodeType;
         try {
-            deltaNodeType = DeltaNodeType.valueOf(name);
+            deltaNodeType = DeltaNodeType.valueOf(x.name().replaceAll("_DELTA", ""));
         } catch (IllegalArgumentException iae) {
             throw new StudyCalendarError(
                 "Could not build XML serializer for element %s.", delta.getName(), iae);

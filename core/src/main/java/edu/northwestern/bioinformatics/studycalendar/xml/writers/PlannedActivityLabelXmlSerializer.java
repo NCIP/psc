@@ -17,6 +17,7 @@ public class PlannedActivityLabelXmlSerializer
     @Override
     public Element createElement(PlannedActivityLabel paLabel) {
         Element paLabelElt = XsdElement.PLANNED_ACTIVITY_LABEL.create();
+        XsdAttribute.LABEL_ID.addTo(paLabelElt, paLabel.getGridId());
         XsdAttribute.LABEL_NAME.addTo(paLabelElt, paLabel.getLabel());
         if (paLabel.getRepetitionNumber() != null) {
             XsdAttribute.LABEL_REP_NUM.addTo(paLabelElt, paLabel.getRepetitionNumber());
@@ -31,6 +32,7 @@ public class PlannedActivityLabelXmlSerializer
         if (XsdAttribute.LABEL_REP_NUM.from(element) != null) {
             label.setRepetitionNumber(Integer.parseInt(XsdAttribute.LABEL_REP_NUM.from(element)));
         }
+        label.setGridId(XsdAttribute.LABEL_ID.from(element));
         return label;
     }
 

@@ -86,6 +86,12 @@ public class DeltaXmlSerializerFactoryTest extends StudyCalendarTestCase {
         assertEquals("plannedCalendarDeltaXmlSerializer", xmlSerializer.getBeanName());
     }
 
+    public void testKnownElementNameThatDoesNotMatchTheBeanNameMapsCorrectly() throws Exception {
+        BeanNameRecordingDeltaSerializer xmlSerializer =
+            (BeanNameRecordingDeltaSerializer) factory.createXmlSerializer(new DefaultElement("label-delta"));
+        assertEquals("plannedActivityLabelDeltaXmlSerializer", xmlSerializer.getBeanName());
+    }
+
     private static class EmptyDelta<T extends Changeable> extends Delta<T> { }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

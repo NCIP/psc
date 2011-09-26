@@ -97,6 +97,7 @@ public enum XsdElement {
     STUDY_SEGMENT_DELTA(StudySegmentDelta.class),
     PERIOD_DELTA(PeriodDelta.class),
     PLANNED_ACTIVITY_DELTA(PlannedActivityDelta.class),
+    PLANNED_ACTIVITY_LABEL_DELTA("label-delta", PlannedActivityDelta.class),
     POPULATION_DELTA(PopulationDelta.class),
     STUDY_DELTA(StudyDelta.class)
     ;

@@ -10,13 +10,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -131,10 +128,10 @@ public class TemplateImportService {
             }
 
             TemplateInternalReferenceIndex oldExpectedIndex = buildTemplateInternalReferenceIndex(oldVersionList);
-            oldExpectedIndex.addPlanTreeNode(oldStudy.getPlannedCalendar());
+            oldExpectedIndex.addChangeable(oldStudy.getPlannedCalendar());
 
             TemplateInternalReferenceIndex newExpectedIndex = buildTemplateInternalReferenceIndex(newVersionList);
-            newExpectedIndex.addPlanTreeNode(newStudy.getPlannedCalendar());
+            newExpectedIndex.addChangeable(newStudy.getPlannedCalendar());
 
             TemplateInternalReferenceIndex expectedIndex = new TemplateInternalReferenceIndex();
             expectedIndex.getIndex().putAll(oldExpectedIndex.getIndex());
@@ -158,7 +155,7 @@ public class TemplateImportService {
             loadedIndex = buildTemplateInternalReferenceIndex(newAddedList);
         } else {
             loadedIndex = buildTemplateInternalReferenceIndex(amendments);
-            loadedIndex.addPlanTreeNode(newStudy.getPlannedCalendar());
+            loadedIndex.addChangeable(newStudy.getPlannedCalendar());
         }
 
         List<Key> existingGridIdKeys = new ArrayList<Key>();
@@ -197,7 +194,7 @@ public class TemplateImportService {
                     .concat(conflicts.toString()).concat("already exists in system"));
         }
 
-        List<Changeable> cChildren = new ArrayList<Changeable>();
+        List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();
         List<Population> populations = new ArrayList<Population>();
         for (Amendment amendment : amendments) {
             for (Delta<?> delta : amendment.getDeltas()) {
@@ -210,9 +207,9 @@ public class TemplateImportService {
                         if (child instanceof Population) {
                             populations.add((Population)child);
                         } else if (child instanceof PlannedActivity) {
-                            cChildren.add(child);
-                        } else {
-                            cChildren.addAll(templateService.findChildren((Parent) child, PlannedActivity.class));
+                            plannedActivities.add((PlannedActivity) child);
+                        } else if (child instanceof Parent) {
+                            plannedActivities.addAll(templateService.findChildren((Parent) child, PlannedActivity.class));
                         }
                     }
                 }
@@ -220,8 +217,7 @@ public class TemplateImportService {
         }
 
         StringBuilder populationErrors = new StringBuilder();
-        for (Changeable pa: cChildren) {
-            PlannedActivity plannedActivity = (PlannedActivity)pa;
+        for (PlannedActivity plannedActivity : plannedActivities) {
             Activity activity = plannedActivity.getActivity();
 
             Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
@@ -264,18 +260,7 @@ public class TemplateImportService {
                         index.addChildrenChange(oChange);
                         if (change.getAction() == ChangeAction.ADD) {
                             Child child = deltaService.findChangeChild(oChange);
-                            if (!(child instanceof Population))  {
-                                for (Child oChild : templateService.findChildren((Parent) child, Period.class)) {
-                                    index.addPlanTreeNode((PlanTreeNode)oChild);
-                                }
-                                for (Child oChild : templateService.findChildren((Parent) child, StudySegment.class)) {
-                                    index.addPlanTreeNode((PlanTreeNode)oChild);
-                                }
-                                for (Child oChild : templateService.findChildren((Parent) child, PlannedActivity.class)) {
-                                    index.addPlanTreeNode((PlanTreeNode)oChild);
-                                }
-                                index.addPlanTreeNode((PlanTreeNode)child);
-                            }
+                            index.addChangeable(child);
                         }
                     }
                 }

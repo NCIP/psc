@@ -160,6 +160,11 @@
         <property name="xsdElement" value="PLANNED_ACTIVITY_DELTA"/>
     </bean>
 
+    <bean id="plannedActivityLabelDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="PLANNED_ACTIVITY_LABEL"/>
+        <property name="xsdElement" value="PLANNED_ACTIVITY_LABEL_DELTA"/>
+    </bean>
+
     <bean id="populationDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
         <property name="deltaNodeType" value="POPULATION"/>
         <property name="xsdElement" value="POPULATION_DELTA"/>

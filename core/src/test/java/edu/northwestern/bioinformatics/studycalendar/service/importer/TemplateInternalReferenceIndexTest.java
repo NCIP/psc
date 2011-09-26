@@ -1,11 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
-import junit.framework.TestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.Entry;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.Key;
+import junit.framework.TestCase;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 
 /**
  * @author Jalpa Patel
@@ -13,10 +17,12 @@ import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateIn
 public class TemplateInternalReferenceIndexTest  extends TestCase {
     TemplateInternalReferenceIndex referenceIndex;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         referenceIndex =  new TemplateInternalReferenceIndex();
     }
+
     public void testGet() throws Exception {
         PlannedCalendar calendar = new PlannedCalendar();
         calendar.setGridId("CAL-GRID");
@@ -29,16 +35,34 @@ public class TemplateInternalReferenceIndexTest  extends TestCase {
     public void testAddPlanTreeNode() throws Exception {
         PlannedCalendar calendar = new PlannedCalendar();
         calendar.setGridId("CAL-GRID");
-        referenceIndex.addPlanTreeNode(calendar);
+        referenceIndex.addChangeable(calendar);
         assertEquals("Wrong size of index map", 1, referenceIndex.getIndex().size());
         assertSame("Wrong PlanTreeNode present", calendar,
-                referenceIndex.get(new Key(calendar.getClass(), calendar.getGridId())).getOriginal());
+            referenceIndex.get(new Key(calendar.getClass(), calendar.getGridId())).getOriginal());
+    }
 
+    public void testAddPlanTreeNodeWithChildrenAddsChildrenRecursively() throws Exception {
+        PlannedCalendar calendar = new PlannedCalendar();
+        calendar.setGridId("CAL-GRID");
+        calendar.getEpochs().add(setGridId("E4", new Epoch()));
+        referenceIndex.addChangeable(calendar);
+        assertEquals("Wrong size of index map", 2, referenceIndex.getIndex().size());
+        assertNotNull("Root not added",
+            referenceIndex.get(new Key(PlannedCalendar.class, "CAL-GRID")));
+        assertNotNull("Child not added",
+            referenceIndex.get(new Key(Epoch.class, "E4")));
+    }
+
+    public void testAddPlanTreeNodeThatCannotHaveChildrenWorksCorrectly() throws Exception {
+        referenceIndex.addChangeable(setGridId("PAL-4", new PlannedActivityLabel()));
+        assertEquals("Wrong size of index map", 1, referenceIndex.getIndex().size());
+        assertNotNull("Wrong node added",
+                referenceIndex.get(new Key(PlannedActivityLabel.class, "PAL-4")));
     }
 
     public void testAddPlanTreeNodeForNullGridId() throws Exception {
         PlannedCalendar calendar = new PlannedCalendar();
-        referenceIndex.addPlanTreeNode(calendar);
+        referenceIndex.addChangeable(calendar);
         assertEquals("Wrong size of index map", 0, referenceIndex.getIndex().size());
     }
 
