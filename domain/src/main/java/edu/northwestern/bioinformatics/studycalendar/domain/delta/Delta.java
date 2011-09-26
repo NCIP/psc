@@ -2,17 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.DeepComparable;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -71,28 +62,9 @@ public abstract class Delta<T extends Changeable>
 
     @SuppressWarnings({ "unchecked" })
     public static <T extends Changeable> Delta<T> createDeltaFor(T node, Change... changes) {
-        Delta<?> delta;
-        if (node instanceof PlannedCalendar) {
-            delta = new PlannedCalendarDelta((PlannedCalendar) node);
-        } else if (node instanceof Epoch) {
-            delta = new EpochDelta((Epoch) node);
-        } else if (node instanceof StudySegment) {
-            delta = new StudySegmentDelta((StudySegment) node);
-        } else if (node instanceof Period) {
-            delta = new PeriodDelta((Period) node);
-        } else if (node instanceof PlannedActivity) {
-            delta = new PlannedActivityDelta((PlannedActivity) node);
-        } else if (node instanceof PlannedActivityLabel) {
-            delta = new PlannedActivityLabelDelta((PlannedActivityLabel) node);
-        } else if (node instanceof Population) {
-            delta = new PopulationDelta((Population) node);
-        } else if (node instanceof Study) {
-            delta = new StudyDelta((Study)node);
-        } else {
-            throw new StudyCalendarError("Unimplemented changeable type: %s", node.getClass().getName());
-        }
+        Delta<T> delta = DeltaNodeType.valueForNodeClass(node.getClass()).deltaInstance(node);
         delta.addChanges(changes);
-        return (Delta<T>) delta;
+        return delta;
     }
 
     ////// LOGIC
@@ -135,8 +107,13 @@ public abstract class Delta<T extends Changeable>
     }
 
     @Transient
+    public DeltaNodeType getNodeType() {
+        return DeltaNodeType.valueForDeltaClass(getClass());
+    }
+
+    @Transient
     public String getNodeTypeDescription() {
-        return StringTools.humanizeClassName(getNode().getClass().getSimpleName());
+        return getNodeType().getNodeTypeName();
     }
 
     ////// IMPLEMENTATION OF TransientCloneable
