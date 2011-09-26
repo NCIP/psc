@@ -20,6 +20,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PopulationDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudyDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -82,7 +89,17 @@ public enum XsdElement {
     USER_ROLES("roles"),
     USER_ROLE("role"),
     ROLE_SITES,
-    ROLE_STUDIES, ACTIVITY_REFERENCE;
+    ROLE_STUDIES,
+    ACTIVITY_REFERENCE,
+
+    PLANNED_CALENDAR_DELTA(PlannedCalendarDelta.class),
+    EPOCH_DELTA(EpochDelta.class),
+    STUDY_SEGMENT_DELTA(StudySegmentDelta.class),
+    PERIOD_DELTA(PeriodDelta.class),
+    PLANNED_ACTIVITY_DELTA(PlannedActivityDelta.class),
+    POPULATION_DELTA(PopulationDelta.class),
+    STUDY_DELTA(StudyDelta.class)
+    ;
 
     private String elementName;
     private Class<?> correspondingClass;

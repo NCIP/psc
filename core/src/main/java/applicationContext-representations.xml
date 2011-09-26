@@ -128,28 +128,47 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
-    <!-- Delta Serialiers -->
+    <!-- DELTA SERIALIZERS -->
 
-    <bean id="plannedCalendarDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarDeltaXmlSerializer"/>
+    <bean id="baseDeltaXmlSerializer" abstract="true"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.DefaultDeltaXmlSerializer">
+        <property name="changeXmlSerializerFactory" ref="changeXmlSerializerFactory"/>
+    </bean>
 
-    <bean id="epochDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.EpochDeltaXmlSerializer"/>
+    <bean id="plannedCalendarDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="PLANNED_CALENDAR"/>
+        <property name="xsdElement" value="PLANNED_CALENDAR_DELTA"/>
+    </bean>
 
-    <bean id="studySegmentDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySegmentDeltaXmlSerializer"/>
+    <bean id="epochDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="EPOCH"/>
+        <property name="xsdElement" value="EPOCH_DELTA"/>
+    </bean>
 
-    <bean id="periodDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PeriodDeltaXmlSerializer"/>
+    <bean id="studySegmentDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="STUDY_SEGMENT"/>
+        <property name="xsdElement" value="STUDY_SEGMENT_DELTA"/>
+    </bean>
 
-    <bean id="plannedActivityDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityDeltaXmlSerializer"/>
+    <bean id="periodDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="PERIOD"/>
+        <property name="xsdElement" value="PERIOD_DELTA"/>
+    </bean>
 
-    <bean id="populationDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationDeltaXmlSerializer"/>
+    <bean id="plannedActivityDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="PLANNED_ACTIVITY"/>
+        <property name="xsdElement" value="PLANNED_ACTIVITY_DELTA"/>
+    </bean>
 
-    <bean id="studyDeltaXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyDeltaXmlSerializer"/>    
+    <bean id="populationDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="POPULATION"/>
+        <property name="xsdElement" value="POPULATION_DELTA"/>
+    </bean>
+
+    <bean id="studyDeltaXmlSerializer" scope="prototype" parent="baseDeltaXmlSerializer">
+        <property name="deltaNodeType" value="STUDY"/>
+        <property name="xsdElement" value="STUDY_DELTA"/>
+    </bean>
 
     <!-- Change Serializers -->
 

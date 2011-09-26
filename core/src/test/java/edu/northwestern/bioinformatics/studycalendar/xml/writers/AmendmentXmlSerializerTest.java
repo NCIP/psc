@@ -43,7 +43,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        deltaSerializer = registerMockFor(AbstractDeltaXmlSerializer.class);
+        deltaSerializer = registerMockFor(DefaultDeltaXmlSerializer.class);
         deltaSerializerFactory = registerMockFor(DeltaXmlSerializerFactory.class);
 
         amendment0 = setGridId("grid0", new Amendment());
