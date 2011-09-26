@@ -293,4 +293,53 @@ describe "/studies/{study-identifier}/template" do
     put '/studies/NU-Cycles1/template', new, :as => :juno
     response.status_code.should == 200 # OK (replaced)
   end
+
+  describe 'of every-element.xml' do
+    before do
+      @templateService = application_context['templateService']
+
+      ee = PscTest.template('every-element')
+      put '/studies/every-element/template', ee, :as => :juno
+      response.status_code.should == 201
+
+      @created = @studyDao.getByAssignedIdentifier('every-element')
+    end
+
+    def first_child(clazz)
+      @templateService.findChildren(@created.planned_calendar, clazz).first
+    end
+
+    it 'stores the study' do
+      @created.should_not be_nil
+    end
+
+    it 'has the planned calendar' do
+      @created.planned_calendar.should_not be_nil
+    end
+
+    it 'has the epoch' do
+      first_child(Psc::Domain::Epoch).name.should == 'Treatment'
+    end
+
+    it 'has the study segment' do
+      first_child(Psc::Domain::StudySegment).name.should == 'Regimen A'
+    end
+
+    it 'has the period' do
+      first_child(Psc::Domain::Period).duration.quantity.should == 28
+    end
+
+    it 'has the planned activity' do
+      first_child(Psc::Domain::PlannedActivity).details.should == 'Subcutaneously once daily'
+    end
+
+    it 'has the PA label' do
+      first_child(Psc::Domain::PlannedActivityLabel).label.should == 'pharmacy'
+    end
+
+    it 'can be recovered via GET' do
+      get '/studies/every-element/template', :as => :juno
+      response.status_code.should == 200
+    end
+  end
 end
