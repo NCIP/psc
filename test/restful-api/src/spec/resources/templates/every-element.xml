@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="every-element" last-modified-date="2010-10-01T13:40:08.36Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="EE-PC1"/>
+  <amendment name="[Original]" date="2011-11-11" mandatory="true" updated-date="2008-03-18T23:50:03.243Z">
+    <planned-calendar-delta id="EE-PCdelta-1" node-id="EE-PC1">
+      <add id="EE-PCdelta-1.1" index="0">
+        <epoch id="EE-PC1-E1" name="Treatment">
+          <study-segment id="EE-PC1-SS1" name="Regimen A">
+            <period id="EE-PC1-E1-SS1-P1" repetitions="6" start-day="1" duration-quantity="28" duration-unit="day">
+              <planned-activity id="EE-PC1-E1-SS1-P1-PA1" details="Subcutaneously once daily" day="1">
+                <label name="pharmacy"/>
+                <activity-reference code="100001" source="EE Activities"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </amendment>
+  <sources>
+    <source name="EE Activities">
+      <activity name="Azacitidine" code="100001" description="" type="Intervention"/>
+    </source>
+  </sources>
+</study>
