@@ -25,7 +25,8 @@ public class ChangeXmlSerializerFactory implements BeanFactoryAware {
         } else if (ChangeAction.CHANGE_PROPERTY.equals(change.getAction())) {
             return getXmlSerializer(PROPERTY_CHANGE_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem processing template. Change is not recognized: %s", change.getAction());
+            throw new StudyCalendarError(
+                "Could not build XML serializer for change %s (%s).", change, change.getAction());
         }
     }
 
@@ -39,7 +40,8 @@ public class ChangeXmlSerializerFactory implements BeanFactoryAware {
        } else if ((PropertyChangeXmlSerializer.PROPERTY_CHANGE).equals(eChange.getName())) {
             return getXmlSerializer(PROPERTY_CHANGE_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem processing template. Change is not recognized: %s", eChange.getName());
+            throw new StudyCalendarError(
+                "Could not build XML serializer for element %s.", eChange.getName());
         }
     }
 

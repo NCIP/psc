@@ -4,11 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
-
-import java.io.InputStream;
 
 /**
  * @author Rhett Sutphin
@@ -43,41 +39,6 @@ public class PlanTreeNodeXmlSerializerFactoryTest extends StudyCalendarTestCase 
         }
     }
 
-    private static class BeanNameRecordingSerializer implements StudyCalendarXmlSerializer<String> {
-        private String beanName;
-
-        private BeanNameRecordingSerializer(String beanName) {
-            this.beanName = beanName;
-        }
-
-        public String getBeanName() {
-            return beanName;
-        }
-
-        public Document createDocument(String root) {
-            throw new UnsupportedOperationException("createDocument not implemented");
-        }
-
-        public String createDocumentString(String root) {
-            throw new UnsupportedOperationException("createDocumentString not implemented");
-        }
-
-        public Element createElement(String object) {
-            throw new UnsupportedOperationException("createElement not implemented");
-        }
-
-        public String readDocument(Document document) {
-            throw new UnsupportedOperationException("readDocument not implemented");
-        }
-
-        public String readDocument(InputStream in) {
-            throw new UnsupportedOperationException("readDocument not implemented");
-        }
-
-        public String readElement(Element element) {
-            throw new UnsupportedOperationException("readElement not implemented");
-        }
-    }
 
     private static class EmptyChangeable implements Changeable {
         private Integer id;
