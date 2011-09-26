@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
@@ -62,6 +63,12 @@ public class DeltaXmlSerializerFactoryTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testKnownDeltaIsMappedToTheRightBean() throws Exception {
+        BeanNameRecordingDeltaSerializer xmlSerializer =
+            (BeanNameRecordingDeltaSerializer) factory.createXmlSerializer(new StudySegmentDelta());
+        assertEquals("studySegmentDeltaXmlSerializer", xmlSerializer.getBeanName());
+    }
+
     public void testUnknownElementResultsInError() throws Exception {
         try {
             factory.createXmlSerializer(new DefaultElement("fooquux"));
@@ -71,6 +78,12 @@ public class DeltaXmlSerializerFactoryTest extends StudyCalendarTestCase {
                 "Could not build XML serializer for element fooquux.",
                 sce.getMessage());
         }
+    }
+
+    public void testKnownElementNameIsMappedToTheRightBean() throws Exception {
+        BeanNameRecordingDeltaSerializer xmlSerializer =
+            (BeanNameRecordingDeltaSerializer) factory.createXmlSerializer(new DefaultElement("planned-calendar-delta"));
+        assertEquals("plannedCalendarDeltaXmlSerializer", xmlSerializer.getBeanName());
     }
 
     private static class EmptyDelta<T extends Changeable> extends Delta<T> { }

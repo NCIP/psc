@@ -173,8 +173,8 @@
     <bean id="changeXmlSerializerFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ChangeXmlSerializerFactory"/>
 
-    <bean id="planTreeNodeXmlSerializerFactory" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlanTreeNodeXmlSerializerFactory"/>
+    <bean id="changeableXmlSerializerFactory" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ChangeableXmlSerializerFactory"/>
 
     <!-- Xml Serializer Helpers -->
     <bean id="studyXmlSerializerHelper" autowire="byName"

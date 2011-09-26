@@ -19,7 +19,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private Epoch epoch;
     private Document document;
-    private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
+    private ChangeableXmlSerializerFactory changeableSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
 
     protected void setUp() throws Exception {
@@ -28,10 +28,10 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         document = registerMockFor(Document.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
-        planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
+        changeableSerializerFactory = registerMockFor(ChangeableXmlSerializerFactory.class);
 
         serializer = new RemoveXmlSerializer();
-        serializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeSerializerFactory);
+        serializer.setChangeableXmlSerializerFactory(changeableSerializerFactory);
         epoch = setGridId("grid1", new Epoch());
     }
 
@@ -39,7 +39,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.attributeValue("child-id")).andReturn("grid1");
         expectGetElementByIdCalls();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.readElement(element)).andReturn((PlanTreeNode)epoch);
         replayMocks();
 

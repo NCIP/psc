@@ -19,7 +19,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AddXmlSerializer serializer;
     private Add add;
     private Element element;
-    private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
+    private ChangeableXmlSerializerFactory changeableSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
     private StudyCalendarXmlSerializer studyCalendarXmlSerializer;
     private Epoch epoch;
@@ -31,10 +31,10 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
         studyCalendarXmlSerializer = registerMockFor(StudyCalendarXmlSerializer.class);
-        planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
+        changeableSerializerFactory = registerMockFor(ChangeableXmlSerializerFactory.class);
 
         serializer = new AddXmlSerializer();
-        serializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeSerializerFactory);
+        serializer.setChangeableXmlSerializerFactory(changeableSerializerFactory);
 
         epoch = setId(1, setGridId("grid1", new Epoch()));
         add = setGridId("grid0", Add.create(epoch, 0));
@@ -44,7 +44,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateElement() {
         add.setChildId(1);
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
         expect(studyCalendarXmlSerializer.createElement(epoch)).andReturn(eEpoch);
         replayMocks();
 
@@ -60,7 +60,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.attributeValue("index")).andReturn("0");
         expect(element.elements()).andReturn(Collections.singletonList(element));
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.readElement(element)).andReturn((PlanTreeNode) epoch);
         replayMocks();
 
@@ -73,7 +73,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testValidateElementIfEpochIsChild() throws Exception {
         Add add = createAdd();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
 
 
         expect(studyCalendarXmlSerializer.createElement(epoch)).andReturn(eEpoch);
@@ -83,7 +83,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
         replayMocks();
         assertTrue(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
@@ -93,7 +93,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertFalse(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
         replayMocks();
         add = createAdd();
@@ -101,7 +101,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("grid id is different");
         replayMocks();
 
@@ -110,7 +110,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
         replayMocks();
         add = createAdd();
@@ -118,7 +118,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(null, eEpoch)).andReturn("child is null");
         replayMocks();
 
@@ -127,7 +127,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
         replayMocks();
 
@@ -136,7 +136,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         resetMocks();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(changeableSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
         replayMocks();
         add.setGridId("wrong grid id");

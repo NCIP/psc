@@ -14,7 +14,7 @@ public abstract class AbstractChangeXmlSerializer
     extends AbstractStudyCalendarXmlSerializer<Change>
     implements ChangeXmlSerializer
 {
-    private PlanTreeNodeXmlSerializerFactory planTreeNodeXmlSerializerFactory;
+    private ChangeableXmlSerializerFactory changeableXmlSerializerFactory;
 
     protected abstract Change changeInstance();
     protected abstract String elementName();
@@ -66,13 +66,13 @@ public abstract class AbstractChangeXmlSerializer
         return null;
     }
 
-    protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeXmlSerializerFactory() {
-        return planTreeNodeXmlSerializerFactory;
+    protected ChangeableXmlSerializerFactory getChangeableXmlSerializerFactory() {
+        return changeableXmlSerializerFactory;
     }
 
     @Required
-    public void setPlanTreeNodeXmlSerializerFactory(PlanTreeNodeXmlSerializerFactory factory) {
-        this.planTreeNodeXmlSerializerFactory = factory;
+    public void setChangeableXmlSerializerFactory(ChangeableXmlSerializerFactory factory) {
+        this.changeableXmlSerializerFactory = factory;
     }
 
     public StringBuffer validateElement(Change change, Element eChange) {

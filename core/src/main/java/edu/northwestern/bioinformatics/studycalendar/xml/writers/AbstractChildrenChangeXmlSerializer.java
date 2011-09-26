@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.springframework.beans.factory.BeanFactoryAware;
 
 public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer {
     private static final String CHILD_ID = "child-id";
@@ -21,7 +20,7 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     protected void setAdditionalProperties(final Element element, Change change) {
         String childId = element.attributeValue(CHILD_ID);
         Element child = getElementById(element, childId);
-        StudyCalendarXmlSerializer serializer = getPlanTreeNodeXmlSerializerFactory().createXmlSerializer(child);
+        StudyCalendarXmlSerializer serializer = getChangeableXmlSerializerFactory().createXmlSerializer(child);
         Child node = (Child)serializer.readElement(child);
         ((ChildrenChange) change).setChild(node);
     }
