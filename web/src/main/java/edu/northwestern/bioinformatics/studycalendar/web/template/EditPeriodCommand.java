@@ -61,8 +61,8 @@ public class EditPeriodCommand implements PeriodCommand {
 
     public boolean apply() {
         List<Change> changes = new ArrayList<Change>();
-        updateRevWithChangedProperties(changes);
         removeInvalidPlannedActivities(changes);
+        updateRevWithChangedProperties(changes);
         if (!changes.isEmpty()) {
             amendmentService.updateDevelopmentAmendment(originalPeriod,
                 changes.toArray(new Change[changes.size()]));
