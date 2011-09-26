@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="every-delta" last-modified-date="2010-10-01T13:40:08.36Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="ED-PC1"/>
+  <amendment name="Change it all" date="2011-12-12" mandatory="true" updated-date="2008-03-19T23:50:03.243Z" previous-amendment-key="2011-11-11~[Original]">
+    <epoch-delta id="ED-EDelta1" node-id="ED-PC1-E1">
+      <property-change id="ED-EDelta1.1" property-name="name" old-value="Treatment" new-value="Fixing things"/>
+      <add id="ED-EDelta1.2" index="1">
+        <study-segment id="ED-PC1-E1-SS2" name="Regimen Z">
+          <period id="ED-PC1-E1-SS2-P1" repetitions="12" start-day="1" duration-quantity="14" duration-unit="day">
+            <planned-activity id="ED-PC1-E1-SS2-P1-PA1" day="1">
+              <activity-reference code="100001" source="ED Activities"/>
+            </planned-activity>
+          </period>
+        </study-segment>
+      </add>
+    </epoch-delta>
+    <study-segment-delta id="ED-SSDelta1" node-id="ED-PC1-E1-SS1">
+      <property-change id="ED-SSDelta1.1" property-name="name" old-value="Regimen A" new-value="Regimen Alpha"/>
+      <add id="ED-SSDelta1.2">
+        <period id="ED-PC1-E1-SS1-P2" name="Weekly" repetitions="1" start-day="2" duration-quantity="1" duration-unit="week">
+          <planned-activity id="ED-PC1-E1-SS1-P2-PA1" day="2">
+            <activity-reference code="100001" source="ED Activities"/>
+          </planned-activity>
+        </period>
+      </add>
+    </study-segment-delta>
+    <period-delta id="ED-PDelta1" node-id="ED-PC1-E1-SS1-P1">
+      <property-change id="ED-PDelta1.1" property-name="name" old-value="" new-value="Sixer"/>
+      <add id="ED-PDelta1.2" index="1">
+        <planned-activity id="ED-PC1-E1-SS1-P1-PA2" day="2" details="Once again">
+          <activity-reference code="100001" source="ED Activities"/>
+        </planned-activity>
+      </add>
+    </period-delta>
+    <planned-activity-delta id="ED-PADelta1" node-id="ED-PC1-E1-SS1-P1-PA1">
+      <property-change id="ED-PADelta1.1" property-name="details" old-value="Subcutaneously once daily" new-value="Thrice at least"/>
+    </planned-activity-delta>
+  </amendment>
+  <amendment name="[Original]" date="2011-11-11" mandatory="true" updated-date="2008-03-18T23:50:03.243Z">
+    <planned-calendar-delta id="ED-PCdelta1" node-id="ED-PC1">
+      <add id="ED-PCdelta1.1" index="0">
+        <epoch id="ED-PC1-E1" name="Treatment">
+          <study-segment id="ED-PC1-E1-SS1" name="Regimen A">
+            <period id="ED-PC1-E1-SS1-P1" repetitions="6" start-day="1" duration-quantity="28" duration-unit="day">
+              <planned-activity id="ED-PC1-E1-SS1-P1-PA1" details="Subcutaneously once daily" day="1">
+                <label name="pharmacy"/>
+                <activity-reference code="100001" source="ED Activities"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </amendment>
+  <sources>
+    <source name="ED Activities">
+      <activity name="Azacitidine" code="100001" description="" type="Intervention"/>
+    </source>
+  </sources>
+</study>
