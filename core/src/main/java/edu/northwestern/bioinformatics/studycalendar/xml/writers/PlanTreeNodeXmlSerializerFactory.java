@@ -23,8 +23,6 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    // TODO: add to application context and get serializers from application context
-
     public AbstractStudyCalendarXmlSerializer createXmlSerializer(final Element node) {
         if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
             return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
