@@ -11,7 +11,8 @@ import javax.persistence.ManyToOne;
  * @author Rhett Sutphin
  */
 @Entity
-@DiscriminatorValue(value="paLabel")
+@DiscriminatorValue(value="label")
+@SuppressWarnings({ "UnusedDeclaration" })
 public class PlannedActivityLabelDelta extends Delta<PlannedActivityLabel> {
     public PlannedActivityLabelDelta() { }
 
