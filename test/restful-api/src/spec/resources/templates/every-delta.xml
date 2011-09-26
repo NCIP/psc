@@ -29,7 +29,7 @@
       <property-change id="ED-PDelta1.1" property-name="name" old-value="" new-value="Sixer"/>
       <add id="ED-PDelta1.2" index="1">
         <planned-activity id="ED-PC1-E1-SS1-P1-PA2" day="2" details="Once again">
-          <activity-reference code="100001" source="ED Activities"/>
+          <activity-reference code="100003" source="ED Activities"/>
         </planned-activity>
       </add>
     </period-delta>
@@ -62,6 +62,7 @@
   <sources>
     <source name="ED Activities">
       <activity name="Azacitidine" code="100001" description="" type="Intervention"/>
+      <activity name="Bzacitidine" code="100003" description="" type="Intervention"/>
     </source>
   </sources>
 </study>
