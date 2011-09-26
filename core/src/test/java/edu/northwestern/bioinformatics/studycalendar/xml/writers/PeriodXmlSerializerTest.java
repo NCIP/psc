@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 
 public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PeriodXmlSerializer serializer;
@@ -25,11 +26,8 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         plannedActivitySerializer = registerMockFor(PlannedActivityXmlSerializer.class);
-        serializer = new PeriodXmlSerializer() {
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return plannedActivitySerializer;
-            }
-        };
+        serializer = new PeriodXmlSerializer();
+        serializer.setChildXmlSerializer(plannedActivitySerializer);
         period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
 
         periods = new TreeSet<Period>();

@@ -22,11 +22,6 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
         return EPOCH;
     }
 
-    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        StudySegmentXmlSerializer serializer = (StudySegmentXmlSerializer) getBeanFactory().getBean("studySegmentXmlSerializer");
-        return serializer;
-    }
-
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
         ((Epoch) node).setName(element.attributeValue(NAME));
     }
@@ -48,9 +43,9 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     }
 
     protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
-        if (getChildSerializer() != null) {
+        if (getChildXmlSerializer() != null) {
             for (PlanTreeNode<?> oChildNode : node.getChildren()) {
-                Element childElement = getChildSerializer().createElement(oChildNode);
+                Element childElement = getChildXmlSerializer().createElement(oChildNode);
                 eStudySegment.add(childElement);
             }
         }
@@ -60,7 +55,7 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public String validateChildrenElements(StudySegment studySegment, Element eStudySegment) {
         StringBuffer errorMessageStringBuffer = new StringBuffer("");
 
-        errorMessageStringBuffer.append(getChildSerializer().validateElement(studySegment, eStudySegment));
+        errorMessageStringBuffer.append(getChildXmlSerializer().validateElement(studySegment, eStudySegment));
 
         if (!StringUtils.isBlank(errorMessageStringBuffer.toString())) {
             errorMessageStringBuffer.append("Study segments must be identical and they must appear in the same order as they are in system. \n");

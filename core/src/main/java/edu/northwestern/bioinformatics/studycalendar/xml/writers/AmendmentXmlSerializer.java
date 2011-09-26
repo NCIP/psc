@@ -6,12 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.InputStream;
 import java.text.ParseException;
@@ -28,6 +28,7 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
     private Study study;
 
     private boolean isDevelopmentAmendment = false;
+    private DeltaXmlSerializerFactory deltaXmlSerializerFactory;
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -107,9 +108,13 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
         }
     }
 
-
     public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
-        return (DeltaXmlSerializerFactory) getBeanFactory().getBean("deltaXmlSerializerFactory");
+        return deltaXmlSerializerFactory;
+    }
+
+    @Required
+    public void setDeltaXmlSerializerFactory(DeltaXmlSerializerFactory deltaXmlSerializerFactory) {
+        this.deltaXmlSerializerFactory = deltaXmlSerializerFactory;
     }
 
     public void setStudy(Study study) {

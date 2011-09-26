@@ -2,11 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public abstract class AbstractDeltaXmlSerializer
     implements DeltaXmlSerializer
 {
     private static final String NODE_ID = "node-id";
+    private ChangeXmlSerializerFactory changeXmlSerializerFactory;
 
     protected abstract Delta deltaInstance();
 
@@ -59,8 +61,12 @@ public abstract class AbstractDeltaXmlSerializer
     }
 
     public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-        ChangeXmlSerializerFactory factory = (ChangeXmlSerializerFactory) getBeanFactory().getBean("changeXmlSerializerFactory");
-        return factory;
+        return changeXmlSerializerFactory;
+    }
+
+    @Required
+    public void setChangeXmlSerializerFactory(ChangeXmlSerializerFactory factory) {
+        this.changeXmlSerializerFactory = factory;
     }
 
     public String validate(Amendment releasedAmendment, Element eDelta) {

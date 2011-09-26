@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
+    private AbstractPlanTreeNodeXmlSerializer childXmlSerializer;
 
     protected abstract PlanTreeNode<?> nodeInstance();
 
     protected abstract String elementName();
-
-    protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
     protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) { }
 
@@ -31,7 +30,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         element.addAttribute(ID, node.getGridId());
         addAdditionalElementAttributes(node, element);
 
-        if (getChildSerializer() != null) {
+        if (getChildXmlSerializer() != null) {
             addChildrenElements((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) node, element);
         }
 
@@ -49,7 +48,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         node.setGridId(key);
         addAdditionalNodeAttributes(element, node);
 
-        if (getChildSerializer() != null) {
+        if (getChildXmlSerializer() != null) {
             List<PlanTreeNode<?>> children = readChildElements(element);
             addChildren(children, node);
         }
@@ -60,7 +59,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         List<PlanTreeNode<?>> nodeList = new ArrayList<PlanTreeNode<?>>();
         for (Object oChild : element.elements()) {
             Element child = (Element) oChild;
-            PlanTreeNode<?> childNode = getChildSerializer().readElement(child);
+            PlanTreeNode<?> childNode = getChildXmlSerializer().readElement(child);
             nodeList.add(childNode);
         }
         return nodeList;
@@ -109,5 +108,16 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         }
 
         return errorMessageStringBuffer.toString();
+    }
+
+    ////// CONFIGURATION
+
+    protected AbstractPlanTreeNodeXmlSerializer getChildXmlSerializer() {
+        return childXmlSerializer;
+    }
+
+    // not required -- some serializers don't have children, or handle their children a different way
+    public void setChildXmlSerializer(AbstractPlanTreeNodeXmlSerializer childXmlSerializer) {
+        this.childXmlSerializer = childXmlSerializer;
     }
 }

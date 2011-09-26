@@ -4,14 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCa
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import static org.easymock.EasyMock.expect;
 
 public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
     private RemoveXmlSerializer serializer;
@@ -29,11 +30,8 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
         planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
 
-        serializer = new RemoveXmlSerializer(){
-            protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-                return planTreeNodeSerializerFactory;
-            }
-        };
+        serializer = new RemoveXmlSerializer();
+        serializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeSerializerFactory);
         epoch = setGridId("grid1", new Epoch());
     }
 
