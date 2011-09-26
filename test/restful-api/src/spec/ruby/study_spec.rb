@@ -342,4 +342,69 @@ describe "/studies/{study-identifier}/template" do
       response.status_code.should == 200
     end
   end
+
+  describe 'of every-delta.xml' do
+    before do
+      @templateService = application_context['templateService']
+
+      ee = PscTest.template('every-delta')
+      put '/studies/every-delta/template', ee, :as => :juno
+      response.status_code.should == 201
+
+      @created = @studyDao.getByAssignedIdentifier('every-delta')
+    end
+
+    def first_child(clazz)
+      @templateService.findChildren(@created.planned_calendar, clazz).first
+    end
+
+    def second_child(clazz)
+      @templateService.findChildren(@created.planned_calendar, clazz)[1]
+    end
+
+    it 'stores the study' do
+      @created.should_not be_nil
+    end
+
+    it 'has the planned calendar' do
+      @created.planned_calendar.should_not be_nil
+    end
+
+    it 'has the updated epoch' do
+      first_child(Psc::Domain::Epoch).name.should == 'Fixing things'
+    end
+
+    it 'has the new study segment' do
+      second_child(Psc::Domain::StudySegment).name.should == 'Regimen Z'
+    end
+
+    it 'has the updated study segment' do
+      first_child(Psc::Domain::StudySegment).name.should == 'Regimen Alpha'
+    end
+
+    it 'has the new period' do
+      second_child(Psc::Domain::Period).name.should == 'Weekly'
+    end
+
+    it 'has the updated period' do
+      first_child(Psc::Domain::Period).name.should == 'Sixer'
+    end
+
+    it 'has the new planned activity' do
+      second_child(Psc::Domain::PlannedActivity).details.should == 'Once again'
+    end
+
+    it 'has the updated planned activity' do
+      first_child(Psc::Domain::PlannedActivity).details.should == 'Thrice at least'
+    end
+
+    it 'has the PA label' do
+      first_child(Psc::Domain::PlannedActivityLabel).label.should == 'pharmacy'
+    end
+
+    it 'can be recovered via GET' do
+      get '/studies/every-delta/template', :as => :juno
+      response.status_code.should == 200
+    end
+  end
 end
