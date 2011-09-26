@@ -30,50 +30,51 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public AbstractDeltaXmlSerializer createXmlSerializer(final Delta delta) {
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public DeltaXmlSerializer createXmlSerializer(final Delta delta) {
         if (delta instanceof PlannedCalendarDelta) {
-            return getXmlSerialzier(PLANNED_CALENDAR_DELTA_SERIALIZER);
+            return getXmlSerializer(PLANNED_CALENDAR_DELTA_SERIALIZER);
         } else if (delta instanceof EpochDelta) {
-            return getXmlSerialzier(EPOCH_DELTA_SERIALIZER);
+            return getXmlSerializer(EPOCH_DELTA_SERIALIZER);
         } else if (delta instanceof StudySegmentDelta) {
-            return getXmlSerialzier(STUDY_SEGMENT_DELTA_SERIALIZER);
+            return getXmlSerializer(STUDY_SEGMENT_DELTA_SERIALIZER);
         } else if (delta instanceof PeriodDelta) {
-            return getXmlSerialzier(PERIOD_DELTA_SERIALIZER);
+            return getXmlSerializer(PERIOD_DELTA_SERIALIZER);
         } else if (delta instanceof PlannedActivityDelta) {
-            return getXmlSerialzier(PLANNED_ACTIVITY_DELTA_SERIALIZER);
+            return getXmlSerializer(PLANNED_ACTIVITY_DELTA_SERIALIZER);
         } else if (delta instanceof PopulationDelta) {
-            return getXmlSerialzier(POPULATION_DELTA_SERIALIZER);
+            return getXmlSerializer(POPULATION_DELTA_SERIALIZER);
         } else if (delta instanceof StudyDelta) {
-            return getXmlSerialzier(STUDY_DELTA_SERIALIZER);
-        }
-        else {
+            return getXmlSerializer(STUDY_DELTA_SERIALIZER);
+        } else {
             throw new StudyCalendarError("Problem importing template. Could not find delta type");
         }
     }
 
-    public AbstractDeltaXmlSerializer createXmlSerializer(final Element delta) {
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public DeltaXmlSerializer createXmlSerializer(final Element delta) {
         if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(PLANNED_CALENDAR_DELTA_SERIALIZER);
+            return getXmlSerializer(PLANNED_CALENDAR_DELTA_SERIALIZER);
         } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(EPOCH_DELTA_SERIALIZER);
+            return getXmlSerializer(EPOCH_DELTA_SERIALIZER);
         } else if (StudySegmentDeltaXmlSerializer.STUDY_SEGMENT_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(STUDY_SEGMENT_DELTA_SERIALIZER);
+            return getXmlSerializer(STUDY_SEGMENT_DELTA_SERIALIZER);
         } else if (PeriodDeltaXmlSerializer.PERIOD_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(PERIOD_DELTA_SERIALIZER);
+            return getXmlSerializer(PERIOD_DELTA_SERIALIZER);
         } else if(PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(PLANNED_ACTIVITY_DELTA_SERIALIZER);
+            return getXmlSerializer(PLANNED_ACTIVITY_DELTA_SERIALIZER);
         } else if (PopulationDeltaXmlSerializer.POPULATION_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(POPULATION_DELTA_SERIALIZER);
+            return getXmlSerializer(POPULATION_DELTA_SERIALIZER);
         }  else if (StudyDeltaXmlSerializer.STUDY_DELTA.equals(delta.getName())) {
-            return getXmlSerialzier(STUDY_DELTA_SERIALIZER);
-        }else {
+            return getXmlSerializer(STUDY_DELTA_SERIALIZER);
+        } else {
             throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
         }
     }
 
-    private AbstractDeltaXmlSerializer getXmlSerialzier(String beanName) {
-        AbstractDeltaXmlSerializer serializer = (AbstractDeltaXmlSerializer) beanFactory.getBean(beanName);
-        return serializer;
+    // package level for testing
+    DeltaXmlSerializer getXmlSerializer(String beanName) {
+        return (DeltaXmlSerializer) beanFactory.getBean(beanName);
     }
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

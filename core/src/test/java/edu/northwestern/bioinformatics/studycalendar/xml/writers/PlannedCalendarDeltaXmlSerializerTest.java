@@ -12,13 +12,13 @@ import static org.easymock.EasyMock.expect;
 import java.util.Collections;
 
 public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestCase {
-    private AbstractDeltaXmlSerializer serializer;
+    private DeltaXmlSerializer serializer;
     private Delta plannedCalendarDelta;
     private Element element;
     private PlannedCalendar calendar;
     private ChangeXmlSerializerFactory changeSerializerFactory;
     private Add add;
-    private AbstractChangeXmlSerializer changeSerializer;
+    private ChangeXmlSerializer changeSerializer;
 
     protected void setUp() throws Exception {
         super.setUp();

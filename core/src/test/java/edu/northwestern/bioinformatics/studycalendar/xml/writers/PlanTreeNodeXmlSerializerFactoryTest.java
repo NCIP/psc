@@ -16,7 +16,7 @@ import java.io.InputStream;
 public class PlanTreeNodeXmlSerializerFactoryTest extends StudyCalendarTestCase {
     private PlanTreeNodeXmlSerializerFactory factory = new PlanTreeNodeXmlSerializerFactory() {
         @Override
-        StudyCalendarXmlSerializer<?> getXmlSerialzier(String beanName) {
+        StudyCalendarXmlSerializer<?> getXmlSerializer(String beanName) {
             return new BeanNameRecordingSerializer(beanName);
         }
     };

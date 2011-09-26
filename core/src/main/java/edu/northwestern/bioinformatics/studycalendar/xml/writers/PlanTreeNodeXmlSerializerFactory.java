@@ -30,17 +30,17 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public StudyCalendarXmlSerializer createXmlSerializer(final Element node) {
         if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
-            return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
+            return getXmlSerializer(PLANNED_CALENDAR_SERIALIZER);
         } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
-            return getXmlSerialzier(EPOCH_SERIALIZER);
+            return getXmlSerializer(EPOCH_SERIALIZER);
         } else if (StudySegmentXmlSerializer.STUDY_SEGMENT.equals(node.getName())) {
-            return getXmlSerialzier(STUDY_SEGMENT_SERIALIZER);
+            return getXmlSerializer(STUDY_SEGMENT_SERIALIZER);
         } else if (PeriodXmlSerializer.PERIOD.equals(node.getName())) {
-            return getXmlSerialzier(PERIOD_SERIALIZER);
+            return getXmlSerializer(PERIOD_SERIALIZER);
         } else if(PlannedActivityXmlSerializer.PLANNED_ACTIVITY.equals(node.getName())) {
-            return getXmlSerialzier(PLANNED_ACTIVITY_SERIALIZER);
+            return getXmlSerializer(PLANNED_ACTIVITY_SERIALIZER);
         } else if(PopulationXmlSerializer.POPULATION.equals(node.getName())) {
-            return getXmlSerialzier(POPULATION_SERIALIZER);
+            return getXmlSerializer(POPULATION_SERIALIZER);
         } else {
             throw new StudyCalendarError("Could not build XML serializer for element %s.", node.getName());
         }
@@ -49,17 +49,17 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public StudyCalendarXmlSerializer createXmlSerializer(final Changeable node) {
         if (node instanceof PlannedCalendar) {
-            return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
+            return getXmlSerializer(PLANNED_CALENDAR_SERIALIZER);
         } else if (node instanceof Epoch) {
-            return getXmlSerialzier(EPOCH_SERIALIZER);
+            return getXmlSerializer(EPOCH_SERIALIZER);
         } else if (node instanceof StudySegment) {
-            return getXmlSerialzier(STUDY_SEGMENT_SERIALIZER);
+            return getXmlSerializer(STUDY_SEGMENT_SERIALIZER);
         } else if (node instanceof Period) {
-            return getXmlSerialzier(PERIOD_SERIALIZER);
+            return getXmlSerializer(PERIOD_SERIALIZER);
         } else if (node instanceof PlannedActivity) {
-            return getXmlSerialzier(PLANNED_ACTIVITY_SERIALIZER);
+            return getXmlSerializer(PLANNED_ACTIVITY_SERIALIZER);
         } else if (node instanceof Population) {
-            return getXmlSerialzier(POPULATION_SERIALIZER);
+            return getXmlSerializer(POPULATION_SERIALIZER);
         } else {
             throw new StudyCalendarError("Could not build XML serializer for changeable %s.", node);
         }
@@ -67,7 +67,7 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
 
     // package level for testing
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    StudyCalendarXmlSerializer getXmlSerialzier(String beanName) {
+    StudyCalendarXmlSerializer getXmlSerializer(String beanName) {
         return (StudyCalendarXmlSerializer) beanFactory.getBean(beanName);
     }
 
