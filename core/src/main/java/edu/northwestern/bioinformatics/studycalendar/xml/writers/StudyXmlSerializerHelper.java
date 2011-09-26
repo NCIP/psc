@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.TemplateTraversalHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 public class StudyXmlSerializerHelper {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
 
@@ -70,7 +73,9 @@ public class StudyXmlSerializerHelper {
 
     protected void replaceActivityReferencesWithCorrespondingDefinitions(Study study, Collection<Source> sources) {
         Collection<Activity> activityRefs = findAllActivities(study);
+        log.debug("Resolving {} potential activity ref(s)", activityRefs.size());
         for (Activity ref : activityRefs) {
+            log.debug("- attempting to resolve {}", ref);
             if (ref.getSource() == null) {
                 throw new StudyCalendarValidationException(MessageFormat.format("Source is missing for activity reference [code={0}; source=(MISSING)]", ref.getCode()));
             }

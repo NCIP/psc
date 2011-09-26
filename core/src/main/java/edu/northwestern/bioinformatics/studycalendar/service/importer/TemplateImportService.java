@@ -217,13 +217,16 @@ public class TemplateImportService {
         }
 
         StringBuilder populationErrors = new StringBuilder();
+        log.debug("Resolving activities and populations for planned activities");
         for (PlannedActivity plannedActivity : plannedActivities) {
             Activity activity = plannedActivity.getActivity();
 
             Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
             if (existingActivity != null) {
+                log.debug("Activity {} for {} already exists; using.", existingActivity, plannedActivity);
                 plannedActivity.setActivity(existingActivity);
             } else {
+                log.debug("Activity {} for {} is new; creating.", activity, plannedActivity);
                 activityService.saveActivity(activity);
                 plannedActivity.setActivity(activity);
             }
