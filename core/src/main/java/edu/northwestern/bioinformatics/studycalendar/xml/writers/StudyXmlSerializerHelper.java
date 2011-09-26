@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -33,14 +32,8 @@ public class StudyXmlSerializerHelper {
 
     protected List<Activity> findAllActivities(Study study) {
         List<Activity> result = new LinkedList<Activity>();
-        for (PlannedActivity a : TemplateTraversalHelper.findChildren(study.getPlannedCalendar(), PlannedActivity.class)) {
-            result.add(a.getActivity());
-        }
-
-        for (Parent p : TemplateTraversalHelper.findRootParentNodes(study)) {
-            for (PlannedActivity a : TemplateTraversalHelper.findChildren(p, PlannedActivity.class)) {
-                result.add(a.getActivity());
-            }
+        for (PlannedActivity pa : TemplateTraversalHelper.findAllNodes(study, PlannedActivity.class)) {
+            result.add(pa.getActivity());
         }
 
         return result;

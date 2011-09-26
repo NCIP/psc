@@ -1,14 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 
 import java.util.ArrayList;
@@ -22,11 +25,14 @@ import static java.util.Arrays.asList;
 
 public class StudyXmlSerializerHelperTest extends StudyCalendarTestCase {
     private StudyXmlSerializerHelper helper;
+    private Activity fly;
+    private Source source;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         helper = new StudyXmlSerializerHelper();
+        source = createSource("Some Things To Do", fly = createActivity("Fly", "f"));
     }
 
     public void testGroupActivitiesBySource() throws Exception {
@@ -69,12 +75,9 @@ public class StudyXmlSerializerHelperTest extends StudyCalendarTestCase {
     }
 
     public void testResolvingActivityReferencesResolvesMultipleEquivalentActivities() throws Exception {
-        Activity f;
-        Source source = createSource("Some Things To Do", f = createActivity("Fly", "f"));
-
         Period p = createPeriod(1, 7, 4);
-        p.addChild(Fixtures.createPlannedActivity(buildRef(f), 2));
-        p.addChild(Fixtures.createPlannedActivity(buildRef(f), 6));
+        p.addChild(Fixtures.createPlannedActivity(buildRef(fly), 2));
+        p.addChild(Fixtures.createPlannedActivity(buildRef(fly), 6));
 
         Study in = Fixtures.createInDevelopmentTemplate("A");
         Add firstEpochAdd = (Add) in.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
@@ -87,6 +90,26 @@ public class StudyXmlSerializerHelperTest extends StudyCalendarTestCase {
             "Fly", p.getPlannedActivities().get(0).getActivity().getName());
         assertEquals("Did not resolve second",
             "Fly", p.getPlannedActivities().get(1).getActivity().getName());
+    }
+
+    public void testResolvingActivityReferencesResolvesRefsInPAsInPeriodDeltas() throws Exception {
+        Period p = setGridId("P-51", createPeriod(1, 7, 4));
+        p.addChild(Fixtures.createPlannedActivity(buildRef(fly), 2));
+        p.addChild(Fixtures.createPlannedActivity(buildRef(fly), 6));
+
+        Study in = Fixtures.createInDevelopmentTemplate("A");
+        Add firstEpochAdd = (Add) in.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
+        StudySegment aSegment = ((Epoch) firstEpochAdd.getChild()).getChildren().get(0);
+        aSegment.addChild(p);
+
+        in = Fixtures.revise(in, in.getDevelopmentAmendment());
+        in.setDevelopmentAmendment(new Amendment());
+        PlannedActivity pa = Fixtures.createPlannedActivity(buildRef(fly), 3);
+        Delta<Period> periodDelta = Delta.createDeltaFor(p, Add.create(pa));
+        in.getDevelopmentAmendment().addDelta(periodDelta);
+
+        helper.replaceActivityReferencesWithCorrespondingDefinitions(in, Arrays.asList(source));
+        assertEquals("Did not resolve", "Fly", pa.getActivity().getName());
     }
 
     private Activity buildRef(Activity a) {
