@@ -267,7 +267,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         };
         changeXmlSerializerFactory = new ChangeXmlSerializerFactory() {
             @Override
-            public ChangeXmlSerializer createXmlSerializer(Element eChange, Changeable deltaNode) {
+            public ChangeXmlSerializer createXmlSerializer(Element eChange) {
                 if ((AddXmlSerializer.ADD).equals(eChange.getName())) {
                     return addXmlSerializer;
                 } else if ((RemoveXmlSerializer.REMOVE).equals(eChange.getName())) {
@@ -283,7 +283,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
 
             @Override
-            public ChangeXmlSerializer createXmlSerializer(Change change, Changeable deltaNode) {
+            public ChangeXmlSerializer createXmlSerializer(Change change) {
                 if ((ChangeAction.ADD).equals(change.getAction())) {
                     return addXmlSerializer;
                 } else if ((ChangeAction.REMOVE).equals(change.getAction())) {

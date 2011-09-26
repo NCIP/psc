@@ -4,14 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactoryAware;
 
 public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer implements BeanFactoryAware {
     private static final String CHILD_ID = "child-id";
-    protected Class<? extends DomainObject> childClass;
 
     protected void addAdditionalAttributes(final Change change, Element element) {
         Child child = ((ChildrenChange) change).getChild();
@@ -49,7 +47,4 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
         return errorMessageStringBuffer;
     }
 
-    public void setChildClass(Class childClass) {
-        this.childClass = childClass;
-    }
 }

@@ -40,7 +40,7 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
     }
 
     public void testCreateElement() {
-        expect(changeSerializerFactory.createXmlSerializer(add, calendar)).andReturn(changeSerializer);
+        expect(changeSerializerFactory.createXmlSerializer(add)).andReturn(changeSerializer);
         expect(changeSerializer.createElement(add)).andReturn(DocumentHelper.createElement("add"));
         replayMocks();
 

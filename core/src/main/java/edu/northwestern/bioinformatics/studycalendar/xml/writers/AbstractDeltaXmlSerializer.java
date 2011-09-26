@@ -30,7 +30,7 @@ public abstract class AbstractDeltaXmlSerializer
         List<Change> changes = delta.getChanges();
         for (Change change : changes) {
             ChangeXmlSerializer changeSerializer
-                = getChangeXmlSerializerFactory().createXmlSerializer(change, delta.getNode());
+                = getChangeXmlSerializerFactory().createXmlSerializer(change);
             Element eChange = changeSerializer.createElement(change);
             if (eChange != null) {
                 eDelta.add(eChange);
@@ -51,7 +51,7 @@ public abstract class AbstractDeltaXmlSerializer
 
         List<Element> eChanges = element.elements();
         for (Element eChange : eChanges) {
-            ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
+            ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange);
             Change change = changeSerializer.readElement(eChange);
             delta.addChange(change);
         }
@@ -93,8 +93,8 @@ public abstract class AbstractDeltaXmlSerializer
             } else {
                 for (int i = 0; i < eChanges.size(); i++) {
                     Element eChange = eChanges.get(i);
-                    ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, nodeInstance());
-                    ChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i), nodeInstance());
+                    ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange);
+                    ChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i));
 
                     if (!changeSerializer.getClass().isAssignableFrom(abstractChangeXmlSerializer.getClass())) {
                         errorMessageBuffer.append(String.format("\nChange (id :%s) present in imporated document   \n are in different order " +
