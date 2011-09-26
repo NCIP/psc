@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import junit.framework.TestCase;
 
@@ -20,27 +22,32 @@ public class TemplateTraversalHelperTest extends TestCase {
         super.setUp();
     }
 
-    public void testGetParentTreeNodesFromDeltas() throws Exception {
-        StudySegment seg; PlannedCalendar pCal ;
+    public void testGetRootNodesFromDeltas() throws Exception {
+        StudySegment seg;
+        PlannedActivity pa;
 
+        Study study = new Study();
         Amendment a = new Amendment();
+        study.setDevelopmentAmendment(a);
         a.addDelta(
             Delta.createDeltaFor(
-                new Study(),
-                Add.create(pCal = new PlannedCalendar())
-            )
-        );
-
-        a.addDelta(
-            Delta.createDeltaFor(
-                new PlannedCalendar(),
+                new Epoch(),
                 Add.create(seg = new StudySegment())
             )
         );
 
-        Collection<Parent> actual = TemplateTraversalHelper.findRootParentNodes(a);
-        assertEquals("Wrong size", 2, actual.size());
-        assertTrue("Missing planned calendar", actual.contains(pCal));
-        assertTrue("Missing planned segment", actual.contains(seg));
+        a.addDelta(
+            Delta.createDeltaFor(
+                new Period(),
+                Add.create(pa = new PlannedActivity())
+            )
+        );
+
+        Collection<Changeable> actual = TemplateTraversalHelper.findAddedNodes(study);
+        System.out.println(actual);
+        assertEquals("Wrong size", 3, actual.size());
+        assertTrue("Missing planned calendar", actual.contains(study.getPlannedCalendar()));
+        assertTrue("Missing planned activity", actual.contains(pa));
+        assertTrue("Missing segment", actual.contains(seg));
     }
 }
