@@ -100,7 +100,7 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
             serializer.readElement(invalid);
             fail("Should throw validation exception");
         } catch (Throwable e) {
-            assertEquals("Wrong exception message", String.format("Activity code is required for ", XsdElement.ACTIVITY_REFERENCE),
+            assertEquals("Wrong exception message", "Activity code is required for activity-reference",
                 e.getMessage());
         }
     }
@@ -112,7 +112,7 @@ public class ActivityReferenceXmlSerializerTest extends StudyCalendarXmlTestCase
             serializer.readElement(invalid);
             fail("Should throw validation exception");
         } catch (Throwable e) {
-            assertEquals("Wrong exception message", String.format("Source is required for ", XsdElement.ACTIVITY_REFERENCE),
+            assertEquals("Wrong exception message", "Source is required for activity-reference",
                 e.getMessage());
         }
     }

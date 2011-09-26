@@ -29,14 +29,14 @@ public class ActivityReferenceXmlSerializer extends AbstractStudyCalendarXmlSeri
 
         String code = XsdAttribute.ACTIVITY_CODE.from(element);
         if (isBlank(code)) {
-            throw new StudyCalendarValidationException("Activity code is required for %s", XsdElement.ACTIVITY_REFERENCE);
+            throw new StudyCalendarValidationException("Activity code is required for %s", XsdElement.ACTIVITY_REFERENCE.xmlName());
         } else {
             activity.setCode(code);
         }
 
         String sourceName = XsdAttribute.ACTIVITY_SOURCE.from(element);
         if (isBlank(sourceName)) {
-           throw new StudyCalendarValidationException("Source is required for %s", XsdElement.ACTIVITY_REFERENCE);
+           throw new StudyCalendarValidationException("Source is required for %s", XsdElement.ACTIVITY_REFERENCE.xmlName());
         } else {
            Source source = new Source();
            source.setName(sourceName);
