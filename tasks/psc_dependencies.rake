@@ -473,6 +473,8 @@ UNIT_TESTING = [
   CGLIB,
   "org.springframework:spring-test:jar:#{SPRING_VERSION}",
   eponym("xmlunit", "1.1"),
+  "org.reflections:reflections:jar:0.9.5",
+  "com.google.guava:guava:jar:r08",
   SPRING_OSGI_MOCKS,
   LOGBACK,
   SLF4J.jcl,

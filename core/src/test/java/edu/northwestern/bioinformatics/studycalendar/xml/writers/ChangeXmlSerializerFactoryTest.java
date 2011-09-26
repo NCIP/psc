@@ -6,10 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
+import org.reflections.Reflections;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -22,6 +27,31 @@ public class ChangeXmlSerializerFactoryTest extends StudyCalendarTestCase {
             return new BeanNameRecordingChangeSerializer(beanName);
         }
     };
+    private Reflections domainReflections;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        domainReflections = new Reflections("edu.northwestern.bioinformatics.studycalendar.domain");
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public void testASerializerCanBeBuiltForEveryChange() throws Exception {
+        List<String> errors = new ArrayList<String>();
+        for (Class<? extends Change> aClass : domainReflections.getSubTypesOf(Change.class)) {
+            if (Modifier.isPublic(aClass.getModifiers()) && !Modifier.isAbstract(aClass.getModifiers()) && ! aClass.isAnonymousClass()) {
+                Change c = aClass.newInstance();
+                try {
+                    factory.createXmlSerializer(c);
+                } catch (StudyCalendarError sce) {
+                    errors.add(String.format("Failure with %s: %s", c, sce.getMessage()));
+                }
+            }
+        }
+        if (!errors.isEmpty()) {
+            fail(StringUtils.join(errors.iterator(), '\n'));
+        }
+    }
 
     public void testUnknownChangeResultsInError() throws Exception {
         try {
