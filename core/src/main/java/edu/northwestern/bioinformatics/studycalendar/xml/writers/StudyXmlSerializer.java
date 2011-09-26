@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
@@ -17,11 +19,11 @@ import java.util.List;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 
-public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
-
+public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> implements BeanFactoryAware {
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
-    private ActivitySourceXmlSerializer activitySourceXmlSerializer;
     private StudyXmlSerializerHelper studyXmlSerializerHelper;
+    private PlannedCalendarXmlSerializer plannedCalendarXmlSerializer;
+    private BeanFactory beanFactory;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -41,7 +43,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             elt.add(studySecondaryIdentifierXmlSerializer.createElement(studySecondaryIdent));
         }
 
-        Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
+        Element eCalendar = getPlannedCalendarXmlSerializer().createElement(study.getPlannedCalendar());
 
         elt.add(eCalendar);
 
@@ -89,7 +91,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         }
 
         Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
-        PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+        PlannedCalendar calendar = getPlannedCalendarXmlSerializer().readElement(eCalendar);
         study.setPlannedCalendar(calendar);
 
         List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
@@ -138,19 +140,21 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return null;
     }
 
-    protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
-        PlannedCalendarXmlSerializer plannedCalendarXmlSerializer = (PlannedCalendarXmlSerializer) getBeanFactory().getBean("plannedCalendarXmlSerializer");
+    private BeanFactory getBeanFactory() {
+        return beanFactory;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
+
+    protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer() {
         return plannedCalendarXmlSerializer;
     }
 
-    protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
-        PopulationXmlSerializer populationXmlSerializer = (PopulationXmlSerializer) getBeanFactory().getBean("populationXmlSerializer");
-        return populationXmlSerializer;
-    }
-
-    protected StudyXmlSerializer getStudyXmlSerializer(Study study) {
-        StudyXmlSerializer studyXmlSerializer = (StudyXmlSerializer) getBeanFactory().getBean("studyXmlSerializer");
-        return studyXmlSerializer;
+    @Required
+    public void setPlannedCalendarXmlSerializer(PlannedCalendarXmlSerializer plannedCalendarXmlSerializer) {
+        this.plannedCalendarXmlSerializer = plannedCalendarXmlSerializer;
     }
 
     protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
@@ -170,11 +174,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     @Required
     public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
         this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
-    }
-
-    @Required
-    public void setActivitySourceXmlSerializer(ActivitySourceXmlSerializer serializer) {
-        this.activitySourceXmlSerializer = serializer;
     }
 
     @Required

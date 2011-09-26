@@ -31,7 +31,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Study study;
     private Element element;
     private PlannedCalendar calendar;
-    private ActivitySourceXmlSerializer activitySourceSerializer;
     private PlannedCalendarXmlSerializer plannedCalendarSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentXmlSerializer developmentAmendmentSerializer;
@@ -55,29 +54,25 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        activitySourceSerializer = registerMockFor(ActivitySourceXmlSerializer.class);
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
         developmentAmendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         studyXmlSerializerHelper = registerMockFor(StudyXmlSerializerHelper.class);
 
         serializer = new StudyXmlSerializer() {
-            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
-                return plannedCalendarSerializer;
-            }
-
+            @Override
             public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
                 return amendmentSerializer;
             }
 
+            @Override
             protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
                 return developmentAmendmentSerializer;
             }
         };
 
         serializer.setStudyXmlSerializerHelper(studyXmlSerializerHelper);
-
-        serializer.setActivitySourceXmlSerializer(activitySourceSerializer);
+        serializer.setPlannedCalendarXmlSerializer(plannedCalendarSerializer);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         firstAmendment = createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);

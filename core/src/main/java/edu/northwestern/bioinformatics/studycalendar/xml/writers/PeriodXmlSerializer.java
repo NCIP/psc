@@ -29,13 +29,8 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
         return PERIOD;
     }
 
-    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        PlannedActivityXmlSerializer serializer = (PlannedActivityXmlSerializer) getBeanFactory().getBean("plannedActivityXmlSerializer");
-        return serializer;
-    }
-
     protected PlannedActivityXmlSerializer getPlannedActivityXmlSerializer() {
-        return (PlannedActivityXmlSerializer) getChildSerializer();
+        return (PlannedActivityXmlSerializer) getChildXmlSerializer();
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -62,9 +57,9 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     }
 
     protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
-        if (getChildSerializer() != null) {
+        if (getChildXmlSerializer() != null) {
             for (PlanTreeNode<?> oChildNode : node.getChildren()) {
-                Element childElement = getChildSerializer().createElement(oChildNode);
+                Element childElement = getChildXmlSerializer().createElement(oChildNode);
                 eStudySegment.add(childElement);
             }
         }

@@ -1,15 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +21,7 @@ import java.io.StringWriter;
  * @author Rhett Sutphin
  * @author John Dzak
  */
-public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R>, BeanFactoryAware {
+public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
@@ -37,7 +39,6 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     // Attributes
     public static final String ID = "id";
     public static final String NAME = "name";
-    private BeanFactory beanFactory;
 
     public Document createDocument(R root) {
         Document document = DocumentHelper.createDocument();
@@ -100,14 +101,5 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         // Using QName is the only way to attach the namespace to the element
         QName qNode = DocumentHelper.createQName(elementName, DEFAULT_NAMESPACE);
         return DocumentHelper.createElement(qNode);
-    }
-
-    // Bean Getter and Setter methods
-    public BeanFactory getBeanFactory() {
-        return beanFactory;
-    }
-
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
     }
 }

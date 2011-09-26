@@ -23,6 +23,8 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
     private StudyXmlSerializerHelper studyXmlSerializerHelper;
+    private PlannedCalendarXmlSerializer plannedCalendarXmlSerializer;
+    private PopulationXmlSerializer populationXmlSerializer;
 
     @Override
     public Element createElement(Study study) {
@@ -41,12 +43,11 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         }
 
         Set<Population> pops = study.getPopulations();
-        PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
         for (Population pop : pops) {
             elt.add(populationXmlSerializer.createElement(pop));
         }
 
-        elt.add(createPlannedCalendarSerializer(study).createElement(study.getPlannedCalendar()));
+        elt.add(plannedCalendarXmlSerializer.createElement(study.getPlannedCalendar()));
 
         Element eSources = studyXmlSerializerHelper.generateSourcesElementWithActivities(study);
         elt.add(eSources);
@@ -83,7 +84,6 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         }
 
         List<Element> popElts = XsdElement.POPULATION.allFrom(element);
-        PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
         for (Element popElt : popElts) {
             study.addPopulation(populationXmlSerializer.readElement(popElt));
         }
@@ -92,8 +92,7 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         if (pcElt == null) {
             study.setPlannedCalendar(new PlannedCalendar());
         } else {
-            study.setPlannedCalendar(
-                (PlannedCalendar) createPlannedCalendarSerializer(study).readElement(pcElt));
+            study.setPlannedCalendar(plannedCalendarXmlSerializer.readElement(pcElt));
         }
 
         studyXmlSerializerHelper.replaceActivityReferencesWithCorrespondingDefinitions(study, element);
@@ -101,19 +100,16 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         return study;
     }
 
-    private PlannedCalendarXmlSerializer createPlannedCalendarSerializer(Study parent) {
-        PlannedCalendarXmlSerializer serializer
-            = (PlannedCalendarXmlSerializer) getBeanFactory().getBean("plannedCalendarXmlSerializer");
-        serializer.setSerializeEpoch(true);
-        return serializer;
+    @Required
+    public void setPlannedCalendarXmlSerializer(PlannedCalendarXmlSerializer plannedCalendarXmlSerializer) {
+        this.plannedCalendarXmlSerializer = plannedCalendarXmlSerializer;
     }
 
-    private PopulationXmlSerializer createPopulationXmlSerializer(Study parent) {
-        PopulationXmlSerializer serializer
-            = (PopulationXmlSerializer) getBeanFactory().getBean("populationXmlSerializer");
-        return serializer;
+    @Required
+    public void setPopulationXmlSerializer(PopulationXmlSerializer populationXmlSerializer) {
+        this.populationXmlSerializer = populationXmlSerializer;
     }
-    
+
     @Required
     public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
         this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;

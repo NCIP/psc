@@ -3,13 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static java.util.Collections.emptyList;
+import static org.easymock.EasyMock.expect;
 
 public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
     private EpochXmlSerializer serializer;
@@ -22,12 +21,8 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         studySegmentSerializer = registerMockFor(StudySegmentXmlSerializer.class);
-        serializer = new EpochXmlSerializer() {
-
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return studySegmentSerializer;
-            }
-        };
+        serializer = new EpochXmlSerializer();
+        serializer.setChildXmlSerializer(studySegmentSerializer);
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
     }
 

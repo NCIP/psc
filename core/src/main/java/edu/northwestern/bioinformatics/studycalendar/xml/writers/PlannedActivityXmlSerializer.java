@@ -10,14 +10,15 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
-    private ActivityReferenceXmlSerializer activityReferenceXmlSerializer = new ActivityReferenceXmlSerializer();
-    private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
+    private ActivityReferenceXmlSerializer activityReferenceXmlSerializer;
+    private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer;
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
     public static final String POPULATION = "population";
@@ -32,10 +33,6 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
 
     protected String elementName() {
         return PLANNED_ACTIVITY;
-    }
-
-    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        return null;
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -96,14 +93,17 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         element.add(eActivity);
     }
 
+    @Required
     public void setActivityXmlSerializer(ActivityXmlSerializer activityXmlSerializer) {
         this.activityXmlSerializer = activityXmlSerializer;
     }
 
+    @Required
     public void setPlannedActivityLabelXmlSerializer(PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer) {
         this.plannedActivityLabelXmlSerializer = plannedActivityLabelXmlSerializer;
     }
 
+    @Required
     public void setActivityReferenceXmlSerializer(ActivityReferenceXmlSerializer activityReferenceXmlSerializer) {
         this.activityReferenceXmlSerializer = activityReferenceXmlSerializer;
     }

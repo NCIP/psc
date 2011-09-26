@@ -14,10 +14,20 @@
     <bean id="notificationXmlSerializer" autowire="byName"
               class="edu.northwestern.bioinformatics.studycalendar.xml.writers.NotificationXmlSerializer"/>
     
-    <bean id="studyXmlSerializer" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
-    <bean id="studySnapshotXmlSerializer" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer"/>
+    <bean id="studyXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer">
+        <property name="plannedCalendarXmlSerializer" ref="plannedCalendarAloneXmlSerializer"/>
+        <property name="studySecondaryIdentifierXmlSerializer" ref="studySecondaryIdentifierXmlSerializer"/>
+        <property name="studyXmlSerializerHelper" ref="studyXmlSerializerHelper"/>
+    </bean>
+    <bean id="studySnapshotXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer">
+        <property name="studyXmlSerializerHelper" ref="studyXmlSerializerHelper"/>
+        <property name="plannedCalendarXmlSerializer" ref="plannedCalendarWithEpochsXmlSerializer"/>
+        <property name="populationXmlSerializer" ref="populationXmlSerializer"/>
+        <property name="activitySourceXmlSerializer" ref="activitySourceXmlSerializer"/>
+        <property name="studySecondaryIdentifierXmlSerializer" ref="studySecondaryIdentifierXmlSerializer"/>
+    </bean>
     <bean id="studiesXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
     <bean id="studySecondaryIdentifierXmlSerializer" autowire="byName"
@@ -55,33 +65,57 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.UserRoleMembershipsXmlSerializer"/>
     <bean id="blackoutDateXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.BlackoutDateXmlSerializer"/>
-    <!-- PlanTreeNode Serializers -->
-    <bean id="plannedCalendarXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer"/>
 
-    <bean id="populationXmlSerializer" autowire="byName" scope="prototype"
+    <!-- PlanTreeNode Serializers -->
+
+    <bean id="plannedCalendarAloneXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer">
+        <property name="serializeEpoch" value="false"/>
+        <property name="epochXmlSerializer" ref="epochXmlSerializer"/>
+    </bean>
+    <bean id="plannedCalendarWithEpochsXmlSerializer" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer">
+        <property name="serializeEpoch" value="true"/>
+        <property name="epochXmlSerializer" ref="epochXmlSerializer"/>
+    </bean>
+
+    <bean id="populationXmlSerializer" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer"/>
 
-    <bean id="epochXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.EpochXmlSerializer"/>
+    <bean id="epochXmlSerializer" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.EpochXmlSerializer">
+        <property name="childXmlSerializer" ref="studySegmentXmlSerializer"/>
+    </bean>
 
-    <bean id="studySegmentXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySegmentXmlSerializer"/>
+    <bean id="studySegmentXmlSerializer" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySegmentXmlSerializer">
+        <property name="childXmlSerializer" ref="periodXmlSerializer"/>
+    </bean>
 
-    <bean id="periodXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PeriodXmlSerializer"/>
+    <bean id="periodXmlSerializer" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PeriodXmlSerializer">
+        <property name="childXmlSerializer" ref="plannedActivityXmlSerializer"/>
+    </bean>
 
-    <bean id="plannedActivityXmlSerializer" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityXmlSerializer"/>
+    <bean id="plannedActivityXmlSerializer" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityXmlSerializer">
+        <property name="activityReferenceXmlSerializer" ref="activityReferenceXmlSerializer"/>
+        <property name="activityXmlSerializer" ref="activityXmlSerializer"/>
+        <property name="plannedActivityLabelXmlSerializer" ref="plannedActivityLabelXmlSerializer"/>
+    </bean>
 
-  <bean id="activityReferenceXmlSerializer" autowire="byName"
+    <bean id="plannedActivityLabelXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityLabelXmlSerializer"/>
+
+    <bean id="activityReferenceXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityReferenceXmlSerializer"/>
 
-  <bean id="activityXmlSerializer" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializer"/>
+    <bean id="activityXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializer">
+        <property name="activityPropertyXmlSerializer" ref="activityPropertyXmlSerializer"/>
+    </bean>
 
-
-    <bean id="activityPropertyXmlSerializer" autowire="byName"
+    <bean id="activityPropertyXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityPropertyXmlSerializer"/>
 
     <bean id="labelXmlSerializer"
@@ -94,8 +128,8 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
-
     <!-- Delta Serialiers -->
+
     <bean id="plannedCalendarDeltaXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarDeltaXmlSerializer"/>
 
@@ -118,6 +152,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyDeltaXmlSerializer"/>    
 
     <!-- Change Serializers -->
+
     <bean id="addXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AddXmlSerializer"/>
 

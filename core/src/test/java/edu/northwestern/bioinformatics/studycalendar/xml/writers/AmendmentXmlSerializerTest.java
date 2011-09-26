@@ -8,20 +8,21 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AmendmentXmlSerializer serializer;
@@ -75,12 +76,8 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         study = createNamedInstance("Study A", Study.class);
         study.setAmendment(amendment0);
 
-        serializer = new AmendmentXmlSerializer() {
-            @Override public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
-                return deltaSerializerFactory;
-            }
-
-        };
+        serializer = new AmendmentXmlSerializer();
+        serializer.setDeltaXmlSerializerFactory(deltaSerializerFactory);
         serializer.setStudy(study);
     }
 

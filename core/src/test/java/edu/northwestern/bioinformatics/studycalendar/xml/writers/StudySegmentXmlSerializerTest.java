@@ -3,13 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static java.util.Collections.emptyList;
+import static org.easymock.EasyMock.expect;
 
 public class StudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     public static final String STUDY_SEGMENT = "study-segment";
@@ -23,11 +22,8 @@ public class StudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
         element = registerMockFor(Element.class);
         periodSerializer = registerMockFor(PeriodXmlSerializer.class);
-        serializer = new StudySegmentXmlSerializer() {
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return periodSerializer;
-            }
-        };
+        serializer = new StudySegmentXmlSerializer();
+        serializer.setChildXmlSerializer(periodSerializer);
         segment = setGridId("grid0", createNamedInstance("Segment A", StudySegment.class));
     }
 

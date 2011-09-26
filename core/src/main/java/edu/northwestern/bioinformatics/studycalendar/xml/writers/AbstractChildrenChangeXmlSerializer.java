@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactoryAware;
 
-public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer implements BeanFactoryAware {
+public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer {
     private static final String CHILD_ID = "child-id";
 
     protected void addAdditionalAttributes(final Change change, Element element) {
@@ -21,7 +21,7 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     protected void setAdditionalProperties(final Element element, Change change) {
         String childId = element.attributeValue(CHILD_ID);
         Element child = getElementById(element, childId);
-        StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
+        StudyCalendarXmlSerializer serializer = getPlanTreeNodeXmlSerializerFactory().createXmlSerializer(child);
         Child node = (Child)serializer.readElement(child);
         ((ChildrenChange) change).setChild(node);
     }

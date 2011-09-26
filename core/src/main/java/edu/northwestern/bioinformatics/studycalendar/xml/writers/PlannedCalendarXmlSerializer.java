@@ -4,12 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
 public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerializer <PlannedCalendar> {
     public static final String PLANNED_CALENDAR = "planned-calendar";
     private boolean serializeEpoch;
+    private EpochXmlSerializer epochXmlSerializer;
 
     public PlannedCalendarXmlSerializer() {
         serializeEpoch = false;
@@ -51,10 +53,15 @@ public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerial
     }
 
     protected EpochXmlSerializer getEpochSerializer() {
-        EpochXmlSerializer serializer = (EpochXmlSerializer) getBeanFactory().getBean("epochXmlSerializer");
-        return serializer;
+        return epochXmlSerializer;
     }
 
+    @Required
+    public void setEpochXmlSerializer(EpochXmlSerializer epochXmlSerializer) {
+        this.epochXmlSerializer = epochXmlSerializer;
+    }
+
+    @Required
     public void setSerializeEpoch(boolean serializeEpoch) {
         this.serializeEpoch = serializeEpoch;
     }

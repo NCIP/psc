@@ -193,27 +193,21 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
 
         activityXmlSerializer = new ActivityXmlSerializer();
+
         plannedActivityXmlSerializer = new PlannedActivityXmlSerializer();
         plannedActivityXmlSerializer.setActivityXmlSerializer(activityXmlSerializer);
-        periodXmlSerializer = new PeriodXmlSerializer() {
-            @Override
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return plannedActivityXmlSerializer;
-            }
-        };
-        studySegmentXmlSerializer = new StudySegmentXmlSerializer() {
-            @Override
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return periodXmlSerializer;
-            }
-        };
+        plannedActivityXmlSerializer.setActivityReferenceXmlSerializer(new ActivityReferenceXmlSerializer());
+        plannedActivityXmlSerializer.setPlannedActivityLabelXmlSerializer(new PlannedActivityLabelXmlSerializer());
 
-        epochXmlSerializer = new EpochXmlSerializer() {
-            @Override
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-                return studySegmentXmlSerializer;
-            }
-        };
+        periodXmlSerializer = new PeriodXmlSerializer();
+        periodXmlSerializer.setChildXmlSerializer(plannedActivityXmlSerializer);
+
+        studySegmentXmlSerializer = new StudySegmentXmlSerializer();
+        studySegmentXmlSerializer.setChildXmlSerializer(periodXmlSerializer);
+
+        epochXmlSerializer = new EpochXmlSerializer();
+        epochXmlSerializer.setChildXmlSerializer(studySegmentXmlSerializer);
+
         planTreeNodeXmlSerializerFactory = new PlanTreeNodeXmlSerializerFactory() {
 
             @Override
@@ -247,24 +241,12 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
                 }
             }
         };
-        reorderXmlSerializer = new ReorderXmlSerializer() {
-            @Override
-            protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-                return planTreeNodeXmlSerializerFactory;
-            }
-        };
-        addXmlSerializer = new AddXmlSerializer() {
-            @Override
-            protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-                return planTreeNodeXmlSerializerFactory;
-            }
-        };
-        propertyChangeXmlSerializer = new PropertyChangeXmlSerializer() {
-            @Override
-            protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-                return planTreeNodeXmlSerializerFactory;
-            }
-        };
+        reorderXmlSerializer = new ReorderXmlSerializer();
+        reorderXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
+        addXmlSerializer = new AddXmlSerializer();
+        addXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
+        propertyChangeXmlSerializer = new PropertyChangeXmlSerializer();
+        propertyChangeXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
         changeXmlSerializerFactory = new ChangeXmlSerializerFactory() {
             @Override
             public ChangeXmlSerializer createXmlSerializer(Element eChange) {
@@ -298,33 +280,17 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
         };
 
-        plannedCalendarDeltaXmlSerializer = new PlannedCalendarDeltaXmlSerializer() {
+        plannedCalendarDeltaXmlSerializer = new PlannedCalendarDeltaXmlSerializer();
+        plannedCalendarDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
 
-            @Override
-            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-                return changeXmlSerializerFactory;
-            }
-        };
+        studySegmentDeltaXmlSerializer = new StudySegmentDeltaXmlSerializer();
+        studySegmentDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
 
-        studySegmentDeltaXmlSerializer = new StudySegmentDeltaXmlSerializer() {
-            @Override
-            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-                return changeXmlSerializerFactory;
-            }
-        };
-        periodDeltaXmlSerializer = new PeriodDeltaXmlSerializer() {
-            @Override
-            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-                return changeXmlSerializerFactory;
-            }
-        };
+        periodDeltaXmlSerializer = new PeriodDeltaXmlSerializer();
+        periodDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
 
-        epochDeltaXmlSerializer = new EpochDeltaXmlSerializer() {
-            @Override
-            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-                return changeXmlSerializerFactory;
-            }
-        };
+        epochDeltaXmlSerializer = new EpochDeltaXmlSerializer();
+        epochDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
 
         deltaSerializerFactory = new DeltaXmlSerializerFactory() {
             @Override
@@ -370,12 +336,8 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
         };
         studyXmlserializer = new StudyXmlSerializer() {
-            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
+            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer() {
                 return plannedCalendarSerializer;
-            }
-
-            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
-                return populationSerializer;
             }
 
             public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
@@ -392,6 +354,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
         populationSerializer = new PopulationXmlSerializer();
         plannedCalendarSerializer = new PlannedCalendarXmlSerializer();
+        plannedCalendarSerializer.setEpochXmlSerializer(epochXmlSerializer);
         developmentAmendmentSerializer = new AmendmentXmlSerializer();
         developmentAmendmentSerializer.setStudy(study);
 

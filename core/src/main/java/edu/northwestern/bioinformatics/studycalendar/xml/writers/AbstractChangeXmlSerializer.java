@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ public abstract class AbstractChangeXmlSerializer
     extends AbstractStudyCalendarXmlSerializer<Change>
     implements ChangeXmlSerializer
 {
+    private PlanTreeNodeXmlSerializerFactory planTreeNodeXmlSerializerFactory;
+
     protected abstract Change changeInstance();
     protected abstract String elementName();
     protected void addAdditionalAttributes(final Change change, Element element) {}
@@ -63,10 +66,13 @@ public abstract class AbstractChangeXmlSerializer
         return null;
     }
 
+    protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeXmlSerializerFactory() {
+        return planTreeNodeXmlSerializerFactory;
+    }
 
-    protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-        PlanTreeNodeXmlSerializerFactory factory = (PlanTreeNodeXmlSerializerFactory) getBeanFactory().getBean("planTreeNodeXmlSerializerFactory");
-        return factory;
+    @Required
+    public void setPlanTreeNodeXmlSerializerFactory(PlanTreeNodeXmlSerializerFactory factory) {
+        this.planTreeNodeXmlSerializerFactory = factory;
     }
 
     public StringBuffer validateElement(Change change, Element eChange) {
