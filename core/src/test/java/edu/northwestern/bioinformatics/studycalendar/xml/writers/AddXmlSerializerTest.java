@@ -39,7 +39,6 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return planTreeNodeSerializerFactory;
             }
         };
-        serializer.setChildClass(PlannedCalendar.class);
 
         epoch = setId(1, setGridId("grid1", new Epoch()));
         add = setGridId("grid0", Add.create(epoch, 0));

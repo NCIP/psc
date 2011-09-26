@@ -47,7 +47,7 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
         } else if (delta instanceof StudyDelta) {
             return getXmlSerializer(STUDY_DELTA_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem importing template. Could not find delta type");
+            throw new StudyCalendarError("Could not build XML serializer for delta %s.", delta);
         }
     }
 
@@ -68,7 +68,8 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
         }  else if (StudyDeltaXmlSerializer.STUDY_DELTA.equals(delta.getName())) {
             return getXmlSerializer(STUDY_DELTA_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
+            throw new StudyCalendarError(
+                "Could not build XML serializer for element %s.", delta.getName());
         }
     }
 
