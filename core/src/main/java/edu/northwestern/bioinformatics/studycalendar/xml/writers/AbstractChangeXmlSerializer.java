@@ -5,10 +5,14 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import org.dom4j.Element;
 
 import java.util.ArrayList;
-import static java.util.Collections.singletonList;
 import java.util.List;
 
-public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarXmlSerializer<Change> {
+import static java.util.Collections.singletonList;
+
+public abstract class AbstractChangeXmlSerializer
+    extends AbstractStudyCalendarXmlSerializer<Change>
+    implements ChangeXmlSerializer
+{
     protected abstract Change changeInstance();
     protected abstract String elementName();
     protected void addAdditionalAttributes(final Change change, Element element) {}

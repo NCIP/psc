@@ -29,7 +29,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private Amendment amendment0;
     private Element eAmendment;
-    private AbstractDeltaXmlSerializer deltaSerializer;
+    private DeltaXmlSerializer deltaSerializer;
     private Element eDelta;
     private PlannedCalendarDelta delta;
     private DeltaXmlSerializerFactory deltaSerializerFactory;

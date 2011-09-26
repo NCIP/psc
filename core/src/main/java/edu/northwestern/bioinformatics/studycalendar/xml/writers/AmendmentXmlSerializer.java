@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
@@ -85,9 +86,11 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
         return null;
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     private void addDeltas(final Amendment amendment, Element element) {
         for (Delta delta : amendment.getDeltas()) {
-            AbstractDeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(delta);
+            DeltaXmlSerializer serializer =
+                getDeltaXmlSerializerFactory().createXmlSerializer(delta);
             Element eDelta = serializer.createElement(delta);
             element.add(eDelta);
         }
@@ -97,7 +100,8 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
     private void addDeltas(final Element element, Amendment amendment) {
         for (Object oDelta : element.elements()) {
             Element eDelta = (Element) oDelta;
-            AbstractDeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
+            DeltaXmlSerializer serializer =
+                getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
             Delta delta = serializer.readElement(eDelta);
             amendment.addDelta(delta);
         }
@@ -105,8 +109,7 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
 
     public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
-        DeltaXmlSerializerFactory factory = (DeltaXmlSerializerFactory) getBeanFactory().getBean("deltaXmlSerializerFactory");
-        return factory;
+        return (DeltaXmlSerializerFactory) getBeanFactory().getBean("deltaXmlSerializerFactory");
     }
 
     public void setStudy(Study study) {
@@ -161,7 +164,7 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
                 for (Object oDelta : currAmendment.elements()) {
                     Element eDelta = (Element) oDelta;
-                    AbstractDeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
+                    DeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
                     errorMessageBuffer.append(serializer.validate(releasedAmendment, eDelta));
                 }
             }

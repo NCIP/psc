@@ -10,8 +10,10 @@ import org.dom4j.Element;
 
 import java.util.List;
 
-public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXmlSerializer<Delta> {
-
+public abstract class AbstractDeltaXmlSerializer
+    extends AbstractStudyCalendarXmlSerializer<Delta>
+    implements DeltaXmlSerializer
+{
     private static final String NODE_ID = "node-id";
 
     protected abstract Delta deltaInstance();
@@ -27,7 +29,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
         List<Change> changes = delta.getChanges();
         for (Change change : changes) {
-            AbstractChangeXmlSerializer changeSerializer
+            ChangeXmlSerializer changeSerializer
                 = getChangeXmlSerializerFactory().createXmlSerializer(change, delta.getNode());
             Element eChange = changeSerializer.createElement(change);
             if (eChange != null) {
@@ -49,7 +51,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
         List<Element> eChanges = element.elements();
         for (Element eChange : eChanges) {
-            AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
+            ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
             Change change = changeSerializer.readElement(eChange);
             delta.addChange(change);
         }
@@ -91,8 +93,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
             } else {
                 for (int i = 0; i < eChanges.size(); i++) {
                     Element eChange = eChanges.get(i);
-                    AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, nodeInstance());
-                    AbstractChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i), nodeInstance());
+                    ChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, nodeInstance());
+                    ChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i), nodeInstance());
 
                     if (!changeSerializer.getClass().isAssignableFrom(abstractChangeXmlSerializer.getClass())) {
                         errorMessageBuffer.append(String.format("\nChange (id :%s) present in imporated document   \n are in different order " +

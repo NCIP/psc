@@ -267,7 +267,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         };
         changeXmlSerializerFactory = new ChangeXmlSerializerFactory() {
             @Override
-            public AbstractChangeXmlSerializer createXmlSerializer(Element eChange, Changeable deltaNode) {
+            public ChangeXmlSerializer createXmlSerializer(Element eChange, Changeable deltaNode) {
                 if ((AddXmlSerializer.ADD).equals(eChange.getName())) {
                     return addXmlSerializer;
                 } else if ((RemoveXmlSerializer.REMOVE).equals(eChange.getName())) {
@@ -283,7 +283,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
 
             @Override
-            public AbstractChangeXmlSerializer createXmlSerializer(Change change, Changeable deltaNode) {
+            public ChangeXmlSerializer createXmlSerializer(Change change, Changeable deltaNode) {
                 if ((ChangeAction.ADD).equals(change.getAction())) {
                     return addXmlSerializer;
                 } else if ((ChangeAction.REMOVE).equals(change.getAction())) {
@@ -328,7 +328,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
         deltaSerializerFactory = new DeltaXmlSerializerFactory() {
             @Override
-            public AbstractDeltaXmlSerializer createXmlSerializer(Element delta) {
+            public DeltaXmlSerializer createXmlSerializer(Element delta) {
                 if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
                     return plannedCalendarDeltaXmlSerializer;
                 } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
@@ -346,7 +346,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
 
             @Override
-            public AbstractDeltaXmlSerializer createXmlSerializer(Delta delta) {
+            public DeltaXmlSerializer createXmlSerializer(Delta delta) {
                 if (delta instanceof PlannedCalendarDelta) {
                     return plannedCalendarDeltaXmlSerializer;
                 } else if (delta instanceof EpochDelta) {
