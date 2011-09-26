@@ -48,7 +48,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
     private RemoveXmlSerializer removeXmlSerializer;
     private PropertyChangeXmlSerializer propertyChangeXmlSerializer;
     private Source source;
-    private PlanTreeNodeXmlSerializerFactory planTreeNodeXmlSerializerFactory;
+    private ChangeableXmlSerializerFactory changeableXmlSerializerFactory;
     protected Epoch epoch1;
     private EpochXmlSerializer epochXmlSerializer;
     protected Add add1;
@@ -208,7 +208,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         epochXmlSerializer = new EpochXmlSerializer();
         epochXmlSerializer.setChildXmlSerializer(studySegmentXmlSerializer);
 
-        planTreeNodeXmlSerializerFactory = new PlanTreeNodeXmlSerializerFactory() {
+        changeableXmlSerializerFactory = new ChangeableXmlSerializerFactory() {
 
             @Override
             public AbstractStudyCalendarXmlSerializer createXmlSerializer(Element node) {
@@ -242,11 +242,11 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
         };
         reorderXmlSerializer = new ReorderXmlSerializer();
-        reorderXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
+        reorderXmlSerializer.setChangeableXmlSerializerFactory(changeableXmlSerializerFactory);
         addXmlSerializer = new AddXmlSerializer();
-        addXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
+        addXmlSerializer.setChangeableXmlSerializerFactory(changeableXmlSerializerFactory);
         propertyChangeXmlSerializer = new PropertyChangeXmlSerializer();
-        propertyChangeXmlSerializer.setPlanTreeNodeXmlSerializerFactory(planTreeNodeXmlSerializerFactory);
+        propertyChangeXmlSerializer.setChangeableXmlSerializerFactory(changeableXmlSerializerFactory);
         changeXmlSerializerFactory = new ChangeXmlSerializerFactory() {
             @Override
             public ChangeXmlSerializer createXmlSerializer(Element eChange) {
@@ -358,7 +358,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         developmentAmendmentSerializer = new AmendmentXmlSerializer();
         developmentAmendmentSerializer.setStudy(study);
 
-       planTreeNodeXmlSerializerFactory.setBeanFactory(beanFactory);
+       changeableXmlSerializerFactory.setBeanFactory(beanFactory);
     }
 
 

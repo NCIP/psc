@@ -1,7 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
 
 /**
  * @author Rhett Sutphin
@@ -74,5 +77,36 @@ public class XsdElementTest extends StudyCalendarTestCase {
         parent.add(XsdElement.AMENDMENT.create());
 
         assertTrue("Found something when nothing matched", XsdElement.ACTIVITY.allFrom(parent).isEmpty());
+    }
+
+    public void testForCorrespondingClassWorksWhenKnown() throws Exception {
+        assertEquals(XsdElement.STUDY_SEGMENT, XsdElement.forCorrespondingClass(StudySegment.class));
+    }
+
+    public void testForCorrespondingClassWorksOnSubclass() throws Exception {
+        assertEquals(XsdElement.EPOCH, XsdElement.forCorrespondingClass(new Epoch() { }.getClass()));
+    }
+
+    public void testForCorrespondingClassThrowsIllegalArgumentWhenUnknown() throws Exception {
+        try {
+            XsdElement.forCorrespondingClass(String.class);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("No XsdElement corresponds to java.lang.String.", iae.getMessage());
+        }
+    }
+
+    public void testForElementWorksWhenKnown() throws Exception {
+        assertEquals(
+            XsdElement.PLANNED_ACTIVITY_LABEL, XsdElement.forElement(new DefaultElement("label")));
+    }
+
+    public void testForElementThrowsIllegalArgumentExceptionWhenUnknown() throws Exception {
+        try {
+            XsdElement.forElement(new DefaultElement("foobar"));
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("No XsdElement for element foobar.", iae.getMessage());
+        }
     }
 }

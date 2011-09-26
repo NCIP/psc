@@ -1,5 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.Registration;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -12,51 +33,51 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public enum XsdElement {
-    ACTIVITY,
+    ACTIVITY(Activity.class),
     ACTIVITY_SOURCES("sources"),
-    ACTIVITY_SOURCE("source"),
+    ACTIVITY_SOURCE("source", Source.class),
     ACTIVITY_PROPERTY("property"),
     
     REGISTRATIONS,
-    REGISTRATION,
+    REGISTRATION(Registration.class),
     SUBJECT_ASSIGNMENTS,
-    SUBJECT_ASSIGNMENT,
-    SUBJECT,
+    SUBJECT_ASSIGNMENT(StudySubjectAssignment.class),
+    SUBJECT(Subject.class),
     SUBJECT_PROPERTY("property"),
 
     SITES,
-    SITE,
-    BLACKOUT_DATE,
+    SITE(Site.class),
+    BLACKOUT_DATE(BlackoutDate.class),
     BLACKOUT_DATES,
 
-    STUDY_SITE_LINK,
+    STUDY_SITE_LINK(StudySite.class),
     AMENDMENT_APPROVALS,
-    AMENDMENT_APPROVAL,
+    AMENDMENT_APPROVAL(AmendmentApproval.class),
 
     STUDIES,
-    STUDY,
+    STUDY(Study.class),
     STUDY_SNAPSHOT,
     DEVELOPMENT_AMENDMENT,
     AMENDMENT,
-    PLANNED_CALENDAR,
-    EPOCH,
-    STUDY_SEGMENT,
-    PERIOD,
-    PLANNED_ACTIVITY,
-    POPULATION,
-    SECONDARY_IDENTIFIER,
+    PLANNED_CALENDAR(PlannedCalendar.class),
+    EPOCH(Epoch.class),
+    STUDY_SEGMENT(StudySegment.class),
+    PERIOD(Period.class),
+    PLANNED_ACTIVITY(PlannedActivity.class),
+    POPULATION(Population.class),
+    SECONDARY_IDENTIFIER(StudySecondaryIdentifier.class),
     LONG_TITLE,
     SCHEDULED_CALENDARS,
-    SCHEDULED_CALENDAR,
-    SCHEDULED_STUDY_SEGMENT,
-    SCHEDULED_ACTIVITY,
+    SCHEDULED_CALENDAR(ScheduledCalendar.class),
+    SCHEDULED_STUDY_SEGMENT(ScheduledStudySegment.class),
+    SCHEDULED_ACTIVITY(ScheduledActivity.class),
     CURRENT_SCHEDULED_ACTIVITY_STATE,
     PREVIOUS_SCHEDULED_ACTIVITY_STATE,
     SCHEDULED_ACTIVITIES,
     NEXT_SCHEDULED_STUDY_SEGMENT,
     NOTIFICATION, NOTIFICATIONS,
     PLANNED_ACTIVITY_LABELS("labels"),
-    PLANNED_ACTIVITY_LABEL("label"),
+    PLANNED_ACTIVITY_LABEL("label", PlannedActivityLabel.class),
 
     USER_ROLES("roles"),
     USER_ROLE("role"),
@@ -64,13 +85,23 @@ public enum XsdElement {
     ROLE_STUDIES, ACTIVITY_REFERENCE;
 
     private String elementName;
+    private Class<?> correspondingClass;
 
     XsdElement() {
-        this(null);
+        this(null, null);
     }
 
     XsdElement(String elementName) {
+        this(elementName, null);
+    }
+
+    XsdElement(Class<?> correspondingClass) {
+        this(null, correspondingClass);
+    }
+
+    XsdElement(String elementName, Class<?> correspondingClass) {
         this.elementName = elementName == null ? name().replaceAll("_", "-").toLowerCase() : elementName;
+        this.correspondingClass = correspondingClass;
     }
 
     public String xmlName() {
@@ -89,5 +120,33 @@ public enum XsdElement {
     @SuppressWarnings({"unchecked"})
     public List<Element> allFrom(Element parent) {
         return parent.elements(xmlName());
+    }
+
+    public static XsdElement forElement(Element e) {
+        for (XsdElement x : values()) {
+            if (e.getName().equals(x.xmlName())) {
+                return x;
+            }
+        }
+        throw new IllegalArgumentException(
+            String.format("No XsdElement for element %s.", e.getName()));
+    }
+
+    public boolean mapsToOneClass() {
+        return correspondingClass() != null;
+    }
+
+    public Class<?> correspondingClass() {
+        return correspondingClass;
+    }
+
+    public static XsdElement forCorrespondingClass(Class<?> correspondingClass) {
+        for (XsdElement x : values()) {
+            if (x.mapsToOneClass() && x.correspondingClass().isAssignableFrom(correspondingClass)) {
+                return x;
+            }
+        }
+        throw new IllegalArgumentException(
+            String.format("No XsdElement corresponds to %s.", correspondingClass.getName()));
     }
 }

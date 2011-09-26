@@ -32,7 +32,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
         Child child = add.getChild();
         if (child != null) {
             Changeable added = child;
-            StudyCalendarXmlSerializer serializer = getPlanTreeNodeXmlSerializerFactory().createXmlSerializer(added);
+            StudyCalendarXmlSerializer serializer = getChangeableXmlSerializerFactory().createXmlSerializer(added);
             Element ePlanTreeNode = serializer.createElement(added);
             element.add(ePlanTreeNode);
         }
@@ -46,7 +46,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
 
         List<Element> ePlanTreeNodes = element.elements();
         Element ePlanTreeNode = ePlanTreeNodes.get(0);
-        StudyCalendarXmlSerializer serializer = getPlanTreeNodeXmlSerializerFactory().createXmlSerializer(ePlanTreeNode);
+        StudyCalendarXmlSerializer serializer = getChangeableXmlSerializerFactory().createXmlSerializer(ePlanTreeNode);
         Child planTreeNode = (Child)serializer.readElement(ePlanTreeNode);
         ((Add) add).setChild(planTreeNode);
     }
@@ -76,7 +76,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
         //fixme:Saurabh initialze the child also
         Child planTreeNode = add.getChild();
 
-        StudyCalendarXmlSerializer serializer = getPlanTreeNodeXmlSerializerFactory().createXmlSerializer(ePlanTreeNode);
+        StudyCalendarXmlSerializer serializer = getChangeableXmlSerializerFactory().createXmlSerializer(ePlanTreeNode);
         if (serializer instanceof AbstractPlanTreeNodeXmlSerializer ) {
             errorMessageStringBuffer.append(((AbstractPlanTreeNodeXmlSerializer)serializer).validateElement(planTreeNode, ePlanTreeNode));
         }
