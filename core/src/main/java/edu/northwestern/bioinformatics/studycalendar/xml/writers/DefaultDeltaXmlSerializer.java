@@ -4,26 +4,48 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaNodeType;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
-public abstract class AbstractDeltaXmlSerializer
+public class DefaultDeltaXmlSerializer
     extends AbstractStudyCalendarXmlSerializer<Delta>
     implements DeltaXmlSerializer
 {
     private static final String NODE_ID = "node-id";
     private ChangeXmlSerializerFactory changeXmlSerializerFactory;
+    private DeltaNodeType deltaNodeType;
+    private XsdElement xsdElement;
 
-    protected abstract Delta deltaInstance();
+    public static DeltaXmlSerializer create(
+        DeltaNodeType type, ChangeXmlSerializerFactory changeXmlSerializerFactory
+    ) {
+        DefaultDeltaXmlSerializer instance = new DefaultDeltaXmlSerializer();
+        instance.setDeltaNodeType(type);
+        instance.setXsdElement(XsdElement.valueOf(type.name() + "_DELTA"));
+        instance.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
+        return instance;
+    }
 
-    protected abstract Changeable nodeInstance();
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    protected Delta deltaInstance() {
+        return getDeltaNodeType().deltaInstance();
+    }
 
-    protected abstract String elementName();
+    protected Changeable nodeInstance() {
+        return getDeltaNodeType().nodeInstance();
+    }
 
+    protected String elementName() {
+        return getXsdElement().xmlName();
+    }
+
+    @Override
     public Element createElement(Delta delta) {
         Element eDelta = element(elementName());
         eDelta.addAttribute(ID, delta.getGridId());
@@ -130,5 +152,21 @@ public abstract class AbstractDeltaXmlSerializer
         return errorMessageBuffer.toString();
     }
 
+    public DeltaNodeType getDeltaNodeType() {
+        return deltaNodeType;
+    }
 
+    @Required
+    public void setDeltaNodeType(DeltaNodeType deltaNodeType) {
+        this.deltaNodeType = deltaNodeType;
+    }
+
+    public XsdElement getXsdElement() {
+        return xsdElement;
+    }
+
+    @Required
+    public void setXsdElement(XsdElement xsdElement) {
+        this.xsdElement = xsdElement;
+    }
 }

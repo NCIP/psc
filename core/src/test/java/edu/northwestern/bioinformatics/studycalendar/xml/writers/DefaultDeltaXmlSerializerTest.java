@@ -1,17 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaNodeType;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.util.Collections;
 
-public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestCase {
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import static org.easymock.EasyMock.expect;
+
+public class DefaultDeltaXmlSerializerTest extends StudyCalendarXmlTestCase {
     private DeltaXmlSerializer serializer;
     private Delta plannedCalendarDelta;
     private Element element;
@@ -20,6 +22,7 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
     private Add add;
     private ChangeXmlSerializer changeSerializer;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -28,11 +31,8 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         changeSerializer = registerMockFor(AbstractChangeXmlSerializer.class);
 
         calendar = setGridId("grid1", new PlannedCalendar());
-        serializer = new PlannedCalendarDeltaXmlSerializer(){
-            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
-                return changeSerializerFactory;
-            }
-        };
+        serializer =
+            DefaultDeltaXmlSerializer.create(DeltaNodeType.PLANNED_CALENDAR, changeSerializerFactory);
 
         add = new Add();
         plannedCalendarDelta = Delta.createDeltaFor(calendar, add);

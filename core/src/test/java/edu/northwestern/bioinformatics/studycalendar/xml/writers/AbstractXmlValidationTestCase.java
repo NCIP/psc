@@ -3,10 +3,33 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaNodeType;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactory;
 
@@ -28,7 +51,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
     protected Element ePopulation;
     protected Amendment amendment;
     protected PlannedCalendarDelta plannedCalendarDelta;
-    protected PeriodDeltaXmlSerializer periodDeltaXmlSerializer;
+    protected DeltaXmlSerializer periodDeltaXmlSerializer;
     protected PlannedCalendar plannedCalendar;
     protected Activity activity1;
     private Activity activity2;
@@ -41,7 +64,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
     private Period period4;
     protected StudySegment studySegment1;
     protected StudySegment studySegment2;
-    private PlannedCalendarDeltaXmlSerializer plannedCalendarDeltaXmlSerializer;
+    private DeltaXmlSerializer plannedCalendarDeltaXmlSerializer;
     private ChangeXmlSerializerFactory changeXmlSerializerFactory;
     private AddXmlSerializer addXmlSerializer;
     private ReorderXmlSerializer reorderXmlSerializer;
@@ -64,10 +87,10 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
     private ActivityXmlSerializer activityXmlSerializer;
     protected Activity activity3;
     protected StudySegmentDelta studySegmentDelta;
-    protected StudySegmentDeltaXmlSerializer studySegmentDeltaXmlSerializer;
+    protected DeltaXmlSerializer studySegmentDeltaXmlSerializer;
     protected Add add3;
     protected EpochDelta epochDelta;
-    protected EpochDeltaXmlSerializer epochDeltaXmlSerializer;
+    protected DeltaXmlSerializer epochDeltaXmlSerializer;
     protected DeltaXmlSerializerFactory deltaSerializerFactory;
     protected AmendmentXmlSerializer amendmentSerializer;
     protected PopulationXmlSerializer populationSerializer;
@@ -280,30 +303,27 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
         };
 
-        plannedCalendarDeltaXmlSerializer = new PlannedCalendarDeltaXmlSerializer();
-        plannedCalendarDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
-
-        studySegmentDeltaXmlSerializer = new StudySegmentDeltaXmlSerializer();
-        studySegmentDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
-
-        periodDeltaXmlSerializer = new PeriodDeltaXmlSerializer();
-        periodDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
-
-        epochDeltaXmlSerializer = new EpochDeltaXmlSerializer();
-        epochDeltaXmlSerializer.setChangeXmlSerializerFactory(changeXmlSerializerFactory);
+        plannedCalendarDeltaXmlSerializer =
+            DefaultDeltaXmlSerializer.create(DeltaNodeType.PLANNED_CALENDAR, changeXmlSerializerFactory);
+        studySegmentDeltaXmlSerializer =
+            DefaultDeltaXmlSerializer.create(DeltaNodeType.STUDY_SEGMENT, changeXmlSerializerFactory);
+        periodDeltaXmlSerializer =
+            DefaultDeltaXmlSerializer.create(DeltaNodeType.PERIOD, changeXmlSerializerFactory);
+        epochDeltaXmlSerializer =
+            DefaultDeltaXmlSerializer.create(DeltaNodeType.EPOCH, changeXmlSerializerFactory);
 
         deltaSerializerFactory = new DeltaXmlSerializerFactory() {
             @Override
             public DeltaXmlSerializer createXmlSerializer(Element delta) {
-                if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
+                if (XsdElement.PLANNED_CALENDAR_DELTA.xmlName().equals(delta.getName())) {
                     return plannedCalendarDeltaXmlSerializer;
-                } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
+                } else if (XsdElement.EPOCH_DELTA.xmlName().equals(delta.getName())) {
                     return epochDeltaXmlSerializer;
-                } else if (StudySegmentDeltaXmlSerializer.STUDY_SEGMENT_DELTA.equals(delta.getName())) {
+                } else if (XsdElement.STUDY_SEGMENT_DELTA.xmlName().equals(delta.getName())) {
                     return studySegmentDeltaXmlSerializer;
-                } else if (PeriodDeltaXmlSerializer.PERIOD_DELTA.equals(delta.getName())) {
+                } else if (XsdElement.PERIOD_DELTA.xmlName().equals(delta.getName())) {
                     return periodDeltaXmlSerializer;
-                } else if (PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
+                } else if (XsdElement.PLANNED_ACTIVITY_DELTA.xmlName().equals(delta.getName())) {
                     return null;
                 } else {
                     throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
