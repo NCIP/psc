@@ -1047,6 +1047,8 @@ define "psc" do
       end
     end
 
+    iml.excluded_directories << _('tmp')
+
     def compile_sass(src, dst)
       trace "Compiling Sass #{src} => #{dst}"
       require 'sass'
@@ -1358,6 +1360,18 @@ projects.each do |p|
         run
     end
   end
+end
+
+# Manually exclude subproject excludes from parent project.
+# IDEA doesn't seem to do this on its own.
+projects.each do |p1|
+  next unless p1.iml?
+  subprojects = projects.select { |p2| p2.name =~ /^#{p1.name}\:/ }
+  subprojects.
+    select { |sub| sub.iml? }.
+    collect { |sub| sub.iml.excluded_directories }.
+    flatten.
+    each { |ig| p1.iml.excluded_directories << ig }
 end
 
 ###### Top-level aliases for commonly-used tasks
