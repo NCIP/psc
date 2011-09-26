@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -77,7 +76,7 @@ public class DeltaNodeTypeTest extends DomainTestCase {
 
     public void testDeltaInstanceUsesTheProvidedNode() throws Exception {
         PlannedActivityLabel label = new PlannedActivityLabel();
-        assertSame(label, DeltaNodeType.LABEL.deltaInstance(label).getNode());
+        assertSame(label, DeltaNodeType.PLANNED_ACTIVITY_LABEL.deltaInstance(label).getNode());
     }
 
     public void testDeltaInstanceWorksWithoutANode() throws Exception {

@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -29,8 +30,15 @@ public class TemplateInternalReferenceIndex {
     }
 
     @SuppressWarnings( { "RawUseOfParameterizedType" })
-    public void addPlanTreeNode(PlanTreeNode node) {
+    public void addChangeable(Changeable node) {
         addObject(node);
+        if (node instanceof Parent) {
+            for (Object child : ((Parent) node).getChildren()) {
+                if (child instanceof Changeable) {
+                    addChangeable((Changeable) child);
+                }
+            }
+        }
     }
 
     @SuppressWarnings( { "RawUseOfParameterizedType" })

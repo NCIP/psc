@@ -16,7 +16,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -476,14 +475,11 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
 
     private void expectDeltaAndChangesForTemplateIndex(Add add) {
         expect(deltaService.findChangeChild(add)).andReturn(add.getChild());
-        expect(templateService.findChildren((Parent)add.getChild(), Period.class)).andReturn(new ArrayList<Period>());
-        expect(templateService.findChildren((Parent)add.getChild(), StudySegment.class)).andReturn(new ArrayList<StudySegment>());
-        expect(templateService.findChildren((Parent)add.getChild(), PlannedActivity.class)).andReturn(new ArrayList<PlannedActivity>());
     }
 
     private void expectForNewActivities(Add add, List<PlannedActivity> plannedActivities) {
         expect(deltaService.findChangeChild(add)).andReturn(add.getChild());
-        expect(templateService.findChildren((Parent)add.getChild(), PlannedActivity.class)).andReturn(plannedActivities);
+        expect(templateService.findChildren((Parent) add.getChild(), PlannedActivity.class)).andReturn(plannedActivities);
     }
 
     private void expectDaoForPlannedCalendar(Study study) {
@@ -499,6 +495,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         checkGridIdConflictsForChildNode(study, true);
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     private void checkGridIdConflictsForChildNode(Study study, Boolean value) {
         expect(gridIdentifierResolver.resolveGridId(PlannedCalendar.class, study.getPlannedCalendar().getGridId())).andReturn(false);
         List<Amendment> amendments  = new ArrayList<Amendment>(study.getAmendmentsList());
@@ -512,6 +509,13 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
                     expect(gridIdentifierResolver.resolveGridId(change.getClass(), change.getGridId())).andReturn(false);
                     Child child = ((Add)change).getChild();
                     expect(gridIdentifierResolver.resolveGridId(child.getClass(), child.getGridId())).andReturn(value);
+                    if (child instanceof Parent) {
+                        for (Object c : ((Parent) child).getChildren()) {
+                            Child grandChild = (Child) c;
+                            expect(gridIdentifierResolver.resolveGridId(grandChild.getClass(), grandChild.getGridId())).
+                                andReturn(false);
+                        }
+                    }
                 }
             }
         }

@@ -152,6 +152,7 @@
             <xsd:element name="study-segment-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="period-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="planned-activity-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="label-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="population-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="study-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>
@@ -203,6 +204,7 @@
             <xsd:element ref="psc:period"/>
             <xsd:element ref="psc:planned-activity"/>
             <xsd:element ref="psc:population"/>
+            <xsd:element ref="psc:label"/>
         </xsd:choice>
         <xsd:attribute name="index" type="xsd:integer" use="optional"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
@@ -283,6 +285,7 @@
     <xsd:complexType name="Label">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="repetition-number" type="xsd:integer"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="population" type="psc:Population"/>

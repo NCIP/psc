@@ -26,7 +26,7 @@ public enum DeltaNodeType {
     STUDY_SEGMENT(StudySegment.class, StudySegmentDelta.class),
     PERIOD(Period.class, PeriodDelta.class),
     PLANNED_ACTIVITY(PlannedActivity.class, PlannedActivityDelta.class),
-    LABEL(PlannedActivityLabel.class, PlannedActivityLabelDelta.class)
+    PLANNED_ACTIVITY_LABEL(PlannedActivityLabel.class, PlannedActivityLabelDelta.class)
     ;
 
     private Class<? extends Delta> deltaClass;
