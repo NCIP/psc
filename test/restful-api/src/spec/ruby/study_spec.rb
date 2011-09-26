@@ -398,8 +398,12 @@ describe "/studies/{study-identifier}/template" do
       first_child(Psc::Domain::PlannedActivity).details.should == 'Thrice at least'
     end
 
-    it 'has the PA label' do
-      first_child(Psc::Domain::PlannedActivityLabel).label.should == 'pharmacy'
+    it 'has the new PA label' do
+      second_child(Psc::Domain::PlannedActivityLabel).label.should == 'repeat'
+    end
+
+    it 'has the updated PA label' do
+      first_child(Psc::Domain::PlannedActivityLabel).repetitionNumber.should == 2
     end
 
     it 'can be recovered via GET' do

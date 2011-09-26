@@ -35,7 +35,13 @@
     </period-delta>
     <planned-activity-delta id="ED-PADelta1" node-id="ED-PC1-E1-SS1-P1-PA1">
       <property-change id="ED-PADelta1.1" property-name="details" old-value="Subcutaneously once daily" new-value="Thrice at least"/>
+      <add id="ED-PADelta1.2">
+        <label name="repeat" id="ED-PC1-E1-SS1-P1-PA1-L2"/>
+      </add>
     </planned-activity-delta>
+    <label-delta id="ED-PALDelta1" node-id="ED-PC1-E1-SS1-P1-PA1-L1">
+      <property-change id="ED-PALDelta1.1" property-name="repetitionNumber" old-value="" new-value="2"/>
+    </label-delta>
   </amendment>
   <amendment name="[Original]" date="2011-11-11" mandatory="true" updated-date="2008-03-18T23:50:03.243Z">
     <planned-calendar-delta id="ED-PCdelta1" node-id="ED-PC1">
@@ -44,7 +50,7 @@
           <study-segment id="ED-PC1-E1-SS1" name="Regimen A">
             <period id="ED-PC1-E1-SS1-P1" repetitions="6" start-day="1" duration-quantity="28" duration-unit="day">
               <planned-activity id="ED-PC1-E1-SS1-P1-PA1" details="Subcutaneously once daily" day="1">
-                <label name="pharmacy"/>
+                <label name="pharmacy" id="ED-PC1-E1-SS1-P1-PA1-L1"/>
                 <activity-reference code="100001" source="ED Activities"/>
               </planned-activity>
             </period>
