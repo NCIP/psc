@@ -1,16 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import org.dom4j.Element;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.BeansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
     private BeanFactory beanFactory;
@@ -23,7 +27,8 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public AbstractStudyCalendarXmlSerializer createXmlSerializer(final Element node) {
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public StudyCalendarXmlSerializer createXmlSerializer(final Element node) {
         if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
             return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
         } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
@@ -37,10 +42,11 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
         } else if(PopulationXmlSerializer.POPULATION.equals(node.getName())) {
             return getXmlSerialzier(POPULATION_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem importing template. Could not find node type %s", node.getName());
+            throw new StudyCalendarError("Could not build XML serializer for element %s.", node.getName());
         }
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public StudyCalendarXmlSerializer createXmlSerializer(final Changeable node) {
         if (node instanceof PlannedCalendar) {
             return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
@@ -55,13 +61,14 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
         } else if (node instanceof Population) {
             return getXmlSerialzier(POPULATION_SERIALIZER);
         } else {
-            throw new StudyCalendarError("Problem importing template. Cannot find Child Node for Change");
+            throw new StudyCalendarError("Could not build XML serializer for changeable %s.", node);
         }
     }
 
-    private AbstractStudyCalendarXmlSerializer getXmlSerialzier(String beanName) {
-        AbstractStudyCalendarXmlSerializer serializer = (AbstractStudyCalendarXmlSerializer) beanFactory.getBean(beanName);
-        return serializer;
+    // package level for testing
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    StudyCalendarXmlSerializer getXmlSerialzier(String beanName) {
+        return (StudyCalendarXmlSerializer) beanFactory.getBean(beanName);
     }
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
