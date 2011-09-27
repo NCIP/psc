@@ -111,20 +111,26 @@ public class TemplateImportService {
 
             List<Amendment> newVersionList = newStudy.getAmendmentsList().subList(newVersionSize -
                                                oldVersionSize, newVersionSize);
-            StringBuilder sb = new StringBuilder();
-            for (Amendment amendment: oldVersionList) {
-                Amendment newVersion = newVersionList.get(oldVersionList.indexOf(amendment));
-                Differences differences = amendment.deepEquals(newVersion);
-                if (differences.hasDifferences()) {
-                    sb.append("Existing released amendment ").append(amendment.getDisplayName()).
-                        append(" differs from released amendment ").
-                        append(newVersion.getDisplayName()).
-                        append(" in imported template:\n").append(differences.toTreeString());
+            {
+                Differences allDifferences = new Differences();
+                for (Amendment amendment: oldVersionList) {
+                    Amendment newVersion = newVersionList.get(oldVersionList.indexOf(amendment));
+                    Differences aDiff = amendment.deepEquals(newVersion);
+                    if (aDiff.hasDifferences()) {
+                        allDifferences.addChildDifferences(
+                            new StringBuilder().
+                                append("Existing released amendment ").append(amendment.getDisplayName()).
+                                append(" differs from released amendment ").
+                                append(newVersion.getDisplayName()).
+                                append(" in imported template").toString(),
+                            aDiff
+                        );
+                    }
                 }
-            }
 
-            if (sb.length() != 0) {
-                throw new StudyCalendarValidationException(sb.toString());
+                if (allDifferences.hasDifferences()) {
+                    throw new TemplateDifferenceException(allDifferences);
+                }
             }
 
             TemplateInternalReferenceIndex oldExpectedIndex = buildTemplateInternalReferenceIndex(oldVersionList);

@@ -176,6 +176,25 @@ public class Differences {
         }
     }
 
+    public String toTreeHtml() {
+        StringBuilder sb = new StringBuilder();
+        toTreeHtml(sb, "");
+        return sb.toString().trim();
+    }
+
+    private void toTreeHtml(StringBuilder sb, String indent) {
+        sb.append(indent).append("<ul>\n");
+        for (String message : getMessages()) {
+            sb.append(indent).append("<li>").append(message).append("</li>\n");
+        }
+        for (Map.Entry<String, Differences> entry : getChildDifferences().entrySet()) {
+            sb.append(indent).append("<li>").append(entry.getKey()).append('\n');
+            entry.getValue().toTreeHtml(sb, indent + INDENT_INCREMENT);
+            sb.append(indent).append("</li>\n");
+        }
+        sb.append(indent).append("</ul>\n");
+    }
+
     //////
 
     private static abstract class IndexKeyExtractor<T> {
