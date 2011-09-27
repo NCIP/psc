@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateDifferenceException;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
@@ -36,9 +37,11 @@ public class ImportTemplateXmlController extends PscSimpleFormController impleme
         ImportTemplateXmlCommand command = (ImportTemplateXmlCommand) o;
         try {
             command.apply();
+        } catch (TemplateDifferenceException e) {
+            errors.reject("error.problem.importing.file",
+                new String[] { e.getDifferences().toTreeHtml() }, e.getMessage());
         } catch (StudyCalendarValidationException e) {
             errors.reject("error.problem.importing.file", new String[]{e.getMessage()}, e.getMessage());
-
         }
         if (errors.hasErrors()) {
             return showForm(request, response, errors);

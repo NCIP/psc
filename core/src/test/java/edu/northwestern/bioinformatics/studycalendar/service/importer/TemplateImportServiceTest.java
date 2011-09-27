@@ -168,10 +168,10 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertTrue("Wrong message: " + scve.getMessage(),
-                scve.getMessage().
-                    startsWith("Existing released amendment 04/06/2007 (Amendment1) differs from released amendment 04/06/2007 (Amendment) in imported template:"));
+        } catch (TemplateDifferenceException tde) {
+            assertTrue("Wrong message: " + tde.getMessage(),
+                tde.getMessage().
+                    startsWith("- Existing released amendment 04/06/2007 (Amendment1) differs from released amendment 04/06/2007 (Amendment) in imported template"));
         }
     }
 

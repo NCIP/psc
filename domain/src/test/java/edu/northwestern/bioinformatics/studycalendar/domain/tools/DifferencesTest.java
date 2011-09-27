@@ -202,6 +202,54 @@ public class DifferencesTest extends DomainTestCase {
         );
     }
 
+    public void testTreeHtmlWithMessagesOnly() throws Exception {
+        diff.addMessage("A");
+        diff.addMessage("B");
+        diff.addMessage("C");
+        assertEquals("<ul>\n<li>A</li>\n<li>B</li>\n<li>C</li>\n</ul>", diff.toTreeHtml());
+    }
+
+    public void testTreeHtmlWithNestedChildrenMessages() throws Exception {
+        diff.addMessage("A");
+        diff.addMessage("B");
+
+        Differences childOne = new Differences();
+        childOne.addMessage("one");
+        diff.getChildDifferences().put("C1", childOne);
+        Differences grandchild = new Differences();
+        grandchild.addMessage("g one");
+        grandchild.addMessage("g two");
+        childOne.getChildDifferences().put("G1", grandchild);
+
+        Differences childTwo = new Differences();
+        childTwo.addMessage("two");
+        diff.getChildDifferences().put("C2", childTwo);
+
+        assertEquals(
+            "<ul>\n" +
+            "<li>A</li>\n" +
+            "<li>B</li>\n" +
+            "<li>C1\n" +
+            "  <ul>\n" +
+            "  <li>one</li>\n" +
+            "  <li>G1\n" +
+            "    <ul>\n" +
+            "    <li>g one</li>\n" +
+            "    <li>g two</li>\n" +
+            "    </ul>\n" +
+            "  </li>\n" +
+            "  </ul>\n" +
+            "</li>\n" +
+            "<li>C2\n" +
+            "  <ul>\n" +
+            "  <li>two</li>\n" +
+            "  </ul>\n" +
+            "</li>\n" +
+            "</ul>",
+            diff.toTreeHtml()
+        );
+    }
+
     ////// HELPERS
 
     private void assertNoDifferences() {

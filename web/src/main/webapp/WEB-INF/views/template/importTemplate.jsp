@@ -19,13 +19,20 @@
         }
 
         form {
-            width: 25em;
+            width: auto;
         }
-       div.errros{
-           width:85em;
-       }
         #submit-button {
             margin-top: 1em
+        }
+        div.errors {
+            margin-bottom: 1em;
+            color: #900;
+        }
+        div.errors ul {
+            margin: 0.25em 0; padding: 0
+        }
+        div.errors ul li {
+            margin: 0 2em; padding: 0
         }
     </style>
 </head>
@@ -33,8 +40,8 @@
 <laf:box title="Import Template">
     <laf:division>
         <form:form method="post" enctype="multipart/form-data">
-            <div class="errros">
-                <form:errors path="*"/>
+            <div class="errors">
+                <form:errors path="*" htmlEscape="false"/>
             </div>
             <div class="row">
                 <div class="label">
