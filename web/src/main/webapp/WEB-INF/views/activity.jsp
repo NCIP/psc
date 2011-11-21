@@ -293,7 +293,7 @@
                 }
 
                 var element = '<Activity name=\"' + activityName +'\" code=\"' + activityCode +'\" description=\"'
-                        + activityName +'\" type=\"'+activityTypeName +'\" source=\"' + activitySource + '\"/>'
+                        + activityDescription +'\" type=\"'+activityTypeName +'\" source=\"' + activitySource + '\"/>'
 
                 clearErrorMessage();
                 $.ajax({
