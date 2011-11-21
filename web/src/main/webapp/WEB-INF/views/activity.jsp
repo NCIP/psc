@@ -295,7 +295,6 @@
                 var element = '<Activity name=\"' + activityName +'\" code=\"' + activityCode +'\" description=\"'
                         + activityDescription +'\" type=\"'+activityTypeName +'\" source=\"' + activitySource + '\"/>'
 
-                clearErrorMessage();
                 $.ajax({
                     url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
                     type: 'PUT',
@@ -309,6 +308,7 @@
             }
 
             function createAndSaveNewActivity() {
+                clearErrorMessage()
                 var activityCode = $('#new-inputCode').val()
                 var activitySource= $('#sources').val()
 
@@ -371,6 +371,7 @@
             }
 
             function editSaveDeleteButtonClicked(e, button) {
+                clearErrorMessage();
                 var buttonClass = $w(e.target.className)[0];
                 var activityRow = $(e.target).closest('tr');
                 var editAction = "edit";
