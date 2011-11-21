@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
@@ -24,6 +26,7 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
     public static final String SOURCE_NAME = "House of Activities";
     public static final String SOURCE_NAME_ENCODED = "House%20of%20Activities";
     public static final String ACTIVITY_NAME = "Activities";
+    public static final String ACTIVITY_TYPE_NAME = "Type";
 
     private ActivityDao activityDao;
     private Activity activity;
@@ -31,6 +34,8 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
     private SourceDao sourceDao;
     private Source source;
     private ActivityService activityService;
+    private ActivityTypeDao activityTypeDao;
+    private ActivityType activityType;
 
     @Override
     public void setUp() throws Exception {
@@ -43,6 +48,8 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
         activityService = registerMockFor(ActivityService.class);
         activity = Fixtures.createNamedInstance(ACTIVITY_NAME, Activity.class);
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
+        activityType = Fixtures.createActivityType(ACTIVITY_TYPE_NAME);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
     }
 
     @Override
@@ -54,6 +61,7 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
         resource.setXmlSerializer(xmlSerializer);
         resource.setPlannedActivityDao(plannedActivityDao);
         resource.setSourceDao(sourceDao);
+        resource.setActivityTypeDao(activityTypeDao);
         return resource;
     }
 
@@ -108,8 +116,11 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
 
     public void testPutExistingActivity() throws Exception {
         activity.setId(1);
+        activity.setType(activityType);
         Activity newActivity = new Activity();
+        newActivity.setType(activityType);
         expectExistentSource(source);
+        expectExistentType(activityType);
         expectFoundActivity(activity);
         expectReadXmlFromRequestAs(newActivity);
         expectObjectXmlized(newActivity);
@@ -163,6 +174,9 @@ public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityRes
         expect(sourceDao.getByName(SOURCE_NAME)).andReturn(expectedSource);
     }
 
+    private void expectExistentType(ActivityType expectedType) {
+        expect(activityTypeDao.getByName(ACTIVITY_TYPE_NAME)).andReturn(expectedType);
+    }
     private void expectActivityUsedByPlannedCalendar(Activity expectedActivity, boolean isExcepted) {
         if (isExcepted) {
             List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();

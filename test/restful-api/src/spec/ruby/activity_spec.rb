@@ -32,12 +32,12 @@ describe "/activity" do
 
     describe "updates properties of" do
       before do
-         @activityType = PscTest::Fixtures.createActivityType("MalariaTreatment")
+         @activityType = PscTest::Fixtures.createActivityType("Malaria Treatment")
          application_context['activityTypeDao'].save(@activityType)
          @activity = PscTest::Fixtures.createActivity("InitialDiagnosis", "ActivityCode",@source, @activityType, "diagnosis for diabetes")
          application_context['activityDao'].save(@activity)
          @updateActivity_xml = psc_xml("activity", 'name' => "InitialDiagnosis", 'code' => "UpdatedActivityCode", 'source' => "Diabetes",
-          'type' => @activityType, 'description' => "diagnosis for diabetes")
+          'type' => "Malaria Treatment", 'description' => "diagnosis for diabetes")
       end
 
       it "the existing activity" do
@@ -45,6 +45,26 @@ describe "/activity" do
          response.status_code.should == 200
          response.content_type.should == 'text/xml'
          response.xml_attributes("activity", "code").should include("UpdatedActivityCode")
+      end
+    end
+
+    describe "updates ActivityType property of activity" do
+      before do
+         @activityType = PscTest::Fixtures.createActivityType("Malaria Treatment")
+         application_context['activityTypeDao'].save(@activityType)
+         @newActivityType = PscTest::Fixtures.createActivityType("New Activity Type")
+         application_context['activityTypeDao'].save(@newActivityType)
+         @activity = PscTest::Fixtures.createActivity("InitialDiagnosis", "ActivityCode",@source, @activityType, "diagnosis for diabetes")
+         application_context['activityDao'].save(@activity)
+         @updateActivity_xml = psc_xml("activity", 'name' => "InitialDiagnosis", 'code' => "ActivityCode", 'source' => @source,
+          'type' => "New Activity Type", 'description' => "diagnosis for diabetes")
+      end
+
+      it "the existing activity" do
+         put '/activities/Diabetes/ActivityCode', @updateActivity_xml, :as => :juno
+         response.status_code.should == 200
+         response.content_type.should == 'text/xml'
+         response.xml_attributes("activity", "type").should include("New Activity Type")
       end
     end
 
