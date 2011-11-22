@@ -146,6 +146,11 @@
             jQuery('#errors').append(typeLabel)
         }
 
+        function displayErrorOnInput(userFriendlyText) {
+            var typeLabel = jQuery('<label id="error"/>').text(userFriendlyText.trim());
+            jQuery('#errors').append(typeLabel)
+        }
+
         function executeAddSource(input) {
             var newSource = $('addSource').value
             var url = psc.tools.Uris.relative('/api/v1/activities/' + encodeURIComponent(newSource));
@@ -283,7 +288,6 @@
                     var activityCode = $('#new-inputCode').val()
                     var activityDescription = $('#new-inputDescription').val()
                     var activitySource= $('#sources').val()
-
                 } else {
                     var activityName = $(activityRowElement).find('.inputName').val()
                     var activityTypeName = $(activityRowElement).find('.sourceTypes :selected').text();
@@ -311,20 +315,26 @@
                 clearErrorMessage()
                 var activityCode = $('#new-inputCode').val()
                 var activitySource= $('#sources').val()
-
-                $.ajax({
-                    url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
-                    type: 'GET',
-                    success : function(response) {
-                        var typeLabel = jQuery('<label id="error"/>').text("The activity with this code already exists for this source. Please specify the different code");
-                        jQuery('#errors').append(typeLabel)
-                    },
-                    error: function(response) {
-                        if (response.status == 404) {
-                            saveActivity(null)
+                var activityName = $('#new-inputName').val()
+                if (activityCode.empty()) {
+                    displayErrorOnInput("Activity code can not be null for activities.")
+                } else if (activityName.empty()) {
+                    displayErrorOnInput("Activity name can not be null for activities.")
+                } else {
+                    $.ajax({
+                        url: psc.tools.Uris.relative("/api/v1/activities/"+encodeURIComponent(activitySource)+"/"+ encodeURIComponent(activityCode)),
+                        type: 'GET',
+                        success : function(response) {
+                            var typeLabel = jQuery('<label id="error"/>').text("The activity with this code already exists for this source. Please specify the different code");
+                            jQuery('#errors').append(typeLabel)
+                        },
+                        error: function(response) {
+                            if (response.status == 404) {
+                                saveActivity(null)
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             function clearActivity() {
