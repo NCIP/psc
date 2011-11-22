@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import org.restlet.data.Method;
@@ -29,6 +27,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     private Source source;
     private SourceDao sourceDao;
     private ActivityService activityService;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     public void doInit() {
@@ -71,9 +70,14 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
             existingActivity.setCode(activity.getCode());
             existingActivity.setName(activity.getName());
             existingActivity.setDescription(activity.getDescription());
+            existingActivity.setType(getActivityType(activity.getType().getName()));
             activityService.saveActivity(existingActivity);
         }
         return activity;
+    }
+
+    private ActivityType getActivityType(String name) {
+        return activityTypeDao.getByName(name);
     }
 
     @Override
@@ -114,6 +118,10 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
         this.sourceDao = sourceDao;
     }
 
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
+    }
     @Required
     public void setActivityService(ActivityService activityService) {
         this.activityService = activityService;
