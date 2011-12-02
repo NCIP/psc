@@ -15,8 +15,6 @@ repositories.remote << "http://repository.springsource.com/maven/bundles/release
 repositories.remote << "http://repository.springsource.com/maven/bundles/external"
 # codehaus repo
 repositories.remote << "http://repository.codehaus.org/"
-# dynamicjava.org repo
-repositories.remote << "http://maven.dynamicjava.org"
 # main m2 repo
 repositories.remote << "http://repo1.maven.org/maven2"
 #Jboss repository added to fetch dbunit 2.2 jar.
@@ -449,10 +447,12 @@ EQUINOX = struct(
 )
 
 DYNAMIC_JAVA = struct(
-  :da_launcher => "org.dynamicjava.osgi:da-launcher:jar:1.1.2",
-  :osgi_commons => "org.dynamicjava.osgi:osgi-commons:jar:1.1.3",
-  :bundle_building_utils => "org.dynamicjava.osgi:bundle-building-utils:jar:1.0.2",
-  :bundler => "org.dynamicjava.osgi:bundler:jar:1.0.1"
+  Dir[static_lib('dynamicjava-osgi/*.jar')].inject({}) do |h, jar|
+    name, version = jar.scan(%r{dynamicjava-osgi/(\S+)-(\d\.\d\.\d).jar$}).first
+    h[name.gsub('-', '_').to_sym] =
+      artifact("org.dynamicjava.osgi:#{name}:jar:#{version}").from(jar)
+    h
+  end
 )
 
 SPRING_OSGI = struct(
