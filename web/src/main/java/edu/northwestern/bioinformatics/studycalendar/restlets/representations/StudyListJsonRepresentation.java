@@ -48,9 +48,6 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
     private void writeStudyObject(JsonGenerator generator, Study study) throws IOException {
         generator.writeStartObject();
         JacksonTools.nullSafeWriteStringField(generator, "assigned_identifier", study.getAssignedIdentifier());
-        if (study.getId() != null) {
-            JacksonTools.nullSafeWriteStringField(generator, "id", study.getId().toString());
-        }
         JacksonTools.nullSafeWriteStringField(generator, "provider", study.getProvider());
         JacksonTools.nullSafeWriteStringField(generator, "long_title", study.getLongTitle());
         if (!study.getSecondaryIdentifiers().isEmpty()) {

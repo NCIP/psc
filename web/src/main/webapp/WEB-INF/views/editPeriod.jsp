@@ -195,7 +195,7 @@
                 var lis = data.map(function(study) {
                     var id = study.id
                     var name = study.assigned_identifier
-                    var listItem = "<li id='"  + id + "'>" + name + "</li>";
+                    var listItem = "<li id='"  + name + "'>" + name + "</li>";
                     return listItem
                 }).join("\n");
                 callback("<ul>\n" + lis + "\n</ul>");
@@ -325,7 +325,7 @@
             <div class="row">
                 Search for study:
                 <input id="template-autocompleter-input" type="text" autocomplete="off" value="" hint="Search for study" class="autocomplete"/>
-                <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
+                <input type="hidden" id="template-autocompleter-input-id" value="${study.assignedIdentifier}"/>
                 <div id="template-autocompleter-div" class="autocomplete" style="z-index:1000" ></div>
             </div>
         </laf:division>

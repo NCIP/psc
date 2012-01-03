@@ -102,34 +102,29 @@
 
     <script type="text/javascript">
 
-
-
-
         function createAutocompleter() {
-             new SC.FunctionalAutocompleter(
-                 'studies-autocompleter-input', 'studies-autocompleter-div', studyAutocompleterChoices, {
-                     afterUpdateElement: function(input, selected) {
-                         $('selected-study').style.display = 'inline';
-                          $('selected-study-itself').innerHTML= selected.innerHTML;
-                          $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + selected.id;
-
-                         input.value = ""
-                         input.focus()
-                     }
-                 }
-             );
-         }
+            new SC.FunctionalAutocompleter(
+                'studies-autocompleter-input', 'studies-autocompleter-div', studyAutocompleterChoices, {
+                    afterUpdateElement: function(input, selected) {
+                        $('selected-study').style.display = 'inline';
+                        $('selected-study-itself').innerHTML= selected.innerHTML;
+                        $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + selected.id;
+                        input.value = ""
+                        input.focus()
+                    }
+                }
+            );
+        }
 
         function studyAutocompleterChoices(str, callback) {
-              studyAutocompleterChoiceProcessing(function(data) {
-              var lis = data.map(function(study) {
-                        var id = study.id
-                        var name = study.assigned_identifier
-                        var listItem = "<li id='"  + id + "'>" + name + "</li>";
-                        return listItem
-              }).join("\n");
+            studyAutocompleterChoiceProcessing(function(data) {
+                var lis = data.map(function(study) {
+                var name = study.assigned_identifier
+                var listItem = "<li id='"  + name + "'>" + name + "</li>";
+                return listItem
+            }).join("\n");
 
-              callback("<ul>\n" + lis + "\n</ul>");
+            callback("<ul>\n" + lis + "\n</ul>");
             });
         }
 
