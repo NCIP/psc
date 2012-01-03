@@ -34,8 +34,8 @@ public class SelectStudyController implements Controller, PscAuthorizedHandler {
 
     @SuppressWarnings({"unchecked"})
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int id = ServletRequestUtils.getRequiredIntParameter(request, "study");
-        Study study = studyDao.getById(id);
+        String identifier = ServletRequestUtils.getRequiredStringParameter(request, "study");
+        Study study = studyDao.getByAssignedIdentifier(identifier);
         Study theRevisedStudy = null;
 
         if (study.isReleased()) {
