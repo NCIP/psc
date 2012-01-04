@@ -81,7 +81,7 @@ psc.admin.ps.StudyAutocompleter = (function ($) {
 
 psc.admin.ps.StudyDetails = (function ($) {
     var acInputIdentifier = "studies-autocompleter-input";
-    var studyResourceUri = "/api/v1/studies/{assigned-identifier}/template"
+    var studyResourceUri = "/api/v1/studies/{assigned-identifier}/template.xml"
     var studySitesResourceUri = "api/v1/studies/{study-identifier}/sites";  // Have to creates
     var studySites = [];
 
