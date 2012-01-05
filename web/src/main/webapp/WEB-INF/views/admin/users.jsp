@@ -90,12 +90,21 @@
                 }
             }
 
+            function nextNavigate(request, response, payload) {
+                if (response.meta.totalRecords == 1) {
+                    document.location.href =  userAdminPageUrl(response.results[0].username)
+
+                } else {
+                    dataTable.onDataReturnInitializeTable(request, response, payload)
+                }
+            }
+
             var searchText = "";
             function search() {
                 searchText = $('#q').val();
                 dataTableAuxConfig.paginator.set('recordOffset', 0);
                 dataSource.sendRequest("&q=" + searchText, {
-                    success: dataTable.onDataReturnInitializeTable,
+                    success: nextNavigate,
                     failure: dataTable.onDataReturnInitializeTable,
                     scope: dataTable,
                     argument: dataTable.getState()
@@ -107,7 +116,7 @@
             $(function () {
                 $('#user-search').submit(search);
                 dataTable = createTable();
-                $('#q').val(" ");
+                $('#q').val("");
             })
         }(jQuery));
     </script>
