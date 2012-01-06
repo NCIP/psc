@@ -1794,6 +1794,55 @@
             </method>
         </resource>
 
+        <resource path="subjects">
+            <doc>
+                <html:p>A list of existing subjects</html:p>
+            </doc>
+            <method name="GET">
+                <doc>
+                    <html:p>
+                        Retrieve a list of existing subjects based on the provided search value
+                    </html:p>
+                    <html:div class="roles">
+                        Authorized to:
+                        <html:ul>
+                            <html:li>Study Subject Calendar Manager</html:li>
+                        </html:ul>
+                    </html:div>
+                </doc>
+                <request>
+                    <param style="query" name="q" type="xsd:string">
+                        <doc>If specified, only subjects which contain the query value (case-insensitive) in either their first name or last name will be returned.</doc>
+                    </param>
+                </request>
+                <response>
+                    <doc>A single JSON object with the corresponding array of the properties of selected subjects.</doc>
+                    <representation mediaType="application/json"/>
+                    <doc>
+<html:pre class="example">
+"results":[{
+    "first_name":"Jo",
+    "person_id":"XC1500530002",
+    "grid_id":"40aaba9a-68c5-4aa3-9626-3eeff5c16ade",
+    "hidden_assignments":false,
+    "subject_id":"XC1500530002",
+    "date_of_birth":"1950-05-30",
+    "last_name":"Carlson",
+    "gender":"Female",
+    "assignments":[{
+        "site":"SiteA",
+        "end_date":"2011-02-03",
+        "study":"copy template",
+        "assignment_id":"bb93a68b-b7c4-40a2-93ba-0056acc4c76e",
+        "start_date":"2011-01-26"
+    }]
+ }, ...]
+</html:pre>
+                    </doc>
+                </response>
+            </method>
+        </resource>
+
         <resource path="provided-studies">
             <doc>
                 <html:p>A list of studies from all enabled StudyProviders</html:p>
