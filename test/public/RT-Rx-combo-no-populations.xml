@@ -8,10 +8,10 @@
         <epoch id="09072b19-f551-4294-beb7-a96126a78067" name="Treatment">
           <study-segment id="04bf243f-73b2-4155-9bbc-e6ab8ada98d0" name="Cycle 1 w/ CCI-779 Arm A">
             <period id="01ed9829-9a9a-4bc0-b50c-66dd5b0f7a35" name="First week tests" repetitions="1" start-day="1" duration-quantity="1" duration-unit="day">
-              <planned-activity id="507b9724-dfe9-4ab4-ba64-fb3298f18770" day="1" population="C">
+              <planned-activity id="507b9724-dfe9-4ab4-ba64-fb3298f18770" day="1">
                 <activity name="INR" code="574" type="Lab Test" source="NU test upload"/>
               </planned-activity>
-              <planned-activity id="2c0d7d2c-e6d5-4d16-afca-af193d5e43db" day="1" population="Loc">
+              <planned-activity id="2c0d7d2c-e6d5-4d16-afca-af193d5e43db" day="1">
                 <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
               </planned-activity>
               <planned-activity id="1a4ddf47-ab8b-4038-9a85-a1eff6255296" details="MRI preferred, CT acceptable" day="1">
@@ -41,7 +41,7 @@
               </planned-activity>
             </period>
             <period id="75ce7c77-ac9a-4e6a-941a-91c15d1e2ff6" name="Second week tests" repetitions="1" start-day="8" duration-quantity="1" duration-unit="day">
-              <planned-activity id="67ac90e2-a9d3-4969-bd46-fb0e4234c2fe" day="1" population="Loc">
+              <planned-activity id="67ac90e2-a9d3-4969-bd46-fb0e4234c2fe" day="1">
                 <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
               </planned-activity>
             </period>
@@ -82,20 +82,20 @@
               <planned-activity id="a6161202-a286-4113-837c-224101258a7a" day="1">
                 <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
               </planned-activity>
-              <planned-activity id="66c8c7fb-367e-47e1-ae7d-59e506a4428b" day="1" population="Loc">
+              <planned-activity id="66c8c7fb-367e-47e1-ae7d-59e506a4428b" day="1">
                 <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
               </planned-activity>
             </period>
           </study-segment>
           <study-segment id="5a0c5eee-2a9a-429c-b2ea-d08cbb79e4ad" name="Cycle 1 w/o CCI-779 Arm B">
             <period id="56f892c7-e0be-497e-86b2-6ce74899eb72" name="Prior to RT and TMZ" repetitions="1" start-day="0" duration-quantity="1" duration-unit="day">
-              <planned-activity id="c0b5ce9e-8f7c-436f-9af7-f5ec24e4e564" day="1" population="C">
+              <planned-activity id="c0b5ce9e-8f7c-436f-9af7-f5ec24e4e564" day="1">
                 <activity name="INR" code="574" type="Lab Test" source="NU test upload"/>
               </planned-activity>
               <planned-activity id="624ded4b-a53a-4038-8125-c39a90b441e9" details="Perform prior to RT and TMZ" day="1">
                 <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
               </planned-activity>
-              <planned-activity id="14afb846-1117-4029-bba4-a38db68866ec" day="1" population="Loc">
+              <planned-activity id="14afb846-1117-4029-bba4-a38db68866ec" day="1">
                 <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
               </planned-activity>
             </period>
@@ -150,7 +150,7 @@
               <planned-activity id="34684e29-644d-44c2-97bd-bcb09186d19c" day="1">
                 <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
               </planned-activity>
-              <planned-activity id="e6daeb80-41a3-4f1f-b7f0-5e8d6ba2f584" day="1" population="Loc">
+              <planned-activity id="e6daeb80-41a3-4f1f-b7f0-5e8d6ba2f584" day="1">
                 <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
               </planned-activity>
             </period>
@@ -164,7 +164,7 @@
           </study-segment>
           <study-segment id="3ab1fd70-4358-4713-9b39-088e32a148d7" name="Cycles 3-8">
             <period id="c7d2bf6b-7bea-4f18-961b-e73fc7fcb10b" name="Cycles 3 and 5" repetitions="2" start-day="57" duration-quantity="56" duration-unit="day">
-              <planned-activity id="9c2b9545-4042-4422-8ab4-04309a7acaac" day="1" population="Loc">
+              <planned-activity id="9c2b9545-4042-4422-8ab4-04309a7acaac" day="1">
                 <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
               </planned-activity>
             </period>
