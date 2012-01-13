@@ -43,14 +43,16 @@ public class FirstAdministratorCommandTest extends WebTestCase {
         assertTrue("Memberships not empty", command.getUser().getMemberships().isEmpty());
     }
 
-    public void testMayProvisionSysAdmins() throws Exception {
-        assertEquals("Wrong number of provisionable roles", 1,
+    public void testMayProvisionSysAdminAndUserAdmin() throws Exception {
+        assertEquals("Wrong number of provisionable roles", 2,
             command.getProvisionableRoles().size());
         assertEquals("Wrong provisionable role",
             "system_administrator", command.getProvisionableRoles().get(0).getKey());
+        assertEquals("Wrong provisionable role",
+            "user_administrator", command.getProvisionableRoles().get(1).getKey());
     }
 
-    public void testAutomaticallyProvisionsAsSystemAdmin() throws Exception {
+    public void testAutomaticallyProvisionsAsSystemAdminAndUserAdmin() throws Exception {
         command.getUser().getCsmUser().setLoginName("newguy");
 
         User found = AuthorizationObjectFactory.createCsmUser(63L, "newguy");
@@ -60,6 +62,11 @@ public class FirstAdministratorCommandTest extends WebTestCase {
         SuiteRoleMembership srm = new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null);
         expect(pSession.getProvisionableRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR)).andReturn(srm);
         /* expect */ pSession.replaceRole(srm);
+
+        SuiteRoleMembership provisionableRole = new SuiteRoleMembership(SuiteRole.USER_ADMINISTRATOR, null, null);
+        SuiteRoleMembership expectedProvisionableRole = provisionableRole.clone().forAllSites();
+        expect(pSession.getProvisionableRoleMembership(SuiteRole.USER_ADMINISTRATOR)).andReturn(provisionableRole);
+        /* expect */ pSession.replaceRole(expectedProvisionableRole);
 
         replayMocks();
         command.apply();
