@@ -41,6 +41,8 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
     public static final ConfigurationProperty<String> AUTHENTICATION_SYSTEM
         = UNIVERSAL_PROPERTIES.add(new DefaultConfigurationProperty.Text("authenticationSystem"));
     private static final String SERVICE_NAME = AuthenticationSystem.class.getName();
+    private static final String DEFAULT_AUTHENTICATION_SYSTEM_BUNDLE =
+        "edu.northwestern.bioinformatics.psc-authentication-local-plugin";
 
     public AuthenticationSystemConfiguration() {
         configurationPropertyValues = new MapBasedDictionary<String, String>();
@@ -129,7 +131,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
         if (ref == null) {
             // Get the default, either because nothing is explicitly configured or because
             // the explicitly configured plugin is not available.
-            ref = getBundleContext().getServiceReference(SERVICE_NAME);
+            ref = findServiceFromBundle(DEFAULT_AUTHENTICATION_SYSTEM_BUNDLE);
         }
         if (ref == null) {
             // Still null?  No auth systems available.
@@ -148,6 +150,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
         } catch (InvalidSyntaxException e) {
             throw new StudyCalendarSystemException("Unexpected exception when retrieving list of authentication systems", e);
         }
+        if (refs == null) return null;
         for (ServiceReference serviceReference : refs) {
             if (serviceReference.getBundle().getSymbolicName().equals(desiredBundle)) {
                 log.debug("Found desired service \"{}\" in bundle {}",
