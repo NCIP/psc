@@ -99,6 +99,7 @@ define "psc" do
   define "utility" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
+    bnd.category = :infrastructure
 
     compile.with SLF4J.api, SPRING, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED, OSGI.core
@@ -120,6 +121,7 @@ define "psc" do
   define "domain" do
     bnd.wrap!
     bnd.name = "PSC Domain Model"
+    bnd.category = :infrastructure
     bnd.import_packages <<
       "org.hibernate;version=3.3" <<
       "org.hibernate.type;version=3.3" <<
@@ -139,7 +141,8 @@ define "psc" do
   desc "Database configuration and testing"
   define "database" do
     bnd.wrap!
-    bnd.name = 'PSC Database Module'
+    bnd.name = 'PSC Database Support'
+    bnd.category = :infrastructure
 
     # Migrations are resources, too
     resources.enhance([_("src/main/db/migrate")]) do
@@ -150,9 +153,6 @@ define "psc" do
       CTMS_COMMONS.base, CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps,
       HIBERNATE, EHCACHE
     test.with UNIT_TESTING, BERING, CORE_COMMONS
-
-    bnd.wrap!
-    bnd.name = 'PSC Database Support'
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
@@ -244,6 +244,8 @@ define "psc" do
         "org.acegisecurity" <<
         "org.springframework.core" <<
         "gov.nih.nci.cabig.ctms.domain"
+      bnd.category = :infrastructure
+
       compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm, SECURITY.clm,
         SECURITY.suite_authorization
       test.with UNIT_TESTING, project('domain').test_dependencies
@@ -256,6 +258,8 @@ define "psc" do
 
       bnd.wrap!
       bnd.name = "PSC Authorization Plugin API"
+      bnd.category = :infrastructure
+
       compile.with SLF4J.api, SECURITY.suite_authorization, SPRING,
         CTMS_COMMONS.base, CTMS_COMMONS.core
       test.with UNIT_TESTING, LOGBACK, CTMS_COMMONS.lang
@@ -283,9 +287,10 @@ define "psc" do
     define 'mock-plugin' do
       bnd.wrap!
       bnd.name = 'PSC Authorization Mock Plugin'
-      bnd.autostart = false
       bnd['Bundle-Activator'] =
         'gov.nih.nci.cabig.ctms.suite.authorization.plugins.mock.Activator'
+      bnd.category = :optional_plugins
+
       package(:jar)
 
       compile.with project('plugin-api').and_dependencies, SLF4J.api,
@@ -299,6 +304,8 @@ define "psc" do
       bnd.name = 'PSC Default CSM Authorization Manager'
       bnd['Bundle-Activator'] = 'edu.northwestern.bioinformatics.studycalendar.security.csm.Activator'
       bnd['DynamicImport-Package'] = '*' # For JDBC drivers
+      bnd.category = :automatic_plugins
+
       package(:jar)
 
       compile.with project('utility'), project('database'), CTMS_COMMONS.core,
@@ -318,6 +325,8 @@ define "psc" do
 
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
+      bnd.category = :infrastructure
+
       compile.with project('utility'), project('authorization:definitions'),
         SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
         CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
@@ -344,6 +353,7 @@ define "psc" do
         "org.acegisecurity.wrapper" <<
         "org.acegisecurity.vote" <<
         "org.springframework.cache.ehcache"
+
       compile.with project('plugin-api').and_dependencies, SPRING_OSGI,
         project('domain').and_dependencies, EHCACHE, JAKARTA_COMMONS.codec
       test.with UNIT_TESTING,
@@ -360,6 +370,8 @@ define "psc" do
       bnd.name = "PSC Local Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
+      bnd.category = :automatic_plugins
+
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
@@ -374,6 +386,7 @@ define "psc" do
       bnd.name = "PSC CAS Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
+      bnd.category = :automatic_plugins
       bnd.import_packages <<
         "org.springframework.beans.factory.config;version=2.5" <<
         "org.springframework.cache.ehcache;version=2.5" <<
@@ -384,6 +397,7 @@ define "psc" do
         "org.acegisecurity.providers.cas.ticketvalidator" <<
         "org.acegisecurity.ui.cas" <<
         "org.acegisecurity.ui.logout"
+
       compile.with project('plugin-api').and_dependencies, SECURITY.cas,
         EHCACHE, JAKARTA_COMMONS.httpclient, HTMLPARSER
       test.with project('plugin-api').test_dependencies, JAKARTA_COMMONS.io
@@ -396,6 +410,7 @@ define "psc" do
       bnd.name = "PSC caGrid WebSSO Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
+      bnd.category = :automatic_plugins
       bnd.import_packages.clear
       bnd.import_packages <<
         "!org.globus.gsi" << "*" <<
@@ -431,6 +446,8 @@ define "psc" do
       bnd.name = "PSC Insecure Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure.Activator"
+      bnd.category = :automatic_plugins
+
       compile.with project('plugin-api').and_dependencies
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies
@@ -444,6 +461,8 @@ define "psc" do
     define "api" do
       bnd.wrap!
       bnd.name = "PSC Data Providers API"
+      bnd.category = :infrastructure
+
       compile.with project('domain').and_dependencies
       package(:jar)
     end
@@ -452,11 +471,12 @@ define "psc" do
     define "mock" do
       bnd.wrap!
       bnd.name = "PSC Mock Data Providers"
-      bnd.autostart = false
+      bnd.category = :optional_plugins
       bnd.import_packages <<
         "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
         "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
         "gov.nih.nci.cabig.ctms.domain"
+
       iml.id = "providers-mock"
       compile.with parent.project('api').and_dependencies, SPRING
       test.with UNIT_TESTING, project('domain').test_dependencies
@@ -468,7 +488,7 @@ define "psc" do
       define "common" do
         bnd.wrap!
         bnd.name = "PSC COPPA Data Providers Common Library"
-        bnd.autostart = false
+        bnd.category = :optional_plugins
         bnd.import_packages <<
           "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
           "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
@@ -484,7 +504,7 @@ define "psc" do
         bnd.wrap!
         bnd.name = "PSC COPPA Integration Hub Data Providers"
         bnd.description = "A suite of data providers which communicate with COPPA via caBIG Integration Hub"
-        bnd.autostart = false
+        bnd.category = :optional_plugins
         bnd['Bundle-Activator'] =
           "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
         bnd.import_packages.clear
@@ -520,25 +540,31 @@ define "psc" do
   define "osgi-layer" do
     task :embedder_artifacts => :artifacts do |task|
       class << task; attr_accessor :values; end
+      bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
+
+      jars_for_category = lambda do |category|
+        bundle_projects.select { |p| p.bnd.category == category }.collect { |p| p.package(:jar) }
+      end
+
+      all_categories = bundle_projects.collect { |p| p.bnd.category }.uniq
+      unmapped_categories = all_categories - [:system, :infrastructure, :automatic_plugins, :optional_plugins, :application]
+      unless unmapped_categories.empty?
+        fail "Unhandled categories for OSGi layer: #{unmapped_categories.inspect}"
+      end
+
       system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact.collect { |b| artifact(b) }
       system_bundles = (FELIX.values - [FELIX.framework]).collect { |b| artifact(b) } - system_optional
+      system_bundles += (LOGBACK.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) }
+      system_bundles += jars_for_category[:system]
 
-      system_bundles += (LOGBACK.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
-        [ project('osgi-layer:log-configuration').packages.first ]
+      application_infrastructure = [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
+      application_infrastructure += jars_for_category[:infrastructure]
 
-      bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_infrastructure =
-        [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API, Buildr::project('psc:database'), Buildr::project('psc:osgi-layer:datasources') ].
-        collect { |a| Buildr::Project === a ? a.package(:jar) : artifact(a) }
-      application_bundles =
-        bundle_projects.select { |p| p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles - application_infrastructure
-      application_optional =
-        bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles - application_infrastructure
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - system_optional - application_bundles - application_infrastructure -
+        system_bundles - system_optional - application_infrastructure -
         [FELIX.shell,  GLOBUS_UNDUPLICABLE.values].flatten.collect { |b| artifact(b) }
 
       task.values = {
@@ -546,8 +572,9 @@ define "psc" do
         "001_system/install"         => system_optional,
         "002_infrastructure/start"   => application_infrastructure,
         "002_infrastructure/install" => application_libraries,
-        "003_application/start"      => application_bundles,
-        "003_application/install"    => application_optional
+        "003_plugins/start"          => jars_for_category[:automatic_plugins],
+        "003_plugins/install"        => jars_for_category[:optional_plugins],
+        "004_application/start"      => jars_for_category[:application]
       }
     end
 
@@ -638,6 +665,7 @@ define "psc" do
         'org.apache.commons.dbcp' <<
         'gov.nih.nci.cabig.ctms.tools.spring' <<
         'javax.sql'
+      bnd.category = :infrastructure
 
       compile.with project('database'), CTMS_COMMONS.core, db_deps
       package(:jar)
@@ -672,6 +700,7 @@ define "psc" do
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.log.Adapter"
       bnd.name = "PSC OSGi Log to SLF4J Adapter"
+      bnd.category = :infrastructure
 
       compile.with project('utility').and_dependencies, OSGI
 
@@ -683,6 +712,7 @@ define "psc" do
       bnd.name = "PSC OSGi Layer Log Configuration"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.logback.LogbackConfigurator"
+      bnd.category = :system
 
       compile.with SLF4J.api, LOGBACK, OSGI.core
 
@@ -692,10 +722,10 @@ define "psc" do
     desc "A bundle which exports services for testing OSGi config interfaces"
     define "mock" do
       bnd.wrap!
-      bnd.autostart = false
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.mock.Activator"
       bnd.name = "PSC OSGi Layer Mock Services"
+      bnd.category = :optional_plugins
       iml.id = "osgi-layer-mock"
 
       compile.with project('utility').and_dependencies, OSGI

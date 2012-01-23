@@ -101,10 +101,10 @@ module Bnd
     end
 
     attr_writer(*SCALAR_ATTR)
-    attr_writer :autostart
+    attr_writer :category
 
-    def autostart?
-      @autostart.nil? ? true : @autostart
+    def category
+      @category ||= :application
     end
 
     # List properties are memoized to allow for concatenation via the
