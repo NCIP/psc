@@ -43,6 +43,10 @@
     </context-param>
 
     <listener>
+        <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerStartupListener</listener-class>
     </listener>
 
@@ -52,10 +56,6 @@
 
     <listener>
         <listener-class>edu.northwestern.bioinformatics.studycalendar.web.JulIntoSlf4jConfigurator</listener-class>
-    </listener>
-
-    <listener>
-        <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
     </listener>
 
     <listener>
