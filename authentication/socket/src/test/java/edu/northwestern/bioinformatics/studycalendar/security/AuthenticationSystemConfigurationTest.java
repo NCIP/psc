@@ -85,8 +85,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testUnknownSelectedSystemSelectsDefault() throws Exception {
-        expectServiceReferences(localPlugin, testablePlugin);
-        expectOsgiSelectedServiceReferenceIs(localPlugin);
+        expectServiceReferences(testablePlugin, localPlugin);
         expectSelectedService(localPlugin);
         replayMocks();
 
@@ -96,7 +95,8 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testFailureIfNoAuthenticationSystemsAvailable() throws Exception {
-        expect(mockBundleContext.getServiceReference(AuthenticationSystem.class.getName())).andReturn(null);
+        expect(mockBundleContext.getServiceReferences(AuthenticationSystem.class.getName(), null)).
+            andStubReturn(null);
         replayMocks();
 
         try {
@@ -110,7 +110,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testPropertiesReflectConfiguredAuthenticationSystem() throws Exception {
-        expectOsgiSelectedServiceReferenceIs(localPlugin);
+        expectServiceReferences(localPlugin, stubPlugin, testablePlugin);
         expectSelectedService(localPlugin);
         replayMocks();
 
@@ -138,7 +138,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testCreateDefaultAuthenticationSystem() throws Exception {
-        expectOsgiSelectedServiceReferenceIs(localPlugin);
+        expectServiceReferences(localPlugin, stubPlugin, testablePlugin);
         expectSelectedService(localPlugin);
         replayMocks();
 
@@ -148,7 +148,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testCreateNewAuthenticationSystemAfterSystemSwitch() throws Exception {
-        expectOsgiSelectedServiceReferenceIs(localPlugin);
+        expectServiceReferences(localPlugin, stubPlugin, testablePlugin);
         expectSelectedService(localPlugin);
         replayMocks();
 
