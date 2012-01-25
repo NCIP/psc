@@ -570,11 +570,11 @@ define "psc" do
       task.values = {
         "001_system/start"           => system_bundles,
         "001_system/install"         => system_optional,
-        "002_infrastructure/start"   => application_infrastructure,
-        "002_infrastructure/install" => application_libraries,
-        "003_plugins/start"          => jars_for_category[:automatic_plugins],
-        "003_plugins/install"        => jars_for_category[:optional_plugins],
-        "004_application/start"      => jars_for_category[:application]
+        "010_infrastructure/start"   => application_infrastructure,
+        "010_infrastructure/install" => application_libraries,
+        "020_plugins/start"          => jars_for_category[:automatic_plugins],
+        "020_plugins/install"        => jars_for_category[:optional_plugins],
+        "030_application/start"      => jars_for_category[:application]
       }
     end
 
@@ -745,6 +745,19 @@ define "psc" do
       package(:jar)
     end
 
+    desc 'Arranges for deployment-specific plugins to be automatically installed'
+    define 'plugin-installer' do
+      bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.plugininstaller.Activator"
+      bnd.name = 'PSC Plugin Installer'
+      bnd.category = :system
+
+      compile.with OSGI, SLF4J.api
+      test.with UNIT_TESTING
+      package(:jar)
+    end
+
     define "integrated-tests" do
       directory _('tmp/logs')
 
@@ -756,7 +769,9 @@ define "psc" do
         project('authentication:plugin-api').test_dependencies,
         project('providers:mock'),
         project('authorization:plugin-api').test_dependencies,
-        project('authorization:mock-plugin')
+        project('authorization:mock-plugin'),
+        project('plugin-installer').and_dependencies,
+        project('mock')
       test.enhance([:build_test_embedder, _('tmp/logs')])
     end
   end

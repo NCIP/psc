@@ -110,6 +110,7 @@ public class OsgiLayerIntegratedTestHelper {
         SEARCH: while (!timedOut(start)) {
             for (ServiceReference ref : bundle.getRegisteredServices()) {
                 String[] interfaces = (String[]) ref.getProperty("objectClass");
+                log.debug("- has service with {}", Arrays.asList(interfaces));
                 if (interfaces != null) {
                     if (Arrays.asList(interfaces).contains(withService)) {
                         break SEARCH;
@@ -140,7 +141,7 @@ public class OsgiLayerIntegratedTestHelper {
         findBundle(bundleName).stop();
     }
 
-    private static Bundle findBundle(String bundleName) throws IOException {
+    public static Bundle findBundle(String bundleName) throws IOException {
         for (Bundle candidate : getBundleContext().getBundles()) {
             if (candidate.getSymbolicName() == null) {
                 throw new NullPointerException(

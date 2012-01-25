@@ -433,6 +433,7 @@ FELIX = struct(
   :bundlerepo   => felix_lib("bundlerepository", "1.6.4"),
   :configadmin  => felix_lib("configadmin",      "1.2.8"),
   :eventadmin   => felix_lib("eventadmin",       "1.2.10"),
+  :fileinstall  => felix_lib('fileinstall',      '3.1.10'),
   :log          => felix_lib("log",              "1.0.0"),
   :metatype     => felix_lib("metatype",         "1.0.0"),
   :shell        => felix_lib("shell",            "1.4.2"),

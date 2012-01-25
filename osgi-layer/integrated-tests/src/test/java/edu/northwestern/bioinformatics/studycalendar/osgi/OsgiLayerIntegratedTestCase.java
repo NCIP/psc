@@ -17,6 +17,7 @@ public abstract class OsgiLayerIntegratedTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        System.setProperty("psc.logging.debug", "true");
         DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8", new Date(),
             "/the/url"));
     }
