@@ -40,6 +40,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         row1.setId(1001);
         row1.setScheduledActivity(addLabels(setGridId("GA1",
             createScheduledActivity("activity1", 2009, 11, 12, saState)), "L1", "L2"));
+        row1.getScheduledActivity().setScheduledStudySegment(
+            setGridId("SSS1", Fixtures.createScheduledStudySegment(DateTools.createDate(2010, Calendar.MAY, 1), 1)));
         row1.setSubject(setGridId("GRID-1",
             createSubject("1111", "subject", "one", DateTools.createDate(1950, 4, 5))));
         row1.setSite(site);
@@ -52,6 +54,8 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         pa2.setCondition("Condition2");
         row2.setScheduledActivity(addLabels(
             setGridId("GA2", createScheduledActivity(pa2, 2009, 10, 15, saState)), "L2"));
+        row2.getScheduledActivity().setScheduledStudySegment(
+            setGridId("SSS2", Fixtures.createScheduledStudySegment(DateTools.createDate(2010, Calendar.MAY, 6), 10)));
         row2.setSubject(setGridId("GRID-2",
             createSubject("2222", "subject", "two", DateTools.createDate(1950, 4, 5))));
         row2.setSite(site);
@@ -222,6 +226,25 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
 
     public void testReasonIncludedInData() throws Exception {
         assertEquals("Wrong reason", "Scheduled Reason", writeAndGetRow(1).optString("last_change_reason"));
+    }
+
+    public void testScheduledStudySegmentInfoIncludedInData() throws Exception {
+        assertTrue("Segment missing", writeAndGetRow(1).has("scheduled_study_segment"));
+    }
+
+    public void testScheduledStudySegmentGridIdIncludedInData() throws Exception {
+        assertEquals("Grid ID incorrect", "SSS1",
+            writeAndGetRow(0).getJSONObject("scheduled_study_segment").optString("grid_id"));
+    }
+
+    public void testScheduledStudySegmentStartDayIncludedInData() throws Exception {
+        assertEquals("Start day incorrect", 1,
+            writeAndGetRow(1).getJSONObject("scheduled_study_segment").optInt("start_day"));
+    }
+
+    public void testScheduledStudySegmentStartDateIncludedInData() throws Exception {
+        assertEquals("Start date incorrect", "2010-05-06",
+            writeAndGetRow(1).getJSONObject("scheduled_study_segment").optString("start_date"));
     }
 
     private ScheduledActivityReportJsonRepresentation actual() {

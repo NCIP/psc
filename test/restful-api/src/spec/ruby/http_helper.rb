@@ -120,6 +120,8 @@ module HttpHelper
     attr_accessor :entity
     attr_accessor :status, :content_type, :meta
 
+    alias :body :entity
+
     def initialize(io)
       self.entity = io.read
       io.methods.reject { |m| m =~ /^[_=]/ }.each do |m|

@@ -52,6 +52,7 @@
     <SCHEDULED_STUDY_SEGMENTS
         id="-21"
         study_segment_id="-3"
+        grid_id="SSS-21"
         scheduled_calendar_id="-20"
         start_date="2006-11-04"
         start_day="1"
@@ -61,6 +62,7 @@
     <SCHEDULED_STUDY_SEGMENTS
         id="-22"
         study_segment_id="-3"
+        grid_id="SSS-22"
         scheduled_calendar_id="-30"
         start_date="2006-11-01"
         start_day="1"
@@ -69,6 +71,7 @@
     <SCHEDULED_STUDY_SEGMENTS
         id="-23"
         study_segment_id="-3"
+        grid_id="SSS-23"
         scheduled_calendar_id="-40"
         start_date="2006-12-01"
         start_day="1"

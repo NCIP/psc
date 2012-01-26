@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
@@ -17,6 +18,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
 
 /**
  * @author John Dzak
@@ -200,6 +203,32 @@ public class ScheduledActivitiesReportRowDaoTest extends
     public void testAuthorizedStudySiteIdsFilter() throws Exception {
         filters.setAuthorizedStudySiteIds(Arrays.asList(-2));
         assertSearchWithResults(NEG_18);
+    }
+
+    public void testSearchResultsIncludeScheduledSegment() throws Exception {
+        ScheduledStudySegment seg = rowForNeg17().getScheduledActivity().getScheduledStudySegment();
+        assertNotNull("Scheduled segment not present", seg);
+    }
+
+    public void testSearchResultsIncludeScheduledSegmentGridId() throws Exception {
+        ScheduledStudySegment seg = rowForNeg17().getScheduledActivity().getScheduledStudySegment();
+        assertEquals("Scheduled segment ID wrong", "SSS-21", seg.getGridId());
+    }
+
+    public void testSearchResultsIncludeScheduledSegmentStartDay() throws Exception {
+        ScheduledStudySegment seg = rowForNeg17().getScheduledActivity().getScheduledStudySegment();
+        assertEquals("Scheduled segment start day wrong", (Integer) 1, seg.getStartDay());
+    }
+
+    public void testSearchResultsIncludeScheduledSegmentStartDate() throws Exception {
+        ScheduledStudySegment seg = rowForNeg17().getScheduledActivity().getScheduledStudySegment();
+        assertDayOfDate("Scheduled segment start date wrong",
+            2006, Calendar.NOVEMBER, 4, seg.getStartDate());
+    }
+
+    private ScheduledActivitiesReportRow rowForNeg17() {
+        filters.setStudyAssignedIdentifier("Foo");
+        return assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16).get(2);
     }
 
     private static final ThreadLocal<DateFormat> API_DATE_FORMAT = new ThreadLocal<DateFormat>() {

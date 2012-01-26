@@ -25,6 +25,10 @@
                 subj.last_name,
                 subj.person_id,
                 subj.grid_id AS subject_grid_id,
+                s_seg.id AS sss_id,
+                s_seg.grid_id AS sss_grid_id,
+                s_seg.start_day AS sss_start_day,
+                s_seg.start_date AS sss_start_date,
                 studies.id AS study_id,
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
@@ -76,6 +80,12 @@
             <component name="plannedActivity">
                 <property name="id" column="planned_activity_id"/>
                 <property name="condition" column="condition"/>
+            </component>
+            <component name="scheduledStudySegment">
+                <property name="id" column="sss_id"/>
+                <property name="gridId" column="sss_grid_id"/>
+                <property name="startDay" column="sss_start_day"/>
+                <property name="startDate" column="sss_start_date"/>
             </component>
         </component>
 

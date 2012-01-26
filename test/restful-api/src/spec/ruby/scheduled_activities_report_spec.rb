@@ -165,5 +165,25 @@ describe "/reports/scheduled-activities.json" do
     it "has the right values for study subject ID" do
       response.json["rows"][1]["study_subject_id"].should == "SS001"
     end
+
+    describe 'for scheduled segment' do
+      before do
+        @segment = @studySubjectAssignment.scheduled_calendar.scheduled_study_segments.first
+        @segment_json = response.json["rows"][1]['scheduled_study_segment']
+        @segment_json.should_not be_nil
+      end
+
+      it 'has the public ID' do
+        @segment_json['grid_id'].should == @segment.grid_id
+      end
+
+      it 'has the start day' do
+        @segment_json['start_day'].should == 2
+      end
+
+      it 'has the start date' do
+        @segment_json['start_date'].should == '2008-12-26'
+      end
+    end
   end
 end

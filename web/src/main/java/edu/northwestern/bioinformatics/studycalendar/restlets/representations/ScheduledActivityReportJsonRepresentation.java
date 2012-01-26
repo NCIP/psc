@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import org.codehaus.jackson.JsonGenerator;
 
@@ -105,6 +106,14 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
                     generator.writeString(label);
                 }
                 generator.writeEndArray();
+            }
+            if (row.getScheduledActivity() != null && row.getScheduledActivity().getScheduledStudySegment() != null) {
+                ScheduledStudySegment seg = row.getScheduledActivity().getScheduledStudySegment();
+                generator.writeObjectFieldStart("scheduled_study_segment");
+                    JacksonTools.nullSafeWriteStringField(generator, "grid_id", seg.getGridId());
+                    JacksonTools.nullSafeWriteDateField(generator, "start_date", seg.getStartDate());
+                    JacksonTools.nullSafeWritePrimitiveField(generator, "start_day", seg.getStartDay());
+                generator.writeEndObject();
             }
             JacksonTools.nullSafeWriteStringField(generator, "study_subject_id", row.getStudySubjectId());
             generator.writeObjectFieldStart("subject");
