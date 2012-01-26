@@ -21,7 +21,7 @@ import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegr
  */
 public class PluginInstallerTest extends OsgiLayerIntegratedTestCase {
     private static final String OUTSIDE_BUNDLE_NAME = "com.example.outside-bundle";
-    private static final long WAIT_FOR_FILEINSTALL = 3500L;
+    private static final long WAIT_FOR_FILEINSTALL = 3500L * (System.getenv("JOB_NAME") == null ? 1 : 10);
 
     private File outsideBundleFilename;
     private List<File> paths;
@@ -87,6 +87,7 @@ public class PluginInstallerTest extends OsgiLayerIntegratedTestCase {
 
     private void deployOutsideBundleAndWait(File deployTo) throws IOException, InterruptedException {
         FileUtils.copyFileToDirectory(outsideBundleFilename, deployTo);
+        System.out.println("Waiting for " + (WAIT_FOR_FILEINSTALL / 1000.0) + 's');
         Thread.sleep(WAIT_FOR_FILEINSTALL);
     }
 
