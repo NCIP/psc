@@ -1375,7 +1375,7 @@ define "psc" do
       end
     end
 
-    unless ENV['SHEN'] == 'no'
+    if env_true?('SHEN')
       desc "Specs for client-side javascript"
       define "js-spec" do
         # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
