@@ -2,59 +2,58 @@ describe "/reports/scheduled-activities.json" do
 
   before do
     #create study with an amendment
-    @study = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
-    @amendment = PscTest::Fixtures.createAmendment("am", PscTest.createDate(2008, 12, 10))
-    @study.amendment = @amendment
-    application_context['studyService'].save( @study)
+    study = PscTest::Fixtures.createSingleEpochStudy(
+      "NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
+    amendment = PscTest::Fixtures.createAmendment("am", PscTest.createDate(2008, 12, 10))
+    study.amendment = amendment
+    application_context['studyService'].save(study)
 
     #create period and link to study
-    @period = PscTest::Fixtures.createPeriod("Period", 2, 4, 2)
-    application_context['periodDao'].save(@period)
-    @study.plannedCalendar.epochs.first.studySegments.first.addPeriod(@period)
+    period = PscTest::Fixtures.createPeriod("Period", 2, 4, 2)
+    application_context['periodDao'].save(period)
+    study.plannedCalendar.epochs.first.studySegments.first.addPeriod(period)
 
     #create planned activity and link to study
-    @source = PscTest::Fixtures.createSource("Malaria")
-    application_context['sourceDao'].save(@source)
-    @activityType = PscTest::Fixtures.createActivityType("Malaria Treatment")
-    application_context['activityTypeDao'].save(@activityType)
-    @activity = PscTest::Fixtures.createActivity("Initial Diagnosis", "diag1", @source, @activityType, "Stage 1 diagnosis for malaria")
-    application_context['activityDao'].save(@activity)
-    @planned_activity = PscTest::Fixtures.createPlannedActivity(@activity, 4)
-    @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity, 4)
-    @planned_activity1.setDetails("DetailsOneTwoAnd Three");
-    @planned_activity1.setCondition("If CBC>100")
+    source = PscTest::Fixtures.createSource("Malaria")
+    application_context['sourceDao'].save(source)
+    activityType = PscTest::Fixtures.createActivityType("Malaria Treatment")
+    application_context['activityTypeDao'].save(activityType)
+    activity = PscTest::Fixtures.createActivity(
+      "Initial Diagnosis", "diag1", source, activityType, "Stage 1 diagnosis for malaria")
+    application_context['activityDao'].save(activity)
+    planned_activity = PscTest::Fixtures.createPlannedActivity(activity, 4)
+    planned_activity1 = PscTest::Fixtures.createPlannedActivity(activity, 4)
+    planned_activity1.setDetails("DetailsOneTwoAnd Three");
+    planned_activity1.setCondition("If CBC>100")
 
-    application_context['plannedActivityDao'].save(@planned_activity)
-    application_context['plannedActivityDao'].save(@planned_activity1)
-    @period.addPlannedActivity(@planned_activity)
-    @period.addPlannedActivity(@planned_activity1)
-    application_context['studyService'].save(@study)
+    application_context['plannedActivityDao'].save(planned_activity)
+    application_context['plannedActivityDao'].save(planned_activity1)
+    period.addPlannedActivity(planned_activity)
+    period.addPlannedActivity(planned_activity1)
+    application_context['studyService'].save(study)
 
     #create a studysite
-    @studySite = PscTest::Fixtures.createStudySite(@study, northwestern)
-    application_context['studySiteDao'].save(@studySite)
+    studySite = PscTest::Fixtures.createStudySite(study, northwestern)
+    application_context['studySiteDao'].save(studySite)
 
     #approve an existing amendment
-    @approve_date = PscTest.createDate(2008, 12, 20)
-    @studySite.approveAmendment(@amendment, @approve_date)
-    application_context['studySiteDao'].save(@studySite)
+    approve_date = PscTest.createDate(2008, 12, 20)
+    studySite.approveAmendment(amendment, approve_date)
+    application_context['studySiteDao'].save(studySite)
 
     #create subject
-    @subject = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+    subject = PscTest::Fixtures.createSubject(
+      "ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
 
     #create a study subject assignment
-    @studySegment = @study.plannedCalendar.epochs.first.studySegments.first
+    studySegment = study.plannedCalendar.epochs.first.studySegments.first
     @studySubjectAssignment = application_context['subjectService'].assignSubject(
-      @studySite,
+      studySite,
       Psc::Service::Presenter::Registration::Builder.new.
-        subject(@subject).first_study_segment(@studySegment).
+        subject(subject).first_study_segment(studySegment).
         study_subject_id("SS001").
         date(PscTest.createDate(2008, 12, 26)).manager(erin).
         to_registration)
-
-    #get Scheduled activity
-    @scheduled_activity1 = @studySubjectAssignment.scheduledCalendar.scheduledStudySegments.first.activities.first
-    @scheduled_activity2 = @studySubjectAssignment.scheduledCalendar.scheduledStudySegments.first.activities
   end
 
   describe "?responsible-user" do
