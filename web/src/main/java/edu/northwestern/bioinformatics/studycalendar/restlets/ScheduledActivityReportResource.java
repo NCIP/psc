@@ -67,6 +67,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
         applyStateFilter(filters);
         applyResponsibleUserFilter(filters);
         applyDateRangeFilters(filters);
+        applyIdealDateRangeFilters(filters);
 
         filters.setSiteName(SITE.extractFrom(getRequest()));
         filters.setLabel(LABEL.extractFrom(getRequest()));
@@ -81,6 +82,13 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
         range.setStart(parseDateFilter(START_DATE));
         range.setStop(parseDateFilter(END_DATE));
         filters.setActualActivityDate(range);
+    }
+
+    private void applyIdealDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStart(parseDateFilter(START_IDEAL_DATE));
+        range.setStop(parseDateFilter(END_IDEAL_DATE));
+        filters.setIdealDate(range);
     }
 
     private Date parseDateFilter(QueryParameters dateParam) throws ResourceException {

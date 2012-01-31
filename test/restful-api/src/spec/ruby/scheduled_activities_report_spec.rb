@@ -86,6 +86,26 @@ describe "/reports/scheduled-activities.json" do
     end
   end
 
+  describe "?end-ideal-date" do
+    before do
+      get "/reports/scheduled-activities.json?end-ideal-date=2010-03-05", :as => :erin
+    end
+
+    it "has the right value for filter end_ideal_date" do
+      response.json["filters"]["end_ideal_date"].should == "2010-03-05"
+    end
+  end
+
+  describe "?start-ideal-date" do
+    before do
+      get "/reports/scheduled-activities.json?start-ideal-date=2010-02-05", :as => :erin
+    end
+
+    it "has the right value for filter start_ideal_date" do
+      response.json["filters"]["start_ideal_date"].should == "2010-02-05"
+    end
+  end
+
   describe "?label" do
     before do
       get "/reports/scheduled-activities.json?label=a", :as => :erin
@@ -142,6 +162,25 @@ describe "/reports/scheduled-activities.json" do
 
     it "has the right number of rows" do
       response.json["rows"].size.should == 4
+    end
+  end
+
+  describe "?start-ideal-date=&end-ideal-date=" do
+    before do
+      get "/reports/scheduled-activities.json?start-ideal-date=2008-12-29&end-ideal-date=2008-12-31", :as => :erin
+    end
+
+    it "contains the right number of filters" do
+      response.json["filters"].size.should == 2
+    end
+
+    it "has the right values for filter start_date and end_date" do
+      response.json["filters"]["start_ideal_date"].should == "2008-12-29"
+      response.json["filters"]["end_ideal_date"].should == "2008-12-31"
+    end
+
+    it "has the right number of rows" do
+      response.json["rows"].size.should == 2
     end
   end
 

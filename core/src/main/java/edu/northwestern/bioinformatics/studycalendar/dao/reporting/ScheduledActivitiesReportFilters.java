@@ -18,6 +18,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private ControlledVocabularyObjectInListFilterLimit<ScheduledActivityMode> currentStateModes =
         new ControlledVocabularyObjectInListFilterLimit<ScheduledActivityMode>("currentStateModes");
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
+    private RangeFilterLimit<Date> idealDate = new RangeFilterLimit<Date>("idealDate");
 
     private DomainObjectInListFilterLimit<ActivityType> activityTypes
         = new DomainObjectInListFilterLimit<ActivityType>("activityTypes");
@@ -70,6 +71,14 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public void setActualActivityDate(MutableRange<Date> range) {
         this.actualActivityDate.setValue(range);
+    }
+
+    public MutableRange<Date> getIdealDate() {
+        return idealDate.getValue();
+    }
+
+    public void setIdealDate(MutableRange<Date> range) {
+        this.idealDate.setValue(range);
     }
 
     public Collection<ActivityType> getActivityTypes() {

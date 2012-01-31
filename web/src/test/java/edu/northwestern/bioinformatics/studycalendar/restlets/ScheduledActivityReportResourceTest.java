@@ -48,6 +48,9 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         FILTER_PROPERTIES.remove("actualActivityDate");
         FILTER_PROPERTIES.add("actualActivityDate.start");
         FILTER_PROPERTIES.add("actualActivityDate.stop");
+        FILTER_PROPERTIES.remove("idealDate");
+        FILTER_PROPERTIES.add("idealDate.start");
+        FILTER_PROPERTIES.add("idealDate.stop");
     }
 
     private ActivityTypeDao activityTypeDao;
@@ -154,6 +157,52 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
                 "Unparseable value for start-date filter: 03/01/2010.  Expected format is yyyy-MM-dd.",
                 re.getStatus().getDescription());
         }
+    }
+
+    public void testGetFilterForEndIdealDate() throws Exception {
+        END_IDEAL_DATE.putIn(request, "2010-03-08");
+        assertOnlyFilterIs("idealDate.stop", DateTools.createDate(2010, Calendar.MARCH, 8, 0, 0, 0));
+    }
+
+    public void testGetFilterForEndIdealDateWhenImproperlyFormatted() throws Exception {
+        try {
+            END_IDEAL_DATE.putIn(request, "03/08/2010");
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unparseable value for end-ideal-date filter: 03/08/2010.  Expected format is yyyy-MM-dd.",
+                re.getStatus().getDescription());
+        }
+    }
+
+    public void testGetFilterForStartIdealDate() throws Exception {
+        START_IDEAL_DATE.putIn(request, "2010-03-01");
+        assertOnlyFilterIs("idealDate.start", DateTools.createDate(2010, Calendar.MARCH, 1, 0, 0, 0));
+    }
+
+    public void testGetFilterForStartIdealDateWhenImproperlyFormatted() throws Exception {
+        try {
+            START_IDEAL_DATE.putIn(request, "03/01/2010");
+            getResource().buildFilters();
+            fail("Exception not thrown");
+        } catch (ResourceException re) {
+            assertEquals("Wrong HTTP error code", 422, re.getStatus().getCode());
+            assertEquals("Wrong message",
+                "Unparseable value for start-ideal-date filter: 03/01/2010.  Expected format is yyyy-MM-dd.",
+                re.getStatus().getDescription());
+        }
+    }
+
+    public void testGetFilterForRangeOfIdealDates() throws Exception {
+        START_IDEAL_DATE.putIn(request, "2010-03-01");
+        END_IDEAL_DATE.putIn(request, "2010-03-08");
+        ScheduledActivitiesReportFilters actualFilter = getResource().buildFilters();
+        assertNotNull("No filters built", actualFilter);
+        assertNotNull("Filter doesn't contain the ideal date range", actualFilter.getIdealDate());
+        assertDayOfDate("Incorrect start date", 2010, Calendar.MARCH, 1, actualFilter.getIdealDate().getStart());
+        assertDayOfDate("Incorrect stop date", 2010, Calendar.MARCH, 8, actualFilter.getIdealDate().getStop());
     }
 
     public void testGetFilterForLabel() throws Exception {

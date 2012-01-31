@@ -116,6 +116,16 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         assertEquals("Wrong value", "2009-04-19", writeAndGetFilters().optString("end_date"));
     }
 
+    public void testReturnedFiltersIncludeStartIdealDate() throws Exception {
+        filters.getIdealDate().setStart(DateTools.createDate(2009, Calendar.APRIL, 8));
+        assertEquals("Wrong value", "2009-04-08", writeAndGetFilters().optString("start_ideal_date"));
+    }
+
+    public void testReturnedFiltersIncludeEndIdealDate() throws Exception {
+        filters.getIdealDate().setStop(DateTools.createDate(2009, Calendar.APRIL, 19));
+        assertEquals("Wrong value", "2009-04-19", writeAndGetFilters().optString("end_ideal_date"));
+    }
+
     public void testReturnedFiltersIncludeActivityTypes() throws Exception {
         filters.setActivityTypes(Arrays.asList(
             createActivityType("Measure"), createActivityType("Intervention")));

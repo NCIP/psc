@@ -63,6 +63,15 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
                 JacksonTools.nullSafeWriteStringField(generator, "end_date", getApiDateFormat().format(filters.getActualActivityDate().getStop()));
             }
         }
+        if (filters.getIdealDate() != null) {
+            if (filters.getIdealDate().getStart() != null) {
+                JacksonTools.nullSafeWriteStringField(generator, "start_ideal_date", getApiDateFormat().format(filters.getIdealDate().getStart()));
+            }
+
+            if (filters.getIdealDate().getStop() != null) {
+                JacksonTools.nullSafeWriteStringField(generator, "end_ideal_date", getApiDateFormat().format(filters.getIdealDate().getStop()));
+            }
+        }
         if (filters.getResponsibleUser() != null) {
             JacksonTools.nullSafeWriteStringField(generator, "responsible_user", filters.getResponsibleUser().getLoginName());
         }

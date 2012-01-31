@@ -115,6 +115,8 @@
         <filter name="filter_currentStateModes" condition="current_state_mode_id IN (:currentStateModes)"/>
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
+        <filter name="filter_idealDate_start"   condition="ideal_date &gt;= :start"/>
+        <filter name="filter_idealDate_stop"    condition="ideal_date &lt;= :stop"/>
         <filter name="filter_activityTypes" condition="activity_type_id IN (:activityTypes)"/>
         <filter name="filter_responsibleUser" condition="manager_csm_user_id = :responsibleUser"/>
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
@@ -147,6 +149,12 @@
     </filter-def>
     <filter-def name="filter_personId">
         <filter-param name="personId" type="string"/>
+    </filter-def>
+    <filter-def name="filter_idealDate_start">
+        <filter-param name="start" type="date"/>
+    </filter-def>
+    <filter-def name="filter_idealDate_stop">
+        <filter-param name="stop" type="date"/>
     </filter-def>
     <filter-def name="filter_authorizedStudySiteIds">
         <filter-param name="authorizedStudySiteIds" type="integer"/>

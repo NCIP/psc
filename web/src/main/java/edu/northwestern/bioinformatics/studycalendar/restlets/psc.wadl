@@ -1922,6 +1922,12 @@
                     <param style="query" name="end-date" type="xsd:string">
                         <doc>Limit to those scheduled activities whose current date is this date or earlier.</doc>
                     </param>
+                    <param style="query" name="start-ideal-date" type="xsd:string">
+                        <doc>Limit to those scheduled activities whose ideal date is this date or later.</doc>
+                    </param>
+                    <param style="query" name="end-ideal-date" type="xsd:string">
+                        <doc>Limit to those scheduled activities whose ideal date is this date or earlier.</doc>
+                    </param>
                     <param style="query" name="responsible-user" type="xsd:string">
                         <doc>Limit to those scheduled activities whose subject assignment is being managed by the user with this username.</doc>
                     </param>

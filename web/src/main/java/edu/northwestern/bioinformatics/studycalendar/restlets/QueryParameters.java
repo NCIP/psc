@@ -27,6 +27,8 @@ public enum QueryParameters {
     LABEL,
     START_DATE,
     END_DATE,
+    START_IDEAL_DATE,
+    END_IDEAL_DATE,
     RESPONSIBLE_USER,
     PERSON_ID,
     PRIVILEGE,

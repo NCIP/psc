@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledA
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.apache.commons.httpclient.util.DateUtil;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -134,6 +135,34 @@ public class ScheduledActivitiesReportRowDaoTest extends
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStop(DateUtils.createDate(2006, Calendar.OCTOBER, 25));
         filters.setActualActivityDate(range);
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithStartIdealDateFilter_Pos() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
+        filters.setIdealDate(range);
+        assertSearchWithResults(NEG_19, NEG_18);
+    }
+
+    public void testSearchWithStopIdealDateFilter_Pos() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStop(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
+        filters.setIdealDate(range);
+        assertSearchWithResults(NEG_17, NEG_16);
+    }
+
+    public void testSearchWithStartIdealDateFilter_Neg() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStart(DateUtils.createDate(2007, Calendar.DECEMBER, 5));
+        filters.setIdealDate(range);
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithStopIdealDateFilter_Neg() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStop(DateUtils.createDate(2006, Calendar.OCTOBER, 25));
+        filters.setIdealDate(range);
         assertSearchWithResults();
     }
 
