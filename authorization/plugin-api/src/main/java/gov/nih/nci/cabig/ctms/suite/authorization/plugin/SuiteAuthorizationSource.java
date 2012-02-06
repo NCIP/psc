@@ -42,7 +42,7 @@ public interface SuiteAuthorizationSource {
     Collection<SuiteUser> getUsersByRole(SuiteRole role);
 
     /**
-     * Returns those users whose user details match all the given criteria.
+     * Returns those users whose user details match <i>any</i> of the given criteria.
      * If the criteria are all null, return all users.
      */
     Collection<SuiteUser> searchUsers(SuiteUserSearchOptions criteria);
