@@ -142,6 +142,12 @@ public class SuiteUser {
         this.roleMemberships = roleMemberships;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append('[').append(getUsername()).append(']').toString();
+    }
+
     /**
      * A literate builder for {@link SuiteUser} instances. Performs validation to help
      * plugin implementations fail fast.

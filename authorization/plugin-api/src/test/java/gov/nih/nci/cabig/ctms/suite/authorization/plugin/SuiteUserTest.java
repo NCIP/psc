@@ -68,6 +68,11 @@ public class SuiteUserTest {
         expectInvalidDetails(user, "Missing id, last name, e-mail address");
     }
 
+    @Test
+    public void itHasAUsefulToString() throws Exception {
+        assertThat(user.toString(), is("SuiteUser[jo]"));
+    }
+
     private void expectValidDetails(SuiteUser actual) {
         actual.validateDetails(); // expect no error
     }
