@@ -76,7 +76,7 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
      */
     @SuppressWarnings({ "unchecked" })
     protected final void dumpResults(String sql) {
-        List<Map<String, String>> rows = new JdbcTemplate(getDataSource()).query(
+        List<Map<String, Object>> rows = new JdbcTemplate(getDataSource()).query(
             sql, new ColumnMapRowMapper() {
             @Override
             protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
@@ -90,8 +90,8 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
             Map<String, Integer> colWidths = new HashMap<String, Integer>();
             for (String colName : rows.get(0).keySet()) {
                 colWidths.put(colName, colName.length());
-                for (Map<String, String> row : rows) {
-                    colWidths.put(colName, Math.max(colWidths.get(colName), row.get(colName).length()));
+                for (Map<String, Object> row : rows) {
+                    colWidths.put(colName, Math.max(colWidths.get(colName), row.get(colName).toString().length()));
                 }
             }
 
@@ -101,9 +101,9 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
             }
             dump.append('\n');
 
-            for (Map<String, String> row : rows) {
+            for (Map<String, Object> row : rows) {
                 for (String colName : row.keySet()) {
-                    StringUtils.appendWithPadding(row.get(colName), colWidths.get(colName), false, dump);
+                    StringUtils.appendWithPadding(row.get(colName).toString(), colWidths.get(colName), false, dump);
                     dump.append(" | ");
                 }
                 dump.append('\n');

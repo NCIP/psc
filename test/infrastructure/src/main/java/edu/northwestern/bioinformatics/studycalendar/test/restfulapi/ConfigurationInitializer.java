@@ -33,13 +33,12 @@ public class ConfigurationInitializer extends EmptySchemaInitializer implements 
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
     private void oneTimeSetup(ConnectionSource connectionSource, String table) {
         Map<String, String> desiredConfigProps = (Map<String, String>) configurations.get(table);
 
-        List<Map<String, String>> currentPropRows = connectionSource.currentJdbcTemplate().queryForList("SELECT prop FROM " + table);
+        List<Map<String, Object>> currentPropRows = connectionSource.currentJdbcTemplate().queryForList("SELECT prop FROM " + table);
         List<String> existingProps = new ArrayList<String>(currentPropRows.size());
-        for (Map<String, String> row : currentPropRows) existingProps.add(row.values().iterator().next());
+        for (Map<String, Object> row : currentPropRows) existingProps.add(row.values().iterator().next().toString());
 
         for (String prop : desiredConfigProps.keySet()) {
             String desiredValue = desiredConfigProps.get(prop);
@@ -47,15 +46,13 @@ public class ConfigurationInitializer extends EmptySchemaInitializer implements 
                 log.debug("Already a record for {} in {}; updating", prop, table);
                 connectionSource.currentJdbcTemplate().update(
                     String.format("UPDATE %s SET value=? WHERE prop=?", table),
-                    new Object[] { desiredValue, prop }
-                );
+                    desiredValue, prop);
                 existingProps.remove(prop);
             } else {
                 log.debug("No record for {} in {}; inserting", prop, table);
                 connectionSource.currentJdbcTemplate().update(
                     String.format("INSERT INTO %s (prop, value) VALUES (?, ?)", table),
-                    new Object[] { prop, desiredValue }
-                );
+                    prop, desiredValue);
             }
         }
         // remaining contents of existingProps are not referenced in the config data, so should be deleted

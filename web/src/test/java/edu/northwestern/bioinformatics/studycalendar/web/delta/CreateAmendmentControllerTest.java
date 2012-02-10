@@ -6,18 +6,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Date;
-import java.util.Calendar;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Saurabh Agrawal
@@ -74,9 +74,7 @@ public class CreateAmendmentControllerTest extends ControllerTestCase {
         verifyMocks();
 
         BindingResult result = (BindingResult) modelAndView.getModel().get(BindingResult.MODEL_KEY_PREFIX + "command");
-        List<FieldError> allErrors = result.getAllErrors();
+        List<ObjectError> allErrors = result.getAllErrors();
         assertEquals("unexpected errors : " + allErrors, 1, allErrors.size());
-
-
     }
 }

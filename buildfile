@@ -100,7 +100,7 @@ define "psc" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
 
-    compile.with SLF4J.api, SPRING, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
+    compile.with SLF4J.api, SPRING, SPRING_WEB.web, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
 
@@ -246,8 +246,8 @@ define "psc" do
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
       compile.with project('utility'), project('authorization'),
-        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
-        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
+        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SPRING_WEB.web,
+        SECURITY.acegi, CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
         SECURITY.suite_authorization
       test.with UNIT_TESTING, EHCACHE,
         project('mocks').and_dependencies,
@@ -981,7 +981,7 @@ define "psc" do
     test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
       project('authentication:socket').test_dependencies
-    test.using :java_args => [ '-Xmx512M', '-Dcom.sun.management.jmxremote' ]
+    test.using :java_args => %w(-Xmx512M -XX:MaxPermSize=256M -Dcom.sun.management.jmxremote)
 
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)

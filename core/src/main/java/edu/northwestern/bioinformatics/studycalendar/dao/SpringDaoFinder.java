@@ -28,8 +28,8 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
 
     @SuppressWarnings({ "unchecked" })
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        Map<String, DomainObjectDao<?>> daos = beanFactory.getBeansOfType(DomainObjectDao.class, false, false);
-        for (DomainObjectDao<?> dao : daos.values()) {
+        Map<String, DomainObjectDao> daos = beanFactory.getBeansOfType(DomainObjectDao.class, false, false);
+        for (DomainObjectDao dao : daos.values()) {
             entries.add(new DaoEntry(dao));
         }
         log.debug("Registered DAOs: {}", entries);
