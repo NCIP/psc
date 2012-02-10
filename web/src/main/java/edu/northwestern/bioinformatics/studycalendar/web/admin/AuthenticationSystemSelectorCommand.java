@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
-import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
-import org.springframework.validation.Errors;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.Errors;
 
 /**
  * @author Rhett Sutphin

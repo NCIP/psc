@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
+import edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemDirectory;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.webflow.action.FormAction;
-import org.springframework.webflow.execution.ScopeType;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
-import org.springframework.webflow.core.collection.MutableAttributeMap;
-import org.springframework.beans.factory.annotation.Required;
-import org.osgi.framework.BundleContext;
-import edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemDirectory;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
+import org.springframework.webflow.execution.ScopeType;
 
 /**
  * @author Jalpa Patel
@@ -29,9 +29,9 @@ public class SelectAuthenticationSystemFormAction extends FormAction {
         return success();
     }
 
+    @Override
     protected Object createFormObject(RequestContext context){
-        SelectAuthenticationSystemCommand command = new SelectAuthenticationSystemCommand(context);
-        return command;
+        return new SelectAuthenticationSystemCommand();
     }
 
    ////// CONFIGURATION
