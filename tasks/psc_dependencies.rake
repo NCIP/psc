@@ -15,6 +15,8 @@ repositories.remote << "http://repository.springsource.com/maven/bundles/release
 repositories.remote << "http://repository.springsource.com/maven/bundles/external"
 # codehaus repo
 repositories.remote << "http://repository.codehaus.org/"
+# NCI maven repo
+repositories.remote << 'https://ncimvn.nci.nih.gov/nexus/content/groups/public/'
 # main m2 repo
 repositories.remote << "http://repo1.maven.org/maven2"
 #Jboss repository added to fetch dbunit 2.2 jar.
@@ -70,13 +72,12 @@ end
 def ctms_commons_lib(mod)
   if ENV['LOCAL_CC_REV']
     rev = ENV['LOCAL_CC_REV']
-    spec = ivy_artifact_spec("local-ctms-commons",
-      "gov.nih.nci.cabig.ctms", mod, rev, mod)
+    spec = "gov.nih.nci.cabig.ctms:#{mod}.LOCAL:jar:#{rev}"
     file = Dir[ "#{ENV['HOME']}/ctms-commons/git/**/target/#{mod}-#{rev}.jar" ].first
     fail "Cannot find locally built #{mod} rev #{rev}" unless file
-    artifact(spec).from(file)
+    artifact(spec, file)
   else
-    cbiit_lib("gov.nih.nci.cabig.ctms", mod, mod, CTMS_COMMONS_VERSION)
+    "gov.nih.nci.cabig.ctms:#{mod}:jar:#{CTMS_COMMONS_VERSION}"
   end
 end
 
@@ -101,7 +102,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "1.0.8.RELEASE"
+CTMS_COMMONS_VERSION = "1.1.2.RELEASE"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "3.0.7.RELEASE"
 SPRING_WEBFLOW_VERSION = "2.3.0.RELEASE"
