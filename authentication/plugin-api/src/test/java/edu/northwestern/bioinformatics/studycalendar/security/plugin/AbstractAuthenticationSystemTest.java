@@ -140,14 +140,6 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         }
     }
 
-    public void testDataSourceIsExtractedFromBundleContext() throws Exception {
-        assertSame(dataSource, system.getDataSource());
-    }
-
-    public void testUserDetailsServiceIsExtractedFromBundleContext() throws Exception {
-        assertSame(userDetailsService, system.getUserDetailsService());
-    }
-
     private void doInitialize() {
         system.initialize(blankConfiguration());
     }

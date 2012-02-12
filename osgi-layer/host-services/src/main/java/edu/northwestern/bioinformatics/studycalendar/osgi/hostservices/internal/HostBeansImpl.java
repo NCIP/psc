@@ -2,15 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.tools.DeferredBeanInvoker;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,8 +20,7 @@ import java.util.Map;
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
 public class HostBeansImpl implements HostBeans {
-    private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
-
+    @SuppressWarnings({ "unchecked" })
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
         DataSource.class, PscUserDetailsService.class, PersistenceManager.class
     );
@@ -68,47 +63,5 @@ public class HostBeansImpl implements HostBeans {
 
     public void setPersistenceManager(PersistenceManager persistenceManager) {
         invokers.get(PersistenceManager.class).setBean(persistenceManager);
-    }
-
-    private static class DeferredBeanInvoker implements InvocationHandler {
-        private String className;
-        private Object bean;
-
-        private DeferredBeanInvoker(String className) {
-            this.className = className;
-        }
-
-        public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (bean == null) {
-                Object rv = defaultReturnValue(method);
-                log.debug(
-                    "Cannot invoke method {} on host bean {} because it is not available yet.  Returning default value {}.",
-                    new Object[] { method.getName(), className, rv });
-                return rv;
-            } else {
-                log.trace("Invoking {} on {}@{}", new Object[] { method, bean.getClass(), System.identityHashCode(bean) });
-                try {
-                    return method.invoke(bean, args);
-                } catch (InvocationTargetException ite) {
-                    throw ite.getCause();
-                }
-            }
-        }
-
-        private Object defaultReturnValue(Method method) {
-            if (method.getReturnType().isPrimitive()) {
-                if (method.getReturnType() == Boolean.TYPE) {
-                    return false;
-                } else {
-                    return 0;
-                }
-            } else {
-                return null;
-            }
-        }
-
-        public synchronized void setBean(Object bean) {
-            this.bean = bean;
-        }
     }
 }

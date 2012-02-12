@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.tools.DeferredBeanInvoker;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
@@ -11,6 +13,10 @@ import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +27,7 @@ import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 
 /**
@@ -89,15 +96,10 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     @SuppressWarnings({ "unchecked" })
     private <T> T getServiceInstance(Class<T> klass) {
         if (bundleContext == null) {
-            log.debug("No bundle context is available; therefore no {}", klass.getName());
+            log.warn("No bundle context is available; therefore no {}", klass.getName());
             return null;
         }
-        ServiceReference ref = bundleContext.getServiceReference(klass.getName());
-        if (ref == null) {
-            log.debug("No {} available in bundle context", klass.getName());
-            return null;
-        }
-        return (T) bundleContext.getService(ref);
+        return new DeferredServiceProxyCreator<T>(klass, bundleContext).getProxy();
     }
 
     public String name() {
@@ -253,6 +255,61 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
             for (String path : contextResourcePaths) {
                 xmlReader.loadBeanDefinitions(new ClassPathResource(path, klass));
             }
+        }
+    }
+
+    private static class DeferredServiceProxyCreator<T> {
+        private final Logger log = LoggerFactory.getLogger(getClass());
+
+        private BundleContext bundleContext;
+        private Class<T> serviceInterface;
+        private T proxy;
+        private DeferredBeanInvoker invoker;
+
+        @SuppressWarnings({ "unchecked" })
+        public DeferredServiceProxyCreator(Class<T> serviceInterface, BundleContext bundleContext) {
+            this.serviceInterface = serviceInterface;
+            this.bundleContext = bundleContext;
+
+            this.invoker = new DeferredBeanInvoker(serviceInterface.getName());
+            this.proxy = (T) Proxy.newProxyInstance(
+                serviceInterface.getClassLoader(),
+                new Class[] { serviceInterface },
+                invoker);
+
+            associateServiceOrRegisterListener();
+        }
+
+        private void associateServiceOrRegisterListener() {
+            ServiceReference ref = bundleContext.getServiceReference(serviceInterface.getName());
+            if (ref == null) {
+                log.debug("Deferred service {} not immediately available.", serviceInterface.getName());
+                ServiceListener deferredSetter = new ServiceListener() {
+                    public void serviceChanged(ServiceEvent event) {
+                        if (event.getType() == ServiceEvent.REGISTERED) {
+                            log.debug("Deferred service {} is now available.", serviceInterface.getName());
+                            setBeanToService(event.getServiceReference());
+                        }
+                    }
+                };
+                try {
+                    bundleContext.addServiceListener(deferredSetter,
+                        String.format("(%s=%s)", Constants.OBJECTCLASS, serviceInterface.getName()));
+                } catch (InvalidSyntaxException e) {
+                    throw new StudyCalendarError("The syntax is not invalid", e);
+                }
+            } else {
+                log.debug("Deferrable service {} immediately available.", serviceInterface.getName());
+                setBeanToService(ref);
+            }
+        }
+
+        private void setBeanToService(ServiceReference ref) {
+            invoker.setBean(bundleContext.getService(ref));
+        }
+
+        public T getProxy() {
+            return proxy;
         }
     }
 }
