@@ -6,13 +6,13 @@
 -->
 
 <beans>
-    <bean id="mainPropertyConfigurer" class="gov.nih.nci.cabig.ctms.tools.spring.PropertyPlaceholderConfigurer">
+    <bean id="mainPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties">
             <bean class="edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
                 <property name="applicationDirectoryName" value="@application-short-name@"/>
             </bean>
         </property>
-        <property name="useNullForUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>

@@ -4,13 +4,13 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        ">
-    <bean id="dsBundlePropertyConfigurer" class="gov.nih.nci.cabig.ctms.tools.spring.PropertyPlaceholderConfigurer">
+    <bean id="dsBundlePropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties">
             <bean class="edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
                 <property name="applicationDirectoryName" value="psc"/>
             </bean>
         </property>
-        <property name="useNullForUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <bean id="dataSourceTemplate" abstract="true" class="org.apache.commons.dbcp.BasicDataSource">
