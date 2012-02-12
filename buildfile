@@ -103,7 +103,7 @@ define "psc" do
     bnd.import_packages.clear
     bnd.import_packages << 'edu.northwestern.bioinformatics.*' << '*;resolution:=optional'
 
-    compile.with SLF4J.api, SPRING, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
+    compile.with SLF4J.api, SPRING, SPRING_WEB.web, SPRING_WEB.webmvc, JAKARTA_COMMONS.collections,
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED, OSGI.core
     test.with(UNIT_TESTING, FELIX.framework)
 
@@ -330,7 +330,7 @@ define "psc" do
       bnd.category = :infrastructure
 
       compile.with project('utility'), project('authorization:definitions'),
-        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
+        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SPRING_WEB.web, SECURITY.acegi,
         CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI,
         SECURITY.suite_authorization
       test.with UNIT_TESTING, EHCACHE,
@@ -1134,7 +1134,7 @@ define "psc" do
       project('test-infrastructure').test_dependencies,
       project('authentication:socket').test_dependencies,
       project('authorization:default-csm').and_dependencies
-    test.using :java_args => [ '-Xmx512M', '-Dcom.sun.management.jmxremote' ]
+    test.using :java_args => %w(-Xmx512M -XX:MaxPermSize=256M -Dcom.sun.management.jmxremote)
 
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)

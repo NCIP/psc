@@ -104,7 +104,7 @@ end
 # Only list versions which appear in more than one artifact here
 CTMS_COMMONS_VERSION = "1.0.9.RELEASE"
 CORE_COMMONS_VERSION = "77"
-SPRING_VERSION = "2.5.6"
+SPRING_VERSION = "3.0.7.RELEASE"
 RESTLET_VERSION = "2.0.3"
 SLF4J_VERSION = "1.5.11"
 LOGBACK_VERSION = "0.9.20"
@@ -170,11 +170,16 @@ JAKARTA_COMMONS = struct({
 
 HTMLPARSER = psc_osgi_artifact("nu.validator.htmlparser:htmlparser:jar:1.1.0") # 1.2.1 not in mvn repo
 
-SPRING = [
-  "org.springframework:spring:jar:#{SPRING_VERSION}",
-]
+SPRING = struct(
+  %w(aop asm beans context context-support core expression jdbc orm tx).inject({}) { |h, a|
+    h[a] = "org.springframework:spring-#{a}:jar:#{SPRING_VERSION}"; h
+  }.merge(
+    :aopalliance => 'org.aopalliance:com.springsource.org.aopalliance:jar:1.0.0'
+  )
+)
 
 SPRING_WEB = struct(
+  :web        => "org.springframework:spring-web:jar:#{SPRING_VERSION}",
   :webmvc     => "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
   :webflow    => "org.springframework:spring-webflow:jar:1.0.5",
   :binding    => "org.springframework:spring-binding:jar:1.0.5",
@@ -440,12 +445,12 @@ FELIX = struct(
 )
 
 SPRING_OSGI = struct(
-  :core => "org.springframework.osgi:org.springframework.osgi.core:jar:1.1.3.RELEASE",
-  :io => "org.springframework.osgi:org.springframework.osgi.io:jar:1.1.3.RELEASE",
-  :extender => "org.springframework.osgi:org.springframework.osgi.extender:jar:1.1.3.RELEASE"
+  %w(core io extender).inject({}) { |h, a|
+    h[a] = "org.springframework.osgi:org.springframework.osgi.#{a}:jar:1.2.1"; h
+  }
 )
 
-SPRING_OSGI_MOCKS = "org.springframework.osgi:org.springframework.osgi.mock:jar:1.1.3.RELEASE"
+SPRING_OSGI_MOCKS = "org.springframework.osgi:org.springframework.osgi.mock:jar:1.2.1"
 
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",

@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.audit.domain.Operation;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -17,10 +18,6 @@ import java.util.Map;
 public class AuditEventDaoTest extends DaoTestCase {
     private AuditEventDao dao = (AuditEventDao) getApplicationContext().getBean("auditEventDao");
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
     @SuppressWarnings({ "unchecked" })
     public void testSaveNewEvent() throws Exception {
         {
@@ -31,7 +28,7 @@ public class AuditEventDaoTest extends DaoTestCase {
 
         interruptSession();
 
-        List<AuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
+        List<Map<String,Object>> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
         assertNotNull(events);
         assertEquals("No of events are wrong", 1, events.size());
     }
@@ -49,14 +46,14 @@ public class AuditEventDaoTest extends DaoTestCase {
 
         interruptSession();
 
-        List<AuditEvent> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
+        List<Map<String, Object>> events = getJdbcTemplate().queryForList("select * from audit_events where object_id = 13");
         assertNotNull(events);
         assertEquals("No of events are wrong", 1, events.size());
 
         int eventId = getJdbcTemplate().queryForInt("select id from audit_events where object_id = 13");
         assertNotNull("Event is not created", eventId);
 
-        List<Map> eventValues = getJdbcTemplate().queryForList("select * from audit_event_values where audit_event_id = ?", new Object[] {eventId});
+        List<Map<String, Object>> eventValues = getJdbcTemplate().queryForList("select * from audit_event_values where audit_event_id = ?", eventId);
         assertEquals("No of values saved are different", 3, eventValues.size());
     }
 

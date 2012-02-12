@@ -34,7 +34,6 @@ public class SecureOperationTest extends WebTestCase {
             put("/cal/managePeriodActivies", new TestingAuthorizedHandler(STUDY_CALENDAR_TEMPLATE_BUILDER)).
             put("/cal/admin/sites", new TestingAuthorizedHandler(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER)).
             toMap());
-        handlerMapping.initApplicationContext();
 
         applicationContext = ConcreteStaticApplicationContext.createWebApplicationContext(
             new MapBuilder<String, Object>().
@@ -44,6 +43,9 @@ public class SecureOperationTest extends WebTestCase {
         );
         request.setAttribute(
             DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
+
+        handlerMapping.setApplicationContext(applicationContext);
+        handlerMapping.initApplicationContext();
 
         SecurityContextHolderTestHelper.setSecurityContext(
             AuthorizationObjectFactory.createPscUser("Walter",

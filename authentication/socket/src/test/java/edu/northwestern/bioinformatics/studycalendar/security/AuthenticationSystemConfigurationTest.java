@@ -8,18 +8,21 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
-import static org.easymock.EasyMock.notNull;
-import static org.easymock.classextension.EasyMock.expect;
+import org.easymock.EasyMock;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockServiceReference;
 
 import javax.sql.DataSource;
 import java.util.Dictionary;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
+import static org.easymock.EasyMock.notNull;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -50,6 +53,8 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
 
         expectSingleService(DataSource.class, dataSource);
         expectSingleService(PscUserDetailsService.class, userDetailsService);
+        EasyMock.expect(mockBundleContext.getServiceReference(PackageAdmin.class.getName())).
+            andStubReturn(null);
 
         configuration = new AuthenticationSystemConfiguration();
         configuration.setBundleContext(mockBundleContext);
