@@ -16,8 +16,6 @@ repositories.remote << "http://repository.springsource.com/maven/bundles/release
 repositories.remote << "http://repository.springsource.com/maven/bundles/external"
 # codehaus repo
 repositories.remote << "http://repository.codehaus.org/"
-# dynamicjava.org repo
-repositories.remote << "http://maven.dynamicjava.org"
 # main m2 repo
 repositories.remote << "http://repo1.maven.org/maven2"
 #Jboss repository added to fetch dbunit 2.2 jar.
