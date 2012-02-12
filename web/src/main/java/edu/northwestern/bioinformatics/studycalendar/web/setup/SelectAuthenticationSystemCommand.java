@@ -1,20 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
-import org.springframework.webflow.execution.RequestContext;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
+
+import java.io.Serializable;
 
 /**
  * @author Jalpa Patel
  */
-public class SelectAuthenticationSystemCommand {
-    private RequestContext context;
+public class SelectAuthenticationSystemCommand implements Serializable {
     private String authenticationSystem;
 
-    public SelectAuthenticationSystemCommand(RequestContext context) {
-      this.context = context;
-    }
-
-    public void apply() {
-      context.getFlowScope().put("authenticationSystemValue", getAuthenticationSystem());
+    public void apply(MutableAttributeMap scope) {
+      scope.put("authenticationSystemValue", getAuthenticationSystem());
     }
    
     public void setAuthenticationSystem(String authenticationSystem) {

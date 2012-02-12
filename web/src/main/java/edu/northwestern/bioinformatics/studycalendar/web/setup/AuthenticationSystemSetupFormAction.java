@@ -31,7 +31,7 @@ public class AuthenticationSystemSetupFormAction extends FormAction {
         super(AuthenticationSystemSelectorCommand.class);
         setFormObjectName("authenticationSystemSetupCommand");
         setValidator(new ValidatableValidator());
-        setFormObjectScope(ScopeType.FLOW);
+        setFormObjectScope(ScopeType.REQUEST);
     }
 
     public Event setupReferenceData(RequestContext context) throws Exception {
@@ -56,13 +56,13 @@ public class AuthenticationSystemSetupFormAction extends FormAction {
         }
     }
 
+    @Override
     protected Object createFormObject(RequestContext context){
-        AuthenticationSystemSelectorCommand command = new AuthenticationSystemSelectorCommand(
+        return new AuthenticationSystemSelectorCommand(
             context.getFlowScope().get("authenticationSystemValue").toString(),
             storedAuthenticationSystemConfiguration,
             new AuthenticationSystemDirectory(bundleContext, membrane),
             installedAuthenticationSystem);
-            return command;
     }
 
     ////// CONFIGURATION

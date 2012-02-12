@@ -2,58 +2,58 @@
 <flow xmlns="http://www.springframework.org/schema/webflow"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
-                          http://www.springframework.org/schema/webflow/spring-webflow-1.0.xsd">
-    <start-state idref="decide"/>
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
+      start-state="decide">
 
     <action-state id="decide">
-        <bean-action bean="setupStatus" method="preAuthenticationSetup"/>
+        <evaluate expression="setupStatus.preAuthenticationSetup()"/>
         <transition to="selectAuthenticationSystem" on="AUTHENTICATION_SYSTEM"/>
         <transition to="firstAdministrator" on="ADMINISTRATOR"/>
-        <transition to="preAuthenticationSetupComplete" on="null"/>
+        <transition to="preAuthenticationSetupComplete" on="success"/>
     </action-state>
 
     <view-state id="selectAuthenticationSystem" view="setup/selectAuthenticationSystem">
-        <render-actions>
-            <action bean="selectAuthenticationSystemFormAction" method="setupForm"/>
-            <action bean="selectAuthenticationSystemFormAction" method="setupReferenceData"/>
-        </render-actions>
+        <on-render>
+            <evaluate expression="selectAuthenticationSystemFormAction.setupForm(flowRequestContext)"/>
+            <evaluate expression="selectAuthenticationSystemFormAction.setupReferenceData(flowRequestContext)"/>
+        </on-render>
         <transition on="next" to="authenticationSystemSetup">
-            <action bean="selectAuthenticationSystemFormAction" method="bindAndValidate"/>
+            <evaluate expression="selectAuthenticationSystemFormAction.bindAndValidate"/>
         </transition>
     </view-state>
 
     <action-state id="authenticationSystemSetup">
-        <evaluate-action expression="${flowScope.selectAuthenticationSystemCommand.apply()}"/>
+        <evaluate expression="flowScope.selectAuthenticationSystemCommand.apply(flowScope)"/>
         <transition to="setupAuthenticationSystem"/>
     </action-state>
 
     <view-state id="setupAuthenticationSystem" view="setup/authenticationSystemSetup">
-        <render-actions>
-            <action bean="authenticationSystemSetupFormAction" method="setupForm"/>
-            <action bean="authenticationSystemSetupFormAction" method="setupReferenceData"/>
-        </render-actions>
+        <on-render>
+            <evaluate expression="authenticationSystemSetupFormAction.setupForm(flowRequestContext)"/>
+            <evaluate expression="authenticationSystemSetupFormAction.setupReferenceData(flowRequestContext)"/>
+        </on-render>
         <transition on="save" to="saveAuthenticationSystem">
-            <action bean="authenticationSystemSetupFormAction" method="bindAndValidate"/>
+            <evaluate expression="authenticationSystemSetupFormAction.bindAndValidate"/>
         </transition>
     </view-state>
 
     <action-state id="saveAuthenticationSystem">
-        <evaluate-action expression="${flowScope.authenticationSystemSetupCommand.apply()}"/>
+        <evaluate expression="requestScope.authenticationSystemSetupCommand.apply()"/>
         <transition to="decide"/>
     </action-state>
 
     <view-state id="firstAdministrator" view="setup/adminForm">
-        <render-actions>
-            <action bean="adminFormAction" method="setupForm"/>
-            <action bean="adminFormAction" method="setupReferenceData"/>
-        </render-actions>
+        <on-render>
+            <evaluate expression="adminFormAction.setupForm(flowRequestContext)"/>
+            <evaluate expression="adminFormAction.setupReferenceData(flowRequestContext)"/>
+        </on-render>
         <transition on="save" to="saveAdministrator">
-            <action bean="adminFormAction" method="bindAndValidate"/>
+            <evaluate expression="adminFormAction.bindAndValidate"/>
         </transition>
     </view-state>
 
     <action-state id="saveAdministrator">
-        <evaluate-action expression="${requestScope.adminCommand.apply()}"/>
+        <evaluate expression="requestScope.adminCommand.apply()"/>
         <transition to="decide"/>
     </action-state>
 

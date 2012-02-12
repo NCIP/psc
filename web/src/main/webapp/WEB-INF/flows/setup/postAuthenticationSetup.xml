@@ -2,48 +2,40 @@
 <flow xmlns="http://www.springframework.org/schema/webflow"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
-                          http://www.springframework.org/schema/webflow/spring-webflow-1.0.xsd">
-    <start-state idref="decide"/>
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
+      start-state="decide">
 
     <action-state id="decide">
-        <bean-action bean="setupStatus" method="postAuthenticationSetup"/>
+        <evaluate expression="setupStatus.postAuthenticationSetup()"/>
         <transition to="firstSite" on="SITE"/>
         <transition to="firstSource" on="SOURCE"/>
-        <transition to="setupComplete" on="null"/>
+        <transition to="setupComplete" on="success"/>
     </action-state>
 
     <view-state id="firstSite" view="setup/siteForm">
-        <render-actions>
-            <action bean="siteFormAction" method="setupForm"/>
-        </render-actions>
+        <on-render>
+            <evaluate expression="siteFormAction.setupForm(flowRequestContext)"/>
+        </on-render>
         <transition on="save" to="saveSite">
-            <action bean="siteFormAction" method="bindAndValidate"/>
+            <evaluate expression="siteFormAction.bindAndValidate"/>
         </transition>
     </view-state>
 
     <action-state id="saveSite">
-        <bean-action bean="siteService" method="createOrUpdateSite">
-            <method-arguments>
-                <argument expression="${flowScope.site}"/>
-            </method-arguments>
-        </bean-action>
+        <evaluate expression="siteService.createOrUpdateSite(flowScope.site)"/>
         <transition to="firstSource"/>
     </action-state>
     <view-state id="firstSource" view="setup/sourceForm">
-        <render-actions>
-            <action bean="sourceFormAction" method="setupForm"/>
-        </render-actions>
+        <on-render>
+            <evaluate expression="sourceFormAction.setupForm(flowRequestContext)"/>
+        </on-render>
         <transition on="save" to="saveSource">
-            <action bean="sourceFormAction" method="bindAndValidate"/>
+            <evaluate expression="sourceFormAction.bindAndValidate"/>
         </transition>
     </view-state>
 
     <action-state id="saveSource">
-        <bean-action bean="sourceService" method="makeManualTarget">
-            <method-arguments>
-                <argument expression="${flowScope.source}"/>
-            </method-arguments>
-        </bean-action>
+        <evaluate expression="sourceService.makeManualTarget(flowScope.source)"/>
         <transition to="decide"/>
     </action-state>
 

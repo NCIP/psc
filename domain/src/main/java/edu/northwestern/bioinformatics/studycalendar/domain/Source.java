@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
         }
 )
 public class Source extends AbstractMutableDomainObject
-    implements Named, NaturallyKeyed, TransientCloneable<Source>, DeepComparable<Source>
+    implements Named, NaturallyKeyed, TransientCloneable<Source>, DeepComparable<Source>, Serializable
 {
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
