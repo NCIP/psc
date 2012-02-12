@@ -30,6 +30,7 @@ public class EmbedderIntegrationTest {
         configuration.getBundlesToInstall().add(new InstallableBundleImpl(1, findClasspathJar("slf4j-api"), false));
         configuration.getBundlesToInstall().add(new InstallableBundleImpl(2, findClasspathJar("logback-core"), false));
         configuration.getBundlesToInstall().add(new InstallableBundleImpl(2, findClasspathJar("logback-classic"), false));
+        configuration.getFrameworkProperties().put("org.osgi.framework.storage", "target/felix-cache");
 
         embedder = new Embedder();
         embedder.setConfiguration(configuration);
