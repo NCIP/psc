@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.xml.sax.SAXException;
@@ -12,7 +13,6 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
 
 public abstract class XMLValidator {
     private static Logger log = LoggerFactory.getLogger(XMLValidator.class);
@@ -72,10 +72,10 @@ public abstract class XMLValidator {
                 doValidate(o);
             } catch (SAXException e) {
                 log.debug("{} file is not valid because {}", getSchemaTitle(), e.getMessage());
-                return MessageFormat.format("{0} file format is incorrect. {1}", toStringArray(getSchemaTitle()), "Error reading file");
+                return MessageFormatter.format("{0} file format is incorrect. {1}", toStringArray(getSchemaTitle()), "Error reading file");
             } catch (IOException e) {
                 log.debug("Error reading file {} because {}", getSchemaTitle(), e.getMessage());
-                return MessageFormat.format("There was a problem reading the {0} file.  Please try again.", getSchemaTitle(), e.getMessage());
+                return MessageFormatter.format("There was a problem reading the {0} file.  Please try again.", getSchemaTitle(), e.getMessage());
             }
             return null;
         }
