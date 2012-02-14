@@ -167,7 +167,11 @@
                 {
                     key: "name", label: "Name", sortable: true,
                     formatter: function (elCell, oRecord, oColumn, oData) {
-                        elCell.innerHTML = oData.replace(/\./g, ".&#8203;");
+                        if (oData) {
+                            elCell.innerHTML = oData.replace(/\./g, ".&#8203;");
+                        } else {
+                            elCell.innerHTML = oRecord.getData()['symbolicname'];
+                        }
                     }
                 },
                 {
