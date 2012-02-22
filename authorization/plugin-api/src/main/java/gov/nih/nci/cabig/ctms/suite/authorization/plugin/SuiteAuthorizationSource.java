@@ -15,6 +15,7 @@ import java.util.Collection;
  * {@link gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership} classes from
  * ctms-commons-suite-authorization.
  * <p>
+ * This is an experimental interface which may change in a future minor release of PSC.
  *
  * @since 2.10
  * @author Rhett Sutphin
