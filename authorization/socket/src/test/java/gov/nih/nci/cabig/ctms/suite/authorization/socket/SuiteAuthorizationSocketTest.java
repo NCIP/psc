@@ -622,7 +622,7 @@ public class SuiteAuthorizationSocketTest {
 
     @Test
     public void getGroupsForUser() throws Exception {
-        expect(plugin.getUser(54L, SuiteUserRoleLevel.ROLES)).andReturn(
+        expect(plugin.getUser(54, SuiteUserRoleLevel.ROLES)).andReturn(
             userBuilder().username("fred").id(54).
                 addRoleMembership(new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forAllSites()).
                 addRoleMembership(new SuiteRoleMembership(SuiteRole.DATA_IMPORTER, null, null)).
@@ -642,7 +642,7 @@ public class SuiteAuthorizationSocketTest {
 
     @Test
     public void getGroupsForUnknownUserThrowsException() throws Exception {
-        expect(plugin.getUser(54L, SuiteUserRoleLevel.ROLES)).andReturn(null);
+        expect(plugin.getUser(54, SuiteUserRoleLevel.ROLES)).andReturn(null);
         mocks.replayMocks();
 
         try {
@@ -702,7 +702,7 @@ public class SuiteAuthorizationSocketTest {
 
     @Test
     public void getProtEltPrivCtxtForUnknownUserThrowsException() throws Exception {
-        expect(plugin.getUser(36L, SuiteUserRoleLevel.ROLES_AND_SCOPES)).andReturn(null);
+        expect(plugin.getUser(36, SuiteUserRoleLevel.ROLES_AND_SCOPES)).andReturn(null);
         mocks.replayMocks();
 
         try {
@@ -726,7 +726,7 @@ public class SuiteAuthorizationSocketTest {
     }
 
     private Set<ProtectionElementPrivilegeContext> doGetProtectionElementPrivilegeContextSample() throws CSObjectNotFoundException {
-        expect(plugin.getUser(54L, SuiteUserRoleLevel.ROLES_AND_SCOPES)).andReturn(
+        expect(plugin.getUser(54, SuiteUserRoleLevel.ROLES_AND_SCOPES)).andReturn(
             userBuilder().username("fred").id(54).
                 addRoleMembership(new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).
                     forAllSites().forStudies("FOO 1701")).
