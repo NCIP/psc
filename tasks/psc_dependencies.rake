@@ -172,11 +172,14 @@ SECURITY = struct(
   :suite_authorization => ctms_commons_lib('ctms-commons-suite-authorization'),
   :clm => psc_osgi_artifact(
     "gov.nih.nci.security:clm:jar:4.2.beta",
-    "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
+    "Export-Package" => "gov.nih.nci.*"
   ),
   :csm => psc_osgi_artifact(
     "csmapi:csmapi:jar:4.2",
-    "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
+    # -failok is necessary because CSM contains some classes that are
+    # not in the correct directory according to their package
+    # names. They are not actually used, however.
+    'Export-Package' => 'gov.nih.nci.*', '-failok' => true
   ),
   :acegi => psc_osgi_artifact("org.acegisecurity:acegi-security:jar:1.0.7"),
   :cas => psc_osgi_artifact("cas:casclient:jar:2.0.11"),
