@@ -3,6 +3,12 @@
 require 'fileutils'
 include FileUtils::Verbose
 
+# CAGRID_MIRROR should point to a local file path designating a mirror
+# of caGrid's ivy repo for the version of caGrid you're targeting. You
+# can build such a mirror with wget, e.g.:
+#
+#   $ wget -nH -nc -np -l 4 -r http://software.cagrid.org/repository-1.3/caGrid/
+#
 CAGRID_LOCATION = ENV['CAGRID_MIRROR'] or raise "No CAGRID_MIRROR"
 # Exclude test, GUI, and sample code
 CAGRID_EXCLUDE = [
