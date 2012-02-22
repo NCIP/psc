@@ -16,7 +16,7 @@ public class SuiteUserTest {
     @Before
     public void before() throws Exception {
         user = new SuiteUser();
-        user.setId(9L);
+        user.setId(9);
         user.setUsername("jo");
         user.setFirstName("Josephine");
         user.setLastName("Miller");

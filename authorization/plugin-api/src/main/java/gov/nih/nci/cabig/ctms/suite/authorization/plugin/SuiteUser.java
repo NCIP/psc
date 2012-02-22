@@ -24,7 +24,7 @@ import java.util.TreeMap;
  * @author Rhett Sutphin
  */
 public class SuiteUser {
-    private Long id;
+    private Integer id;
     private String username, firstName, lastName, emailAddress;
     private Date accountEndDate;
 
@@ -70,11 +70,11 @@ public class SuiteUser {
     /**
      * A unique numeric ID for the user. Required.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -177,7 +177,7 @@ public class SuiteUser {
             return this;
         }
 
-        public Builder id(long id) {
+        public Builder id(int id) {
             user.setId(id);
             return this;
         }

@@ -5,7 +5,6 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserRoleLevel;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserSearchOptions;
-import gov.nih.nci.cabig.ctms.suite.authorization.plugins.mock.internal.StaticSuiteAuthorizationSource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +38,7 @@ public class StaticSuiteAuthorizationSourceTest {
     @Test
     public void itReturnsTheSingleUserForTheCorrectUsername() throws Exception {
         SuiteUser actual = source.getUser("superuser", /* ignored */ null);
-        assertThat(actual.getId(), is(1L));
+        assertThat(actual.getId(), is(1));
     }
 
     @Test

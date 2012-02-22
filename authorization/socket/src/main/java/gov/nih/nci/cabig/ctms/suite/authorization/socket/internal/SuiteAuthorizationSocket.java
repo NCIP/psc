@@ -321,7 +321,7 @@ public class SuiteAuthorizationSocket extends AuthorizationManagerAdapter {
     private User createCsmUser(SuiteUser match) {
         User user = new User();
         user.setLoginName(match.getUsername());
-        user.setUserId(match.getId());
+        user.setUserId(match.getId() == null ? null : match.getId().longValue());
         user.setFirstName(match.getFirstName());
         user.setLastName(match.getLastName());
         user.setEmailId(match.getEmailAddress());

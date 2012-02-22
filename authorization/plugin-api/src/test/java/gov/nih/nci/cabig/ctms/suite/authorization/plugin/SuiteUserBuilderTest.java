@@ -28,7 +28,7 @@ public class SuiteUserBuilderTest {
 
     @Test
     public void setId() throws Exception {
-        assertThat(builder().id(5).toUser().getId(), is(5L));
+        assertThat(builder().id(5).toUser().getId(), is(5));
     }
 
     @Test
