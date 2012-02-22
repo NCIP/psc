@@ -33,29 +33,6 @@ def static_lib(filename)
   File.expand_path(filename, [File.dirname(__FILE__), '..', 'static-lib'].join('/'))
 end
 
-def cagrid_lib(org, mod, art, bnd_props = nil)
-  ivy_artifact(
-    "http://software.cagrid.org/repository-#{CAGRID_VERSION}",
-    "cagrid-ivy", org, mod, CAGRID_VERSION, art, bnd_props)
-end
-
-def ivy_artifact_spec(repo_group, org, mod, rev, art)
-  "#{repo_group}.#{org}.#{mod}:#{art}:jar:#{rev}"
-end
-
-def ivy_artifact(repo_url, repo_group, org, mod, rev, art, bnd_props = nil)
-  # TODO: base this on ivysettings.xml instead
-  url = "#{repo_url}/#{org}/#{mod}/#{rev}/#{art}-#{rev}.jar"
-  artifact_spec = ivy_artifact_spec(repo_group, org, mod, rev, art)
-  if bnd_props.nil?
-    download(artifact(artifact_spec) => url)
-  else
-    psc_osgi_artifact(artifact_spec, bnd_props) { |src|
-      download(src => url)
-    }
-  end
-end
-
 def ctms_commons_lib(mod)
   if ENV['LOCAL_CC_REV']
     rev = ENV['LOCAL_CC_REV']
@@ -68,24 +45,6 @@ def ctms_commons_lib(mod)
   end
 end
 
-def merged_cagrid_bundle(org, mod, merged_art, bnd_props, *sources)
-  merged_spec = "cagrid-merged.#{org}.#{mod}:#{merged_art}:jar:#{CAGRID_VERSION}"
-  psc_osgi_artifact(merged_spec, bnd_props) { |pre_bnd|
-    temp = Tempfile.open(File.basename(pre_bnd.name))
-    ZipTask.define_task(temp.path).tap do |zip|
-      class << zip ; def needed? ; true ; end ; end
-      puts "zip=#{zip.inspect}"
-      puts "zip.name=#{zip.name}"
-      zip.include(sources, :merge => true)
-      pre_bnd.enhance [zip] do
-        mkdir_p File.dirname(pre_bnd.name)
-        puts "Renaming #{zip.name} to #{pre_bnd.name}"
-        cp zip.name, pre_bnd.name
-      end
-    end
-  }
-end
-
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
@@ -96,7 +55,6 @@ SPRING_WEBFLOW_VERSION = "2.3.0.RELEASE"
 RESTLET_VERSION = "2.0.3"
 SLF4J_VERSION = "1.5.11"
 LOGBACK_VERSION = "0.9.20"
-CAGRID_VERSION = "1.3"
 
 CTMS_COMMONS = struct(
   %w{base core laf lang web}.inject({}) do |h, a|
@@ -225,7 +183,8 @@ SECURITY = struct(
   :caaers_cas => psc_osgi_artifact(artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar')))
 )
 
-# This is out of date
+# This is out of date, but for some reason still used in the grid
+# service compilation phase.
 CAGRID_1 = [
   group(%w{
     authentication-service-client
