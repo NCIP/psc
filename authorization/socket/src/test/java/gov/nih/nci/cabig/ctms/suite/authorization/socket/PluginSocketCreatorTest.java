@@ -131,7 +131,7 @@ public class PluginSocketCreatorTest {
             // return null;
         }
 
-        public SuiteUser getUser(long id, SuiteUserRoleLevel desiredDetail) {
+        public SuiteUser getUser(int id, SuiteUserRoleLevel desiredDetail) {
             throw new UnsupportedOperationException("getUser not implemented");
             // return null;
         }

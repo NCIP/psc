@@ -179,7 +179,7 @@ public class SuiteAuthorizationSocket extends AuthorizationManagerAdapter {
 
     @Override
     public User getUserById(String userId) throws CSObjectNotFoundException {
-        long id = new Long(userId);
+        int id = new Integer(userId);
         SuiteUser match = source.getUser(id, SuiteUserRoleLevel.NONE);
         if (match == null) {
             throw userNotFound(userId);
@@ -248,7 +248,7 @@ public class SuiteAuthorizationSocket extends AuthorizationManagerAdapter {
 
     @Override
     public Set getGroups(String userId) throws CSObjectNotFoundException {
-        long id = new Long(userId);
+        int id = new Integer(userId);
         SuiteUser match = source.getUser(id, SuiteUserRoleLevel.ROLES);
         if (match == null) {
             throw userNotFound(userId);
@@ -263,7 +263,7 @@ public class SuiteAuthorizationSocket extends AuthorizationManagerAdapter {
 
     @Override
     public Set getProtectionElementPrivilegeContextForUser(String userId) throws CSObjectNotFoundException {
-        long id = new Long(userId);
+        int id = new Integer(userId);
         SuiteUser match = source.getUser(id, SuiteUserRoleLevel.ROLES_AND_SCOPES);
         if (match == null) {
             throw userNotFound(userId);

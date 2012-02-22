@@ -34,7 +34,7 @@ public interface SuiteAuthorizationSource {
      * <p>
      * The returned user must have all the mandatory fields in {@link SuiteUser} filled in.
      */
-    SuiteUser getUser(long id, SuiteUserRoleLevel desiredDetail);
+    SuiteUser getUser(int id, SuiteUserRoleLevel desiredDetail);
 
     /**
      * Returns those users which have the given role, regardless of completeness of scope.

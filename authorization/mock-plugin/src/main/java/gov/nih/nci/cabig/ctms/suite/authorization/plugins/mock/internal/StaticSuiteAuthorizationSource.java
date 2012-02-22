@@ -38,7 +38,7 @@ public class StaticSuiteAuthorizationSource implements SuiteAuthorizationSource 
         return username.equals(soleUser.getUsername()) ? soleUser : null;
     }
 
-    public SuiteUser getUser(long id, SuiteUserRoleLevel desiredDetail) {
+    public SuiteUser getUser(int id, SuiteUserRoleLevel desiredDetail) {
         return id == soleUser.getId() ? soleUser : null;
     }
 
