@@ -39,19 +39,6 @@ def cagrid_lib(org, mod, art, bnd_props = nil)
     "cagrid-ivy", org, mod, CAGRID_VERSION, art, bnd_props)
 end
 
-# TODO: replace all uses of this with cbiit_lib
-def ncicb_lib(org, mod, art, ver, bnd_props = nil)
-  ivy_artifact(
-    "https://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo",
-    "ncicb-common", org, mod, ver, art, bnd_props)
-end
-
-def cbiit_lib(org, mod, art, ver, bnd_props = nil)
-  ivy_artifact(
-    "https://ncisvn.nci.nih.gov/svn/cbiit-ivy-repo/trunk",
-    "cbiit", org, mod, ver, art, bnd_props)
-end
-
 def ivy_artifact_spec(repo_group, org, mod, rev, art)
   "#{repo_group}.#{org}.#{mod}:#{art}:jar:#{rev}"
 end
@@ -225,13 +212,13 @@ SECURITY = struct(
   :acegi_csm  => ctms_commons_lib("ctms-commons-acegi-csm"),
   :acegi_grid => ctms_commons_lib("ctms-commons-acegi-grid"),
   :suite_authorization => ctms_commons_lib('ctms-commons-suite-authorization'),
-  :clm => cbiit_lib(
-    "gov.nih.nci.security", "clm", "clm", "4.2.beta",
-    "Conditional-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
+  :clm => psc_osgi_artifact(
+    "gov.nih.nci.security:clm:jar:4.2.beta",
+    "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
   ),
-  :csm => cbiit_lib(
-    "gov.nih.nci.security", "csm", "csmapi", "4.2",
-    "Conditional-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
+  :csm => psc_osgi_artifact(
+    "csmapi:csmapi:jar:4.2",
+    "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
   ),
   :acegi => psc_osgi_artifact("org.acegisecurity:acegi-security:jar:1.0.7"),
   :cas => psc_osgi_artifact("cas:casclient:jar:2.0.11"),
