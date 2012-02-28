@@ -2,7 +2,7 @@
 <!-- bda-build-template version 1.2.0   -->
 <!--
 $Id: install.xml 1791 2009-07-01 21:03:49Z saksass $
-$HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-template/software/build/install.xml $
+$HeadURL: https://ncisvn.nci.nih.gov/svn/automation/trunk/software/bda-build-template/software/build/install.xml $
 -->
 
 <project name="psc-installer" default="upgrade" basedir="."
