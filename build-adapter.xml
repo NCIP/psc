@@ -85,6 +85,12 @@
         <install_gem name="rspec"/>
     </target>
 
+    <property name="gems.rack-protection.version" value="1.1.4"/>
+    <gem_available name="rack-protection"/>
+    <target name="install:gem:rack-protection" unless="rack-protection.exists" depends="install:jruby" description="Installs rack-protection gem">
+        <install_gem name="rack-protection"/>
+    </target>
+
     <property name="gems.buildr.version" value="1.4.4"/>
     <gem_available name="buildr" path="buildr-1.4.4-java"/>
     <target name="install:gem:buildr" unless="buildr.exists" depends="install:jruby,install:gem:rspec" description="Installs buildr gem">
