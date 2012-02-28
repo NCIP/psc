@@ -14,7 +14,7 @@ CAGRID_LOCATION = ENV['CAGRID_MIRROR'] or raise "No CAGRID_MIRROR"
 CAGRID_EXCLUDE = [
   /-ui/, /-deprecated/, /installer/, /-graph/, /test/, /wizard/
 ]
-CAGRID_VERSION = "1.3.0"
+CAGRID_VERSION = "1.4.0"
 BUNDLE_VERSION = "#{CAGRID_VERSION}.PSC000"
 JAR_NAME = "psc-cagrid-all_#{BUNDLE_VERSION}.jar"
 BND_NAME = JAR_NAME.sub /jar^/, 'bnd'
