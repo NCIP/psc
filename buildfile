@@ -928,7 +928,7 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-adverse-event-consumer-service') do |ant|
           ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
-          ant.subant :buildpath =>  ENV['CCTS_HOME']+"/AdverseEventConsumerService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath =>  ENV['CCTS_HOME']+"/AdverseEventConsumerService-caGrid1.4", :antfile => "ivy-build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
@@ -1001,7 +1001,7 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-registration-consumer-service') do |ant|
           ant.echo :message => "delegating the registration consumer service deployment to ccts"
-          ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService-caGrid1.4", :antfile => "ivy-build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
@@ -1073,7 +1073,7 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-study-consumer-service') do |ant|
           ant.echo :message => "delegating the study consumer service deployment to ccts"
-          ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService-caGrid1.4", :antfile => "ivy-build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
