@@ -10,7 +10,6 @@ puts "Using JAVA_OPTS=#{ENV['JAVA_OPTS'].inspect}"
 require "buildr"
 require "buildr/jetty"
 require "buildr/emma" if emma?
-require "shenandoah/buildr"
 require "buildr/core/filter"
 require 'fileutils'
 require 'rexml/document'
@@ -1384,6 +1383,7 @@ define "psc" do
     end
 
     if env_true?('SHEN')
+      require "shenandoah/buildr"
       desc "Specs for client-side javascript"
       define "js-spec" do
         # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
