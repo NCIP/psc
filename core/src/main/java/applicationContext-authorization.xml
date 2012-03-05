@@ -12,11 +12,6 @@
     default-lazy-init="true"
     >
 
-    <bean id="osgiCsmAuthorizationManager"
-          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.OsgiAuthorizationManagerFactoryBean">
-        <property name="osgiLayerTools" ref="osgiLayerTools"/>
-    </bean>
-
     <bean id="provisioningSessionFactory"
           class="gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory">
         <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>

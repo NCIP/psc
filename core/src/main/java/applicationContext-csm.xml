@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    This applicationContext contains security-related beans for grid services outside of the OSGI module.
+    Only used in grid services.
+-->
 <beans
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -40,37 +45,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmAuthorizationManagerFactoryBean">
         <property name="applicationName" ref="csmContextName"/>
         <property name="authorizationDao" ref="csmAuthorizationDao"/>
-    </bean>
-
-    <bean id="provisioningSessionFactory"
-          class="gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory">
-        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
-        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
-        <property name="siteMapping" ref="authorizationSiteMapping"/>
-        <property name="studyMapping" ref="authorizationStudyMapping"/>
-        <property name="csmHelper" ref="suiteCsmHelper"/>
-    </bean>
-
-    <bean id="suiteRoleMembershipLoader"
-          class="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader">
-        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
-        <property name="siteMapping" ref="authorizationSiteMapping"/>
-        <property name="studyMapping" ref="authorizationStudyMapping"/>
-    </bean>
-
-    <bean id="suiteCsmHelper"
-          class="gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper">
-        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
-        <property name="siteMapping" ref="authorizationSiteMapping"/>
-        <property name="studyMapping" ref="authorizationStudyMapping"/>
-    </bean>
-
-    <bean id="authorizationSiteMapping" class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscSiteMapping">
-        <property name="siteDao" ref="siteDao"/>
-    </bean>
-
-    <bean id="authorizationStudyMapping" class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscStudyMapping">
-        <property name="studyDao" ref="studyDao"/>
     </bean>
 
 </beans>
