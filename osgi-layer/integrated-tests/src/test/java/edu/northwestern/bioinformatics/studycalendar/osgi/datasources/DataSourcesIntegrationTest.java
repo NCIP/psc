@@ -71,7 +71,7 @@ public class DataSourcesIntegrationTest extends OsgiLayerIntegratedTestCase {
     @Test
     public void itCanUseAConnectionFromTheCsmDataSource() throws Exception {
         DataSource forCsm = (DataSource) getBundleContext().
-            getService(getDataSourceReference(PSC_DATASOURCE_PID));
+            getService(getDataSourceReference(CSM_DATASOURCE_PID));
         Connection conn = forCsm.getConnection();
         try {
             int rowCount = 0;

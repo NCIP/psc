@@ -35,7 +35,7 @@
     </bean>
 
     <bean id="csmDataSource" parent="dataSourceTemplate">
-        <property name="validationQuery"    value="SELECT 1 FROM CSM_USER"/>
+        <property name="validationQuery"    value="SELECT 1 FROM CSM_ROLE"/>
         <property name="url"                value="${csm.datasource.url}"/>
         <property name="username"           value="${csm.datasource.username}"/>
         <property name="password"           value="${csm.datasource.password}"/>

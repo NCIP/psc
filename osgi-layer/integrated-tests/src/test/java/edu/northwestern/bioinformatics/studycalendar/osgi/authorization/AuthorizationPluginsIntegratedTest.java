@@ -30,10 +30,10 @@ public class AuthorizationPluginsIntegratedTest extends OsgiLayerIntegratedTestC
     private static final String DEFAULT_CSM_SYMBOLIC_NAME =
         "edu.northwestern.bioinformatics.psc-authorization-default-csm";
 
-//    @Before
-//    public void before() throws Exception {
-//        waitForService(DEFAULT_CSM_SYMBOLIC_NAME, AuthorizationManager.class.getName());
-//    }
+    @Before
+    public void before() throws Exception {
+        waitForService(DEFAULT_CSM_SYMBOLIC_NAME, AuthorizationManager.class.getName());
+    }
 
     @Test
     public void pluginLayerGivesTheCsmAuthorizationManagerByDefault() throws Exception {
