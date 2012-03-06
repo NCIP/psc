@@ -14,7 +14,7 @@
     <import resource="classpath:applicationContext-db.xml"/>
     <import resource="classpath:applicationContext-mail.xml"/>
     <import resource="classpath:applicationContext-representations.xml"/>
-    <import resource="classpath:applicationContext-authorization.xml"/>
+    <import resource="classpath:applicationContext-csm.xml"/>
     <import resource="classpath:applicationContext-service.xml"/>
     <import resource="classpath:applicationContext-spring.xml"/>
     <import resource="classpath:applicationContext-core-osgi.xml"/>
