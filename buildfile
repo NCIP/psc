@@ -897,12 +897,6 @@ define "psc" do
       ENV['CATALINA_HOME']=_('target/work-tomcat').to_s
       ENV['WSRF_DIR_NAME']='wsrf'
       task(:deploy_with_globus).invoke
-      ## Removing all the dorian related files which makes psc grid service deployment fail in tomcat
-      ['client-1.3', 'common-1.3', 'service-1.3', 'stubs-1.2', 'stubs-1.3', 'tests-1.3'].each do |key|
-        FileUtils.rm wsrf_dir+"/WEB-INF/lib/caGrid-dorian-#{key}.jar"
-      end
-      FileUtils.rm_rf wsrf_dir+"/WEB-INF/etc/cagrid_Dorian"
-      FileUtils.rm_rf wsrf_dir+"/share/schema/Dorian"
     end
 
     ##Project src and test compiling successfully but test cases are failing.
