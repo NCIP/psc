@@ -21,7 +21,7 @@
 
  <!--Standard sub project build TARGETS -->
     <target name="install"
-        depends="install:gem:buildr,install:gem:buildr-iidea,install:gem:haml,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
+        depends="install:gem:buildr,install:gem:buildr-iidea,install:gem:haml,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
         description="Downloads JRuby and installs required gems">
     </target>
 
@@ -85,12 +85,6 @@
         <install_gem name="rspec"/>
     </target>
 
-    <property name="gems.rack-protection.version" value="1.1.4"/>
-    <gem_available name="rack-protection"/>
-    <target name="install:gem:rack-protection" unless="rack-protection.exists" depends="install:jruby" description="Installs rack-protection gem">
-        <install_gem name="rack-protection"/>
-    </target>
-
     <property name="gems.buildr.version" value="1.4.4"/>
     <gem_available name="buildr" path="buildr-1.4.4-java"/>
     <target name="install:gem:buildr" unless="buildr.exists" depends="install:jruby,install:gem:rspec" description="Installs buildr gem">
@@ -107,12 +101,6 @@
     <gem_available name="haml"/>
     <target name="install:gem:haml" unless="haml.exists" depends="install:jruby" description="Installs haml gem">
         <install_gem name="haml"/>
-    </target>
-
-    <property name="gems.shenandoah.version" value="0.0.0"/>
-    <gem_available name="shenandoah"/>
-    <target name="install:gem:shenandoah" unless="shenandoah.exists" depends="install:jruby,install:gem:rack-protection" description="Installs shenandoah gem">
-        <install_gem name="shenandoah"/>
     </target>
 
     <property name="gems.facets.version" value="2.4.5"/>
