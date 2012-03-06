@@ -2,7 +2,7 @@
 <!-- bda-build-template version 1.2.0   -->
 <!--
 $Id: build.xml 1786 2009-06-30 18:44:27Z saksass $
-$HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-template/software/build/build.xml $
+$HeadURL: https://ncisvn.nci.nih.gov/svn/automation/trunk/software/bda-build-template/software/build/build.xml $
 -->
 
 <project name="build-bda-template" default="build:all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:cs="antlib:com.puppycrawl.tools.checkstyle">
