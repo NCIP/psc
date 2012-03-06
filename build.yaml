@@ -2,7 +2,6 @@ gems:
 - buildr =1.4.4      # See issue #1422
 - facets ~>2.4.0
 - haml ~>3.0.0
-- shenandoah =0.0.0
 - json_pure
 - rest-client
 - buildr-iidea 0.0.8
