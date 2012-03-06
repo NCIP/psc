@@ -20,7 +20,6 @@
         <property name="removeAbandoned"               value="true"/>
         <property name="removeAbandonedTimeout"        value="300"/>
         <property name="logAbandoned"                  value="true"/>
-        <property name="validationQuery"               value="SELECT 1 FROM bering_version"/>
         <property name="testWhileIdle"                 value="true"/>
         <property name="testOnReturn"                  value="true"/>
         <property name="timeBetweenEvictionRunsMillis" value="300000"/>
@@ -28,16 +27,18 @@
     </bean>
 
     <bean id="pscDataSource" parent="dataSourceTemplate">
-        <property name="url"             value="${datasource.url}"/>
-        <property name="username"        value="${datasource.username}"/>
-        <property name="password"        value="${datasource.password}"/>
-        <property name="driverClassName" value="${datasource.driver}"/>
+        <property name="validationQuery"    value="SELECT 1 FROM bering_version"/>
+        <property name="url"                value="${datasource.url}"/>
+        <property name="username"           value="${datasource.username}"/>
+        <property name="password"           value="${datasource.password}"/>
+        <property name="driverClassName"    value="${datasource.driver}"/>
     </bean>
 
     <bean id="csmDataSource" parent="dataSourceTemplate">
-        <property name="url"             value="${csm.datasource.url}"/>
-        <property name="username"        value="${csm.datasource.username}"/>
-        <property name="password"        value="${csm.datasource.password}"/>
-        <property name="driverClassName" value="${csm.datasource.driver}"/>
+        <property name="validationQuery"    value="SELECT 1 FROM CSM_USER"/>
+        <property name="url"                value="${csm.datasource.url}"/>
+        <property name="username"           value="${csm.datasource.username}"/>
+        <property name="password"           value="${csm.datasource.password}"/>
+        <property name="driverClassName"    value="${csm.datasource.driver}"/>
     </bean>
 </beans>
