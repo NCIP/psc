@@ -897,6 +897,12 @@ define "psc" do
       ENV['CATALINA_HOME']=_('target/work-tomcat').to_s
       ENV['WSRF_DIR_NAME']='wsrf'
       task(:deploy_with_globus).invoke
+      ## Removing all the dorian related files which makes psc grid service deployment fail in tomcat
+      ['client-1.3', 'common-1.3', 'service-1.3', 'stubs-1.2', 'stubs-1.3', 'tests-1.3'].each do |key|
+        FileUtils.rm wsrf_dir+"/WEB-INF/lib/caGrid-dorian-#{key}.jar"
+      end
+      FileUtils.rm_rf wsrf_dir+"/WEB-INF/etc/cagrid_Dorian"
+      FileUtils.rm_rf wsrf_dir+"/share/schema/Dorian"
     end
 
     ##Project src and test compiling successfully but test cases are failing.
@@ -923,12 +929,12 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-adverse-event-consumer-service') do |ant|
           ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
-          ant.subant :buildpath =>  ENV['CCTS_HOME']+"/AdverseEventConsumerService-caGrid13", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath =>  ENV['CCTS_HOME']+"/AdverseEventConsumerService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
-	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
+	    ##FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -996,12 +1002,12 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-registration-consumer-service') do |ant|
           ant.echo :message => "delegating the registration consumer service deployment to ccts"
-          ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService-caGrid1.3.1", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
-	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
+	    ##FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -1068,12 +1074,12 @@ define "psc" do
         ##Not Tested therefore commented temporarily
         ant('deploy-study-consumer-service') do |ant|
           ant.echo :message => "delegating the study consumer service deployment to ccts"
-          ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService-caGrid1.3.1", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService-caGrid1.4", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
-	FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
+	    ##FileUtils.rm wsrf_dir+"/WEB-INF/lib/spring-2.0.2.jar"
         task(:deploy_impl).invoke
 
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
