@@ -111,7 +111,7 @@
 
     <property name="gems.shenandoah.version" value="0.0.0"/>
     <gem_available name="shenandoah"/>
-    <target name="install:gem:shenandoah" unless="shenandoah.exists" depends="install:jruby" description="Installs shenandoah gem">
+    <target name="install:gem:shenandoah" unless="shenandoah.exists" depends="install:jruby,install:gem:rack-protection" description="Installs shenandoah gem">
         <install_gem name="shenandoah"/>
     </target>
 
