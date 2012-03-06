@@ -17,6 +17,7 @@ public class StudyCalendarApplicationContextBuilder {
         "classpath:applicationContext-db.xml"             ,
         "classpath:applicationContext-mail.xml"           ,
         "classpath:applicationContext-representations.xml",
+        "classpath:applicationContext-authorization-socket.xml"  ,
         "classpath:applicationContext-authorization.xml"  ,
         "classpath:applicationContext-service.xml"        ,
         "classpath:applicationContext-setup.xml"          ,
