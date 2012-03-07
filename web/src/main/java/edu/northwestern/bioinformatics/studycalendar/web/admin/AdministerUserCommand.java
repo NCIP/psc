@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -41,6 +42,7 @@ public class AdministerUserCommand
 {
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
+    private final CsmUserCache csmUserCache;
 
     private boolean lookUpBoundUser;
     private String password, rePassword;
@@ -50,12 +52,14 @@ public class AdministerUserCommand
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
         AuthenticationSystem authenticationSystem,
-        ApplicationSecurityManager applicationSecurityManager
+        ApplicationSecurityManager applicationSecurityManager,
+        CsmUserCache csmUserCache
     ) {
         super(user == null ? AuthorizationObjectFactory.createPscUser() : user,
             provisioningSessionFactory, applicationSecurityManager);
         this.authorizationManager = authorizationManager;
         this.authenticationSystem = authenticationSystem;
+        this.csmUserCache = csmUserCache;
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -63,10 +67,10 @@ public class AdministerUserCommand
         PscUser existingUser, ProvisioningSessionFactory psFactory,
         AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem,
         ApplicationSecurityManager applicationSecurityManager,
-        PscUserService pscUserService, PscUser provisioner
+        PscUserService pscUserService, CsmUserCache csmUserCache, PscUser provisioner
     ) {
-        AdministerUserCommand command = new AdministerUserCommand(existingUser,
-            psFactory, authorizationManager, authenticationSystem, applicationSecurityManager);
+        AdministerUserCommand command = new AdministerUserCommand(existingUser,psFactory,
+            authorizationManager, authenticationSystem, applicationSecurityManager, csmUserCache);
         if (provisioner == null) return command;
 
         VisibleAuthorizationInformation visAuthInfo =
@@ -157,15 +161,20 @@ public class AdministerUserCommand
             if (found != null) {
                 copyBoundProperties(this.getUser().getCsmUser(), found);
                 setUser(AuthorizationObjectFactory.createPscUser(found));
-                authorizationManager.modifyUser(getUser().getCsmUser());
+                modifyCsmUser();
             } else {
                 authorizationManager.createUser(getUser().getCsmUser());
             }
         } else if (getUser().getCsmUser().getUserId() == null) {
             authorizationManager.createUser(getUser().getCsmUser());
         } else {
-            authorizationManager.modifyUser(getUser().getCsmUser());
+            modifyCsmUser();
         }
+    }
+
+    private void modifyCsmUser() throws CSTransactionException {
+        authorizationManager.modifyUser(getUser().getCsmUser());
+        csmUserCache.invalidate(getUser().getCsmUser().getUserId().intValue());
     }
 
     private void copyBoundProperties(User src, User dst) {

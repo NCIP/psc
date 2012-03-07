@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleGroup;
@@ -40,6 +41,7 @@ public class AdministerUserController
     private ApplicationSecurityManager applicationSecurityManager;
     private PscUserService pscUserService;
     private ProvisioningSessionFactory provisioningSessionFactory;
+    private CsmUserCache csmUserCache;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     public AdministerUserController() {
@@ -68,7 +70,7 @@ public class AdministerUserController
             provisioningSessionFactory, authorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
             applicationSecurityManager, pscUserService,
-            applicationSecurityManager.getUser());
+            csmUserCache, applicationSecurityManager.getUser());
     }
 
     @Override
@@ -128,6 +130,11 @@ public class AdministerUserController
     @Required
     public void setPscUserService(PscUserService pscUserService) {
         this.pscUserService = pscUserService;
+    }
+
+    @Required
+    public void setCsmUserCache(CsmUserCache csmUserCache) {
+        this.csmUserCache = csmUserCache;
     }
 
     @Required

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand;
@@ -11,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -20,9 +20,10 @@ public class FirstAdministratorCommand extends AdministerUserCommand {
     public FirstAdministratorCommand(
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
-        AuthenticationSystem authenticationSystem
+        AuthenticationSystem authenticationSystem,
+        CsmUserCache csmUserCache
     ) {
-        super(null, provisioningSessionFactory, authorizationManager, authenticationSystem, null);
+        super(null, provisioningSessionFactory, authorizationManager, authenticationSystem, null, csmUserCache);
         setLookUpBoundUser(true);
         setCanProvisionAllSites(true);
         setProvisionableRoles(SuiteRole.SYSTEM_ADMINISTRATOR, SuiteRole.USER_ADMINISTRATOR);
