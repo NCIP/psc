@@ -27,9 +27,11 @@ public class DefaultCsmAuthorizationManagerRegisterer implements ServiceListener
         "edu.northwestern.bioinformatics.studycalendar.database.CSM_DATASOURCE";
 
     private final BundleContext bundleContext;
+    private final String pid;
 
     public DefaultCsmAuthorizationManagerRegisterer(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+        this.pid = bundleContext.getBundle().getSymbolicName() + ".AUTHORIZATION_MANAGER";
     }
 
     public void start() {
@@ -49,6 +51,7 @@ public class DefaultCsmAuthorizationManagerRegisterer implements ServiceListener
             new DefaultCsmAuthorizationManagerFactory(csmDataSource).create(),
             new MapBuilder<String, Object>().
                 put(Constants.SERVICE_RANKING, Integer.MIN_VALUE).
+                put(Constants.SERVICE_PID, pid).
                 toDictionary());
     }
 

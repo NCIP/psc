@@ -15,6 +15,7 @@ import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -56,16 +57,23 @@ public class PluginSocketCreatorTest {
 
     @Test
     public void itCarriesForwardTheServiceRankingForTheSourceWhenOneIsProvided() throws Exception {
-        ServiceRegistration sourceReg = bundleContext.registerService(
-            new String[] { SuiteAuthorizationSource.class.getName() },
-            new MockAuthorizationSource(),
+        registerMockAuthorizationSource(
             new MapBuilder<String, Object>().put(Constants.SERVICE_RANKING, 17).toDictionary());
-        creator.createSocket(sourceReg.getReference());
 
         assertThat(bundleContext.getRegistrations().size(), is(2));
         RegisteringMockBundleContext.UnregisterableMockServiceRegistration actual =
             bundleContext.getRegistrations().get(1);
         assertThat((Integer) actual.getReference().getProperty(Constants.SERVICE_RANKING), is(17));
+    }
+
+    @Test
+    public void itGivesTheSocketAPidIfTheSourceHasOne() throws Exception {
+        registerMockAuthorizationSource(
+            new MapBuilder<String, Object>().put(Constants.SERVICE_PID, "George").toDictionary());
+
+        RegisteringMockBundleContext.UnregisterableMockServiceRegistration actual =
+            bundleContext.getRegistrations().get(1);
+        assertThat((String) actual.getReference().getProperty(Constants.SERVICE_PID), is("SuiteAuthorizationSocket for George"));
     }
 
     @Test
@@ -96,9 +104,14 @@ public class PluginSocketCreatorTest {
     }
 
     private ServiceRegistration registerMockAuthorizationSource() {
+        return registerMockAuthorizationSource(null);
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    private ServiceRegistration registerMockAuthorizationSource(Dictionary properties) {
         ServiceRegistration sourceReg = bundleContext.registerService(
             new String[] { SuiteAuthorizationSource.class.getName() },
-            new MockAuthorizationSource(), null);
+            new MockAuthorizationSource(), properties);
         creator.createSocket(sourceReg.getReference());
 
         return sourceReg;

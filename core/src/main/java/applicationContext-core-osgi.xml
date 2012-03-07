@@ -30,6 +30,8 @@
                 <value>gov.nih.nci.security.authorization.domainobjects</value>
                 <value>gov.nih.nci.security.authorization.jaas</value>
 
+                <value>gov.nih.nci.cabig.ctms.suite.authorization</value>
+
                 <value>org.acegisecurity</value>
                 <value>org.acegisecurity.context</value>
                 <value>org.acegisecurity.userdetails</value>
@@ -63,6 +65,13 @@
                 </entry>
                 <entry key="org.springframework.validation.BindException">
                     <list>
+                        <null/>
+                        <null/>
+                    </list>
+                </entry>
+                <entry key="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership">
+                    <list>
+                        <null/>
                         <null/>
                         <null/>
                     </list>
