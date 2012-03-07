@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="gov.nih.nci.cabig.ctms.suite.authorization.socket.creator"
+           immediate="true"
+           xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+    <reference
+        name="Source"
+        interface="gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource"
+        cardinality="0..n"
+        policy="dynamic"
+        bind="createSocket"
+        unbind="destroySocket"
+        />
+    <implementation
+        class="gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.PluginSocketCreator"/>
+</component>

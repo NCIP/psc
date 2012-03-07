@@ -274,13 +274,14 @@ define "psc" do
 
       bnd.wrap!
       bnd.name = "PSC Authorization Plugin Socket"
-      bnd['Bundle-Activator'] =
-        'gov.nih.nci.cabig.ctms.suite.authorization.socket.Activator'
+      bnd['Service-Component'] = 'OSGI-INF/plugin-socket-creator.xml'
+      bnd.export_packages.clear
+      bnd.export_packages << '!gov.nih.nci.cabig.ctms.suite.authorization.socket.internal'
       package(:jar)
 
       compile.with project('plugin-api').and_dependencies, project('utility'), SLF4J.api,
         SECURITY.csm, SECURITY.suite_authorization, CTMS_COMMONS.base, JAKARTA_COMMONS.lang,
-        OSGI.core
+        OSGI
       test.with UNIT_TESTING, LOGBACK
     end
 

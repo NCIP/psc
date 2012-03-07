@@ -1,4 +1,4 @@
-package gov.nih.nci.cabig.ctms.suite.authorization.socket;
+package gov.nih.nci.cabig.ctms.suite.authorization.socket.internal;
 
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

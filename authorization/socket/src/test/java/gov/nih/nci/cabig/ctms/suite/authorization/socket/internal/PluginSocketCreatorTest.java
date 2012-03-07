@@ -1,4 +1,4 @@
-package gov.nih.nci.cabig.ctms.suite.authorization.socket;
+package gov.nih.nci.cabig.ctms.suite.authorization.socket.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -6,13 +6,10 @@ import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSourc
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserRoleLevel;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserSearchOptions;
-import gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.PluginSocketCreator;
-import gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.SuiteAuthorizationSocket;
 import gov.nih.nci.security.AuthorizationManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockServiceReference;
 
@@ -33,26 +30,8 @@ public class PluginSocketCreatorTest {
     @Before
     public void before() throws Exception {
         bundleContext  = new RegisteringMockBundleContext();
-        creator = new PluginSocketCreator(bundleContext);
-    }
-
-    @Test
-    public void initRegistersSocketsForExistingSources() throws Exception {
-        bundleContext.registerService(
-            new String[] { SuiteAuthorizationSource.class.getName() },
-            new MockAuthorizationSource(), null);
-
-        creator.init();
-        assertThat(bundleContext.getRegistrations().size(), is(2));
-        RegisteringMockBundleContext.UnregisterableMockServiceRegistration actual =
-            bundleContext.getRegistrations().get(1);
-        assertThat(actual.getInterfaces(), hasItems(AuthorizationManager.class.getName()));
-    }
-
-    @Test
-    public void initDoesNothingWithNoExistingSources() throws Exception {
-        creator.init();
-        assertThat(bundleContext.getRegistrations().size(), is(0));
+        creator = new PluginSocketCreator();
+        creator.activate(bundleContext);
     }
 
     @Test
@@ -81,7 +60,7 @@ public class PluginSocketCreatorTest {
             new String[] { SuiteAuthorizationSource.class.getName() },
             new MockAuthorizationSource(),
             new MapBuilder<String, Object>().put(Constants.SERVICE_RANKING, 17).toDictionary());
-        creator.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sourceReg.getReference()));
+        creator.createSocket(sourceReg.getReference());
 
         assertThat(bundleContext.getRegistrations().size(), is(2));
         RegisteringMockBundleContext.UnregisterableMockServiceRegistration actual =
@@ -94,7 +73,7 @@ public class PluginSocketCreatorTest {
         ServiceRegistration sourceReg = bundleContext.registerService(
             new String[] { List.class.getName() },
             new ArrayList(), null);
-        creator.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sourceReg.getReference()));
+        creator.createSocket(sourceReg.getReference());
 
         assertThat(bundleContext.getRegistrations().size(), is(1));
     }
@@ -103,7 +82,7 @@ public class PluginSocketCreatorTest {
     public void itUnregistersTheSocketWhenTheSourceVanishes() throws Exception {
         ServiceRegistration reg = registerMockAuthorizationSource();
 
-        creator.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, reg.getReference()));
+        creator.destroySocket(reg.getReference());
         assertThat(bundleContext.getRegistrations().size(), is(1));
     }
 
@@ -112,7 +91,7 @@ public class PluginSocketCreatorTest {
         MockServiceReference oldSource = new MockServiceReference(
             new String[] { SuiteAuthorizationSource.class.getName() });
 
-        creator.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, oldSource));
+        creator.destroySocket(oldSource);
         assertThat(bundleContext.getRegistrations().size(), is(0));
     }
 
@@ -120,7 +99,7 @@ public class PluginSocketCreatorTest {
         ServiceRegistration sourceReg = bundleContext.registerService(
             new String[] { SuiteAuthorizationSource.class.getName() },
             new MockAuthorizationSource(), null);
-        creator.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sourceReg.getReference()));
+        creator.createSocket(sourceReg.getReference());
 
         return sourceReg;
     }
