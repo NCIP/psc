@@ -51,6 +51,10 @@ public class DefaultEncapsulatorCreator {
             return new SetEncapsulator(membrane, nearClassLoader);
         } else if (Collection.class.isAssignableFrom(farClass)) {
             return new CollectionEncapsulator(membrane, nearClassLoader);
+        } else if (Map.class.isAssignableFrom(farClass)) {
+            return new MapEncapsulator(membrane, nearClassLoader);
+        } else if (Map.Entry.class.isAssignableFrom(farClass)) {
+            return new MapEntryEncapsulator(membrane, nearClassLoader);
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
             Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(

@@ -16,7 +16,7 @@ public class EncapsulatedList<E> extends EncapsulatedCollection<E> implements Li
         this.farList = farList;
     }
 
-    public List getFarList() {
+    protected List getFarList() {
         return farList;
     }
 
