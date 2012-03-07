@@ -45,7 +45,15 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
                         // constructor invokes a method that returns itself.
                         return proxy;
                     } else {
-                        return getMembrane().traverse(farResult, proxyTargetClassLoader(proxy));
+                        Object nearResult = getMembrane().traverse(farResult, proxyTargetClassLoader(proxy));
+                        if (nearResult == null || nearMethod.getReturnType().isAssignableFrom(nearResult.getClass())) {
+                            return nearResult;
+                        } else {
+                            log.trace(" - bridged return value is not compatible ({} is not assignable from {})",
+                                nearMethod.getReturnType().getName(), nearResult.getClass().getName());
+                            log.trace(" - returning unencapsulated value");
+                            return farResult;
+                        }
                     }
                 } catch (IllegalAccessException iae) {
                     log.error(String.format("Bridging method %s to %s failed due to illegal access", nearMethod, farMethod), iae);
