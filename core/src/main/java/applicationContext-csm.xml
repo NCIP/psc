@@ -47,4 +47,10 @@
         <property name="authorizationDao" ref="csmAuthorizationDao"/>
     </bean>
 
+    <bean id="suiteRoleMembershipLoader"
+          class="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader">
+        <property name="siteMapping" ref="authorizationSiteMapping"/>
+        <property name="studyMapping" ref="authorizationStudyMapping"/>
+        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
+    </bean>
 </beans>
