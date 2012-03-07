@@ -1,13 +1,9 @@
 package gov.nih.nci.cabig.ctms.suite.authorization.socket.internal;
 
-import gov.nih.nci.cabig.ctms.CommonsSystemException;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource;
 import gov.nih.nci.security.AuthorizationManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -19,61 +15,36 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
+ * Declarative Services component used to automatically create and register
+ * {@link SuiteAuthorizationSocket} instances as {@link SuiteAuthorizationSource}s are found.
+ *
  * @author Rhett Sutphin
  */
-public class PluginSocketCreator implements ServiceListener {
+public class PluginSocketCreator {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     // map from SuiteAuthorizationSource ref to the registered Socket's reg
     private Map<ServiceReference, ServiceRegistration> adapters;
-    private final BundleContext bundleContext;
+    private BundleContext bundleContext;
 
-    public PluginSocketCreator(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-        adapters = new HashMap<ServiceReference, ServiceRegistration>();
+    @SuppressWarnings({ "UnusedDeclaration" })
+    protected void activate(BundleContext context) {
+        this.bundleContext = context;
+        this.adapters = new HashMap<ServiceReference, ServiceRegistration>();
     }
 
-    /**
-     * Creates sockets for any sources that existed before the creator was registered.
-     */
-    public void init() {
-        ServiceReference[] existingSourceRefs;
-        try {
-            existingSourceRefs = bundleContext.getAllServiceReferences(SuiteAuthorizationSource.class.getName(), null);
-        } catch (InvalidSyntaxException e) {
-            throw new CommonsSystemException("No filter provided, so this shouldn't be possible", e);
-        }
-
-        if (existingSourceRefs != null) {
-            for (ServiceReference sourceRef : existingSourceRefs) register(sourceRef);
-        }
+    @SuppressWarnings({ "UnusedDeclaration" })
+    protected void deactivate() {
+        this.bundleContext = null;
+        this.adapters = null;
     }
 
-    /**
-     * Create a socket when a new source is registered and removes the socket when the source is
-     * unregistered.
-     */
-    public void serviceChanged(ServiceEvent serviceEvent) {
-        switch (serviceEvent.getType()) {
-            case ServiceEvent.REGISTERED:
-                register(serviceEvent);
-                break;
-            case ServiceEvent.UNREGISTERING:
-                unregister(serviceEvent);
-                break;
-        }
-    }
-
-    private void register(ServiceEvent registerEvent) {
-        register(registerEvent.getServiceReference());
-    }
-
-    @SuppressWarnings( { "RawUseOfParameterizedType", "unchecked" })
-    private void register(ServiceReference sourceRef) {
-        Object service = bundleContext.getService(sourceRef);
+    @SuppressWarnings({ "UnusedDeclaration", "RawUseOfParameterizedType", "unchecked" })
+    protected void createSocket(ServiceReference reference) {
+        Object service = bundleContext.getService(reference);
         if (service instanceof SuiteAuthorizationSource) {
             log.info("Registering authorization socket for {}", service);
-            Integer sourceRank = (Integer) sourceRef.getProperty(Constants.SERVICE_RANKING);
+            Integer sourceRank = (Integer) reference.getProperty(Constants.SERVICE_RANKING);
             Dictionary props = new Hashtable();
             if (sourceRank != null) {
                 props.put(Constants.SERVICE_RANKING, sourceRank);
@@ -82,12 +53,13 @@ public class PluginSocketCreator implements ServiceListener {
                 AuthorizationManager.class.getName(),
                 new SuiteAuthorizationSocket((SuiteAuthorizationSource) service),
                 props);
-            adapters.put(sourceRef, socketReg);
+            adapters.put(reference, socketReg);
         }
     }
 
-    private void unregister(ServiceEvent serviceEvent) {
-        ServiceRegistration socketReg = adapters.get(serviceEvent.getServiceReference());
+    @SuppressWarnings({ "UnusedDeclaration" })
+    protected void destroySocket(ServiceReference reference) {
+        ServiceRegistration socketReg = adapters.get(reference);
         if (socketReg != null) {
             socketReg.unregister();
         }

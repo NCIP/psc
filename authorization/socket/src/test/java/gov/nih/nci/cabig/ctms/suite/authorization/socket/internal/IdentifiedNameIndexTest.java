@@ -1,4 +1,4 @@
-package gov.nih.nci.cabig.ctms.suite.authorization.socket;
+package gov.nih.nci.cabig.ctms.suite.authorization.socket.internal;
 
 import gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.IdentifiedName;
 import gov.nih.nci.cabig.ctms.suite.authorization.socket.internal.IdentifiedNameIndex;

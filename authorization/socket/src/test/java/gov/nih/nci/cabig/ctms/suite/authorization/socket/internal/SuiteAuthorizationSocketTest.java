@@ -1,4 +1,4 @@
-package gov.nih.nci.cabig.ctms.suite.authorization.socket;
+package gov.nih.nci.cabig.ctms.suite.authorization.socket.internal;
 
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;

@@ -432,6 +432,7 @@ FELIX = struct(
   :fileinstall  => felix_lib('fileinstall',      '3.1.10'),
   :log          => felix_lib("log",              "1.0.0"),
   :metatype     => felix_lib("metatype",         "1.0.0"),
+  :scr          => felix_lib('scr',              '1.6.0'),
   :shell        => felix_lib("shell",            "1.4.2"),
   :shell_tui    => felix_lib("shell.tui",        "1.4.1"),
   :shell_remote => felix_lib("shell.remote",     "1.1.2")
