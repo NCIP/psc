@@ -30,7 +30,7 @@ module Psc
       case s
       when /(\d{4})-(\d{1,2})-(\d{1,2})/
         Date.new($1.to_i, $2.to_i, $3.to_i)
-      when /^\d+$/
+      when /^[+-]?\d+$/
         RelativeDate.new s.to_i
       end
     end
@@ -76,6 +76,7 @@ module Psc
           :study_sites => reg_elt.xpath('study-site').collect { |study_elt|
             StudySite.create(
               %w(template site primary_coordinator study_subject_identifier desired_assignment_identifier).
+              reject { |k| v = study_elt[k.gsub('_', '-')]; v.nil? || v.empty? }.
               inject({}) { |h, k| h[k] = study_elt[k.gsub('_', '-')]; h }.
               merge(
                 :scheduled_segments => study_elt.xpath('scheduled-segment').collect { |seg_elt|
@@ -224,7 +225,8 @@ module Psc
           collect { |pair| pair.join('~') }.
           each do |am_ident|
             connection.post "#{study_site_path}/approvals",
-              Psc.xml('amendment-approval', :date => approval.to_s, :amendment => am_ident).to_s
+              Psc.xml('amendment-approval', :date => approval.to_s, :amendment => am_ident),
+              'Content-Type' => 'text/xml'
           end
       end
     end
@@ -268,16 +270,18 @@ module Psc
     def apply(connection, subject, state)
       template_details = state.template(template)
 
+      attributes = {
+        'subject-coordinator-name' => primary_coordinator,
+        'desired-assignment-id' => desired_assignment_identifier,
+        'study-subject-id' => study_subject_identifier,
+        'first-study-segment-id' => template_details.resolve_segment(
+          scheduled_segments.first.identifier),
+        'date' => (scheduled_segments.first.start || Psc::RelativeDate.new(0)).to_s
+      }.reject { |k, v| v.nil? }
+
       schedule_resp = connection.post("studies/#{template}/sites/#{site}/subject-assignments",
-        Psc.xml(
-          'registration',
-          'subject-coordinator-name' => primary_coordinator,
-          'desired-assignment-id' => desired_assignment_identifier,
-          'study-subject-id' => study_subject_identifier,
-          'first-study-segment-id' => template_details.resolve_segment(
-            scheduled_segments.first.identifier),
-          'date' => (scheduled_segments.first.start || Psc::RelativeDate.new(0)).to_s
-        ) { |reg_elt| subject.build_on(reg_elt) }
+        Psc.xml('registration', attributes) { |reg_elt| subject.build_on(reg_elt) },
+        'Content-Type' => 'text/xml'
       )
 
       schedule_url = schedule_resp.headers['Location']
