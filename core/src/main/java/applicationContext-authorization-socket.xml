@@ -15,4 +15,11 @@
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.OsgiAuthorizationManagerFactoryBean">
         <property name="osgiLayerTools" ref="osgiLayerTools"/>
     </bean>
+
+    <bean id="suiteRoleMembershipLoader"
+          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.OsgiSuiteRoleMembershipLoader">
+        <property name="siteMapping" ref="authorizationSiteMapping"/>
+        <property name="studyMapping" ref="authorizationStudyMapping"/>
+        <property name="osgiLayerTools" ref="osgiLayerTools"/>
+    </bean>
 </beans>

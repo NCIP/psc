@@ -2,7 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import java.util.List;
 

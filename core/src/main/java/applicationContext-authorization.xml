@@ -21,13 +21,6 @@
         <property name="csmHelper" ref="suiteCsmHelper"/>
     </bean>
 
-    <bean id="suiteRoleMembershipLoader"
-          class="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader">
-        <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
-        <property name="siteMapping" ref="authorizationSiteMapping"/>
-        <property name="studyMapping" ref="authorizationStudyMapping"/>
-    </bean>
-
     <bean id="suiteCsmHelper"
           class="gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper">
         <property name="authorizationManager" ref="osgiCsmAuthorizationManager"/>
