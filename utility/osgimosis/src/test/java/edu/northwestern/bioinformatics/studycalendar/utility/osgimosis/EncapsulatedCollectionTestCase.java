@@ -1,9 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultHat;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
 
-import java.lang.reflect.InvocationTargetException;
+import java.awt.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Jalpa Patel
@@ -25,5 +27,11 @@ public abstract class EncapsulatedCollectionTestCase extends OsgimosisTestCase {
     protected Object farPerson(String name) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor cons = classFromLoader(DefaultPerson.class, loaderA).getConstructor(String.class, String.class);
         return cons.newInstance(name, "traveler");
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    protected Object farHat(Color color) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor cons = classFromLoader(DefaultHat.class, loaderA).getConstructor(Color.class);
+        return cons.newInstance(color);
     }
 }

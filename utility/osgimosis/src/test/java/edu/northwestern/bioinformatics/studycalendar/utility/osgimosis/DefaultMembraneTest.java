@@ -17,7 +17,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -197,12 +199,23 @@ public class DefaultMembraneTest extends OsgimosisTestCase {
         assertEquals(3, actual.size());
     }
 
+    public void testFarMapIsEncapsulated() throws Exception {
+        Map<Person, Integer> actual = bridgedPersonService().createPieCount();
+        assertEquals(2, actual.size());
+
+        Set<String> names = new HashSet<String>();
+        for (Person person : actual.keySet()) {
+            names.add(person.getName());
+        }
+        assertTrue(names.contains("Ned"));
+    }
+    
     public void testFarArrayContentsAreEncapsulated() throws Exception {
         Person[] actual = bridgedPersonService().createArray();
         assertEquals("Ned", actual[0].getName());
         assertEquals(3, actual.length);
     }
-    
+
     public void testFarPrimitiveArrayIsAvailable() throws Exception {
         int[] actual = bridgedPersonService().createNameLengths();
         assertEquals(7, actual[1]);

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -16,6 +17,7 @@ public interface PersonService {
     List<Person> createList();
     Set<Person> createUnique();
     SortedSet<Person> createOrdered();
+    Map<Person, Integer> createPieCount();
     Person[] createArray();
     int[] createNameLengths();
 
