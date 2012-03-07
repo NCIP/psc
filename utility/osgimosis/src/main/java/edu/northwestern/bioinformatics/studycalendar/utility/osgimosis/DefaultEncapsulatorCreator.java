@@ -66,6 +66,8 @@ public class DefaultEncapsulatorCreator {
             } else {
                 throw new MembraneException("Cannot encapsulate array; component type is not array capable");
             }
+        } else if (farClass.isEnum()) {
+            return new EnumValueEncapsulator(nearClassLoader);
         } else if (nearClassLoader == null) {
             log.trace(" - Not proxying object from bootstrap classloader");
             return null;

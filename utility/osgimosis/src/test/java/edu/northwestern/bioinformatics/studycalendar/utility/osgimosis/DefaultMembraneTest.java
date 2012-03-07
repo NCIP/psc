@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PrivatePerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.ProtectedPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Size;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
@@ -240,6 +241,11 @@ public class DefaultMembraneTest extends OsgimosisTestCase {
         assertTrue("Contents are wrong type", nearArray[0] instanceof Person);
     }
     
+    public void testFarEnumIsConvertedToLocalEnum() throws Exception {
+        Object farSmall = classFromLoader(Size.class, loaderA).getEnumConstants()[0];
+        assertSame(Size.SMALL, membrane.farToNear(farSmall));
+    }
+
     public void testProxyCanReceiveCollection() throws Exception {
         List<Person> people = Arrays.<Person>asList(new DefaultPerson("Joe", "everyman"), new DefaultPerson("Jo", "another-one"));
         Person result = bridgedPersonService().pickOne(people);
