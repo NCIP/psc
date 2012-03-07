@@ -1,4 +1,4 @@
-ENV['JAVA_OPTS'] ||= "-Xmx512M -XX:MaxPermSize=256M -Dcom.sun.management.jmxremote"
+ENV['JAVA_OPTS'] ||= "-Xmx256M -XX:MaxPermSize=96M -Dcom.sun.management.jmxremote"
 if env_true?('YOURKIT')
   ENV['JAVA_OPTS'] += " #{yourkit_javaopt}"
 end
