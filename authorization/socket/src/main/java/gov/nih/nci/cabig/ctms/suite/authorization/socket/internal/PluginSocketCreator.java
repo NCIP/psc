@@ -44,11 +44,18 @@ public class PluginSocketCreator {
         Object service = bundleContext.getService(reference);
         if (service instanceof SuiteAuthorizationSource) {
             log.info("Registering authorization socket for {}", service);
-            Integer sourceRank = (Integer) reference.getProperty(Constants.SERVICE_RANKING);
             Dictionary props = new Hashtable();
+
+            Integer sourceRank = (Integer) reference.getProperty(Constants.SERVICE_RANKING);
             if (sourceRank != null) {
                 props.put(Constants.SERVICE_RANKING, sourceRank);
             }
+
+            String sourcePid = (String) reference.getProperty(Constants.SERVICE_PID);
+            if (sourcePid != null) {
+                props.put(Constants.SERVICE_PID, "SuiteAuthorizationSocket for " + sourcePid);
+            }
+
             ServiceRegistration socketReg = bundleContext.registerService(
                 AuthorizationManager.class.getName(),
                 new SuiteAuthorizationSocket((SuiteAuthorizationSource) service),

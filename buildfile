@@ -295,7 +295,7 @@ define "psc" do
 
       package(:jar)
 
-      compile.with project('plugin-api').and_dependencies, SLF4J.api,
+      compile.with project('plugin-api').and_dependencies, SLF4J.api, project('utility'),
         SECURITY.suite_authorization, OSGI.core, CTMS_COMMONS.base
       test.with UNIT_TESTING, LOGBACK
     end
@@ -313,6 +313,21 @@ define "psc" do
       compile.with project('utility'), project('database'), CTMS_COMMONS.core,
         OSGI.core, OSGI.compendium, HIBERNATE.main, SLF4J.api, SLF4J.log4j,
         SPRING, SECURITY.csm, SECURITY.clm, SECURITY.suite_authorization
+      test.with UNIT_TESTING, LOGBACK
+    end
+
+    desc 'Publishes AuthorizationManager-based services no matter which AuthorizationManager is used'
+    define 'auxiliary-services' do
+      bnd.wrap!
+      bnd.name = 'PSC Auxiliary Authorization Services'
+      bnd.category = :infrastructure
+      bnd.export_packages.clear
+      bnd.export_packages << '!edu.northwestern.bioinformatics.studycalendar.authorization.auxiliary.internal'
+      bnd['Service-Component'] = 'OSGI-INF/suite-role-membership-loader.xml'
+
+      package(:jar)
+
+      compile.with SLF4J.api, SECURITY.suite_authorization, OSGI, SECURITY.csm, project('utility')
       test.with UNIT_TESTING, LOGBACK
     end
   end
