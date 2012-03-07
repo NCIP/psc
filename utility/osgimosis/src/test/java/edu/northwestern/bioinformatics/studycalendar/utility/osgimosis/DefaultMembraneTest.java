@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -210,7 +211,7 @@ public class DefaultMembraneTest extends OsgimosisTestCase {
         }
         assertTrue(names.contains("Ned"));
     }
-    
+
     public void testFarArrayContentsAreEncapsulated() throws Exception {
         Person[] actual = bridgedPersonService().createArray();
         assertEquals("Ned", actual[0].getName());
@@ -256,6 +257,12 @@ public class DefaultMembraneTest extends OsgimosisTestCase {
         Person[] people = new Person[] { new DefaultPerson("Joe", "everyman"), new DefaultPerson("Jo", "another-one") };
         Person result = bridgedPersonService().pickOne(people);
         assertEquals("Wrong person picked", "Joe", result.getName());
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType", "UnusedDeclaration" })
+    public void testProxyDoesNotReturnEncapsulatedValueWhenItIsNotTypeCompatible() throws Exception {
+        Hashtable result = bridgedPersonService().createAwfulLegacyPieCount();
+        // expect no ClassCastException
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
