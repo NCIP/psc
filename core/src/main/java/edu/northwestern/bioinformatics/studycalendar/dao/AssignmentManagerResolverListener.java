@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.hibernate.event.PostLoadEvent;
 import org.hibernate.event.PostLoadEventListener;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class AssignmentManagerResolverListener implements PostLoadEventListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private AuthorizationManager csmAuthorizationManager;
+    private CsmUserCache csmUserCache;
 
     public void onPostLoad(PostLoadEvent event) {
         if (!(event.getEntity() instanceof StudySubjectAssignment)) return;
@@ -27,24 +26,16 @@ public class AssignmentManagerResolverListener implements PostLoadEventListener 
         log.debug("Resolving associated manager for assignment {} (manager user ID = {})",
             assignment.getId(), assignment.getManagerCsmUserId());
 
-        User csmUser = findCsmUser(assignment.getManagerCsmUserId());
+        User csmUser = csmUserCache.getCsmUser(assignment.getManagerCsmUserId());
         if (csmUser == null) return;
 
         assignment.setStudySubjectCalendarManager(csmUser);
     }
 
-    private User findCsmUser(Integer csmUserId) {
-        try {
-            return csmAuthorizationManager.getUserById(csmUserId.toString());
-        } catch (CSObjectNotFoundException e) {
-            return null;
-        }
-    }
-
     ////// CONFIGURATION
 
     @Required
-    public void setCsmAuthorizationManager(AuthorizationManager csmAuthorizationManager) {
-        this.csmAuthorizationManager = csmAuthorizationManager;
+    public void setCsmUserCache(CsmUserCache csmUserCache) {
+        this.csmUserCache = csmUserCache;
     }
 }

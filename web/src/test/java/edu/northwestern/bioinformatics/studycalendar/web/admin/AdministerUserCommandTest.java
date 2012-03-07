@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
@@ -18,6 +19,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import org.easymock.EasyMock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.validation.Errors;
@@ -44,6 +46,7 @@ public class AdministerUserCommandTest extends WebTestCase {
     private ProvisioningSessionFactory psFactory;
     private AuthenticationSystem authenticationSystem;
     private StubPscUserService pscUserService;
+    private CsmUserCache csmUserCache;
 
     private Errors errors;
 
@@ -76,6 +79,10 @@ public class AdministerUserCommandTest extends WebTestCase {
 
         pscUserService = new StubPscUserService();
 
+        csmUserCache = registerMockFor(CsmUserCache.class);
+        csmUserCache.invalidate(15);
+        EasyMock.expectLastCall().asStub();
+
         PscUser principal = new PscUserBuilder("zelda").add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser();
         principal.getCsmUser().setUserId(99L);
         SecurityContextHolderTestHelper.setSecurityContext(principal);
@@ -92,7 +99,7 @@ public class AdministerUserCommandTest extends WebTestCase {
     private AdministerUserCommand create(PscUser existingUser, PscUser provisioner) {
         return AdministerUserCommand.create(existingUser,
             psFactory, authorizationManager, authenticationSystem, applicationSecurityManager,
-            pscUserService, provisioner
+            pscUserService, csmUserCache, provisioner
         );
     }
 
@@ -246,6 +253,14 @@ public class AdministerUserCommandTest extends WebTestCase {
         verifyMocks();
     }
 
+    public void testApplyInvalidatesCacheIfAlreadySaved() throws Exception {
+        /* expect */ csmUserCache.invalidate(15);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+    }
+
     public void testApplyCreatesUserIfNotSaved() throws Exception {
         csmUser.setUserId(null);
         /* expect */ authorizationManager.createUser(csmUser);
@@ -280,6 +295,7 @@ public class AdministerUserCommandTest extends WebTestCase {
         expect(authorizationManager.getUser(csmUser.getLoginName())).andReturn(savedJo);
 
         /* expect */ authorizationManager.modifyUser(savedJo);
+        /* expect */ csmUserCache.invalidate(13);
         replayMocks();
 
         command.apply();

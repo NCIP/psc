@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.hibernate.event.PostLoadEvent;
 
 import static org.easymock.EasyMock.expect;
@@ -19,7 +18,7 @@ public class AssignmentManagerResolverListenerTest extends StudyCalendarTestCase
 
     private PostLoadEvent event;
     private StudySubjectAssignment assignment;
-    private AuthorizationManager csmAuthorizationManager;
+    private CsmUserCache csmUserCache;
     private User csmUser;
 
     @Override
@@ -31,15 +30,15 @@ public class AssignmentManagerResolverListenerTest extends StudyCalendarTestCase
         event = new PostLoadEvent(null);
         event.setEntity(assignment);
 
-        csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
+        csmUserCache = registerMockFor(CsmUserCache.class);
 
         listener = new AssignmentManagerResolverListener();
-        listener.setCsmAuthorizationManager(csmAuthorizationManager);
+        listener.setCsmUserCache(csmUserCache);
     }
 
     public void testManagerResolvedWhenResolveable() throws Exception {
         assignment.setManagerCsmUserId(55);
-        expect(csmAuthorizationManager.getUserById("55")).andReturn(csmUser);
+        expect(csmUserCache.getCsmUser(55)).andReturn(csmUser);
 
         fire();
         assertSame(csmUser, assignment.getStudySubjectCalendarManager());
@@ -51,16 +50,9 @@ public class AssignmentManagerResolverListenerTest extends StudyCalendarTestCase
         assertNull(assignment.getStudySubjectCalendarManager());
     }
 
-    public void testNotErrorWhenCsmThrowsException() throws Exception {
-        assignment.setManagerCsmUserId(79);
-        expect(csmAuthorizationManager.getUserById("79")).andThrow(new CSObjectNotFoundException("Nope"));
-        fire();
-        assertEquals("ID reset", (Object) 79, assignment.getManagerCsmUserId());
-    }
-
     public void testNotErrorWhenCsmReturnsNull() throws Exception {
         assignment.setManagerCsmUserId(78);
-        expect(csmAuthorizationManager.getUserById("78")).andReturn(null);
+        expect(csmUserCache.getCsmUser(78)).andReturn(null);
         fire();
         assertEquals("ID reset", (Object) 78, assignment.getManagerCsmUserId());
     }

@@ -43,6 +43,10 @@
         <property name="studyDao" ref="studyDao"/>
     </bean>
 
+    <bean id="csmUserCache" class="edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache">
+        <property name="csmAuthorizationManager" ref="osgiCsmAuthorizationManager"/>
+    </bean>
+
     <!-- TODO: is this actually wired to anything? -->
     <bean id="authorizationSwitch"
           class="gov.nih.nci.cabig.ctms.acegi.csm.authorization.AuthorizationSwitch"

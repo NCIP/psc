@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
@@ -20,6 +21,7 @@ public class FirstAdministratorFormAction extends FormAction {
     private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthorizationManager csmAuthorizationManager;
     private ProvisioningSessionFactory provisioningSessionFactory;
+    private CsmUserCache csmUserCache;
 
     public FirstAdministratorFormAction() {
         super(AdministerUserCommand.class);
@@ -32,7 +34,7 @@ public class FirstAdministratorFormAction extends FormAction {
     protected AdministerUserCommand createFormObject(RequestContext context) throws Exception {
         return new FirstAdministratorCommand(
             provisioningSessionFactory, csmAuthorizationManager,
-            installedAuthenticationSystem.getAuthenticationSystem());
+            installedAuthenticationSystem.getAuthenticationSystem(), csmUserCache);
     }
 
     public Event setupReferenceData(RequestContext context) throws Exception {
@@ -57,5 +59,10 @@ public class FirstAdministratorFormAction extends FormAction {
     @Required
     public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
         this.installedAuthenticationSystem = installedAuthenticationSystem;
+    }
+
+    @Required
+    public void setCsmUserCache(CsmUserCache csmUserCache) {
+        this.csmUserCache = csmUserCache;
     }
 }

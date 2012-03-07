@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.core.CsmUserCache;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -16,6 +17,7 @@ import static org.easymock.classextension.EasyMock.*;
  * @author Rhett Sutphin
  */
 public class FirstAdministratorCommandTest extends WebTestCase {
+    private static final int USER_ID = 63;
     private FirstAdministratorCommand command;
 
     private ProvisioningSession pSession;
@@ -32,9 +34,12 @@ public class FirstAdministratorCommandTest extends WebTestCase {
         expect(authenticationSystem.usesLocalPasswords()).andStubReturn(true);
 
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
+        CsmUserCache csmUserCache = registerMockFor(CsmUserCache.class);
+        csmUserCache.invalidate(USER_ID);
+        expectLastCall().asStub();
 
         command = new FirstAdministratorCommand(
-            psFactory, csmAuthorizationManager, authenticationSystem);
+            psFactory, csmAuthorizationManager, authenticationSystem, csmUserCache);
     }
 
     public void testUserIsSetToBlank() throws Exception {
@@ -55,7 +60,7 @@ public class FirstAdministratorCommandTest extends WebTestCase {
     public void testAutomaticallyProvisionsAsSystemAdminAndUserAdmin() throws Exception {
         command.getUser().getCsmUser().setLoginName("newguy");
 
-        User found = AuthorizationObjectFactory.createCsmUser(63L, "newguy");
+        User found = AuthorizationObjectFactory.createCsmUser(USER_ID, "newguy");
         expect(csmAuthorizationManager.getUser("newguy")).andReturn(found);
         /* expect */ csmAuthorizationManager.modifyUser(found);
 
