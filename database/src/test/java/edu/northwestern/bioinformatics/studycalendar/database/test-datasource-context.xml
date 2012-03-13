@@ -3,12 +3,13 @@
 
 <beans>
     <bean id="mainPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
-                <property name="applicationDirectoryName" value="@application-short-name@"/>
-            </bean>
-        </property>
+        <property name="properties" ref="dataSourceProperties"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <bean id="dataSourceProperties"
+          class="edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
+        <property name="applicationDirectoryName" value="@application-short-name@"/>
     </bean>
 
     <bean id="dataSource" lazy-init="true" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

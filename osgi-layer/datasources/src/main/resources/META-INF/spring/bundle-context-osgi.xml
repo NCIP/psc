@@ -15,6 +15,7 @@
         <osgi:service-properties>
             <entry key="service.ranking" value="1"/>
             <entry key="service.pid" value="edu.northwestern.bioinformatics.studycalendar.database.PSC_DATASOURCE"/>
+            <entry key="hibernate.dialect" value="${hibernate.dialect}"/>
         </osgi:service-properties>
     </osgi:service>
 

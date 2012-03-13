@@ -126,7 +126,8 @@ define "psc" do
     bnd.import_packages <<
       "org.hibernate;version=3.3" <<
       "org.hibernate.type;version=3.3" <<
-      "org.hibernate.cfg;version=3.3"
+      "org.hibernate.cfg;version=3.3" <<
+      "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm"
 
     compile.with project('utility'), SLF4J.api,
       CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core,
@@ -582,7 +583,8 @@ define "psc" do
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
         system_bundles - system_optional - application_infrastructure -
-        [FELIX.shell,  GLOBUS_UNDUPLICABLE.values].flatten.collect { |b| artifact(b) }
+        [FELIX.shell,  GLOBUS_UNDUPLICABLE.values].flatten.collect { |b| artifact(b) } +
+        project('psc:osgi-layer:domain-fragments').projects.collect { |p| p.package(:jar) }
 
       task.values = {
         "001_system/start"           => system_bundles,
@@ -755,16 +757,42 @@ define "psc" do
       bnd.name = "PSC Felix Configuration Persistence"
       bnd.category = :infrastructure
       bnd['Service-Component'] = 'OSGI-INF/psc-felix-persistence-manager.xml'
-      bnd.export_packages.clear
-      bnd.export_packages << '!edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal'
+      bnd.export_packages.unshift '!edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal'
+      bnd.import_packages << 'edu.northwestern.bioinformatics.bering.dialect.hibernate'
+      bnd['DynamicImport-Package'] = '*' # for JDBC drivers
 
       compile.with project('utility'), project('domain'),
         SLF4J.api, OSGI, FELIX.configadmin, HIBERNATE,
         JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.core, CTMS_COMMONS.lang,
-        SPRING.core, SPRING.beans, SPRING.orm, SPRING.tx
+        SPRING.core, SPRING.beans, SPRING.orm, SPRING.tx, BERING
       test.with UNIT_TESTING, project('database').test_dependencies
 
       package(:jar)
+    end
+
+    define 'domain-fragments' do
+      DOMAIN_PACKAGES = %w(
+        edu.northwestern.bioinformatics.studycalendar.osgi.felixcm
+      )
+
+      {
+        'hibernate' => 'org.hibernate.edu.northwestern.bioinformatics.osgi.hibernate-core',
+        'ctms-commons-core' => 'gov.nih.nci.cabig.ctms.ctms-commons.core'
+      }.each do |name, host|
+        desc "Allows #{name} to import PSC domain packages"
+        define name do
+          iml.id = ['domain-fragments', name].join('-')
+
+          package(:jar).with(:manifest => {
+              'Bundle-ManifestVersion' => 2,
+              'Bundle-Name' => "PSC Domain to #{name} Fragment",
+              'Bundle-SymbolicName' => [project.group, project.name.gsub(':', '.')].join('.'),
+              'Bundle-Version' => project.version,
+              'Fragment-Host' => host,
+              'Import-Package' => DOMAIN_PACKAGES.collect { |pkg| "#{pkg};version=\"#{project.version.split('.')[0,2].join('.')}\"" }.join(',')
+            })
+        end
+      end
     end
 
     desc "Non-PSC-specific commands for the felix shell"
@@ -796,7 +824,8 @@ define "psc" do
     define "integrated-tests" do
       directory _('tmp/logs')
 
-      test.using(:junit).with UNIT_TESTING, FELIX.framework,
+      test.using(:junit, :properties => { 'psc.logging.debug' => 'true', 'psc.config.datasource' => db_name }).with UNIT_TESTING,
+        FELIX.framework,
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
