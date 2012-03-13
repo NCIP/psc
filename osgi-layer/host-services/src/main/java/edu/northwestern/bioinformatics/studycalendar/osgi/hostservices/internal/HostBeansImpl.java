@@ -4,11 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.DeferredBeanInvoker;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
@@ -23,11 +20,9 @@ import java.util.Map;
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
 public class HostBeansImpl implements HostBeans {
-    private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
-
     @SuppressWarnings({ "unchecked" })
-    private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        PscUserDetailsService.class, PersistenceManager.class
+    private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.<Class<?>>asList(
+        PscUserDetailsService.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -61,9 +56,5 @@ public class HostBeansImpl implements HostBeans {
 
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
         invokers.get(PscUserDetailsService.class).setBean(userDetailsService);
-    }
-
-    public void setPersistenceManager(PersistenceManager persistenceManager) {
-        invokers.get(PersistenceManager.class).setBean(persistenceManager);
     }
 }

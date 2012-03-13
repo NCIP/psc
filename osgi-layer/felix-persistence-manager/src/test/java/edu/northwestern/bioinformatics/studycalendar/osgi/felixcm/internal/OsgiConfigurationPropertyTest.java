@@ -1,19 +1,21 @@
-package edu.northwestern.bioinformatics.studycalendar.configuration;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
 
-import static edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty.CollectionType.*;
-import static edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty.Type.*;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.Vector;
+
+import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty.CollectionType.*;
+import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty.Type.*;
 
 /**
  * @author Rhett Sutphin
  */
 @SuppressWarnings({"UnnecessaryBoxing"})
-public class OsgiConfigurationPropertyTest extends StudyCalendarTestCase {
+public class OsgiConfigurationPropertyTest extends TestCase {
     private OsgiConfigurationProperty property;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         property = new OsgiConfigurationProperty();
@@ -213,8 +215,8 @@ public class OsgiConfigurationPropertyTest extends StudyCalendarTestCase {
         assertTrue("Wrong type", value instanceof short[]);
         short[] actual = (short[]) value;
         assertEquals("Wrong number of values", 3, actual.length);
-        assertEquals("Wrong value 0",  256, actual[0]);
-        assertEquals("Wrong value 1",   13, actual[1]);
+        assertEquals("Wrong value 0", 256, actual[0]);
+        assertEquals("Wrong value 1", 13, actual[1]);
         assertEquals("Wrong value 2", -150, actual[2]);
     }
 
@@ -224,8 +226,8 @@ public class OsgiConfigurationPropertyTest extends StudyCalendarTestCase {
         assertTrue("Wrong type", value instanceof Float[]);
         Float[] actual = (Float[]) value;
         assertEquals("Wrong number of values", 3, actual.length);
-        assertEquals("Wrong value 0",  256.0f, actual[0]);
-        assertEquals("Wrong value 1",   13.0f, actual[1]);
+        assertEquals("Wrong value 0", 256.0f, actual[0]);
+        assertEquals("Wrong value 1", 13.0f, actual[1]);
         assertEquals("Wrong value 2", -150.0f, actual[2]);
     }
 
@@ -235,11 +237,12 @@ public class OsgiConfigurationPropertyTest extends StudyCalendarTestCase {
         assertTrue("Wrong type", value instanceof String[]);
         String[] actual = (String[]) value;
         assertEquals("Wrong number of values", 3, actual.length);
-        assertEquals("Wrong value 0",  "256", actual[0]);
-        assertEquals("Wrong value 1",   "13", actual[1]);
+        assertEquals("Wrong value 0", "256", actual[0]);
+        assertEquals("Wrong value 1", "13", actual[1]);
         assertEquals("Wrong value 2", "-150", actual[2]);
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void testGetValueForSimpleVector() throws Exception {
         setPropertyAttributes(BYTE, VECTOR, "25", "55", "-75");
         Object value = property.getValue();
@@ -247,8 +250,8 @@ public class OsgiConfigurationPropertyTest extends StudyCalendarTestCase {
         Vector actual = (Vector) value;
         assertEquals("Wrong number of values", 3, actual.size());
         assertTrue("Wrong value type", actual.get(0) instanceof Byte);
-        assertEquals("Wrong value 0", (byte)  25, actual.get(0));
-        assertEquals("Wrong value 1", (byte)  55, actual.get(1));
+        assertEquals("Wrong value 0", (byte) 25, actual.get(0));
+        assertEquals("Wrong value 1", (byte) 55, actual.get(1));
         assertEquals("Wrong value 2", (byte) -75, actual.get(2));
     }
 

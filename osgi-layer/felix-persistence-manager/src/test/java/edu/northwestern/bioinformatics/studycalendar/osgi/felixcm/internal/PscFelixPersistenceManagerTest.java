@@ -1,6 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.configuration;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
+import edu.northwestern.bioinformatics.studycalendar.database.StudyCalendarDbTestCase;
 import org.apache.commons.collections15.EnumerationUtils;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.Vector;
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
-public class PscFelixPersistenceManagerTest extends DaoTestCase {
+public class PscFelixPersistenceManagerTest extends StudyCalendarDbTestCase {
     private static final String GOOD_PID = "edu.nwu.psc.words";
     private static final String BAD_PID = "edu.nwu.psc.wordle-wardle";
 
@@ -27,7 +27,14 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        manager = (PscFelixPersistenceManager) getApplicationContext().getBean("pscFelixPersistenceManager");
+        manager = new PscFelixPersistenceManager();
+        manager.initializeSessionFactory(getDataSource());
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        manager.destroySessionFactory();
+        super.tearDown();
     }
 
     public void testExistsWhenDoesExist() throws Exception {
@@ -78,8 +85,6 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
             manager.delete(GOOD_PID);
         }
 
-        interruptSession();
-
         assertFalse(manager.exists(GOOD_PID));
     }
 
@@ -99,15 +104,13 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
             manager.store(newPid, d);
         }
 
-        interruptSession();
-
         Dictionary loaded = manager.load(newPid);
         assertEquals("Wrong reloaded contents: " + loaded, 3, loaded.size());
         assertEquals("Missing aleph", (byte) 0, loaded.get("aleph"));
 
         assertTrue("Missing nature", loaded.get("nature") instanceof int[]);
         int[] actualNature = (int[]) loaded.get("nature");
-        assertEquals("Wrong value 0 in nature",  2, actualNature[0]);
+        assertEquals("Wrong value 0 in nature", 2, actualNature[0]);
         assertEquals("Wrong value 1 in nature", 72, actualNature[1]);
 
         assertTrue("Missing pie", loaded.get("pie") instanceof Vector);
@@ -124,8 +127,6 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
             d.remove("letters");
             manager.store(GOOD_PID, d);
         }
-
-        interruptSession();
 
         Dictionary reloaded = manager.load(GOOD_PID);
         assertEquals("Updated value not updated", "mezzanine", reloaded.get("favorite"));
@@ -157,8 +158,6 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
             manager.store(newPid, d);
         }
 
-        interruptSession();
-
         List actual = getJdbcTemplate().queryForList(
             "SELECT id FROM osgi_cm_properties WHERE name=? AND service_pid=?",
             new Object[] { BUNDLE_LOCATION_PROPERTY, newPid }
@@ -169,7 +168,6 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
     public void testModifyingALoadedDictionaryDoesNotAffectThePersistedData() throws Exception {
         Dictionary first = manager.load(GOOD_PID);
         first.put("favorite", "apocrypha");
-        interruptSession();
 
         Dictionary second = manager.load(GOOD_PID);
         assertEquals("godspeed", second.get("favorite"));

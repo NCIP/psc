@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.configuration;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -6,13 +6,14 @@ import gov.nih.nci.cabig.ctms.domain.CodedEnum;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -31,8 +32,9 @@ import java.util.Vector;
  * A representation of a single KV pair for an OSGi configuration.
  *
  * @author Rhett Sutphin
- * @see edu.northwestern.bioinformatics.studycalendar.configuration.PscFelixPersistenceManager
+ * @see edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.PscFelixPersistenceManager
  */
+@SuppressWarnings({ "RawUseOfParameterizedType" })
 @Entity
 @Table(name = "osgi_cm_properties")
 @GenericGenerator(name = "id-generator", strategy = "native",
@@ -170,7 +172,7 @@ public class OsgiConfigurationProperty implements DomainObject {
         parameters = {
             @Parameter(
                 name = "enumClassName",
-                value = "edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty$CollectionType"
+                value = "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty$CollectionType"
             )
         }
     )
@@ -188,7 +190,7 @@ public class OsgiConfigurationProperty implements DomainObject {
         parameters = {
             @Parameter(
                 name = "enumClass",
-                value = "edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty$Type"
+                value = "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty$Type"
             )
         })
     public Type getType() {
@@ -199,7 +201,7 @@ public class OsgiConfigurationProperty implements DomainObject {
         this.type = type;
     }
 
-    @CollectionOfElements
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "value")
     @JoinTable(name = "osgi_cm_property_values", joinColumns = @JoinColumn(name = "property_id", nullable = false))
     @IndexColumn(name = "list_index", nullable = false)

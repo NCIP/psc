@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.persistence-manager"
+           immediate="true"
+           xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+    <service>
+        <provide interface="org.apache.felix.cm.PersistenceManager"/>
+    </service>
+    <reference
+        name="PSC Primary DataSource"
+        interface="javax.sql.DataSource"
+        target="(service.pid=edu.northwestern.bioinformatics.studycalendar.database.PSC_DATASOURCE)"
+        cardinality="1..1"
+        policy="dynamic"
+        bind="initializeSessionFactory"
+        unbind="destroySessionFactory"
+        />
+    <implementation
+        class="edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.PscFelixPersistenceManager"/>
+</component>

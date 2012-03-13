@@ -1,14 +1,21 @@
-package edu.northwestern.bioinformatics.studycalendar.configuration;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy;
 import org.apache.commons.collections15.EnumerationUtils;
 import org.apache.felix.cm.PersistenceManager;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,14 +32,40 @@ import java.util.Vector;
 /**
  * @author Rhett Sutphin
  */
-@Transactional(readOnly = true)
 public class PscFelixPersistenceManager extends HibernateDaoSupport implements PersistenceManager {
     private static final Collection<String> EXCLUDED_PROPERTIES =
         Arrays.asList("service.bundleLocation");
+    private HibernateTransactionManager transactionManager;
+    private TransactionTemplate transactionTemplate;
+
+    ////// DECLARATIVE SERVICE LIFECYCLE METHODS
+
+    protected void initializeSessionFactory(DataSource dataSource) throws Exception {
+        AnnotationSessionFactoryBean sessionFactoryBean = new AnnotationSessionFactoryBean();
+        sessionFactoryBean.setNamingStrategy(new StudyCalendarNamingStrategy());
+        sessionFactoryBean.setDataSource(dataSource);
+        sessionFactoryBean.setAnnotatedClasses(new Class[] { OsgiConfigurationProperty.class });
+        sessionFactoryBean.afterPropertiesSet();
+        setSessionFactory(sessionFactoryBean.getObject());
+
+        transactionManager = new HibernateTransactionManager(getSessionFactory());
+        transactionManager.afterPropertiesSet();
+
+        transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.afterPropertiesSet();
+    }
+
+    protected void destroySessionFactory() {
+        getSessionFactory().close();
+        transactionManager = null;
+        transactionTemplate = null;
+    }
+
+    ////// IMPLEMENT PersistenceManager
 
     public boolean exists(final String pid) {
-        return (Boolean) getHibernateTemplate().execute(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().execute(new HibernateCallback<Boolean>() {
+            public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
                 Long count = (Long) session.createQuery(
                     "select COUNT(*) from OsgiConfigurationProperty p where p.servicePid = :pid"
                 ).setString("pid", pid).uniqueResult();
@@ -74,8 +107,17 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
     }
 
     @SuppressWarnings({"unchecked"})
-    @Transactional(readOnly = false)
-    public void store(String pid, Dictionary values) throws IOException {
+    public void store(final String pid, final Dictionary values) {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                doStore(pid, values);
+            }
+        });
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void doStore(String pid, Dictionary values) {
         List<OsgiConfigurationProperty> existingProperties = getProperties(pid);
         Collection<String> newKeys = EnumerationUtils.toList(values.keys());
         Collection<String> existingKeys = new HashSet<String>();
@@ -96,10 +138,14 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
         }
     }
 
-    @Transactional(readOnly = false)
     public void delete(final String pid) throws IOException {
-        // bulk delete doesn't cascade for some reason
-        getHibernateTemplate().deleteAll(getProperties(pid));
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                // bulk delete doesn't cascade for some reason
+                getHibernateTemplate().deleteAll(getProperties(pid));
+            }
+        });
     }
 
     @SuppressWarnings({"unchecked"})

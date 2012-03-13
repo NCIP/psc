@@ -89,6 +89,5 @@
         <!-- The bundle context is not resolveable when in the core, so we rely on autowiring -->
         <property name="membrane" ref="membrane"/>
         <property name="pscUserDetailsService" ref="pscUserService"/>
-        <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
     </bean>
 </beans>
