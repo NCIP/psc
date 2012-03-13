@@ -36,7 +36,7 @@ public class OsgiLayerIntegratedTestHelper {
     private static BundleContext bundleContext;
     private static File projectRoot;
 
-    private static final int TIMEOUT_MS = 300 * 1000;
+    private static final int TIMEOUT_MS = (System.getenv("JOB_NAME") == null ? 60 : 300) * 1000;
 
     public static synchronized BundleContext getBundleContext() throws IOException {
         if (bundleContext == null) {
