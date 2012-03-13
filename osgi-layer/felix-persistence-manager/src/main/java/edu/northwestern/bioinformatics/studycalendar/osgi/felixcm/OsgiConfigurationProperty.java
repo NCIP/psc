@@ -1,18 +1,20 @@
-package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.domain.CodedEnum;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,13 +38,14 @@ import java.util.Vector;
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
 @Entity
+@Proxy(lazy = false)
 @Table(name = "osgi_cm_properties")
 @GenericGenerator(name = "id-generator", strategy = "native",
     parameters = {
         @Parameter(name = "sequence", value = "seq_osgi_cm_properties_id")
     }
 )
-public class OsgiConfigurationProperty implements DomainObject {
+public class OsgiConfigurationProperty {
     private Integer id, version;
     private String servicePid;
     private String name;
@@ -167,15 +170,7 @@ public class OsgiConfigurationProperty implements DomainObject {
     }
 
     @Column(name = "collection_kind")
-    @org.hibernate.annotations.Type(
-        type = "edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.EnumUserType",
-        parameters = {
-            @Parameter(
-                name = "enumClassName",
-                value = "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty$CollectionType"
-            )
-        }
-    )
+    @Enumerated(EnumType.STRING)
     public CollectionType getCollectionType() {
         return collectionType;
     }
@@ -190,7 +185,7 @@ public class OsgiConfigurationProperty implements DomainObject {
         parameters = {
             @Parameter(
                 name = "enumClass",
-                value = "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty$Type"
+                value = "edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.OsgiConfigurationProperty$Type"
             )
         })
     public Type getType() {

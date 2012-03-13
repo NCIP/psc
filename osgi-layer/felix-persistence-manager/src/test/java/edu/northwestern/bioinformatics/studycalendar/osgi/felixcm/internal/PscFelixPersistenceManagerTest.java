@@ -28,7 +28,7 @@ public class PscFelixPersistenceManagerTest extends StudyCalendarDbTestCase {
     public void setUp() throws Exception {
         super.setUp();
         manager = new PscFelixPersistenceManager();
-        manager.initializeSessionFactory(getDataSource());
+        manager.initializeSessionFactory(getDataSource(), getDataSourceProperties());
     }
 
     @Override

@@ -1,12 +1,12 @@
-package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal;
+package edu.northwestern.bioinformatics.studycalendar.osgi.felixcm;
 
 import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.Vector;
 
-import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty.CollectionType.*;
-import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal.OsgiConfigurationProperty.Type.*;
+import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.OsgiConfigurationProperty.CollectionType.*;
+import static edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.OsgiConfigurationProperty.Type.*;
 
 /**
  * @author Rhett Sutphin

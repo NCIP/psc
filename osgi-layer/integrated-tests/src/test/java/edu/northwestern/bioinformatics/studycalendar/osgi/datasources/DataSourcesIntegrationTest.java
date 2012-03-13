@@ -13,10 +13,12 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Arrays;
 
 import static edu.northwestern.bioinformatics.studycalendar.osgi.OsgiLayerIntegratedTestHelper.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
 /**
  * @author Rhett Sutphin
@@ -83,11 +85,19 @@ public class DataSourcesIntegrationTest extends OsgiLayerIntegratedTestCase {
         }
     }
 
+    @Test
+    public void itProvidesTheHibernateDialectWithThePscDataSource() throws Exception {
+        assertThat(
+            Arrays.asList(getDataSourceReference(PSC_DATASOURCE_PID).getPropertyKeys()),
+            hasItem("hibernate.dialect"));
+    }
+
     private ServiceReference getDataSourceReference(
         String pid
     ) throws InvalidSyntaxException, IOException {
         ServiceReference[] refs = getBundleContext().getServiceReferences(DataSource.class.getName(),
             String.format("(%s=%s)", Constants.SERVICE_PID, pid));
+        assertNotNull(pid + " not available", refs);
         assertEquals(pid + " not available", 1, refs.length);
         return refs[0];
     }

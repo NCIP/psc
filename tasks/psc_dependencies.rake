@@ -316,7 +316,7 @@ CIH = struct(
 )
 
 BERING = [
-  "edu.northwestern.bioinformatics:bering:jar:0.7.1",
+  "edu.northwestern.bioinformatics:bering:jar:0.8.2",
   "org.codehaus.groovy:com.springsource.org.codehaus.groovy:jar:1.5.7",
   "org.objectweb.asm:com.springsource.org.objectweb.asm:jar:2.2.3"
 ]

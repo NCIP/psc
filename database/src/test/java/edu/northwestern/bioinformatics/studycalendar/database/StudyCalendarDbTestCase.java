@@ -43,6 +43,10 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
         return dataSourceFactory.getPscDataSource();
     }
 
+    protected Map<String, String> getDataSourceProperties() {
+        return dataSourceFactory.getDataSourceProperties();
+    }
+
     @Override
     protected void tearDown() throws Exception {
         DataAuditInfo.setLocal(null);

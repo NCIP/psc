@@ -137,6 +137,19 @@ public class OsgiLayerIntegratedTestHelper {
         waitForService(findBundle(bundleName), withService);
     }
 
+    public static void waitForService(String serviceInterface) throws IOException, InterruptedException {
+        log.debug("Beginning wait for {} from any bundle", serviceInterface);
+
+        long start = System.currentTimeMillis();
+
+        while(!timedOut(start) && getBundleContext().getServiceReference(serviceInterface) == null) {
+            log.debug("- waiting for service {} in any bundle", serviceInterface);
+            Thread.sleep(100);
+        }
+
+        log.debug("- {} became available after {}ms", serviceInterface, System.currentTimeMillis() - start);
+    }
+
     public static void stopBundle(String bundleName) throws IOException, BundleException {
         findBundle(bundleName).stop();
     }
