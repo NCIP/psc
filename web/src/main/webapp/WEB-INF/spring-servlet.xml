@@ -442,6 +442,7 @@
         <property name="pscUserService" ref="pscUserService"/>
         <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
         <property name="controllerTools" ref="controllerTools"/>
+        <property name="csmUserCache" ref="csmUserCache"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
 
