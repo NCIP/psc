@@ -23,7 +23,6 @@ public class HostBeansInitializer implements InitializingBean {
     private BundleContext bundleContext;
     private Membrane membrane;
 
-    private DataSource dataSource;
     private PscUserDetailsService userDetailsService;
 
     public void afterPropertiesSet() throws Exception {
@@ -51,11 +50,6 @@ public class HostBeansInitializer implements InitializingBean {
     }
 
     ////// DEFERRED BEANS
-
-    @Required
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     @Required
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
