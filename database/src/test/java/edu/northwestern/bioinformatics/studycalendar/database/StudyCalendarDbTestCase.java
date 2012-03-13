@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,12 +29,18 @@ import java.util.Map;
 public abstract class StudyCalendarDbTestCase extends DbTestCase {
     // protected final Log log = LogFactory.getLog(getClass());
     protected final Logger log = LoggerFactory.getLogger(getClass());
+    private TrivalTestDataSourceFactory dataSourceFactory = new TrivalTestDataSourceFactory();
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8", new Date(),
             "/the/url"));
+    }
+
+    @Override
+    protected DataSource getDataSource() {
+        return dataSourceFactory.getPscDataSource();
     }
 
     @Override

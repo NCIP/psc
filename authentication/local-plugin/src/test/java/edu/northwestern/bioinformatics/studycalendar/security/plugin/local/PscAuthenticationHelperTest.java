@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.local;
 
 import edu.northwestern.bioinformatics.studycalendar.database.StudyCalendarDbTestCase;
-import javax.sql.DataSource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+
+import javax.sql.DataSource;
 
 /**
  * @author Jalpa Patel
@@ -12,10 +12,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 public class PscAuthenticationHelperTest extends StudyCalendarDbTestCase {
     private PscAuthenticationHelper pscAuthenticationHelper;
 
-    protected DataSource getDataSource() {
-        return (DataSource) new ClassPathXmlApplicationContext("test-datasource-context.xml", getClass()).getBean("dataSource");
-    }
-
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         DataSource dataSource = getDataSource();

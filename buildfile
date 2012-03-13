@@ -154,6 +154,7 @@ define "psc" do
       CTMS_COMMONS.base, CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps,
       HIBERNATE, EHCACHE
     test.with UNIT_TESTING, BERING, CORE_COMMONS
+    test.resources.filter.using(:ant, 'application-short-name'  => APPLICATION_SHORT_NAME)
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
@@ -393,7 +394,6 @@ define "psc" do
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
         project('database').and_dependencies, project('database').test_dependencies, db_deps
-      test.resources.filter.using(:ant, 'application-short-name'  => APPLICATION_SHORT_NAME)
       package(:jar)
     end
 
