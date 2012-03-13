@@ -4,14 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
-import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
 
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import static org.easymock.EasyMock.expect;
@@ -27,7 +25,6 @@ public class HostBeansImplTest extends TestCase {
 
     private HostBeansImpl impl;
     private PscUserDetailsService pscUserDetailsService;
-    private PersistenceManager persistenceManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -48,7 +45,6 @@ public class HostBeansImplTest extends TestCase {
         impl = new HostBeansImpl();
         impl.registerServices(bundleContext);
         pscUserDetailsService = mockRegistry.registerMockFor(PscUserDetailsService.class);
-        persistenceManager = mockRegistry.registerMockFor(PersistenceManager.class);
     }
 
     public void testProxyServiceRegisteredForUserDetailsService() throws Exception {
@@ -61,9 +57,9 @@ public class HostBeansImplTest extends TestCase {
 
     @SuppressWarnings({ "EqualsBetweenInconvertibleTypes" })
     public void testDeferredProxyServicesUseDefaultsIfCalledEarly() throws Exception {
-        PersistenceManager proxied = (PersistenceManager) registeredServices.get(PersistenceManager.class.getName());
-        assertNull(proxied.load("foo"));
-        assertFalse(proxied.exists("bar"));
+        PscUserDetailsService proxied = (PscUserDetailsService) registeredServices.get(PscUserDetailsService.class.getName());
+        assertNull(proxied.loadUserByUsername("foo"));
+        assertFalse(proxied.equals("bar"));
     }
 
     public void testUserDetailsServiceDelegatesToPscUserDetailsServiceBean() throws Exception {
@@ -74,17 +70,6 @@ public class HostBeansImplTest extends TestCase {
         expect(pscUserDetailsService.loadUserByUsername("joe")).andReturn(expectedUser);
         mockRegistry.replayMocks();
         assertSame(expectedUser, actual.loadUserByUsername("joe"));
-        mockRegistry.verifyMocks();
-    }
-
-    public void testPersistenceManagerDelegatesToPersistenceManagerBean() throws Exception {
-        PersistenceManager actual = (PersistenceManager) registeredServices.get(PersistenceManager.class.getName());
-        impl.setPersistenceManager(persistenceManager);
-
-        Dictionary expected = new Hashtable();
-        expect(persistenceManager.load("abc")).andReturn(expected);
-        mockRegistry.replayMocks();
-        assertSame(expected, actual.load("abc"));
         mockRegistry.verifyMocks();
     }
 

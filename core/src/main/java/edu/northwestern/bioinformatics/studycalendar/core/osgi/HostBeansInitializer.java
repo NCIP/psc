@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ public class HostBeansInitializer implements InitializingBean {
 
     private DataSource dataSource;
     private PscUserDetailsService userDetailsService;
-    private PersistenceManager persistenceManager;
 
     public void afterPropertiesSet() throws Exception {
         if (bundleContext != null) {
@@ -34,7 +32,6 @@ public class HostBeansInitializer implements InitializingBean {
             if (ref != null) {
                 HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
                 beans.setPscUserDetailsService(userDetailsService);
-                beans.setPersistenceManager(persistenceManager);
             }
         } else {
             log.debug("No bundleContext set");
@@ -64,10 +61,4 @@ public class HostBeansInitializer implements InitializingBean {
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
-
-    @Required
-    public void setPersistenceManager(PersistenceManager persistenceManager) {
-        this.persistenceManager = persistenceManager;
-    }
-
 }

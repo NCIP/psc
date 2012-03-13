@@ -77,7 +77,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty</value>
 
                 <value>edu.northwestern.bioinformatics.studycalendar.configuration.AuthenticationSystemConfigurationEntry</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty</value>
 
                 <!-- TODO remove ctms common annotated class, once psc audit dao implements methods of ctms daos using jdbctemplate -->
                 <value>gov.nih.nci.cabig.ctms.audit.domain.DataAuditEventValue</value>
@@ -181,8 +180,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
     <bean id="storedAuthenticationSystemConfiguration" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.configuration.StoredAuthenticationSystemConfiguration"/>
-    <bean id="pscFelixPersistenceManager" parent="daoTemplate"
-          class="edu.northwestern.bioinformatics.studycalendar.configuration.PscFelixPersistenceManager"/>
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 

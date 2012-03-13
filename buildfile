@@ -749,6 +749,24 @@ define "psc" do
       package(:jar)
     end
 
+    desc "Provides a PersistenceManager for Felix's CM implementation"
+    define 'felix-persistence-manager' do
+      bnd.wrap!
+      bnd.name = "PSC Felix Configuration Persistence"
+      bnd.category = :infrastructure
+      bnd['Service-Component'] = 'OSGI-INF/psc-felix-persistence-manager.xml'
+      bnd.export_packages.clear
+      bnd.export_packages << '!edu.northwestern.bioinformatics.studycalendar.osgi.felixcm.internal'
+
+      compile.with project('utility'), project('domain'),
+        SLF4J.api, OSGI, FELIX.configadmin, HIBERNATE,
+        JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.core, CTMS_COMMONS.lang,
+        SPRING.core, SPRING.beans, SPRING.orm, SPRING.tx
+      test.with UNIT_TESTING, project('database').test_dependencies
+
+      package(:jar)
+    end
+
     desc "Non-PSC-specific commands for the felix shell"
     define "felix-commands" do
       bnd.wrap!
