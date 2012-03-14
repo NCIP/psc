@@ -15,7 +15,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.auditing.AuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ApplicationPathAware;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -51,7 +50,7 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new ScheduleActivityCommand(scheduledCalendarDao);
+        return new ScheduleActivityCommand(scheduledCalendarDao, applicationSecurityManager.getUser());
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -73,7 +72,6 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
         model.put("uriMap",uriMap);
         model.put("modes", command.getEventSpecificMode());
         StudySubjectAssignment ssa = command.getEvent().getScheduledStudySegment().getScheduledCalendar().getAssignment();
-        model.put("readOnly", readOnlyMode(ssa));
         return new ModelAndView("schedule/event", model);
     }
 
@@ -107,11 +105,6 @@ public class ScheduleActivityController extends PscSimpleFormController implemen
 
         userActionDao.save(userAction);
         AuditEvent.setUserAction(userAction);
-    }
-    private boolean readOnlyMode(StudySubjectAssignment ssa) {
-        PscUser user = applicationSecurityManager.getUser();
-        UserStudySubjectAssignmentRelationship ussar = new UserStudySubjectAssignmentRelationship(user, ssa);
-        return (!ussar.getCanUpdateSchedule() && (ussar.getCanReadData() || ussar.getCanSetCalendarManager()));
     }
 
     ////// CONFIGURATION
