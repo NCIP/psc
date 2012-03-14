@@ -1,27 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleActivityCommand implements Validatable {
+public class ScheduleActivityCommand implements Validatable, PscAuthorizedCommand {
     private static final Logger log = LoggerFactory.getLogger(ScheduleActivityCommand.class.getName());
 
     private ScheduledActivity event;
@@ -71,6 +76,19 @@ public class ScheduleActivityCommand implements Validatable {
         instance.setDate(date);
 
         return instance;
+    }
+
+    public Collection<ResourceAuthorization> authorizations(Errors bindErrors) {
+        Site site = null;
+        Study study = null;
+        if (getEvent() != null) {
+            StudySite studySite = getEvent().getScheduledStudySegment().getScheduledCalendar().getAssignment().getStudySite();
+            site = studySite.getSite();
+            study = studySite.getStudy();
+        }
+
+        return ResourceAuthorization.createCollection(site, study,
+            STUDY_SUBJECT_CALENDAR_MANAGER, STUDY_TEAM_ADMINISTRATOR, DATA_READER);
     }
 
     ////// BOUND PROPERTIES

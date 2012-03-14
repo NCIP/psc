@@ -18,7 +18,7 @@ public interface PscAuthorizedCommand {
      * set of authorizations in that case.
      *
      * @see PscAuthorizedHandler
-     * @param e
+     * @param bindErrors
      */
     Collection<ResourceAuthorization> authorizations(Errors bindErrors);
 }
