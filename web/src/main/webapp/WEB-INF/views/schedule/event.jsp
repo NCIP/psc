@@ -11,13 +11,12 @@
              type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity"/>
 <jsp:useBean id="subject" scope="request"
              type="edu.northwestern.bioinformatics.studycalendar.domain.Subject"/>
-<jsp:useBean id="readOnly" scope="request" type="java.lang.Boolean"/>
 <jsp:useBean id="uriMap" scope="request" type="java.util.Map<java.lang.String, java.lang.String>"/>
 <jsp:useBean id="modes" scope="request"
              type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode>"/>
 
 <c:set var="modeTitle" value="Edit"/>
-<c:if test="${readOnly}">
+<c:if test="${command.readOnly}">
     <c:set var="modeTitle" value="View"/>
 </c:if>
 
@@ -193,7 +192,7 @@
                         </c:forEach>
                         <li class="current">${scheduledActivity.currentState.textSummary}</li>
                     </ul>
-                    <c:if test="${!readOnly}">
+                    <c:if test="${!command.readOnly}">
                         <label id="new-mode-selector-group">Change to
                             <form:select path="newMode" id="new-mode-selector">
                                 <form:option value="${scheduledActivity.currentState.mode.id}" label="leave the state same"/>
@@ -227,11 +226,11 @@
             <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newTime">Time</form:label></div>
                 <div class="value">
-                    <c:if test="${!readOnly}">
+                    <c:if test="${!command.readOnly}">
                         <form:input path="newTime" id="new-time-input"/>
                         <label class="time">either in 24-hour format or with AM/PM. E.g. "16:15" or "4:15 PM"</label>
                     </c:if>
-                    <c:if test="${readOnly}">
+                    <c:if test="${command.readOnly}">
                         ${command.newTime}
                     </c:if>
                 </div>
@@ -241,17 +240,17 @@
             <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
                 <div class="value">
-                    <c:if test="${!readOnly}">
+                    <c:if test="${!command.readOnly}">
                         <form:textarea path="newNotes" rows="6" cols="30"/>
                     </c:if>
-                    <c:if test="${readOnly}">
+                    <c:if test="${command.readOnly}">
                         ${command.newNotes}
                     </c:if>
                 </div>
             </div>
             <c:set var="count" value="${count + 1}"/>
 
-            <c:if test="${!readOnly}">
+            <c:if test="${!command.readOnly}">
                 <div class="row submit">
                     <input type="submit" value="Save"/>
                 </div>

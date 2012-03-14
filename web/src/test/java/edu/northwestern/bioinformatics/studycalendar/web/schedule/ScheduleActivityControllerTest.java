@@ -16,10 +16,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserAction;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.easymock.EasyMock;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,7 +31,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.classextension.EasyMock.expect;
 
 /**
@@ -201,6 +202,20 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         verifyMocks();
     }
 
+    public void testRealFormBackingObjectIncludesCurrentUser() throws Exception {
+        ScheduleActivityController realController = new ScheduleActivityController();
+        realController.setApplicationSecurityManager(mockApplicationSecurityManager);
+
+        PscUser user = new PscUserBuilder().add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().toUser();
+        EasyMock.expect(mockApplicationSecurityManager.getUser()).andReturn(user);
+
+        replayMocks();
+        ScheduleActivityCommand actual = (ScheduleActivityCommand) realController.formBackingObject(request);
+        verifyMocks();
+
+        assertSame(user, actual.getUser());
+    }
+
     private void expectShowFormWithNoErrors() throws Exception {
         event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
 
@@ -221,8 +236,6 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         Map<String,String> uriListMap = new TreeMap<String, String>();
         expect(scheduleService.generateActivityTemplateUri(event)).andReturn(uriListMap);
         request.setParameter("event", "16");
-        PscUserBuilder builder = new PscUserBuilder();
-        expect(mockApplicationSecurityManager.getUser()).andReturn(builder.add(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().toUser());
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);

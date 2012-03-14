@@ -7,7 +7,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivitySta
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -36,15 +39,23 @@ public class ScheduleActivityCommand implements Validatable, PscAuthorizedComman
     private String newNotes;
     private String newTime;
 
-    private ScheduledCalendarDao scheduledCalendarDao;
+    private final ScheduledCalendarDao scheduledCalendarDao;
+    private final PscUser user;
+    private Boolean readOnly;
 
-    public ScheduleActivityCommand(ScheduledCalendarDao scheduledCalendarDao) {
+    public ScheduleActivityCommand(ScheduledCalendarDao scheduledCalendarDao, PscUser user) {
         this.scheduledCalendarDao = scheduledCalendarDao;
+        this.user = user;
+        this.readOnly = null;
     }
 
     ////// LOGIC
 
     public void apply() {
+        if (isReadOnly()) {
+            log.warn("Not applying changes to {} from unauthorized user {}", event, user);
+            return;
+        }
         if (hasStateChange()) {
             event.changeState(createState());
         }
@@ -82,13 +93,35 @@ public class ScheduleActivityCommand implements Validatable, PscAuthorizedComman
         Site site = null;
         Study study = null;
         if (getEvent() != null) {
-            StudySite studySite = getEvent().getScheduledStudySegment().getScheduledCalendar().getAssignment().getStudySite();
+            StudySite studySite = getAssignment().getStudySite();
             site = studySite.getSite();
             study = studySite.getStudy();
         }
 
         return ResourceAuthorization.createCollection(site, study,
             STUDY_SUBJECT_CALENDAR_MANAGER, STUDY_TEAM_ADMINISTRATOR, DATA_READER);
+    }
+
+    public boolean isReadOnly() {
+        if (readOnly == null) {
+            readOnly = determineReadOnly();
+        }
+        return readOnly;
+    }
+
+    private Boolean determineReadOnly() {
+        UserStudySubjectAssignmentRelationship rel =
+            new UserStudySubjectAssignmentRelationship(user, getAssignment());
+        return !rel.getCanUpdateSchedule();
+    }
+
+    private StudySubjectAssignment getAssignment() {
+        return getEvent().getScheduledStudySegment().getScheduledCalendar().getAssignment();
+    }
+
+    // for testing
+    PscUser getUser() {
+        return user;
     }
 
     ////// BOUND PROPERTIES

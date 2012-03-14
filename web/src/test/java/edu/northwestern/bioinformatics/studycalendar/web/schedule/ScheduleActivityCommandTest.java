@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
@@ -11,10 +12,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
 
@@ -39,10 +44,15 @@ public class ScheduleActivityCommandTest extends WebTestCase {
     private Study study;
     private ScheduledActivity event;
 
+    private PscUser user;
+
     protected void setUp() throws Exception {
         super.setUp();
+        user = new PscUserBuilder("eileen").
+            add(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies().toUser();
+
         scheduledCalendarDao = registerMockFor(ScheduledCalendarDao.class);
-        command = new ScheduleActivityCommand(scheduledCalendarDao);
+        command = new ScheduleActivityCommand(scheduledCalendarDao, user);
 
         site = Fixtures.createSite("NU");
         study = Fixtures.createSingleEpochStudy("ABC 4678", "Follow up");
@@ -195,6 +205,28 @@ public class ScheduleActivityCommandTest extends WebTestCase {
     public void testAuthorizationAllowsAppropriateRoles() throws Exception {
         Collection<ResourceAuthorization> actual = command.authorizations(null);
         assertRolesAllowed(actual, STUDY_TEAM_ADMINISTRATOR, STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER);
+    }
+
+    public void testIsReadOnlyWithoutSscmRole() throws Exception {
+        user.getMemberships().clear();
+        user.getMemberships().put(SuiteRole.DATA_READER,
+            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forAllSites().forAllStudies());
+
+        assertTrue(command.isReadOnly());
+    }
+
+    public void testCanWriteWithSscmRole() throws Exception {
+        assertFalse(command.isReadOnly());
+    }
+
+    public void testApplyDoesNothingWhenReadOnly() throws Exception {
+        user.getMemberships().clear();
+        user.getMemberships().put(SuiteRole.DATA_READER,
+            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forAllSites().forAllStudies());
+
+        replayMocks();
+        command.apply();
+        verifyMocks();
     }
 
     private BindException validateAndReturnErrors() {
