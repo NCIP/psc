@@ -29,7 +29,8 @@ import java.util.Map;
 public abstract class StudyCalendarDbTestCase extends DbTestCase {
     // protected final Log log = LogFactory.getLog(getClass());
     protected final Logger log = LoggerFactory.getLogger(getClass());
-    private TrivalTestDataSourceFactory dataSourceFactory = new TrivalTestDataSourceFactory();
+    // static so that there's a single test pool for the full run
+    private static TrivalTestDataSourceFactory dataSourceFactory = new TrivalTestDataSourceFactory();
 
     @Override
     protected void setUp() throws Exception {

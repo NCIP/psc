@@ -12,7 +12,20 @@
         <property name="applicationDirectoryName" value="@application-short-name@"/>
     </bean>
 
-    <bean id="dataSource" lazy-init="true" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <!-- Need to use a pool even in testing to avoid ORA-12519 when testing on Oracle XE -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="maxActive"                     value="5"/>
+        <property name="maxIdle"                       value="2"/>
+        <property name="maxWait"                       value="180000"/>
+        <property name="removeAbandoned"               value="true"/>
+        <property name="removeAbandonedTimeout"        value="300"/>
+        <property name="logAbandoned"                  value="true"/>
+        <property name="validationQuery"               value="SELECT 1 FROM bering_version"/>
+        <property name="testWhileIdle"                 value="true"/>
+        <property name="testOnReturn"                  value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+        <property name="minEvictableIdleTimeMillis"    value="600000"/>
+
         <property name="driverClassName" value="${datasource.driver}"/>
         <property name="url"      value="${datasource.url}"/>
         <property name="username" value="${datasource.username}"/>
