@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
 
@@ -16,16 +22,21 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
+public class ScheduleActivityCommandTest extends WebTestCase {
     private static final String NEW_REASON = "New Reason";
     private static final Date NEW_DATE = DateUtils.createDate(2003, Calendar.MARCH, 14);
 
     private ScheduleActivityCommand command;
 
     private ScheduledCalendarDao scheduledCalendarDao;
+
+    private Site site;
+    private Study study;
     private ScheduledActivity event;
 
     protected void setUp() throws Exception {
@@ -33,9 +44,16 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         scheduledCalendarDao = registerMockFor(ScheduledCalendarDao.class);
         command = new ScheduleActivityCommand(scheduledCalendarDao);
 
+        site = Fixtures.createSite("NU");
+        study = Fixtures.createSingleEpochStudy("ABC 4678", "Follow up");
+        StudySite studySite = Fixtures.createStudySite(study, site);
+        StudySubjectAssignment assignment = Fixtures.createAssignment(
+            studySite, Fixtures.createSubject("Suzy", "Subject"));
+
         event = Fixtures.createScheduledActivity("ABC", 2003, Calendar.MARCH, 13);
         event.setScheduledStudySegment(new ScheduledStudySegment());
         event.getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        event.getScheduledStudySegment().getScheduledCalendar().setAssignment(assignment);
 
         command.setEvent(event);
         command.setNewReason(NEW_REASON);
@@ -157,6 +175,28 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong error code", "error.time.not.valid.format", errors.getGlobalError().getCode());
     }
 
+    public void testAuthorizationLimitsByAssignmentSiteWhenActivityAvailable() throws Exception {
+        ResourceAuthorization example = command.authorizations(null).iterator().next();
+        assertSame(site.getAssignedIdentifier(), example.getScope(ScopeType.SITE));
+    }
+
+    public void testAuthorizationLimitsByAssignmentStudyWhenActivityAvailable() throws Exception {
+        ResourceAuthorization example = command.authorizations(null).iterator().next();
+        assertSame(study.getAssignedIdentifier(), example.getScope(ScopeType.STUDY));
+    }
+
+    public void testAuthorizationsReturnsUnqualifiedAuthorizationsWhenUnresolvableActivity() throws Exception {
+        command.setEvent(null);
+        ResourceAuthorization example = command.authorizations(null).iterator().next();
+        assertNull(example.getScope(ScopeType.SITE));
+        assertNull(example.getScope(ScopeType.STUDY));
+    }
+
+    public void testAuthorizationAllowsAppropriateRoles() throws Exception {
+        Collection<ResourceAuthorization> actual = command.authorizations(null);
+        assertRolesAllowed(actual, STUDY_TEAM_ADMINISTRATOR, STUDY_SUBJECT_CALENDAR_MANAGER, DATA_READER);
+    }
+
     private BindException validateAndReturnErrors() {
         replayMocks();
         BindException errors = new BindException(command, StringUtils.EMPTY);
@@ -164,6 +204,4 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         verifyMocks();
         return errors;
     }
-
-
 }
