@@ -100,6 +100,51 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
                 getCanAssignSubjects());
     }
 
+    ////// canManageCalendars
+
+    public void testCanManageIfAllScopesStudySubjectCalendarManager() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+                getCanManageCalendars());
+    }
+
+    public void testCanManageIfSpecificStudyStudySubjectCalendarManager() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(study)).
+                getCanManageCalendars());
+    }
+
+    public void testCannotManageIfWrongStudySubjectCalendarManager() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(otherStudy)).
+                getCanManageCalendars());
+    }
+
+    public void testCanManageIfSpecificSiteStudySubjectCalendarManager() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forAllStudies()).
+                getCanManageCalendars());
+    }
+
+    public void testCannotManageIfWrongSiteSubjectCalendarManager() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(mayo).forAllStudies()).
+                getCanManageCalendars());
+    }
+
+    public void testCannotAssignIfNoAssignmentsExist() throws Exception {
+        nuF.getStudySubjectAssignments().clear();
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
+                getCanManageCalendars());
+    }
+
+    public void testCannotManageIfOtherRole() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
+                getCanManageCalendars());
+    }
+
     ////// canCreateSubjects
 
     public void testCanCreateSubjectIfAllScopesSubjectManager() throws Exception {

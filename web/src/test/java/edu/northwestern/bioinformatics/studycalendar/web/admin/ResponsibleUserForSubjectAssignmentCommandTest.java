@@ -187,6 +187,21 @@ public class ResponsibleUserForSubjectAssignmentCommandTest extends WebTestCase 
         assertEquals("Wrong assignments", Arrays.asList(c_vu_1), actualRa.getAssignments());
     }
 
+    // #2049
+    public void testReassignablesIncludesAllReassignableUsersWhenSubjectAssignmentIsDisabled() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).
+            andReturn(false).anyTimes();
+
+        replayMocks();
+        Map<Site, Map<Study, ResponsibleUserForSubjectAssignmentCommand.ReassignableAssignments>> actual =
+            command.getReassignables();
+        verifyMocks();
+
+        ResponsibleUserForSubjectAssignmentCommand.ReassignableAssignments actualRa =
+            actual.get(nu).get(a);
+        assertEquals("Wrong eligible users", Arrays.asList(alice), actualRa.getEligibleUsers());
+    }
+
     ////// validate
 
     public void testInvalidIfSettingAssignmentNotVisible() throws Exception {

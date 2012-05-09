@@ -55,6 +55,14 @@ public class UserStudySiteRelationship {
     }
 
     /**
+     * Returns true if the user can manage calendars and the study site has any.
+     */
+    public boolean getCanManageCalendars() {
+        return hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER) &&
+            !getStudySite().getStudySubjectAssignments().isEmpty();
+    }
+
+    /**
      * Returns true if the user is allowed to create subjects for the
      * associated site.
      */
