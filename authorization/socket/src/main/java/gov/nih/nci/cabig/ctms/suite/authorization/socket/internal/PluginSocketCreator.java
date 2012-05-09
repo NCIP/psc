@@ -28,7 +28,7 @@ public class PluginSocketCreator {
     private BundleContext bundleContext;
 
     @SuppressWarnings({ "UnusedDeclaration" })
-    protected void activate(BundleContext context) {
+    protected synchronized void activate(BundleContext context) {
         log.debug("Activating");
 
         this.bundleContext = context;
@@ -56,7 +56,7 @@ public class PluginSocketCreator {
     }
 
     @SuppressWarnings({ "UnusedDeclaration", "RawUseOfParameterizedType", "unchecked" })
-    protected void createSocket(ServiceReference reference) {
+    protected synchronized void createSocket(ServiceReference reference) {
         if (bundleContext == null) {
             log.warn(
                 "createSocket called for {} before activation or after deactivation. No changes made.",
