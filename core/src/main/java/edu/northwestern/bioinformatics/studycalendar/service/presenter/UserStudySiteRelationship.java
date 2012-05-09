@@ -47,10 +47,10 @@ public class UserStudySiteRelationship {
      */
     public boolean getCanAssignSubjects() {
         return !getStudySite().getAmendmentApprovals().isEmpty() &&
-            hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER) && isEnabledToAssignSubjects();
+            hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER) && subjectAssigningIsEnabled();
     }
 
-    public Boolean isEnabledToAssignSubjects() {
+    private boolean subjectAssigningIsEnabled() {
         return configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT);
     }
 
@@ -59,7 +59,6 @@ public class UserStudySiteRelationship {
      * associated site.
      */
     public boolean getCanCreateSubjects() {
-
         return hasMatchingRole(SUBJECT_MANAGER);
     }
 
@@ -99,7 +98,6 @@ public class UserStudySiteRelationship {
      * Returns true if the user is allowed to take subject off from the study for the
      * study site and there are any subjects associated with it.
      */
-
     public boolean getCanTakeSubjectOffStudy() {
         return !getStudySite().getStudySubjectAssignments().isEmpty()
             && hasMatchingRole(STUDY_SUBJECT_CALENDAR_MANAGER);
