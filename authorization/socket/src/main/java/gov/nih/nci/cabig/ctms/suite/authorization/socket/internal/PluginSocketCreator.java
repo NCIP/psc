@@ -29,28 +29,41 @@ public class PluginSocketCreator {
 
     @SuppressWarnings({ "UnusedDeclaration" })
     protected void activate(BundleContext context) {
+        log.debug("Activating");
+
         this.bundleContext = context;
         this.adapters = new HashMap<ServiceReference, ServiceRegistration>();
+
+        log.debug("Activated");
     }
 
     @SuppressWarnings({ "UnusedDeclaration" })
     protected synchronized void deactivate(int reason) {
-        log.debug("Deactivating with reason code {}.", reason);
+        log.debug("Deactivating with reason code {}", reason);
 
         this.bundleContext = null;
 
         if (this.adapters != null && !this.adapters.isEmpty()) {
-            log.info("Deactivating while {} socket(s) are live. Unregistering sockets.",
+            log.info("Deactivating while {} socket(s) are live; unregistering sockets",
                 this.adapters.size());
             for (ServiceRegistration registration : this.adapters.values()) {
                 destroyRegistration(registration);
             }
         }
         this.adapters = null;
+
+        log.debug("Deactivated");
     }
 
     @SuppressWarnings({ "UnusedDeclaration", "RawUseOfParameterizedType", "unchecked" })
     protected void createSocket(ServiceReference reference) {
+        if (bundleContext == null) {
+            log.warn(
+                "createSocket called for {} before activation or after deactivation. No changes made.",
+                reference);
+            return;
+        }
+
         Object service = bundleContext.getService(reference);
         if (service instanceof SuiteAuthorizationSource) {
             log.info("Registering authorization socket for {}", service);
