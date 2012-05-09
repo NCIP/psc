@@ -166,7 +166,7 @@ public class ResponsibleUserForSubjectAssignmentCommand implements Validatable {
         List<PscUser> subteam = new ArrayList<PscUser>(getTeam());
         for (Iterator<PscUser> it = subteam.iterator(); it.hasNext();) {
             PscUser candidate = it.next();
-            if (!(new UserStudySiteRelationship(candidate, studySite, configuration)).getCanAssignSubjects()) {
+            if (!(new UserStudySiteRelationship(candidate, studySite, configuration)).getCanManageCalendars()) {
                 it.remove();
             } else if (currentManager != null && candidate.getUsername().equals(currentManager.getUsername())) {
                 it.remove();
