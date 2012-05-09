@@ -95,7 +95,15 @@ public class PluginSocketCreatorTest {
     }
 
     @Test
-    public void isDoesNothingWhenAnUnknownServiceIsUnregistered() throws Exception {
+    public void itUnregistersAllSocketsWhenDeactivated() throws Exception {
+        registerMockAuthorizationSource();
+
+        creator.deactivate(0);
+        assertThat(bundleContext.getRegistrations().size(), is(1));
+    }
+
+    @Test
+    public void itDoesNothingWhenAnUnknownServiceIsUnregistered() throws Exception {
         MockServiceReference oldSource = new MockServiceReference(
             new String[] { SuiteAuthorizationSource.class.getName() });
 

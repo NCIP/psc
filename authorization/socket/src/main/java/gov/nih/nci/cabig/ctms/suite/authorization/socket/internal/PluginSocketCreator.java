@@ -34,8 +34,18 @@ public class PluginSocketCreator {
     }
 
     @SuppressWarnings({ "UnusedDeclaration" })
-    protected void deactivate() {
+    protected synchronized void deactivate(int reason) {
+        log.debug("Deactivating with reason code {}.", reason);
+
         this.bundleContext = null;
+
+        if (this.adapters != null && !this.adapters.isEmpty()) {
+            log.info("Deactivating while {} socket(s) are live. Unregistering sockets.",
+                this.adapters.size());
+            for (ServiceRegistration registration : this.adapters.values()) {
+                destroyRegistration(registration);
+            }
+        }
         this.adapters = null;
     }
 
@@ -65,10 +75,19 @@ public class PluginSocketCreator {
     }
 
     @SuppressWarnings({ "UnusedDeclaration" })
-    protected void destroySocket(ServiceReference reference) {
+    protected synchronized void destroySocket(ServiceReference reference) {
+        if (adapters == null) {
+            log.debug(
+                "destroySocket called after deactivation or before activation. No changes made.");
+            return;
+        }
         ServiceRegistration socketReg = adapters.get(reference);
         if (socketReg != null) {
-            socketReg.unregister();
+            destroyRegistration(socketReg);
         }
+    }
+
+    protected void destroyRegistration(ServiceRegistration socketReg) {
+        socketReg.unregister();
     }
 }
