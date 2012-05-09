@@ -12,8 +12,8 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import java.util.Date;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.*;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 
@@ -43,44 +43,33 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
         nuF.addStudySubjectAssignment(createAssignment(nuF, createSubject("A", "B")));
 
         configuration = registerMockFor(Configuration.class);
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andStubReturn(true);
     }
 
     ////// canAssignSubjects
 
     public void testCanAssignIfAllScopesStudySubjectCalendarManager() throws Exception {
-        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
-        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
                 getCanAssignSubjects());
-        verifyMocks();
     }
 
     public void testCanAssignIfSpecificStudyStudySubjectCalendarManager() throws Exception {
-        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
-        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(study)).
                 getCanAssignSubjects());
-        verifyMocks();
     }
 
     public void testCannotAssignIfWrongStudySubjectCalendarManager() throws Exception {
-        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
-        replayMocks();
         assertFalse(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies(otherStudy)).
                 getCanAssignSubjects());
-        verifyMocks();
     }
 
     public void testCanAssignIfSpecificSiteStudySubjectCalendarManager() throws Exception {
-        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).andReturn(Boolean.TRUE).anyTimes();
-        replayMocks();
         assertTrue(
             actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites(nu).forAllStudies()).
                 getCanAssignSubjects());
-        verifyMocks();
     }
 
     public void testCannotAssignIfWrongSiteSubjectCalendarManager() throws Exception {
@@ -99,6 +88,15 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
     public void testCannotAssignIfOtherRole() throws Exception {
         assertFalse(
             actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
+                getCanAssignSubjects());
+    }
+
+    public void testCannotAssignIfAssigningIsDisabled() throws Exception {
+        expect(configuration.get(Configuration.ENABLE_ASSIGNING_SUBJECT)).
+            andReturn(false).anyTimes();
+
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies()).
                 getCanAssignSubjects());
     }
 
@@ -283,7 +281,6 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
                 getCouldSeeSubjectInformation());
     }
 
-
     ////// canAdministerUsers
 
     public void testCanAdministerUsersIfAllScopesUserAdministrator() throws Exception {
@@ -370,6 +367,11 @@ public class UserStudySiteRelationshipTest extends StudyCalendarTestCase {
         } catch (SuiteAuthorizationValidationException save) {
             fail("Test membership is invalid.  " + save.getMessage());
         }
-        return new UserStudySiteRelationship(createPscUser("jo", membership), nuF, configuration);
+        try {
+            replayMocks();
+            return new UserStudySiteRelationship(createPscUser("jo", membership), nuF, configuration);
+        } finally {
+            verifyMocks();
+        }
     }
 }
