@@ -15,6 +15,15 @@ psc.tools.Dates = (function () {
       }
     },
 
+    apiDateToNonUtc: function (apiDate) {
+      if (apiDate != null) {
+        var pieces = apiDate.split('-')
+        return new Date(pieces[0], pieces[1] - 1, pieces[2]);
+      } else {
+        return null;
+      }
+    },
+
     displayDateToUtc: function (humanReadableDate) {
       var dateFormat = psc.configuration.calendarDateFormat();
       var pieces = humanReadableDate.split('/')
@@ -31,6 +40,12 @@ psc.tools.Dates = (function () {
         "-" + psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2);
     },
 
+    nonUtcToApiDate: function (jsDate) {
+      return jsDate.getFullYear() +
+        "-" + psc.tools.Strings.leftpad(jsDate.getMonth() + 1, 2) +
+        "-" + psc.tools.Strings.leftpad(jsDate.getDate(), 2);
+    },
+
     utcToDisplayDate: function(jsDate) {
       var dateFormat = psc.configuration.calendarDateFormat();
       if (dateFormat.startsWith("%m")) {
@@ -44,8 +59,25 @@ psc.tools.Dates = (function () {
       }
     },
 
+    nonUtcToDisplayDate: function(jsDate) {
+      var dateFormat = psc.configuration.calendarDateFormat();
+      if (dateFormat.startsWith("%m")) {
+        return psc.tools.Strings.leftpad(jsDate.getMonth() + 1, 2)+
+         '/'+psc.tools.Strings.leftpad(jsDate.getDate(), 2)+
+         '/'+jsDate.getFullYear()
+      } else {
+        return psc.tools.Strings.leftpad(jsDate.getDate(), 2)+
+         '/'+psc.tools.Strings.leftpad(jsDate.getMonth() + 1, 2)+
+         '/'+jsDate.getFullYear()
+      }
+    },
+
     apiDateToDisplayDate: function (apiDate) {
       return this.utcToDisplayDate(this.apiDateToUtc(apiDate));
+    },
+
+    apiDateToNonUtcDisplayDate: function (apiDate) {
+      return this.nonUtcToDisplayDate(this.apiDateToNonUtc(apiDate));
     },
 
     displayDateToApiDate: function (displayDate) {
