@@ -22,8 +22,8 @@ psc.namespace('dashboard');
     endDate.setDate(endDate.getDate() + (days-1));
     var qs = $.param({
       "responsible-user": psc.dashboard.Main.username,
-      "start-date": psc.tools.Dates.nonUtcToApiDate(startDate),
-      "end-date": psc.tools.Dates.nonUtcToApiDate(endDate),
+      "start-date": psc.tools.Dates.localToApiDate(startDate),
+      "end-date": psc.tools.Dates.localToApiDate(endDate),
       "state": ["scheduled", "conditional"],
       "activity-type": activityTypes
     }, true);

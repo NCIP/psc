@@ -42,24 +42,19 @@ Screw.Unit(function () {
         expect(psc.tools.Dates.apiDateToDisplayDate("2005-11-03")).to(equal, "11/03/2005");
       });
 
-      it("converts 2009-05-01 to a non UTC date", function () {
-        expect(psc.tools.Dates.apiDateToNonUtc("2009-05-01")).to(
+      it("converts 2009-05-01 to a local date", function () {
+        expect(psc.tools.Dates.apiDateToLocal("2009-05-01")).to(
           equal_date, new Date(2009, 4, 1));
       });
 
-      it("returns null when converts null to a non UTC date", function () {
-        expect(psc.tools.Dates.apiDateToNonUtc(null)).to(
+      it("returns null when converts null to a local date", function () {
+        expect(psc.tools.Dates.apiDateToLocal(null)).to(
           equal, null);
       });
 
-      it("converts a non UTC date to an API date", function () {
-        expect(psc.tools.Dates.nonUtcToApiDate(new Date(2009, 3, 9))).to(
+      it("converts a local date to an API date", function () {
+        expect(psc.tools.Dates.localToApiDate(new Date(2009, 3, 9))).to(
           equal, "2009-04-09");
-      });
-
-      it("converts a non UTC date to a display date", function () {
-        expect(psc.tools.Dates.nonUtcToDisplayDate(new Date(2009, 4, 5))).to(
-          equal, "05/05/2009");
       });
     });
 
