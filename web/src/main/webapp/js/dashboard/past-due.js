@@ -6,7 +6,7 @@ psc.namespace("dashboard");
       psc.dashboard.Main.loadStarted("past-due");
       var qs = $.param({
         "responsible-user": psc.dashboard.Main.username,
-        "end-date": psc.tools.Dates.nonUtcToApiDate(psc.tools.Dates.shiftByDays(new Date(), -1)),
+        "end-date": psc.tools.Dates.localToApiDate(psc.tools.Dates.shiftByDays(new Date(), -1)),
         "state": ["scheduled", "conditional"]
       }, true);
       $.ajax({
@@ -45,7 +45,7 @@ psc.namespace("dashboard");
 
   function buildPastDue(reportResults) {
     var pastDue = {};
-    var todayApi = psc.tools.Dates.nonUtcToApiDate(new Date());
+    var todayApi = psc.tools.Dates.localToApiDate(new Date());
     _(reportResults['rows']).each(function (row) {
       var key = row.subject.grid_id;
       if (!pastDue[key]) {

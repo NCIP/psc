@@ -38,14 +38,14 @@
             <a href="<c:url value="/pages/subject?subject=[#= subject.grid_id #]"/>">[#= subject.name #]</a>
             has [#= count #] past due activit[#= count == 1 ? 'y' : 'ies' #].
             [#= (count == 1) ? 'It is from' : 'The earliest is from' #]
-            [#= psc.tools.Dates.apiDateToNonUtcDisplayDate(earliestApiDate) #].
+            [#= psc.tools.Dates.apiDateToDisplayDate(earliestApiDate) #].
         </li>
     </tags:resigTemplate>
 
     <tags:resigTemplate id="upcoming_day">
         <h3>
-            [#= psc.tools.Dates.weekdayName(psc.tools.Dates.apiDateToNonUtc(day)) #]
-            [#= psc.tools.Dates.apiDateToNonUtcDisplayDate(day) #]
+            [#= psc.tools.Dates.weekdayName(psc.tools.Dates.apiDateToLocal(day)) #]
+            [#= psc.tools.Dates.apiDateToDisplayDate(day) #]
         </h3>
         <laf:division>
             <ul class="upcoming-day">
