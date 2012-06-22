@@ -84,7 +84,7 @@ public class PluginInstaller {
     private void startFileinstall(
         File path, String pattern, Map<String, String> additionalProps
     ) throws IOException {
-        log.debug("Creating fileinstall configuration for {}", path.getCanonicalPath());
+        log.info("Creating fileinstall configuration for {}", path.getCanonicalPath());
         Configuration configuration =
             admin.createFactoryConfiguration(
                 FILEINSTALL_FACTORY_PID, fileinstallBundle.getLocation());
@@ -95,7 +95,7 @@ public class PluginInstaller {
         props.put("felix.fileinstall.noInitialDelay", "true");
         props.put("felix.fileinstall.log.level", "4");
 
-        log.debug("- using properties {}", props);
+        log.info("- using properties {}", props);
         configuration.update(props);
     }
 }
