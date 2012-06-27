@@ -59,6 +59,10 @@ psc.tools.Dates = (function () {
       }
     },
 
+    apiDateToDisplayDate: function (apiDate) {
+      return this.utcToDisplayDate(this.apiDateToUtc(apiDate));
+    },
+
     displayDateToApiDate: function (displayDate) {
       return this.utcToApiDate(this.displayDateToUtc(displayDate));
     },
