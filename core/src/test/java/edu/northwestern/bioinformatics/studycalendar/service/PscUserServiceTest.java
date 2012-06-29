@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PossiblyReadOnlyAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -55,6 +56,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     private StudySubjectAssignmentDao assignmentDao;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private AuthorizationManager csmAuthorizationManager;
+    private PossiblyReadOnlyAuthorizationManager possiblyReadOnlyAuthorizationManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -70,6 +72,8 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
 
         CsmHelper csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
+        possiblyReadOnlyAuthorizationManager =
+            registerMockFor(PossiblyReadOnlyAuthorizationManager.class);
 
         service = new PscUserService();
         service.setCsmAuthorizationManager(csmAuthorizationManager);
@@ -764,6 +768,32 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             actual.getStudiesForTemplateManagement());
         assertEquals("Should have all non-global roles: " + actual.getRoles(),
             19, actual.getRoles().size());
+    }
+
+    ////// read-onlyness
+
+    public void testReadOnlyIfAuthorizationManagerSaysItIs() throws Exception {
+        service.setCsmAuthorizationManager(possiblyReadOnlyAuthorizationManager);
+        expect(possiblyReadOnlyAuthorizationManager.isReadOnly()).andReturn(true);
+
+        replayMocks();
+        assertTrue(service.isAuthorizationSystemReadOnly());
+        verifyMocks();
+    }
+
+    public void testReadOnlyIfAuthorizationManagerSaysItIsnt() throws Exception {
+        service.setCsmAuthorizationManager(possiblyReadOnlyAuthorizationManager);
+        expect(possiblyReadOnlyAuthorizationManager.isReadOnly()).andReturn(false);
+
+        replayMocks();
+        assertFalse(service.isAuthorizationSystemReadOnly());
+        verifyMocks();
+    }
+
+    public void testReadOnlyIfAuthorizationManagerCannotSay() throws Exception {
+        replayMocks();
+        assertFalse(service.isAuthorizationSystemReadOnly());
+        verifyMocks();
     }
 
     ////// helpers

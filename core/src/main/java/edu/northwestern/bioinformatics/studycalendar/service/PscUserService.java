@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PossiblyReadOnlyAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
@@ -405,6 +406,19 @@ public class PscUserService implements PscUserDetailsService {
         }
 
         return info;
+    }
+
+    /**
+     * Returns true if the underlying authorization system in use is read-only. If this is true,
+     * any modifying call to any component of the authorization system (not just this service)
+     * should not be attempted.
+     */
+    public boolean isAuthorizationSystemReadOnly() {
+        if (csmAuthorizationManager instanceof PossiblyReadOnlyAuthorizationManager) {
+            return ((PossiblyReadOnlyAuthorizationManager) csmAuthorizationManager).isReadOnly();
+        } else {
+            return false;
+        }
     }
 
     ////// CONFIGURATION
