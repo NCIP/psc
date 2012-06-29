@@ -148,6 +148,7 @@
     <bean id="authorizationScopeUpdaterListener"
           class="edu.northwestern.bioinformatics.studycalendar.dao.AuthorizationScopeUpdaterListener">
         <property name="suiteCsmHelper" ref="suiteCsmHelper"/>
+        <property name="pscUserService" ref="pscUserService"/>
     </bean>
 
     <bean id="auditEventListener"
