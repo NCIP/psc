@@ -7,10 +7,12 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.Privilege;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -51,6 +53,11 @@ public class OsgiAuthorizationManagerFactoryBeanTest {
     @Test
     public void createdObjectImplementsAuthorizationManager() throws Exception {
         assertThat(factory.getObject(), is(AuthorizationManager.class));
+    }
+
+    @Test
+    public void createdObjectImplementsPossiblyReadOnlyAuthorizationManager() throws Exception {
+        assertThat(factory.getObject(), is(PossiblyReadOnlyAuthorizationManager.class));
     }
 
     @Test
@@ -97,6 +104,61 @@ public class OsgiAuthorizationManagerFactoryBeanTest {
         } catch (CSObjectNotFoundException o) {
             assertThat(o.getMessage(), is("Answer hazy"));
         }
+        mocks.verifyMocks();
+    }
+
+    @Test
+    public void createdObjectIsReadOnlyIfModifyingCallsThrowUnsupported() throws Exception {
+        AuthorizationManager found = mocks.registerMockFor(AuthorizationManager.class);
+        expect(osgiLayerTools.getRequiredService(AuthorizationManager.class)).andReturn(found);
+        found.removeRole("foobarquux");
+        expectLastCall().andThrow(new UnsupportedOperationException("No dice"));
+
+        mocks.replayMocks();
+        PossiblyReadOnlyAuthorizationManager authorizationManager =
+            (PossiblyReadOnlyAuthorizationManager) factory.getObject();
+        assertThat(authorizationManager.isReadOnly(), is(true));
+        mocks.verifyMocks();
+    }
+
+    @Test
+    public void createdObjectIsNotReadOnlyIfModifyingCallsThrowDeclaredException() throws Exception {
+        AuthorizationManager found = mocks.registerMockFor(AuthorizationManager.class);
+        expect(osgiLayerTools.getRequiredService(AuthorizationManager.class)).andReturn(found);
+        found.removeRole("foobarquux");
+        expectLastCall().andThrow(new CSTransactionException("No dice"));
+
+        mocks.replayMocks();
+        PossiblyReadOnlyAuthorizationManager authorizationManager =
+            (PossiblyReadOnlyAuthorizationManager) factory.getObject();
+        assertThat(authorizationManager.isReadOnly(), is(false));
+        mocks.verifyMocks();
+    }
+
+    @Test
+    public void createdObjectIsNotReadOnlyIfModifyingCallsThrowOtherRuntimeException() throws Exception {
+        AuthorizationManager found = mocks.registerMockFor(AuthorizationManager.class);
+        expect(osgiLayerTools.getRequiredService(AuthorizationManager.class)).andReturn(found);
+        found.removeRole("foobarquux");
+        expectLastCall().andThrow(new NullPointerException("No dice"));
+
+        mocks.replayMocks();
+        PossiblyReadOnlyAuthorizationManager authorizationManager =
+            (PossiblyReadOnlyAuthorizationManager) factory.getObject();
+        assertThat(authorizationManager.isReadOnly(), is(false));
+        mocks.verifyMocks();
+    }
+
+    @Test
+    public void createdObjectIsNotReadOnlyIfModifyingCallsDoNothing() throws Exception {
+        AuthorizationManager found = mocks.registerMockFor(AuthorizationManager.class);
+        expect(osgiLayerTools.getRequiredService(AuthorizationManager.class)).andReturn(found);
+        found.removeRole("foobarquux");
+
+        mocks.replayMocks();
+        PossiblyReadOnlyAuthorizationManager authorizationManager =
+            (PossiblyReadOnlyAuthorizationManager) factory.getObject();
+        assertThat(authorizationManager.isReadOnly(), is(false));
         mocks.verifyMocks();
     }
 }
