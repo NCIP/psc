@@ -72,6 +72,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     private NotificationService notificationService;
     private ProvisioningSession pSession;
     private ProvisioningSessionFactory psFactory;
+    private PscUserService pscUserService;
 
     @Override
     protected void setUp() throws Exception {
@@ -87,6 +88,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         notificationService=registerMockFor(NotificationService.class);
         staticNowFactory = new StaticNowFactory();
         staticNowFactory.setNowTimestamp(NOW);
+
+        pscUserService = registerMockFor(PscUserService.class);
+        expect(pscUserService.isAuthorizationSystemReadOnly()).andStubReturn(false);
 
         WorkflowService ws = new WorkflowService();
         ws.setApplicationSecurityManager(applicationSecurityManager);
@@ -104,6 +108,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.setApplicationSecurityManager(applicationSecurityManager);
         service.setWorkflowService(ws);
         service.setProvisioningSessionFactory(psFactory);
+        service.setPscUserService(pscUserService);
 
         study = setId(1 , new Study());
 
@@ -348,8 +353,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Membership made for specified study", 0, SCTB.getStudyIdentifiers().size());
         assertFalse("Membership made for specified study",
             SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
-        List<Site> sites = Arrays.asList(site1);
-        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(sites);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(Arrays.asList(site1));
         replayMocks();
         service.save(expected);
         verifyMocks();
@@ -357,6 +361,28 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Membership not made for specified study", 1, SCTB.getStudyIdentifiers().size());
         assertTrue("Membership not made for specified study",
             SCTB.getStudyIdentifiers().contains(expected.getAssignedIdentifier()));
+    }
+
+    public void testApplyDefaultStudyAccessDoesNothingWhenAuthorizationSystemIsReadOnly() throws Exception {
+        Site site1 = createSite("Site1", "Site1");
+        Study expected = createNamedInstance("A", Study.class);
+        expected.setAssignedIdentifier("StudyA");
+
+        PscUser principal = createUserAndSetCsmId();
+        SuiteRoleMembership mem = createSuiteRoleMembership(PscRole.STUDY_CREATOR).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CREATOR, mem);
+        SuiteRoleMembership SCTB = createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(site1);
+        principal.getMemberships().put(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, SCTB);
+
+        SecurityContextHolderTestHelper.setSecurityContext(principal, "secret");
+
+        expect(pscUserService.isAuthorizationSystemReadOnly()).andReturn(true);
+        studyDao.save(expected);
+        expect(siteDao.reassociate(Arrays.asList(site1))).andReturn(Arrays.asList(site1));
+
+        replayMocks();
+        service.save(expected);
+        verifyMocks();
     }
 
     public void testApplyDefaultStudyAccessWhenUserHasNoAccessToSite() throws Exception {

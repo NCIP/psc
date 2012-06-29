@@ -92,6 +92,7 @@ public class StudyService {
     private ProvisioningSessionFactory provisioningSessionFactory;
 
     private static final String COPY = "copy";
+    private PscUserService pscUserService;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -192,6 +193,8 @@ public class StudyService {
         SuiteRoleMembership mem2 =
                     user.getMemberships().get(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER.getSuiteRole());
         if (mem2 == null) return;
+
+        if (pscUserService.isAuthorizationSystemReadOnly()) return;
 
         ProvisioningSession session = provisioningSessionFactory.createSession(
                 user.getCsmUser().getUserId());
@@ -607,6 +610,11 @@ public class StudyService {
     @Required
     public void setProvisioningSessionFactory(ProvisioningSessionFactory provisioningSessionFactory) {
         this.provisioningSessionFactory = provisioningSessionFactory;
+    }
+
+    @Required
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 
     public void purge(Study study) {
