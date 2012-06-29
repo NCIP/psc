@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.hibernate.event.PostUpdateEvent;
@@ -20,8 +21,11 @@ public class AuthorizationScopeUpdaterListener implements PostUpdateEventListene
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private CsmHelper suiteCsmHelper;
+    private PscUserService pscUserService;
 
     public void onPostUpdate(PostUpdateEvent event) {
+        if (pscUserService.isAuthorizationSystemReadOnly()) { return; }
+
         if (event.getEntity() instanceof Study) {
             recordScopeChangeIfAny(event, ScopeType.STUDY, "assignedIdentifier");
         } else if (event.getEntity() instanceof Site) {
@@ -75,5 +79,10 @@ public class AuthorizationScopeUpdaterListener implements PostUpdateEventListene
     @Required
     public void setSuiteCsmHelper(CsmHelper suiteCsmHelper) {
         this.suiteCsmHelper = suiteCsmHelper;
+    }
+
+    @Required
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 }
