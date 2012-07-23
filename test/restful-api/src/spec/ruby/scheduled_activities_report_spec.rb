@@ -71,8 +71,8 @@ describe "/reports/scheduled-activities.json" do
       get "/reports/scheduled-activities.json?end-date=2010-03-05", :as => :erin
     end
 
-    it "has the right value for filter end_date" do
-      response.json["filters"]["end_date"].should == "2010-03-05"
+    it "has the right value for filter end_date with increment of day 1" do
+      response.json["filters"]["end_date"].should == "2010-03-06"
     end
   end
 
@@ -155,9 +155,9 @@ describe "/reports/scheduled-activities.json" do
       response.json["filters"].size.should == 2
     end
 
-    it "has the right values for filter start_date and end_date" do
+    it "has the right values for filter start_date and end_date with end_date increment by 1 day" do
       response.json["filters"]["start_date"].should == "2008-12-28"
-      response.json["filters"]["end_date"].should == "2009-03-01"
+      response.json["filters"]["end_date"].should == "2009-03-02"
     end
 
     it "has the right number of rows" do
@@ -181,6 +181,29 @@ describe "/reports/scheduled-activities.json" do
 
     it "has the right number of rows" do
       response.json["rows"].size.should == 2
+    end
+  end
+
+  describe "?start-date=&end-date='with activity scheduled_date as end_date which has time" do
+    before do
+      scheduled_activity = @studySubjectAssignment.scheduledCalendar.scheduledStudySegments.first.activities.first
+      scheduled_activity_state_json = "{#{scheduled_activity.gridId} : { state : scheduled, reason : Add Time to the activity , date : 2008-12-28, time : '14:20' }}"
+      post "/studies/NU480/schedules/#{@studySubjectAssignment.gridId}/activities/#{scheduled_activity.gridId}", scheduled_activity_state_json,
+           :as => :erin, 'Content-Type' => 'application/json'
+      get "/reports/scheduled-activities.json?start-date=2008-12-27&end-date=2008-12-28", :as => :erin
+    end
+
+    it "contains the right number of filters" do
+      response.json["filters"].size.should == 2
+    end
+
+    it "has the right values for filter start_date and end_date" do
+      response.json["filters"]["start_date"].should == "2008-12-27"
+      response.json["filters"]["end_date"].should == "2008-12-29"
+    end
+
+    it "has the right number of rows" do
+      response.json["rows"].size.should == 1
     end
   end
 

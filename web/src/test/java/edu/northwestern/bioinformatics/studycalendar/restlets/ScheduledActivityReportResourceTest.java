@@ -120,12 +120,12 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         assertNotNull("No filters built", actualFilter);
         assertNotNull("Filter doesn't contain the actual activity date range", actualFilter.getActualActivityDate());
         assertDayOfDate("Incorrect start date", 2010, Calendar.MARCH, 1, actualFilter.getActualActivityDate().getStart());
-        assertDayOfDate("Incorrect stop date", 2010, Calendar.MARCH, 8, actualFilter.getActualActivityDate().getStop());
+        assertDayOfDate("Incorrect stop date", 2010, Calendar.MARCH, 9, actualFilter.getActualActivityDate().getStop());
     }
 
     public void testGetFilterForEndDate() throws Exception {
         END_DATE.putIn(request, "2010-03-08");
-        assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 8, 0, 0, 0));
+        assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 9, 0, 0, 0));
     }
 
     public void testGetFilterForEndDateWhenImproperlyFormatted() throws Exception {
