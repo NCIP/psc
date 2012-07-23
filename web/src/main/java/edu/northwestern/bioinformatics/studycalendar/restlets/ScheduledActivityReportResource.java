@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduledActivityReportCsvRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduledActivityReportJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
@@ -21,10 +22,8 @@ import org.restlet.representation.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
@@ -80,7 +79,19 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(parseDateFilter(START_DATE));
-        range.setStop(parseDateFilter(END_DATE));
+
+        // Update the search condition to less than, instead of less than and equal to,
+        // To include the stop date with the time
+        // So increment the Stop date by 1 day
+        Date end_date = parseDateFilter(END_DATE);
+        if (end_date == null) {
+            range.setStop(end_date);
+        } else {
+            Calendar c1 = Calendar.getInstance();
+            c1.setTime(end_date);
+            c1.add(Calendar.DATE, 1);
+            range.setStop(c1.getTime());
+        }
         filters.setActualActivityDate(range);
     }
 
