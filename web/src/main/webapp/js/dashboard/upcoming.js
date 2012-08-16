@@ -55,7 +55,8 @@ psc.namespace('dashboard');
         subjectRecord = {
           subject_name: row.subject.name,
           subject_grid_id: row.subject.grid_id,
-          activities: []
+          activities: [],
+          studySubjectIds: []
         };
         upcoming[dateKey]['subjects'].unshift(subjectRecord);
       }
@@ -64,6 +65,9 @@ psc.namespace('dashboard');
         activity_type: row.activity_type,
         id: row.grid_id
       });
+      if (row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, subjectRecord['studySubjectIds']) < 0) {
+        subjectRecord['studySubjectIds'].push(row.study_subject_id)
+      }
     });
 
     // sort subjects within days ...

@@ -103,6 +103,9 @@
                                 <form:checkbox path="targetAssignments" value="${a.id}"
                                                cssClass="target-assignment"/>
                                 ${a.subject.fullName}
+                                <c:if test="${fn:length(a.studySubjectId) > 0}">
+                                    ( ${a.studySubjectId} )
+                                </c:if>
                             </label>
                         </c:forEach>
                     </div>
