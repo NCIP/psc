@@ -79,19 +79,7 @@ public class ScheduledActivityReportResource extends AbstractCollectionResource<
     private void applyDateRangeFilters(ScheduledActivitiesReportFilters filters) throws ResourceException {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(parseDateFilter(START_DATE));
-
-        // Update the search condition to less than, instead of less than and equal to,
-        // To include the stop date with the time
-        // So increment the Stop date by 1 day
-        Date end_date = parseDateFilter(END_DATE);
-        if (end_date == null) {
-            range.setStop(end_date);
-        } else {
-            Calendar c1 = Calendar.getInstance();
-            c1.setTime(end_date);
-            c1.add(Calendar.DATE, 1);
-            range.setStop(c1.getTime());
-        }
+        range.setStop(parseDateFilter(END_DATE));
         filters.setActualActivityDate(range);
     }
 

@@ -71,8 +71,8 @@ describe "/reports/scheduled-activities.json" do
       get "/reports/scheduled-activities.json?end-date=2010-03-05", :as => :erin
     end
 
-    it "has the right value for filter end_date with increment of day 1" do
-      response.json["filters"]["end_date"].should == "2010-03-06"
+    it "has the right value for filter end_date" do
+      response.json["filters"]["end_date"].should == "2010-03-05"
     end
   end
 
@@ -155,9 +155,9 @@ describe "/reports/scheduled-activities.json" do
       response.json["filters"].size.should == 2
     end
 
-    it "has the right values for filter start_date and end_date with end_date increment by 1 day" do
+    it "has the right values for filter start_date and end_date" do
       response.json["filters"]["start_date"].should == "2008-12-28"
-      response.json["filters"]["end_date"].should == "2009-03-02"
+      response.json["filters"]["end_date"].should == "2009-03-01"
     end
 
     it "has the right number of rows" do
@@ -199,7 +199,7 @@ describe "/reports/scheduled-activities.json" do
 
     it "has the right values for filter start_date and end_date" do
       response.json["filters"]["start_date"].should == "2008-12-27"
-      response.json["filters"]["end_date"].should == "2008-12-29"
+      response.json["filters"]["end_date"].should == "2008-12-28"
     end
 
     it "has the right number of rows" do
