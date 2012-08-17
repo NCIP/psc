@@ -5,9 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
@@ -55,12 +57,13 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
             }
             generator.writeEndArray();
         }
-        if (filters.getActualActivityDate() != null ) {
-            if (filters.getActualActivityDate().getStart() != null) {
-                JacksonTools.nullSafeWriteStringField(generator, "start_date", getApiDateFormat().format(filters.getActualActivityDate().getStart()));
+        MutableRange<Date> actualActivityDate= filters.getActualActivityDate();
+        if (actualActivityDate != null ) {
+            if (actualActivityDate.getStart() != null) {
+                JacksonTools.nullSafeWriteStringField(generator, "start_date", getApiDateFormat().format(actualActivityDate.getStart()));
             }
-            if (filters.getActualActivityDate().getStop() != null) {
-                JacksonTools.nullSafeWriteStringField(generator, "end_date", getApiDateFormat().format(filters.getActualActivityDate().getStop()));
+            if (actualActivityDate.getStop() != null) {
+                JacksonTools.nullSafeWriteStringField(generator, "end_date", getApiDateFormat().format(actualActivityDate.getStop()));
             }
         }
         if (filters.getIdealDate() != null) {

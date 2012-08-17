@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledA
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.ReportService;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -22,11 +23,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.beans.PropertyDescriptor;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.QueryParameters.*;
@@ -118,14 +115,15 @@ public class ScheduledActivityReportResourceTest extends AuthorizedResourceTestC
         END_DATE.putIn(request, "2010-03-08");
         ScheduledActivitiesReportFilters actualFilter = getResource().buildFilters();
         assertNotNull("No filters built", actualFilter);
-        assertNotNull("Filter doesn't contain the actual activity date range", actualFilter.getActualActivityDate());
-        assertDayOfDate("Incorrect start date", 2010, Calendar.MARCH, 1, actualFilter.getActualActivityDate().getStart());
-        assertDayOfDate("Incorrect stop date", 2010, Calendar.MARCH, 9, actualFilter.getActualActivityDate().getStop());
+        MutableRange<Date> actualActivityDate = actualFilter.getActualActivityDate();
+        assertNotNull("Filter doesn't contain the actual activity date range", actualActivityDate);
+        assertDayOfDate("Incorrect start date", 2010, Calendar.MARCH, 1, actualActivityDate.getStart());
+        assertDayOfDate("Incorrect stop date", 2010, Calendar.MARCH, 8, actualActivityDate.getStop());
     }
 
     public void testGetFilterForEndDate() throws Exception {
         END_DATE.putIn(request, "2010-03-08");
-        assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 9, 0, 0, 0));
+        assertOnlyFilterIs("actualActivityDate.stop", DateTools.createDate(2010, Calendar.MARCH, 8, 0, 0, 0));
     }
 
     public void testGetFilterForEndDateWhenImproperlyFormatted() throws Exception {

@@ -7,7 +7,7 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author John Dzak
@@ -66,10 +66,28 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     }
 
     public MutableRange<Date> getActualActivityDate() {
-        return actualActivityDate.getValue();
+        MutableRange<Date> range = actualActivityDate.getValue();
+        Date stopDate = range.getStop();
+        if (stopDate != null) {
+            Calendar c1 = Calendar.getInstance();
+            c1.setTime(stopDate);
+            c1.add(Calendar.DATE, -1);
+            range.setStop(c1.getTime());
+        }
+        return range;
     }
 
     public void setActualActivityDate(MutableRange<Date> range) {
+        Date stopDate = range.getStop();
+        // Update the search condition to less than, instead of less than and equal to,
+        // To include the stop date with the time
+        // So increment the Stop date by 1 day
+        if (stopDate != null) {
+            Calendar c1 = Calendar.getInstance();
+            c1.setTime(stopDate);
+            c1.add(Calendar.DATE, 1);
+            range.setStop(c1.getTime());
+        }
         this.actualActivityDate.setValue(range);
     }
 

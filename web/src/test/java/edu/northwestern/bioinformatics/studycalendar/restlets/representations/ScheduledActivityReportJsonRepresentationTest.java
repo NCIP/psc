@@ -5,16 +5,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
@@ -107,12 +105,12 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
     }
 
     public void testReturnedFiltersIncludeStartDate() throws Exception {
-        filters.getActualActivityDate().setStart(DateTools.createDate(2009, Calendar.APRIL, 8));
+        filters.setActualActivityDate(new MutableRange<Date>(DateTools.createDate(2009, Calendar.APRIL, 8), null));
         assertEquals("Wrong value", "2009-04-08", writeAndGetFilters().optString("start_date"));
     }
 
     public void testReturnedFiltersIncludeEndDate() throws Exception {
-        filters.getActualActivityDate().setStop(DateTools.createDate(2009, Calendar.APRIL, 19));
+        filters.setActualActivityDate(new MutableRange<Date>(null, DateTools.createDate(2009, Calendar.APRIL, 19)));
         assertEquals("Wrong value", "2009-04-19", writeAndGetFilters().optString("end_date"));
     }
 
