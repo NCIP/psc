@@ -35,7 +35,7 @@
 
     <tags:resigTemplate id="past_due_subject">
         <li class="past-due-subject">
-            <a href="<c:url value="/pages/subject?subject=[#= subject.grid_id #]"/>">[#= subject.name #]</a>
+            <a href="<c:url value="/pages/subject?subject=[#= subject.grid_id #]"/>">[#= subject.name #] [#= studySubjectId.length == 0 ? '' : ' (' + studySubjectId + ')' #]</a>
             has [#= count #] past due activit[#= count == 1 ? 'y' : 'ies' #].
             [#= (count == 1) ? 'It is from' : 'The earliest is from' #]
             [#= psc.tools.Dates.apiDateToDisplayDate(earliestApiDate) #].
@@ -52,7 +52,7 @@
                 [# _(subjects).each(function (subject, i) { #]
                     <li class="subject autoclear [#= (i % 2 == 0 ? 'even' : 'odd') #]">
                         <a class="subject-name" href="<c:url value="/pages/subject?subject=[#= subject.subject_grid_id #]"/>">
-                            [#= subject.subject_name #]
+                            [#= subject.subject_name #][#= subject.studySubjectIds == 0 ? '' : ' (' + subject.studySubjectIds + ')' #]
                         </a>
                         <ul class="subject-day-activities">
                             [# _(subject.activities).each(function (activity) { #]
@@ -124,7 +124,27 @@
         <ul id="notification-subjects">
             <c:forEach items="${command.pendingNotifications}" var="entry" varStatus="noteStatus">
                 <li class="notification-subject ${commons:parity(noteStatus.index)}">
-                    <a href="<c:url value="/pages/subject?subject=${entry.key.gridId}"/>">${entry.key.fullName}</a>
+                    <a href="<c:url value="/pages/subject?subject=${entry.key.gridId}"/>">${entry.key.fullName}
+                        <c:set var="myCount" value="0"/>
+                        <c:set var="studySubjectIds" value=""/>
+                        <c:forEach items="${entry.key.assignments}" var="assignment" varStatus="assignmentStatus">
+                            <c:if test="${fn:length(assignment.studySubjectId) > 0}">
+                                <c:choose>
+                                     <c:when test="${myCount == 0}">
+                                         <c:set var="myCount" value="1"/>
+                                         <c:set var="studySubjectIds" value="${studySubjectIds} (${assignment.studySubjectId}"/>
+                                     </c:when>
+                                    <c:otherwise>
+                                        <c:set var="studySubjectIds" value="${studySubjectIds}, ${assignment.studySubjectId}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${myCount > 0}">
+                            <c:set var="studySubjectIds" value="${studySubjectIds} )"/>
+                        </c:if>
+                        ${studySubjectIds}
+                    </a>
                     <ul class="subject-notifications">
                         <c:forEach items="${entry.value}" var="notification">
                             <li id="notification-${notification.id}" class="notification">
@@ -224,6 +244,9 @@
                                 <li class="assignment ${ussar.assignment.managerCsmUserId == command.user.csmUser.userId ? 'owned' : 'unowned'} ${ussar.assignment.off ? 'off-study' : 'on-study'}">
                                     <a href="<c:url value="/pages/subject?subject=${ussar.assignment.subject.id}"/>">
                                         ${ussar.assignment.subject.fullName}
+                                        <c:if test="${fn:length(ussar.assignment.studySubjectId) > 0}">
+                                            ( ${ussar.assignment.studySubjectId} )
+                                        </c:if>
                                     </a>
                                     <c:if test="${ussar.assignment.off}">(off study)</c:if>
                                 </li>

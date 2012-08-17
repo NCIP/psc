@@ -52,15 +52,18 @@ psc.namespace("dashboard");
         pastDue[key] = {
           count: 0,
           earliestApiDate: todayApi,
-          subject: row.subject
+          subject: row.subject,
+          studySubjectId: []
         }
       }
       pastDue[key].count += 1;
+      if (row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, pastDue[key].studySubjectId) < 0) {
+        pastDue[key].studySubjectId.push(row.study_subject_id)
+      }
       if (row.scheduled_date < pastDue[key].earliestApiDate) {
         pastDue[key].earliestApiDate = row.scheduled_date;
       }
     });
-
     return pastDue;
   }
 
