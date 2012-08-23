@@ -128,7 +128,7 @@
                         <c:set var="myCount" value="0"/>
                         <c:set var="studySubjectIds" value=""/>
                         <c:forEach items="${entry.key.assignments}" var="assignment" varStatus="assignmentStatus">
-                            <c:if test="${fn:length(assignment.studySubjectId) > 0}">
+                            <c:if test="${not empty (assignment.studySubjectId)}">
                                 <c:choose>
                                      <c:when test="${myCount == 0}">
                                          <c:set var="myCount" value="1"/>
@@ -244,7 +244,7 @@
                                 <li class="assignment ${ussar.assignment.managerCsmUserId == command.user.csmUser.userId ? 'owned' : 'unowned'} ${ussar.assignment.off ? 'off-study' : 'on-study'}">
                                     <a href="<c:url value="/pages/subject?subject=${ussar.assignment.subject.id}"/>">
                                         ${ussar.assignment.subject.fullName}
-                                        <c:if test="${fn:length(ussar.assignment.studySubjectId) > 0}">
+                                        <c:if test="${not empty (ussar.assignment.studySubjectId)}">
                                             ( ${ussar.assignment.studySubjectId} )
                                         </c:if>
                                     </a>
