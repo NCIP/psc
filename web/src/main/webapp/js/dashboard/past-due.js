@@ -57,7 +57,7 @@ psc.namespace("dashboard");
         }
       }
       pastDue[key].count += 1;
-      if (row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, pastDue[key].studySubjectId) < 0) {
+      if (row.study_subject_id && row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, pastDue[key].studySubjectId) < 0) {
         pastDue[key].studySubjectId.push(row.study_subject_id)
       }
       if (row.scheduled_date < pastDue[key].earliestApiDate) {

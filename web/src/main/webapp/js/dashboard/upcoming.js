@@ -65,7 +65,7 @@ psc.namespace('dashboard');
         activity_type: row.activity_type,
         id: row.grid_id
       });
-      if (row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, subjectRecord['studySubjectIds']) < 0) {
+      if (row.study_subject_id && row.study_subject_id.length > 0 && jQuery.inArray(row.study_subject_id, subjectRecord['studySubjectIds']) < 0) {
         subjectRecord['studySubjectIds'].push(row.study_subject_id)
       }
     });

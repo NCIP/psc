@@ -103,7 +103,7 @@
                                 <form:checkbox path="targetAssignments" value="${a.id}"
                                                cssClass="target-assignment"/>
                                 ${a.subject.fullName}
-                                <c:if test="${fn:length(a.studySubjectId) > 0}">
+                                <c:if test="${not empty a.studySubjectId}">
                                     ( ${a.studySubjectId} )
                                 </c:if>
                             </label>

@@ -963,7 +963,7 @@
                                                             off="${aRel.assignment.off}"
                                                             >
                                                             ${aRel.assignment.subject.lastFirst}
-                                                            <c:if test="${fn:length(aRel.assignment.studySubjectId) > 0}">
+                                                            <c:if test="${not empty (aRel.assignment.studySubjectId)}">
                                                                 ( ${aRel.assignment.studySubjectId} )
                                                             </c:if>
                                                             <c:if test="${aRel.assignment.off}">(off study)</c:if>
