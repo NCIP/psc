@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**
@@ -33,5 +32,10 @@ public class AddPlannedActivityLabelMutator extends CollectionAddMutator {
                     sa.addLabel(paLabel.getLabel());
             }
         }
+    }
+
+    @Override
+    public boolean appliesToExistingSchedules() {
+        return true;
     }
 }

@@ -33,4 +33,9 @@ public class RemovePlannedActivityLabelMutator extends RemoveMutator {
             }
         }
     }
+
+    @Override
+    public boolean appliesToExistingSchedules() {
+        return true;
+    }
 }
