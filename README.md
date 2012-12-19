@@ -1,9 +1,17 @@
 Patient Study Calendar
 ======================
 
-This is the source for Patient Study Calendar, an open source web
-application for tracking patients on clinical trials. Check out the
-following for more information:
+This is the source for Patient Study Calendar, an open source web application
+for tracking patients on clinical trials. It is a Java Servlet application using
+the Spring Framework and Hibernate for its major infrastructure. Its goal is to
+help ensure that complex protocols are followed identically for different
+patients. It can also help decouple protocol-dependent participant scheduling
+information from more generic registration and consenting workflows.
+
+Patient Study Calendar is distributed under the BSD 3-Clause License. Please see
+the NOTICE and LICENSE files for details.
+
+Check out the following for more information:
 
 ## Documentation & Support
 
