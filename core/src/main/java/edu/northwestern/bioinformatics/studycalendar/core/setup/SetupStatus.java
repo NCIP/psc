@@ -68,10 +68,12 @@ public class SetupStatus implements InitializingBean {
     }
 
     public boolean isPreAuthenticationSetupNeeded() {
+        recheck();
         return isAdministratorMissing() || isAuthenticationSystemNotConfigured();
     }
 
     public boolean isPostAuthenticationSetupNeeded() {
+        recheck();
         return (isSiteMissing() || isSourceMissing());
     }
 

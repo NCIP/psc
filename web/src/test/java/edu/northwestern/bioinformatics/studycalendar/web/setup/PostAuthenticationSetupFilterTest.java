@@ -1,13 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
-import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus;
+import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.FilterChain;
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.mock.web.MockFilterConfig;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Jalpa Patel
@@ -42,8 +43,7 @@ public class PostAuthenticationSetupFilterTest extends WebTestCase {
         filter.doFilter(request, response, filterChain);
         verifyMocks();
 
-        assertNotNull(response.getRedirectedUrl());
-        assertEquals("/pscTest/setup/postAuthenticationSetup", response.getRedirectedUrl());
+        assertRedirectedAppropriately(response);
     }
 
     public void testFallThroughWhenNotNecessary() throws Exception {
@@ -53,6 +53,36 @@ public class PostAuthenticationSetupFilterTest extends WebTestCase {
 
         filter.doFilter(request, response, filterChain);
         verifyMocks();
+    }
+
+    public void testDoesRecheckAfterOneSetupNeeded() throws Exception {
+        expect(setupStatus.isPostAuthenticationSetupNeeded()).andReturn(true).times(2);
+        replayMocks();
+
+        filter.doFilter(request, response, filterChain);
+        assertRedirectedAppropriately(response);
+
+        MockHttpServletResponse response2 = new MockHttpServletResponse();
+        filter.doFilter(request, response2, filterChain);
+        assertRedirectedAppropriately(response2);
+
+        verifyMocks();
+    }
+
+    public void testDoesNotRecheckAfterOneNoSetupNeeded() throws Exception {
+        expect(setupStatus.isPostAuthenticationSetupNeeded()).andReturn(false).once();
+        filterChain.doFilter(request, response);
+        expectLastCall().times(2);
+        replayMocks();
+
+        filter.doFilter(request, response, filterChain);
+        filter.doFilter(request, response, filterChain);
+        verifyMocks();
+    }
+
+    private void assertRedirectedAppropriately(MockHttpServletResponse resp) {
+        assertNotNull(resp.getRedirectedUrl());
+        assertEquals("/pscTest/setup/postAuthenticationSetup", resp.getRedirectedUrl());
     }
 }
 
