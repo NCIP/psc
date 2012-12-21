@@ -123,7 +123,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         expectNoSystemAdministrators();
         replayMocks();
 
-        status.recheck();
         assertTrue(status.isPreAuthenticationSetupNeeded());
         verifyMocks();
     }
@@ -132,7 +131,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         expectNoAuthenticationSystem();
         replayMocks();
 
-        status.recheck();
         assertTrue(status.isPreAuthenticationSetupNeeded());
         verifyMocks();
     }
@@ -140,7 +138,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     public void testPreAuthenticationSetupNotNeededWhenSatisfied() throws Exception {
         replayMocks();
 
-        status.recheck();
         assertFalse(status.isPreAuthenticationSetupNeeded());
         verifyMocks();
     }
@@ -149,7 +146,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         expectNoSites();
         replayMocks();
 
-        status.recheck();
         assertTrue(status.isPostAuthenticationSetupNeeded());
         verifyMocks();
     }
@@ -158,7 +154,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         expectNoManualActivityTargetSource();
         replayMocks();
 
-        status.recheck();
         assertTrue(status.isPostAuthenticationSetupNeeded());
         verifyMocks();
     }
@@ -166,7 +161,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     public void testExpectPostAuthenticationSetupNotNeededWhenSatisfied() throws Exception {
         replayMocks();
 
-        status.recheck();
         assertFalse(status.isPostAuthenticationSetupNeeded());
         verifyMocks();
     }
