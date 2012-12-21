@@ -47,8 +47,8 @@ define "psc" do
   project.version = VERSION_NUMBER
   project.group = "edu.northwestern.bioinformatics"
 
-  compile.options.target = "1.5"
-  compile.options.source = "1.5"
+  compile.options.target = "1.6"
+  compile.options.source = "1.6"
   compile.options.other = %w(-encoding UTF-8)
 
   test.using(:properties => { "psc.config.datasource" => db_name })
