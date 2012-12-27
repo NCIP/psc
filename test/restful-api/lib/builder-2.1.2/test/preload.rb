@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # We are defining method_added in Kernel and Object so that when
 # BlankSlate overrides them later, we can verify that it correctly
 # calls the older hooks.

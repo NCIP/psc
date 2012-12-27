@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 describe "/users/{username}/roles/subject-coordinator/schedules" do
   before do
     # The released version of NU480

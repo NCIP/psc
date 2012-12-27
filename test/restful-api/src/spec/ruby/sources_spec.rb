@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 describe "/activities" do
   describe "GET" do
     it "forbids access to sources for an unauthorized user" do

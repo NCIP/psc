@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # This is a hack of (and drop-in replacement for) open-uri that
 # supports entity-bodies, and HTTP methods other than GET. This makes
 # it easy to build clients for REST web services.

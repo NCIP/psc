@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 describe 'GET /system-status' do
   # Can't practically check failures, so these are just the happy scenarios
   before do

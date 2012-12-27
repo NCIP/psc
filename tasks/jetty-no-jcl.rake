@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # Remove the slf4j commons-logging adapter from the build classpath.
 # When it is present, JCL loggers get bound to the simple logger used
 # by jetty itself, making it impossible to get to DEBUG-level logging

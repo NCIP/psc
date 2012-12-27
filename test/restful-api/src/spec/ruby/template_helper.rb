@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # Defines a DSL for building valid templates for testing
 # Allows the user to specify the template to any level, then provides
 # defaults below that level to ensure the template is complete

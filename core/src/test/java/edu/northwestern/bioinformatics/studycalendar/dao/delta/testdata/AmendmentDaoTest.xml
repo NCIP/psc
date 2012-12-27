@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+
+<!--L
+  Copyright Northwestern University.
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/psc/LICENSE.txt for details.
+L-->
+
 <!DOCTYPE dataset [
     <!ELEMENT dataset (AMENDMENTS*, STUDIES*, DELTAS*, CHANGES*, PLANNED_CALENDARS*) >
 

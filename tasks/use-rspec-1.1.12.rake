@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 if Gem::Version.new(Buildr::VERSION.dup) < Gem::Version.new("1.3.5")
   require 'facets/dictionary'
   require 'buildr/java/bdd'

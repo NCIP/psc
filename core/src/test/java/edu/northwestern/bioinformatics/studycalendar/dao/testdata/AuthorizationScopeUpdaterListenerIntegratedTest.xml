@@ -1,3 +1,10 @@
+<!--L
+  Copyright Northwestern University.
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/psc/LICENSE.txt for details.
+L-->
+
 <dataset>
     <STUDIES id="90" assigned_identifier="EG 1701"/>
     <CSM_PROTECTION_ELEMENT

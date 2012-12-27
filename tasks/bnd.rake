@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # Provides tasks to use bnd with buildr.  Of particular interest is
 # bnd:wrap, which implements automatic bundling of buildr-packaged jars
 # if enabled for a project.

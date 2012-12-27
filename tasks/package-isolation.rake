@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 desc "Check the java source to ensure that no two modules define the same package"
 task :check_module_packages do
   project_packages = projects.inject({}) do |h, proj|

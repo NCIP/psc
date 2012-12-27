@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 ##
 # This script will populate the targeted PSC instance with many, many
 # subjects and a variety of sites and SSCMs. It expects that the PSC
