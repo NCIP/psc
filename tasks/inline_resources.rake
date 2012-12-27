@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # Uses before_define to default all projects to including their resources from
 # src/main/java instead of src/main/resources (& similar for test) if
 # those source directories exist

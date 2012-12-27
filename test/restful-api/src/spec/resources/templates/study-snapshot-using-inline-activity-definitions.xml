@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--L
+  Copyright Northwestern University.
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/psc/LICENSE.txt for details.
+L-->
+
 <study-snapshot xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="1140" last-modified-date="2011-01-07T15:01:28.399Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
   <planned-calendar>
     <epoch name="Follow up">

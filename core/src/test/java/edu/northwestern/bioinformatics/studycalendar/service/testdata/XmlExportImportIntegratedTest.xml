@@ -1,3 +1,10 @@
+<!--L
+  Copyright Northwestern University.
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/psc/LICENSE.txt for details.
+L-->
+
 <dataset>
     <SOURCES id="-1" name="Test source" version="0"/>
     <ACTIVITY_TYPES id="4" name="ActivityType4"/>

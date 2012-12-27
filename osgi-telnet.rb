@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # This script uses PSC's OSGi API resources to turn on and off the telnet
 # console for the dev-deployed PSC instance.
 #

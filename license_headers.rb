@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 ######
 # Run this script to add/update NCIP's mandatory license headers or to verify
 # the presence of the headers in all applicable files.

@@ -1,3 +1,10 @@
+<!--L
+  Copyright Northwestern University.
+
+  Distributed under the OSI-approved BSD 3-Clause License.
+  See http://ncip.github.com/psc/LICENSE.txt for details.
+L-->
+
 <dataset>
     <CSM_USER user_id="-14" login_name="joe2061" first_name="Joey" last_name="Shabadoo"/>
     <CSM_USER user_id="-12" login_name="jv2008" first_name="Mai" last_name="Avril"/>

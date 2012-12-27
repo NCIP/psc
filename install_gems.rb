@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 ####
 # Installs the gems that PSC's build depends on, as expressed in build.yaml.
 

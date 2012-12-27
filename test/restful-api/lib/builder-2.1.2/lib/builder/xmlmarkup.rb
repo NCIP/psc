@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
+
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 #--
 # Copyright 2004, 2005 by Jim Weirich (jim@weirichhouse.org).
 # All rights reserved.

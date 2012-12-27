@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 describe "/user-actions/{user-action-identifier}" do
   def create_user_action(description, action_type, user, context)
     action = user_action(action_type, description, context)

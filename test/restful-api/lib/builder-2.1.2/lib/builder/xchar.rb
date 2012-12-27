@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 # The XChar library is provided courtesy of Sam Ruby (See
 # http://intertwingly.net/stories/2005/09/28/xchar.rb)
 

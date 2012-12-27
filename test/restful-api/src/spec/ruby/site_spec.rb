@@ -1,3 +1,10 @@
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 describe "/sites/{site-identifier}" do
   before do
     @massgeneral = PscTest::Fixtures.createSite("Massachussets General Hospital", "MA034")

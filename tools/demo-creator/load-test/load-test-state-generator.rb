@@ -1,5 +1,12 @@
 #!/usr/bin/ruby
 
+#L
+# Copyright Northwestern University.
+#
+# Distributed under the OSI-approved BSD 3-Clause License.
+# See http://ncip.github.com/psc/LICENSE.txt for details.
+#L
+
 ###
 # Generates a psc-state XML file that assigns lots and lots of
 # subjects to a diverse group of SSCMs. It reuses the static setup for
