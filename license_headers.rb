@@ -129,7 +129,7 @@ class XmlLicenseUpdater < LicenseUpdater
     [
       "<!--L",
       "  {LICENSE}",
-      "L--!>"
+      "L-->"
     ]
   end
 end
