@@ -21,8 +21,6 @@ Check out the following for more information:
 
 ## Development
 
+* [GitHub repository](https://github.com/NCIP/psc)
 * [Issue tracker](https://code.bioinformatics.northwestern.edu/issues/projects/psc/issues)
 * [Development wiki](https://code.bioinformatics.northwestern.edu/issues/wiki/psc)
-* [Subversion repository](https://ncisvn.nci.nih.gov/svn/psc)
-  (the canonical source for updates)
-* [Github project](https://github.com/rsutphin/psc-mirror) (to ease forking)
