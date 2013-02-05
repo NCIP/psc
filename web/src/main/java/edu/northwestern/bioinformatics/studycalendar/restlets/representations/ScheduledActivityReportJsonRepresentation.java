@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DateFormat;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import org.codehaus.jackson.JsonGenerator;
 
@@ -110,6 +111,9 @@ public class ScheduledActivityReportJsonRepresentation extends StreamingJsonRepr
         generator.writeStartObject();
             JacksonTools.nullSafeWriteStringField(generator, "grid_id", row.getScheduledActivity().getGridId());
             JacksonTools.nullSafeWriteStringField(generator, "activity_name", row.getScheduledActivity().getActivity().getName());
+            if (row.getScheduledActivity().getCurrentState().getWithTime()) {
+                JacksonTools.nullSafeWritePrimitiveField(generator, "activity_time", DateFormat.generateTimeFromDate(row.getScheduledActivity().getCurrentState().getDate()));
+            }
             JacksonTools.nullSafeWriteStringField(generator, "activity_type", row.getScheduledActivity().getActivity().getType().getName());
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
