@@ -239,6 +239,36 @@ public class ScheduledActivityReportJsonRepresentationTest extends JsonRepresent
         assertFalse("Condition included", writeAndGetRow(2).has("condition"));
     }
 
+    public void testActivityTimeIncludedInData() throws Exception {
+        ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
+        saState.setDate(DateTools.createDate(2009, Calendar.APRIL, 3, 14, 20, 0));
+        saState.setReason("Update activity with time");
+        saState.setWithTime(true);
+
+        ScheduledActivitiesReportRow row4 = new ScheduledActivitiesReportRow();
+        row4.setScheduledActivity(setGridId("GA1", createScheduledActivity("activity1", 2009, 11, 12, saState)));
+        row4.setSite(new Site());
+        row4.setStudy(new Study());
+        row4.setSubject(setGridId("GRID-4",
+            createSubject("4444", "subject", "one", DateTools.createDate(1950, 4, 5))));
+        allRows.add(row4);
+        assertEquals("Wrong time", "14:20", writeAndGetRow(2).optString("activity_time"));
+    }
+
+    public void testActivityTimeIgnoredInData() throws Exception {
+        ScheduledActivityState saState = ScheduledActivityMode.SCHEDULED.createStateInstance();
+        saState.setDate(DateTools.createDate(2009, Calendar.APRIL, 3, 14, 20, 0));
+
+        ScheduledActivitiesReportRow row5 = new ScheduledActivitiesReportRow();
+        row5.setScheduledActivity(setGridId("GA1", createScheduledActivity("activity1", 2009, 11, 12, saState)));
+        row5.setSite(new Site());
+        row5.setStudy(new Study());
+        row5.setSubject(setGridId("GRID-5",
+            createSubject("5555", "subject", "one", DateTools.createDate(1950, 4, 5))));
+        allRows.add(row5);
+        assertNull("Should have no activity_time", writeAndGetRow(1).opt("activity_time"));
+    }
+
     public void testReasonIncludedInData() throws Exception {
         assertEquals("Wrong reason", "Scheduled Reason", writeAndGetRow(1).optString("last_change_reason"));
     }
