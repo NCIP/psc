@@ -1,11 +1,16 @@
-Patient Study Calendar
+Patient Study Calendar (PSC)
 Copyright 2006 Northwestern University
 
 This project is distributed under the BSD 3-Clauses License.
 Please see LICENSE file for details.
 
-This project was developed as part of the NCI caBIG initiative.
+This project was initially developed as part of the NCI caBIG initiative.
 
 This project was developed at Northwestern University's Biomedical Informatics
 Center with major contributions from SemanticBits. Akaza Research was involved
 in the early phase of the project.
+
+In 2013, as part of the National Cancer Informatics Program (NCIP) Open Development 
+Initiative, the PSC source code was migrated to GitHub to allow further development
+by the broader community.
+
