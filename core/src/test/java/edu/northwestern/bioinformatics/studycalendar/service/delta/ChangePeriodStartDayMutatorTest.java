@@ -77,4 +77,14 @@ public class ChangePeriodStartDayMutatorTest extends PeriodMutatorTestCase<Prope
         getMutator().apply(scheduledCalendar);
         verifyMocks();
     }
+
+    public void testDoesNothingWhenNewAndOldValueIsSame() throws Exception {
+        change.setNewValue("1");
+        change.setOldValue("1");
+
+        // expect nothing to happen
+        replayMocks();
+        getMutator().apply(scheduledCalendar);
+        verifyMocks();
+    }
 }
