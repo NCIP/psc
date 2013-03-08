@@ -30,8 +30,10 @@ public class ChangePlannedActivityDayMutator extends AbstractChangePlannedActivi
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        for (ScheduledActivity event : findEventsToMutate(calendar)) {
-            scheduleService.reviseDate(event, amount, change.getDelta().getRevision());
+        if (amount != 0) {
+            for (ScheduledActivity event : findEventsToMutate(calendar)) {
+                scheduleService.reviseDate(event, amount, change.getDelta().getRevision());
+            }
         }
     }
 }
