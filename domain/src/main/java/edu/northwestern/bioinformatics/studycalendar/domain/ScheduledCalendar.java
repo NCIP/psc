@@ -10,6 +10,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
@@ -64,6 +66,7 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
 
     ////// BEAN PROPERTIES
 
+    @Fetch(FetchMode.JOIN)
     @ManyToOne
     @JoinColumn(name = "assignment_id")
     public StudySubjectAssignment getAssignment() {
@@ -76,6 +79,7 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
 
     // This is annotated this way so that the IndexColumn will work with
     // the bidirectional mapping.  See section 2.4.6.2.3 of the hibernate annotations docs.
+    @Fetch(FetchMode.JOIN)
     @OneToMany
     @JoinColumn(name="scheduled_calendar_id", nullable=false)
     @IndexColumn(name="list_index")
