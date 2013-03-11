@@ -8,7 +8,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 
 /**
@@ -18,9 +17,9 @@ public class ChangePlannedActivityActivityMutator extends ChangePlannedActivityS
     private ActivityDao activityDao;
 
     public ChangePlannedActivityActivityMutator(
-        PropertyChange change, ScheduledActivityDao scheduledActivityDao, ActivityDao activityDao
+        PropertyChange change, ActivityDao activityDao
     ) {
-        super(change, scheduledActivityDao);
+        super(change);
         this.activityDao = activityDao;
     }
 

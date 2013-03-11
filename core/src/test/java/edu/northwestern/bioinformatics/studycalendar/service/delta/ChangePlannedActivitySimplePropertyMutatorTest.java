@@ -7,17 +7,18 @@
 
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.easymock.classextension.EasyMock;
-
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -28,30 +29,30 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     private ChangePlannedActivitySimplePropertyMutator mutator;
     private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
-
-    private ScheduledActivityDao scheduledActivityDao;
+    private Period period;
+    private StudySegment studySegment;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedActivity = Fixtures.createPlannedActivity("Elph", 4);
+        plannedActivity = createPlannedActivity("Elph", 4);
+        studySegment = setId(45, new StudySegment());
+        period = setId(81, createPeriod("P1", 4, 17, 8));
+        period.addChild(plannedActivity);
+        studySegment.addChild(period);
         scheduledCalendar = new ScheduledCalendar();
-
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
         // Needed for side effects
         PropertyChange change = PropertyChange.create("details", "D", "Dprime");
         Delta.createDeltaFor(plannedActivity, change);
 
-        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
-
-        mutator = new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
+        mutator = new ChangePlannedActivitySimplePropertyMutator(change);
     }
 
     public void testApplyDetails() throws Exception {
         ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
         expectedSE.setDetails("D");
-        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSE));
-
+        addEvents(scheduledCalendar.getScheduledStudySegments().get(0), expectedSE);
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
@@ -59,11 +60,9 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyToOccurredDetails() throws Exception {
-        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, ScheduledActivityMode.OCCURRED.createStateInstance());
+        ScheduledActivity expectedSE = createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, ScheduledActivityMode.OCCURRED.createStateInstance());
         expectedSE.setDetails("D");
-        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSE));
-
+        addEvents(scheduledCalendar.getScheduledStudySegments().get(0), expectedSE);
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
