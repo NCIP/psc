@@ -8,6 +8,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -51,10 +52,34 @@ public class TemplateTraversalHelperTest extends TestCase {
         );
 
         Collection<Changeable> actual = TemplateTraversalHelper.findAddedNodes(study);
-        System.out.println(actual);
         assertEquals("Wrong size", 3, actual.size());
         assertTrue("Missing planned calendar", actual.contains(study.getPlannedCalendar()));
         assertTrue("Missing planned activity", actual.contains(pa));
         assertTrue("Missing segment", actual.contains(seg));
+    }
+
+    public void testFindAllNodesFindsMultipleEquivalentNodes() {
+        StudySegment identicalSegment1 = Fixtures.createNamedInstance("M", StudySegment.class);
+        StudySegment identicalSegment2 = Fixtures.createNamedInstance("M", StudySegment.class);
+
+        Study study = new Study();
+        Amendment a = new Amendment();
+        study.setDevelopmentAmendment(a);
+        a.addDelta(
+            Delta.createDeltaFor(
+                new Epoch(),
+                Add.create(identicalSegment1)
+            )
+        );
+
+        a.addDelta(
+            Delta.createDeltaFor(
+                new Epoch(),
+                Add.create(identicalSegment2)
+            )
+        );
+
+        Collection<Changeable> actual = TemplateTraversalHelper.findAddedNodes(study);
+        assertEquals("Wrong number of nodes", 3, actual.size());
     }
 }

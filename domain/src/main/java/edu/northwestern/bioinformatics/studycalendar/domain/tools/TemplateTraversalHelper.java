@@ -74,7 +74,7 @@ public class TemplateTraversalHelper {
     private static Collection<Changeable> findAddedNodes(Revision rev) {
         if (rev == null) return Collections.emptySet();
 
-        Collection<Changeable> result = new LinkedHashSet<Changeable>();
+        Collection<Changeable> result = new LinkedList<Changeable>();
         for (Delta<?> delta : rev.getDeltas()) {
             for (Change change : delta.getChanges()) {
                 if (change instanceof Add) {
