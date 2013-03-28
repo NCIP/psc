@@ -18,6 +18,7 @@ Check out the following for more information:
 * [Community wiki](https://cabig-kc.nci.nih.gov/CTMS/KC/index.php/PSC)
   (includes install and admin guides, etc.)
 * [Forums](https://cabig-kc.nci.nih.gov/CTMS/forums/viewforum.php?f=11&sid=cddabedd7fbf1828fe6e27028bc10fed)
+* [Old docs](https://github.com/NCIP/psc-docs)
 
 ## Development
 
