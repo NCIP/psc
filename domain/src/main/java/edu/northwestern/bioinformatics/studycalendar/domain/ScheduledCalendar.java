@@ -65,8 +65,6 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
     }
 
     ////// BEAN PROPERTIES
-
-    @Fetch(FetchMode.JOIN)
     @ManyToOne
     @JoinColumn(name = "assignment_id")
     public StudySubjectAssignment getAssignment() {
