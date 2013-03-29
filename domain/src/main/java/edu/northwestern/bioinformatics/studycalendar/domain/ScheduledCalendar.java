@@ -64,6 +64,17 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
         return matches;
     }
 
+    @Transient
+    public List<ScheduledActivity> getScheduledActivitiesFor(PlannedActivity source) {
+        List<ScheduledActivity> matches = new ArrayList<ScheduledActivity>();
+        for (ScheduledStudySegment scheduledStudySegment : getScheduledStudySegments()) {
+            for (ScheduledActivity scheduledActivity : scheduledStudySegment.getActivities()) {
+                if (scheduledActivity.getPlannedActivity().equals(source)) matches.add(scheduledActivity);
+            }
+        }
+        return matches;
+    }
+
     ////// BEAN PROPERTIES
     @ManyToOne
     @JoinColumn(name = "assignment_id")
