@@ -10,6 +10,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import org.easymock.classextension.EasyMock;
 
+import java.util.Calendar;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,6 +76,35 @@ public class ScheduledCalendarTest extends DomainTestCase {
         assertSame("Wrong 0th for A2", scheduledCalendar.getScheduledStudySegments().get(1), forA2.get(0));
 
         List<ScheduledStudySegment> forUnused = scheduledCalendar.getScheduledStudySegmentsFor(unused);
+        assertEquals("Wrong number for unused", 0, forUnused.size());
+    }
+
+    public void testGetScheduledActivitiesFor() throws Exception {
+        Activity activity0 = createActivity("0", Fixtures.createActivityType("PROCEDURE"));
+        Activity activity1 = createActivity("1", Fixtures.createActivityType("INTERVENTION"));
+
+        PlannedActivity pa0 = createPlannedActivity(activity0, 1);
+        PlannedActivity pa1 = createPlannedActivity(activity1, 2);
+        PlannedActivity unused = createPlannedActivity(activity1, 1);
+        ScheduledStudySegment scheduledStudySegment =  new ScheduledStudySegment();
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(1,pa0), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(2,pa1), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(3,pa0), 2006, Calendar.SEPTEMBER, 22));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(4,pa0), 2006, Calendar.SEPTEMBER, 25));
+        scheduledCalendar.addStudySegment(scheduledStudySegment);
+
+        List<ScheduledActivity> forPA0 = scheduledCalendar.getScheduledActivitiesFor(pa0);
+        assertEquals("Wrong number for PA0", 3, forPA0.size());
+        assertSame("Wrong 0th for PA0", scheduledCalendar.getCurrentStudySegment().getActivities().get(0), forPA0.get(0));
+        assertSame("Wrong 1st for PA0", scheduledCalendar.getCurrentStudySegment().getActivities().get(2), forPA0.get(1));
+        assertSame("Wrong 2nd for PA0", scheduledCalendar.getCurrentStudySegment().getActivities().get(3), forPA0.get(2));
+
+
+        List<ScheduledActivity> forPA1 = scheduledCalendar.getScheduledActivitiesFor(pa1);
+        assertEquals("Wrong number for PA1", 1, forPA1.size());
+        assertSame("Wrong 0th for PA0", scheduledCalendar.getCurrentStudySegment().getActivities().get(1), forPA1.get(0));
+
+        List<ScheduledActivity> forUnused = scheduledCalendar.getScheduledActivitiesFor(unused);
         assertEquals("Wrong number for unused", 0, forUnused.size());
     }
 }

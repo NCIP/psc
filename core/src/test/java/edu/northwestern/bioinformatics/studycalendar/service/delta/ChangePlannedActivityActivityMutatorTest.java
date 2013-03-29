@@ -8,13 +8,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -31,7 +31,6 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
 
-    private ScheduledActivityDao scheduledActivityDao;
     private ActivityDao activityDao;
     private Activity sc;
     private Activity scprime;
@@ -42,17 +41,16 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
         plannedActivity = createPlannedActivity(sc, 4);
         scheduledCalendar = new ScheduledCalendar();
 
+        scheduledCalendar.addStudySegment(new ScheduledStudySegment());
         // For side effects
         PropertyChange change = PropertyChange.create("activity", "S|C", "S|Cprime");
         Delta.createDeltaFor(plannedActivity, change);
 
         sc = createActivity("C");
         scprime = createActivity("Cprime");
-
-        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
 
-        mutator = new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
+        mutator = new ChangePlannedActivityActivityMutator(change, activityDao);
     }
 
     public void testApplyActivityToPlannedActivity() throws Exception {
@@ -67,8 +65,7 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     public void testApplyActivity() throws Exception {
         ScheduledActivity expectedSE = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
         expectedSE.setActivity(sc);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSE));
+        addEvents(scheduledCalendar.getScheduledStudySegments().get(0), expectedSE);
         expect(activityDao.getByUniqueKey("S|Cprime")).andReturn(scprime);
 
         replayMocks();
@@ -80,8 +77,7 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     public void testApplyToOccurredActivity() throws Exception {
         ScheduledActivity expectedSE = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4, ScheduledActivityMode.OCCURRED.createStateInstance());
         expectedSE.setActivity(sc);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSE));
+        addEvents(scheduledCalendar.getScheduledStudySegments().get(0), expectedSE);
 
         replayMocks();
         mutator.apply(scheduledCalendar);

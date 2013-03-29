@@ -11,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 
 /**
  * @author Rhett Sutphin
@@ -21,9 +20,9 @@ public class ChangePlannedActivityDayMutator extends AbstractChangePlannedActivi
     private int amount;
 
     public ChangePlannedActivityDayMutator(
-        PropertyChange change, ScheduledActivityDao scheduledActivityDao, ScheduleService scheduleService
+        PropertyChange change, ScheduleService scheduleService
     ) {
-        super(change, scheduledActivityDao);
+        super(change);
         this.scheduleService = scheduleService;
         amount = Integer.parseInt(change.getNewValue()) - Integer.parseInt(change.getOldValue());
     }

@@ -10,11 +10,11 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -43,12 +43,10 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     private ScheduledCalendar scheduledCalendar;
 
     private PlannedActivityLabelDao paLabelDao;
-    private ScheduledActivityDao scheduledActivityDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
         plannedActivity = setId(21, Fixtures.createPlannedActivity("pa", 8));
         paLabel = setId(51, Fixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
         add = Add.create(paLabel);
@@ -57,17 +55,15 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
         amendment.addDelta(Delta.createDeltaFor(plannedActivity, add));
 
         scheduledCalendar = new ScheduledCalendar();
+        scheduledCalendar.addStudySegment(new ScheduledStudySegment());
         plannedActivity.addPlannedActivityLabel(paLabel);
         paLabelDao = registerDaoMockFor(PlannedActivityLabelDao.class);
-        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         mutator = new AddPlannedActivityLabelMutator(
-                add, paLabelDao,scheduledActivityDao);
+                add, paLabelDao);
     }
 
     public void testApplyToOneScheduledActivityWithOneLabel() throws Exception {
         ScheduledActivity expectedSA = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSA));
         expectedSA.addLabel("newLabel");
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -78,8 +74,6 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     public void testApplyToOneScheduledActivity() throws Exception {
         ScheduledActivity expectedSA = Fixtures.createScheduledActivity("Activity1", 2007, Calendar.MARCH, 4);
         expectedSA.setRepetitionNumber(0);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-            .andReturn(Arrays.asList(expectedSA));
         expectedSA.addLabel("newLabel");
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -94,8 +88,6 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-                    .andReturn(scheduledActivities);
         sa1.addLabel("newLabel");
         sa2.addLabel("newLabel");
         replayMocks();
