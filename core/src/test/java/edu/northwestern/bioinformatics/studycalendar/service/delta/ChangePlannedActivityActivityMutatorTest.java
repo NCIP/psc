@@ -10,12 +10,11 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -32,8 +31,6 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
 
-    private Period period;
-    private StudySegment studySegment;
     private ActivityDao activityDao;
     private Activity sc;
     private Activity scprime;
@@ -42,12 +39,9 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     protected void setUp() throws Exception {
         super.setUp();
         plannedActivity = createPlannedActivity(sc, 4);
-        studySegment = setId(45, new StudySegment());
-        period = setId(81, createPeriod("P1", 4, 17, 8));
         scheduledCalendar = new ScheduledCalendar();
-        period.addChild(plannedActivity);
-        studySegment.addChild(period);
-        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
+
+        scheduledCalendar.addStudySegment(new ScheduledStudySegment());
         // For side effects
         PropertyChange change = PropertyChange.create("activity", "S|C", "S|Cprime");
         Delta.createDeltaFor(plannedActivity, change);

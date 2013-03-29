@@ -11,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 import java.util.ArrayList;
@@ -34,12 +33,10 @@ abstract class AbstractChangePlannedActivityMutator extends SimplePropertyChange
 
     public Collection<ScheduledActivity> findEventsToMutate(ScheduledCalendar calendar) {
         PlannedActivity plannedActivity = (PlannedActivity) (PlanTreeNode) change.getDelta().getNode();
+        Collection<ScheduledActivity> allScheduledActivities = calendar.getScheduledActivitiesFor(plannedActivity);
         Collection<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
-        Collection<ScheduledStudySegment> scheduledStudySegments = calendar.getScheduledStudySegmentsFor(plannedActivity.getPeriod().getStudySegment());
-        for (ScheduledStudySegment scheduledStudySegment : scheduledStudySegments) {
-            for (ScheduledActivity sa : scheduledStudySegment.getActivities()) {
-                if (sa.getCurrentState().getMode().isOutstanding()) scheduledActivities.add(sa);
-            }
+        for (ScheduledActivity sa : allScheduledActivities) {
+            if (sa.getCurrentState().getMode().isOutstanding()) scheduledActivities.add(sa);
         }
         return scheduledActivities;
     }

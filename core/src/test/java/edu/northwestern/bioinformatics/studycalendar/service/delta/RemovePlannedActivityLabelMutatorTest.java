@@ -32,8 +32,6 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     private Amendment amendment;
     private Remove remove;
 
-    private Period period;
-    private StudySegment studySegment;
     private PlannedActivity plannedActivity;
     private PlannedActivityLabel paLabel;
     private ScheduledCalendar scheduledCalendar;
@@ -43,19 +41,15 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studySegment = setId(45, new StudySegment());
-        period = setId(81, createPeriod("P1", 4, 17, 8));
-        plannedActivity = setId(21, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivity("pa", 8));
-        paLabel = setId(51, Fixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
-        period.addChild(plannedActivity);
-        studySegment.addChild(period);
+        plannedActivity = setId(21, createPlannedActivity("pa", 8));
+        paLabel = setId(51, createPlannedActivityLabel(plannedActivity,"TestLabel",5));
         remove = Remove.create(paLabel);
         amendment = createAmendments("amendment1");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
         amendment.addDelta(Delta.createDeltaFor(plannedActivity,remove));
 
         scheduledCalendar = new ScheduledCalendar();
-        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
+        scheduledCalendar.addStudySegment(new ScheduledStudySegment());
         plannedActivity.addPlannedActivityLabel(paLabel);
         paLabelDao = registerDaoMockFor(PlannedActivityLabelDao.class);
         mutator = new RemovePlannedActivityLabelMutator(

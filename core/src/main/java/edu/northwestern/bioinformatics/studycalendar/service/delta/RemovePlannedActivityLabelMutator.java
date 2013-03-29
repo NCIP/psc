@@ -28,13 +28,11 @@ public class RemovePlannedActivityLabelMutator extends RemoveMutator {
         PlannedActivityLabel paLabel = (PlannedActivityLabel) findChild();
         PlannedActivity plannedActivity = (PlannedActivity) change.getDelta().getNode();
         plannedActivity.removeChild(paLabel);
-        Collection<ScheduledStudySegment> scheduledStudySegments = calendar.getScheduledStudySegmentsFor(plannedActivity.getPeriod().getStudySegment());
-        for (ScheduledStudySegment scheduledStudySegment : scheduledStudySegments) {
-            for (ScheduledActivity sa : scheduledStudySegment.getActivities()) {
-                if (sa.getPlannedActivity().equals(plannedActivity)) {
-                    if (paLabel.appliesToRepetition(sa.getRepetitionNumber())) {
-                        sa.removeLabel(paLabel.getLabel());
-                    }
+        Collection<ScheduledActivity> allScheduledActivities = calendar.getScheduledActivitiesFor(plannedActivity);
+        for (ScheduledActivity sa : allScheduledActivities) {
+            if (sa.getPlannedActivity().equals(plannedActivity)) {
+                if (paLabel.appliesToRepetition(sa.getRepetitionNumber())) {
+                    sa.removeLabel(paLabel.getLabel());
                 }
             }
         }
