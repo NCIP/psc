@@ -14,6 +14,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
@@ -248,6 +250,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         this.scheduledStudySegment = scheduledStudySegment;
     }
 
+    @Fetch(FetchMode.JOIN)
     @ManyToOne
     public PlannedActivity getPlannedActivity() {
         return plannedActivity;
@@ -257,6 +260,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         this.plannedActivity = plannedActivity;
     }
 
+    @Fetch(FetchMode.JOIN)
     @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.ScheduledActivityStateType")
     @Columns(columns = {
         @Column(name = "current_state_mode_id"),
@@ -329,6 +333,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         this.sourceAmendment = sourceAmendment;
     }
 
+    @Fetch(FetchMode.JOIN)
     @CollectionOfElements
     @Sort(type = SortType.COMPARATOR, comparator = LabelComparator.class)
     @JoinTable(name = "scheduled_activity_labels", joinColumns = @JoinColumn(name = "scheduled_activity_id"))

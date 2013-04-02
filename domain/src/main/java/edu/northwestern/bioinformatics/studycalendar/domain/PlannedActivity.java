@@ -12,6 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
@@ -218,6 +220,7 @@ public class PlannedActivity extends PlanTreeNode<Period>
 		return population;
 	}
 
+    @Fetch(FetchMode.JOIN)
 	@OneToMany(mappedBy = "plannedActivity")
 	@Cascade(value = {CascadeType.ALL})
 	@Sort(type = SortType.NATURAL)
