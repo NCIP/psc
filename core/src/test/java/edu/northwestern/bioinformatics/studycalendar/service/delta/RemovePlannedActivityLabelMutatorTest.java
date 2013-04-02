@@ -12,7 +12,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.*;
@@ -38,30 +37,27 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     private ScheduledCalendar scheduledCalendar;
 
     private PlannedActivityLabelDao paLabelDao;
-    private ScheduledActivityDao scheduledActivityDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedActivity = setId(21, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivity("pa", 8));
-        paLabel = setId(51, Fixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
+        plannedActivity = setId(21, createPlannedActivity("pa", 8));
+        paLabel = setId(51, createPlannedActivityLabel(plannedActivity,"TestLabel",5));
         remove = Remove.create(paLabel);
         amendment = createAmendments("amendment1");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
         amendment.addDelta(Delta.createDeltaFor(plannedActivity,remove));
 
         scheduledCalendar = new ScheduledCalendar();
+        scheduledCalendar.addStudySegment(new ScheduledStudySegment());
         plannedActivity.addPlannedActivityLabel(paLabel);
         paLabelDao = registerDaoMockFor(PlannedActivityLabelDao.class);
-        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         mutator = new RemovePlannedActivityLabelMutator(
-                    remove, paLabelDao,scheduledActivityDao);
+                    remove, paLabelDao);
     }
 
     public void testRemoveLabelFromOneScheduledActivity() throws Exception {
         ScheduledActivity expectedSA = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-                .andReturn(Arrays.asList(expectedSA));
         expectedSA.removeLabel(paLabel.getLabel());
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -75,8 +71,6 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);
-        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
-                        .andReturn(scheduledActivities);
         sa1.removeLabel(paLabel.getLabel());
         sa2.removeLabel(paLabel.getLabel());
         replayMocks();

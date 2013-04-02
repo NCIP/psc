@@ -64,7 +64,7 @@ public class MutatorFactory implements ApplicationContextAware {
             return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
                 getSubjectService(), getTemplateService());
         } else if (target instanceof PlannedActivity)  {
-            return new AddPlannedActivityLabelMutator(add, dao, scheduledActivityDao);
+            return new AddPlannedActivityLabelMutator(add, dao);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
         } else {
@@ -79,7 +79,7 @@ public class MutatorFactory implements ApplicationContextAware {
         } else if (target instanceof Period) {
             return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);
         } else if (target instanceof PlannedActivity)  {
-            return new RemovePlannedActivityLabelMutator(remove, dao, scheduledActivityDao);
+            return new RemovePlannedActivityLabelMutator(remove, dao);
         } else {
             return new RemoveMutator(remove,  dao);
         }
@@ -104,14 +104,14 @@ public class MutatorFactory implements ApplicationContextAware {
         }
         if (target instanceof PlannedActivity) {
             if ("day".equals(change.getPropertyName())) {
-                return new ChangePlannedActivityDayMutator(change, scheduledActivityDao, getScheduleService());
+                return new ChangePlannedActivityDayMutator(change, getScheduleService());
             } else if ("details".equals(change.getPropertyName())) {
-                return new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
+                return new ChangePlannedActivitySimplePropertyMutator(change);
             } else if ("activity".equals(change.getPropertyName())) {
-                return new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
+                return new ChangePlannedActivityActivityMutator(change, activityDao);
             } else if ("population".equals(change.getPropertyName())) {
                 Study study = getTemplateService().findStudy((PlanTreeNode<?>) target);
-                return new ChangePlannedActivityPopulationMutator(change, study, scheduledActivityDao, populationDao);
+                return new ChangePlannedActivityPopulationMutator(change, study, populationDao);
             }
             // fall through
         }

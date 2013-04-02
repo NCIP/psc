@@ -8,7 +8,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -30,7 +29,6 @@ public class ChangePlannedActivityPopulationMutatorTest extends StudyCalendarTes
     private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
 
-    private ScheduledActivityDao scheduledActivityDao;
     private PopulationDao populationDao;
     private Population p1, p2;
     private PropertyChange change;
@@ -54,15 +52,13 @@ public class ChangePlannedActivityPopulationMutatorTest extends StudyCalendarTes
         change = PropertyChange.create("population", "P1", "P2");
         Delta.createDeltaFor(plannedActivity, change);
 
-
-        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
     }
 
     private Mutator getMutator() {
         if (mutator == null) {
             mutator = new ChangePlannedActivityPopulationMutator(
-                change, study, scheduledActivityDao, populationDao);
+                change, study, populationDao);
         }
         return mutator;
     }

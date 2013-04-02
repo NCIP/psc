@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Parameter;
@@ -169,6 +171,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     }
     ////// BEAN PROPERTIES
 
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "scheduledStudySegment")
     @OrderBy(clause="ideal_date")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
