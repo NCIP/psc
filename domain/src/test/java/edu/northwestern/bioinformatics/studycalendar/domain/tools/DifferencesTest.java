@@ -37,12 +37,12 @@ public class DifferencesTest extends DomainTestCase {
 
     public void testRegisterLeftNullRecordsDifference() throws Exception {
         diff.registerValueDifference("bar", null, "A");
-        assertDifferences(diff, "bar <null> does not match \"A\"");
+        assertDifferences(diff, "bar [null] does not match \"A\"");
     }
 
     public void testRegisterRightNullRecordsDifference() throws Exception {
         diff.registerValueDifference("bar", "A", null);
-        assertDifferences(diff, "bar \"A\" does not match <null>");
+        assertDifferences(diff, "bar \"A\" does not match [null]");
     }
 
     public void testRegisterDifferentNumbersUsesArthimeticNotation() throws Exception {

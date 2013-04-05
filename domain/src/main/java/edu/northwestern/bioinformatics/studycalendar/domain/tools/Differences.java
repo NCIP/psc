@@ -69,7 +69,7 @@ public class Differences {
         } else if (o instanceof NaturallyKeyed) {
             return ((NaturallyKeyed) o).getNaturalKey();
         } else {
-            return o == null ? "<null>" : o.toString();
+            return o == null ? "[null]" : o.toString();
         }
     }
 
