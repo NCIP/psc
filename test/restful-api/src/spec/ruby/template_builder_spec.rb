@@ -2,7 +2,7 @@
 # Copyright Northwestern University.
 #
 # Distributed under the OSI-approved BSD 3-Clause License.
-# See http://ncip.github.com/psc/LICENSE.txt for details.
+# See http://ncip.github.io/psc/LICENSE.txt for details.
 #L
 
 # This isn't actually a spec for the API -- it's a spec for one of the helpers

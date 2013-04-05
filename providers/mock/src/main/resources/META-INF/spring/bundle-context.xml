@@ -4,7 +4,7 @@
   Copyright Northwestern University.
 
   Distributed under the OSI-approved BSD 3-Clause License.
-  See http://ncip.github.com/psc/LICENSE.txt for details.
+  See http://ncip.github.io/psc/LICENSE.txt for details.
 L-->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd        ">
