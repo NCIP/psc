@@ -2,7 +2,7 @@
 # Copyright Northwestern University.
 #
 # Distributed under the OSI-approved BSD 3-Clause License.
-# See http://ncip.github.com/psc/LICENSE.txt for details.
+# See http://ncip.github.io/psc/LICENSE.txt for details.
 #L
 
 ENV['JAVA_OPTS'] ||= "-Xmx256M -XX:MaxPermSize=96M -Dcom.sun.management.jmxremote"
