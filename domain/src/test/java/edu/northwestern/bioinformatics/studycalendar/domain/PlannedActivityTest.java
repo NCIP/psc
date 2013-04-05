@@ -326,7 +326,7 @@ public class PlannedActivityTest extends DomainTestCase {
 
         assertDifferences(a.deepEquals(b),
             "details \"Every time\" does not match \"Sometimes\"",
-            "condition <null> does not match \"When the coin flip is tails\"");
+            "condition [null] does not match \"When the coin flip is tails\"");
     }
 
     public void testDeepEqualsForDifferentLabels() throws Exception {
@@ -347,7 +347,7 @@ public class PlannedActivityTest extends DomainTestCase {
         Population p1 = Fixtures.createPopulation("N1", "name");
         a.setPopulation(p1);
 
-        assertDifferences(a.deepEquals(b), "population N1 does not match <null>");
+        assertDifferences(a.deepEquals(b), "population N1 does not match [null]");
     }
 
     private PlannedActivity createPlannedActivityInPeriod(int periodStartDay, int paDay) {
