@@ -102,7 +102,11 @@ public class DefaultMembrane implements Membrane {
                     locationLog.trace("      {}", stacktrace[i]);
                 }
             }
-            if (cache.get(object) == null) {
+
+            // result is a hard reference to the value in the cache. This prevents it from being
+            // GC'd out of the cache before it can be returned from the method.
+            Object result = cache.get(object);
+            if (result == null) {
                 try {
                     Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader, newCounterpartReverseClassLoader);
                     if (encapsulator == null) {
@@ -110,7 +114,8 @@ public class DefaultMembrane implements Membrane {
                         return object;
                     } else {
                         log.trace(" - Building new proxy");
-                        cache.put(encapsulator.encapsulate(object), object);
+                        result = encapsulator.encapsulate(object);
+                        cache.put(result, object);
                     }
                 } catch (MembraneException e) {
                     log.error(
@@ -124,7 +129,7 @@ public class DefaultMembrane implements Membrane {
             } else {
                 log.trace(" - Reusing cached value");
             }
-            Object result = cache.get(object);
+
             log.trace(" - Complete with {}@{}", result.getClass().getName(),
                 Integer.toHexString(System.identityHashCode(result)));
             return result;
