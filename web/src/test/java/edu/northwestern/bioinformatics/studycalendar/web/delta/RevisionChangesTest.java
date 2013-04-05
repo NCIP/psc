@@ -7,20 +7,29 @@
 
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
-import static org.easymock.classextension.EasyMock.expect;
 
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -119,6 +128,12 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
 
     public void testNodeNameForPopulation() throws Exception {
         assertEquals("unnamed population", RevisionChanges.getNodeName(new Population()));
+    }
+
+    public void testNodeNameForLabel() throws Exception {
+        PlannedActivityLabel label = new PlannedActivityLabel();
+        label.setLabel("foo");
+        assertEquals("the label foo on all", RevisionChanges.getNodeName(label));
     }
 
     public void testSentenceForReorderUp() throws Exception {

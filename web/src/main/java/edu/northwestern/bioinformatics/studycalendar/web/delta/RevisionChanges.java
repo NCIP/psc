@@ -102,6 +102,9 @@ public class RevisionChanges {
             } else {
                 sb.append("a planned ").append(e.getActivity().getName());
             }
+        } else if (PlannedActivityLabel.class.isAssignableFrom(node.getClass())) {
+            PlannedActivityLabel e = (PlannedActivityLabel) node;
+            sb.append("the label ").append(e.getNaturalKey());
         } else {
             sb.append("unexpected node: ").append(node);
         }
